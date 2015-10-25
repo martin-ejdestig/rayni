@@ -1,0 +1,18 @@
+---
+# misc-noexcept-move-constructor is disabled because of a bug with = default.
+# See https://llvm.org/bugs/show_bug.cgi?id=24712 .
+Checks: "\
+misc-*,\
+-misc-noexcept-move-constructor,\
+readability-*,\
+"
+
+HeaderFilterRegex: '^src/'
+
+CheckOptions:
+  - key:   readability-braces-around-statements.ShortStatementLines
+    value: '3'
+  - key:   readability-function-size.LineThreshold
+    value: '64'
+...
+

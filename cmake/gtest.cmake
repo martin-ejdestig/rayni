@@ -40,15 +40,29 @@ target_include_directories(gtest
 # - There are a lot of implicit conversions from signed to unsigned integers.
 # - GTEST_DEFINE_STATIC_MUTEX_ does not initialize owner_ field. See
 #   documentation for the macro in include/gtest/internal/gtest-port.h
+# - override is missing... everywhere
+# - NULL is used by gtest.
+# - Clang warns for non string literal format strings in custom printf-like
+#   functions in gtest-all.cc while GCC does not.
 if(CMAKE_COMPILER_IS_GNUCXX OR "${CMAKE_CXX_COMPILER_ID}" MATCHES "Clang")
     target_compile_options(gtest
                            PUBLIC -Wno-sign-compare
-                           PRIVATE -Wno-missing-field-initializers)
+                           PRIVATE -Wno-sign-conversion
+                                   -Wno-missing-field-initializers)
+endif()
+if(CMAKE_COMPILER_IS_GNUCXX)
+    target_compile_options(gtest
+                           PUBLIC -Wno-zero-as-null-pointer-constant
+                                  $<$<VERSION_GREATER:$<CXX_COMPILER_VERSION>,4.9>:-Wno-suggest-override>)
+endif()
+if("${CMAKE_CXX_COMPILER_ID}" MATCHES "Clang")
+    target_compile_options(gtest
+                           PRIVATE -Wno-format-nonliteral)
 endif()
 
 set_source_files_properties(${GTEST_MAIN_SRC} PROPERTIES GENERATED TRUE)
 add_library(gtest_main ${GTEST_MAIN_SRC})
-add_dependencies(gtest_main gtest)
+target_link_libraries(gtest_main gtest)
 target_include_directories(gtest_main
                            PUBLIC ${GTEST_INCLUDE_DIR}
                            PRIVATE ${source_dir})

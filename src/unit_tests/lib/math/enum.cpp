@@ -33,7 +33,7 @@ namespace Rayni
 			BAZ = 456
 		};
 
-		static const std::array<Foo, 2> enum_values = {Foo::BAR, Foo::BAZ};
+		static const std::array<Foo, 2> enum_values = {{Foo::BAR, Foo::BAZ}};
 
 		EXPECT_EQ(123, enum_to_value(Foo::BAR));
 		EXPECT_EQ(456, enum_to_value(Foo::BAZ));

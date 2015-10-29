@@ -44,18 +44,18 @@ target_include_directories(gtest
 # - NULL is used by gtest.
 # - Clang warns for non string literal format strings in custom printf-like
 #   functions in gtest-all.cc while GCC does not.
-if(CMAKE_COMPILER_IS_GNUCXX OR "${CMAKE_CXX_COMPILER_ID}" MATCHES "Clang")
+if(CMAKE_CXX_COMPILER_ID MATCHES "GNU|Clang")
     target_compile_options(gtest
                            PUBLIC -Wno-sign-compare
                            PRIVATE -Wno-sign-conversion
                                    -Wno-missing-field-initializers)
 endif()
-if(CMAKE_COMPILER_IS_GNUCXX)
+if(CMAKE_CXX_COMPILER_ID MATCHES "GNU")
     target_compile_options(gtest
                            PUBLIC -Wno-zero-as-null-pointer-constant
                                   $<$<VERSION_GREATER:$<CXX_COMPILER_VERSION>,4.9>:-Wno-suggest-override>)
 endif()
-if("${CMAKE_CXX_COMPILER_ID}" MATCHES "Clang")
+if(CMAKE_CXX_COMPILER_ID MATCHES "Clang")
     target_compile_options(gtest
                            PRIVATE -Wno-format-nonliteral)
 endif()

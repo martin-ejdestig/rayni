@@ -25,4 +25,4 @@ enable_testing()
 
 # TODO: Not fond of having a CMakeLists.txt in every directory. Not sure that
 #       including from cmake/ is the way to go though.
-include(cmake/lib.cmake)
+include(cmake/librayni.cmake)

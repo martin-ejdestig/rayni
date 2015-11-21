@@ -44,7 +44,8 @@ namespace Rayni
 		template <typename Duration>
 		std::string format(Duration duration) const
 		{
-			using namespace std::chrono_literals;
+			// TODO: Remove NOLINT when https://llvm.org/bugs/show_bug.cgi?id=25594 is fixed.
+			using namespace std::chrono_literals; // NOLINT
 			auto hh = std::chrono::duration_cast<std::chrono::hours>(duration).count();
 			auto mm = std::chrono::duration_cast<std::chrono::minutes>(duration % 1h).count();
 			auto ss = std::chrono::duration_cast<std::chrono::duration<float>>(duration % 1min).count();

@@ -3,6 +3,7 @@
 # See https://llvm.org/bugs/show_bug.cgi?id=24712 .
 Checks: "\
 google-build-namespaces,\
+google-build-using-namespace,\
 google-global-names-in-headers,\
 google-readability-casting,\
 misc-*,\

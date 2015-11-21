@@ -121,8 +121,8 @@ namespace Rayni
 		EXPECT_THROW(Variant().to_double(), Variant::Exception);
 
 		Variant::Map map;
-		map.emplace("key1", 123);
-		map.emplace("key2", "abc");
+		map.emplace("key1", Variant(123));
+		map.emplace("key2", Variant("abc"));
 		EXPECT_EQ("{ key1: 123, key2: abc }", Variant(std::move(map)).to_string());
 
 		Variant::Vector vector;
@@ -148,7 +148,7 @@ namespace Rayni
 	{
 		struct Foo
 		{
-			Foo(const Variant &v) : bar(v.to_int())
+			explicit Foo(const Variant &v) : bar(v.to_int())
 			{
 			}
 
@@ -162,7 +162,7 @@ namespace Rayni
 	{
 		struct Foo
 		{
-			Foo(int foo) : bar(foo)
+			explicit Foo(int foo) : bar(foo)
 			{
 			}
 
@@ -181,7 +181,7 @@ namespace Rayni
 	{
 		struct Foo
 		{
-			Foo(int foo) : bar(foo)
+			explicit Foo(int foo) : bar(foo)
 			{
 			}
 
@@ -208,8 +208,8 @@ namespace Rayni
 	TEST(VariantTest, GetFromMap)
 	{
 		Variant::Map map;
-		map.emplace("key1", 123);
-		map.emplace("key2", "abc");
+		map.emplace("key1", Variant(123));
+		map.emplace("key2", Variant("abc"));
 		Variant variant(std::move(map));
 
 		EXPECT_EQ(123, variant.get("key1").get_int());
@@ -251,10 +251,10 @@ namespace Rayni
 
 		vector.emplace_back(123);
 		vector.emplace_back("abc");
-		map.emplace("key1", std::move(vector));
+		map.emplace("key1", Variant(std::move(vector)));
 		vector.emplace_back(456);
 		vector.emplace_back("def");
-		map.emplace("key2", std::move(vector));
+		map.emplace("key2", Variant(std::move(vector)));
 		variant = Variant(std::move(map));
 
 		EXPECT_EQ("['key1']", variant.get("key1").get_path());
@@ -264,11 +264,11 @@ namespace Rayni
 		EXPECT_EQ("['key2'][0]", variant.get("key2").get(0).get_path());
 		EXPECT_EQ("['key2'][1]", variant.get("key2").get(1).get_path());
 
-		map.emplace("key1", 123);
-		map.emplace("key2", "abc");
+		map.emplace("key1", Variant(123));
+		map.emplace("key2", Variant("abc"));
 		vector.emplace_back(std::move(map));
-		map.emplace("key1", 456);
-		map.emplace("key2", "def");
+		map.emplace("key1", Variant(456));
+		map.emplace("key2", Variant("def"));
 		vector.emplace_back(std::move(map));
 		variant = Variant(std::move(vector));
 

@@ -56,13 +56,13 @@ namespace Rayni
 			initialize_from(std::move(other));
 		}
 
-		Variant(Map &&map) : type(Type::MAP)
+		explicit Variant(Map &&map) : type(Type::MAP)
 		{
 			new (&value.map) Map(std::move(map));
 			reparent_children();
 		}
 
-		Variant(Vector &&vector) : type(Type::VECTOR)
+		explicit Variant(Vector &&vector) : type(Type::VECTOR)
 		{
 			new (&value.vector) Vector(std::move(vector));
 			reparent_children();
@@ -73,36 +73,36 @@ namespace Rayni
 			value.boolean = boolean;
 		}
 
-		Variant(int number) : type(Type::INT)
+		explicit Variant(int number) : type(Type::INT)
 		{
 			value.number_int = number;
 		}
 
-		Variant(unsigned int number) : type(Type::UNSIGNED_INT)
+		explicit Variant(unsigned int number) : type(Type::UNSIGNED_INT)
 		{
 			value.number_unsigned_int = number;
 		}
 
-		Variant(float number) : type(Type::FLOAT)
+		explicit Variant(float number) : type(Type::FLOAT)
 		{
 			value.number_float = number;
 		}
 
-		Variant(double number) : type(Type::DOUBLE)
+		explicit Variant(double number) : type(Type::DOUBLE)
 		{
 			value.number_double = number;
 		}
 
-		Variant(const char *string) : Variant(std::string(string))
+		explicit Variant(const char *string) : Variant(std::string(string))
 		{
 		}
 
-		Variant(std::string &&string) : type(Type::STRING)
+		explicit Variant(std::string &&string) : type(Type::STRING)
 		{
 			new (&value.string) std::string(std::move(string));
 		}
 
-		Variant(const std::string &string) : type(Type::STRING)
+		explicit Variant(const std::string &string) : type(Type::STRING)
 		{
 			new (&value.string) std::string(string);
 		}

@@ -30,7 +30,7 @@ namespace Rayni
 	class ScopedStopwatch
 	{
 	public:
-		ScopedStopwatch(const std::string &prefix) : ScopedStopwatch(prefix, std::cout)
+		explicit ScopedStopwatch(const std::string &prefix) : ScopedStopwatch(prefix, std::cout)
 		{
 		}
 

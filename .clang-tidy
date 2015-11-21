@@ -2,6 +2,7 @@
 # misc-noexcept-move-constructor is disabled because of a bug with = default.
 # See https://llvm.org/bugs/show_bug.cgi?id=24712 .
 Checks: "\
+google-build-namespaces,\
 google-readability-casting,\
 misc-*,\
 -misc-noexcept-move-constructor,\

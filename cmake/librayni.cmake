@@ -5,6 +5,8 @@ add_library(rayni
             src/lib/containers/variant.h
             src/lib/math/enum.h
             src/lib/math/hash.h
+            src/lib/string/string.cpp
+            src/lib/string/string.h
             src/lib/time/duration_formatter.cpp
             src/lib/time/duration_formatter.h
             src/lib/time/scoped_stopwatch.cpp
@@ -21,6 +23,7 @@ add_executable(librayni-unit_tests
                src/unit_tests/lib/containers/variant.cpp
                src/unit_tests/lib/math/enum.cpp
                src/unit_tests/lib/math/hash.cpp
+               src/unit_tests/lib/string/string.cpp
                src/unit_tests/lib/time/duration_formatter.cpp
                src/unit_tests/lib/time/scoped_stopwatch.cpp
                src/unit_tests/lib/time/stopwatch.cpp)

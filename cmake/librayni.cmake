@@ -1,4 +1,6 @@
 add_library(rayni
+            src/lib/color.cpp
+            src/lib/color.h
             src/lib/containers/fixed_size_stack.h
             src/lib/containers/listener_list.h
             src/lib/containers/variant.cpp
@@ -19,6 +21,7 @@ target_include_directories(rayni
                            PRIVATE ${CMAKE_SOURCE_DIR}/src)
 
 add_executable(librayni-unit_tests
+               src/unit_tests/lib/color.cpp
                src/unit_tests/lib/containers/fixed_size_stack.cpp
                src/unit_tests/lib/containers/listener_list.cpp
                src/unit_tests/lib/containers/variant.cpp

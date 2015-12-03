@@ -41,6 +41,7 @@ namespace
 	 * libstdc++5 3.3.6-5 and glibc 2.22-3.
 	 *
 	 * 3.3s - std::strtod (with system locale)
+	 * 6.5s - std::istringstream (with system locale)
 	 * 8.0s - std::istringstream + imbue
 	 * 4.5s - std::istringstream + imbue + thread local reuse
 	 */

@@ -83,12 +83,11 @@ namespace Rayni
 			return std::experimental::nullopt;
 
 		file.reset();
-		auto deleter = file.get_deleter();
 
-		if (deleter.pclose_failed() || !deleter.child_ran_and_exited_normally())
+		if (file.get_deleter().pclose_failed() || !file.get_deleter().child_ran_and_exited_normally())
 			return std::experimental::nullopt;
 
-		result.exit_code = deleter.exit_code();
+		result.exit_code = file.get_deleter().exit_code();
 
 		return std::experimental::make_optional(result);
 	}

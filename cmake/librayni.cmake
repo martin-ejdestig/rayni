@@ -10,6 +10,8 @@ add_library(rayni
             src/lib/math/math.h
             src/lib/string/string.cpp
             src/lib/string/string.h
+            src/lib/system/command.cpp
+            src/lib/system/command.h
             src/lib/time/duration_formatter.cpp
             src/lib/time/duration_formatter.h
             src/lib/time/scoped_stopwatch.cpp
@@ -30,6 +32,7 @@ add_executable(librayni-unit_tests
                src/unit_tests/lib/math/hash.cpp
                src/unit_tests/lib/math/math.cpp
                src/unit_tests/lib/string/string.cpp
+               src/unit_tests/lib/system/command.cpp
                src/unit_tests/lib/time/duration_formatter.cpp
                src/unit_tests/lib/time/scoped_stopwatch.cpp
                src/unit_tests/lib/time/stopwatch.cpp)

@@ -5,6 +5,8 @@ add_library(rayni
             src/lib/containers/listener_list.h
             src/lib/containers/variant.cpp
             src/lib/containers/variant.h
+            src/lib/image.cpp
+            src/lib/image.h
             src/lib/math/enum.h
             src/lib/math/hash.h
             src/lib/math/math.h
@@ -28,6 +30,7 @@ add_executable(librayni-unit_tests
                src/unit_tests/lib/containers/listener_list.cpp
                src/unit_tests/lib/containers/variant.cpp
                src/unit_tests/lib/expect_real_eq.h
+               src/unit_tests/lib/image.cpp
                src/unit_tests/lib/math/enum.cpp
                src/unit_tests/lib/math/hash.cpp
                src/unit_tests/lib/math/math.cpp

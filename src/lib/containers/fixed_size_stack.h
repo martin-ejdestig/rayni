@@ -20,7 +20,6 @@
 #ifndef _RAYNI_LIB_CONTAINERS_FIXED_SIZE_STACK_H_
 #define _RAYNI_LIB_CONTAINERS_FIXED_SIZE_STACK_H_
 
-#include <array>
 #include <cassert>
 #include <utility>
 
@@ -62,7 +61,7 @@ namespace Rayni
 
 	private:
 		unsigned int size = 0;
-		std::array<Type, MAX_SIZE> array;
+		Type array[MAX_SIZE];
 	};
 }
 

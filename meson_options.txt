@@ -1,0 +1,1 @@
+option('extra_warnings', type : 'boolean', value : true, description : 'Enable extra compiler warnings')

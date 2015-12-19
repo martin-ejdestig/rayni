@@ -35,7 +35,7 @@ namespace Rayni
 			friend class ListenerList<Listener>;
 
 		protected:
-			~ListenerBase()
+			virtual ~ListenerBase()
 			{
 				if (list)
 					// TODO: Unsafe cast (but will work for most common use case).

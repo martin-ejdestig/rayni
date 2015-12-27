@@ -6,6 +6,10 @@ project('rayni-staging', 'cpp',
 		'werror=true'
 	])
 
+if get_option('double_precision')
+	add_global_arguments('-DRAYNI_DOUBLE_PRECISION', language : 'cpp')
+endif
+
 if get_option('extra_warnings')
 	extra_warnings = [
 		'-Wold-style-cast',

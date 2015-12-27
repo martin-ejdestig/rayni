@@ -7,12 +7,19 @@ project('rayni-staging', 'cpp',
 	])
 
 if get_option('extra_warnings')
-	extra_warnings = ['-Wold-style-cast', '-Woverloaded-virtual', '-Wformat=2', '-Wsign-conversion']
-
+	extra_warnings = [
+		'-Wold-style-cast',
+		'-Woverloaded-virtual',
+		'-Wformat=2',
+		'-Wsign-conversion'
+	]
 	if meson.get_compiler('cpp').get_id() == 'gcc'
-		extra_warnings += ['-Wdouble-promotion', '-Wsuggest-override', '-Wzero-as-null-pointer-constant']
+		extra_warnings += [
+			'-Wdouble-promotion',
+			'-Wsuggest-override',
+			'-Wzero-as-null-pointer-constant'
+		]
 	endif
-
 	add_global_arguments(extra_warnings, language : 'cpp')
 endif
 

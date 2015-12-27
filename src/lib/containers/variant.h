@@ -250,52 +250,52 @@ namespace Rayni
 		std::string to_string() const;
 
 		template <typename T>
-		typename std::enable_if<std::is_same<T, int>::value, T>::type to() const
+		std::enable_if_t<std::is_same<T, int>::value, T> to() const
 		{
 			return to_int();
 		}
 
 		template <typename T>
-		typename std::enable_if<std::is_same<T, unsigned int>::value, T>::type to() const
+		std::enable_if_t<std::is_same<T, unsigned int>::value, T> to() const
 		{
 			return to_unsigned_int();
 		}
 
 		template <typename T>
-		typename std::enable_if<std::is_same<T, float>::value, T>::type to() const
+		std::enable_if_t<std::is_same<T, float>::value, T> to() const
 		{
 			return to_float();
 		}
 
 		template <typename T>
-		typename std::enable_if<std::is_same<T, double>::value, T>::type to() const
+		std::enable_if_t<std::is_same<T, double>::value, T> to() const
 		{
 			return to_double();
 		}
 
 		template <typename T>
-		typename std::enable_if<std::is_same<T, std::string>::value, T>::type to() const
+		std::enable_if_t<std::is_same<T, std::string>::value, T> to() const
 		{
 			return to_string();
 		}
 
 		template <typename T>
-		typename std::enable_if<std::is_constructible<T, const Variant &>::value, T>::type to() const
+		std::enable_if_t<std::is_constructible<T, const Variant &>::value, T> to() const
 		{
 			return T(*this);
 		}
 
 		template <typename T>
-		typename std::enable_if<!std::is_constructible<T, const Variant &>::value && std::is_class<T>::value &&
-		                                !std::is_same<T, std::string>::value,
-		                        T>::type
+		std::enable_if_t<!std::is_constructible<T, const Variant &>::value && std::is_class<T>::value &&
+		                         !std::is_same<T, std::string>::value,
+		                 T>
 		to() const
 		{
 			return T::from_variant(*this);
 		}
 
 		template <typename T>
-		typename std::enable_if<std::is_pointer<T>::value, T>::type to() const
+		std::enable_if_t<std::is_pointer<T>::value, T> to() const
 		{
 			// Ownership is NOT transfered!
 			return std::remove_pointer<T>::type::get_from_variant(*this);

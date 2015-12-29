@@ -31,6 +31,12 @@ config_header = configure_file(
 	output : 'config.h',
 	configuration : config_data)
 
+git_describe_version_header = vcs_tag(
+	input : 'src/git_describe_version.h.in',
+	output : 'git_describe_version.h',
+	fallback : '<git describe fallback>',
+	command : ['git', 'describe', '--always', '--first-parent', '--dirty'])
+
 src_incdir = include_directories('src')
 
 lib = static_library('rayni',
@@ -57,7 +63,10 @@ lib = static_library('rayni',
 		'src/lib/time/scoped_stopwatch.h',
 		'src/lib/time/stopwatch.cpp',
 		'src/lib/time/stopwatch.h',
+		'src/lib/version_info.cpp',
+		'src/lib/version_info.h',
 		config_header,
+		git_describe_version_header
 	])
 
 gtest = dependency('gtest', main : true)
@@ -80,8 +89,8 @@ lib_unit_tests = executable('librayni-unit_tests',
 		'src/unit_tests/lib/system/command.cpp',
 		'src/unit_tests/lib/time/duration_formatter.cpp',
 		'src/unit_tests/lib/time/scoped_stopwatch.cpp',
-		'src/unit_tests/lib/time/stopwatch.cpp'
+		'src/unit_tests/lib/time/stopwatch.cpp',
+		'src/unit_tests/lib/version_info.cpp'
 	])
 
 test('librayni tests', lib_unit_tests)
-

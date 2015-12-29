@@ -22,6 +22,8 @@
 
 #include <cmath>
 
+#include "config.h"
+
 namespace Rayni
 {
 #ifdef RAYNI_DOUBLE_PRECISION

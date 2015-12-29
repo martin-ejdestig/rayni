@@ -6,10 +6,6 @@ project('rayni-staging', 'cpp',
 		'werror=true'
 	])
 
-if get_option('double_precision')
-	add_global_arguments('-DRAYNI_DOUBLE_PRECISION', language : 'cpp')
-endif
-
 if get_option('extra_warnings')
 	extra_warnings = [
 		'-Wold-style-cast',
@@ -26,6 +22,14 @@ if get_option('extra_warnings')
 	endif
 	add_global_arguments(extra_warnings, language : 'cpp')
 endif
+
+config_data = configuration_data()
+config_data.set('RAYNI_DOUBLE_PRECISION', get_option('double_precision'))
+
+config_header = configure_file(
+	input : 'src/config.h.in',
+	output : 'config.h',
+	configuration : config_data)
 
 src_incdir = include_directories('src')
 
@@ -52,7 +56,8 @@ lib = static_library('rayni',
 		'src/lib/time/scoped_stopwatch.cpp',
 		'src/lib/time/scoped_stopwatch.h',
 		'src/lib/time/stopwatch.cpp',
-		'src/lib/time/stopwatch.h'
+		'src/lib/time/stopwatch.h',
+		config_header,
 	])
 
 gtest = dependency('gtest', main : true)

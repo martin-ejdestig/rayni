@@ -20,7 +20,7 @@
 #ifndef _RAYNI_GIT_DESCRIBE_VERSION_H_
 #define _RAYNI_GIT_DESCRIBE_VERSION_H_
 
-#ifndef RAYNI_IN_SRC_LIB_VERSION_INFO_CPP
+#ifndef RAYNI_GIT_DESCRIBE_VERSION_INCLUDED_FROM_SRC_LIB_VERSION_INFO_CPP
 #error May only be included from src/lib/version_info.cpp
 #endif
 

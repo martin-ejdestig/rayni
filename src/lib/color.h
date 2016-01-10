@@ -117,6 +117,11 @@ namespace Rayni
 			return Color(r() + c.r(), g() + c.g(), b() + c.b());
 		}
 
+		Color operator-(const Color &v) const
+		{
+			return Color(r() - v.r(), g() - v.g(), b() - v.b());
+		}
+
 		Color &operator+=(const Color &c)
 		{
 			r() += c.r();
@@ -143,6 +148,11 @@ namespace Rayni
 		Color operator*(real_t s) const
 		{
 			return Color(r() * s, g() * s, b() * s);
+		}
+
+		friend Color operator*(real_t s, const Color &c)
+		{
+			return Color(s * c.r(), s * c.g(), s * c.b());
 		}
 
 		Color &operator*=(real_t s)

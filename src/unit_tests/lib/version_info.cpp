@@ -37,7 +37,7 @@ namespace Rayni
 	TEST(VersionInfo, Copyright)
 	{
 		const std::string COPYRIGHT_STRING_AND_SIGN = "Copyright \xc2\xa9";
-		const std::string YEAR_OR_YEARS = "20[0-9-]{2}(-20[0-9]{2})?";
+		const std::string YEAR_OR_YEARS = "20[0-9]{2}(-20[0-9]{2})?";
 		const std::string WHO = ".{4,}";
 
 		std::regex copyright_regex(COPYRIGHT_STRING_AND_SIGN + " " + YEAR_OR_YEARS + " " + WHO);

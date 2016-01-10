@@ -1,7 +1,7 @@
 /**
  * This file is part of Rayni.
  *
- * Copyright (C) 2014-2015 Martin Ejdestig <marejde@gmail.com>
+ * Copyright (C) 2014-2016 Martin Ejdestig <marejde@gmail.com>
  *
  * Rayni is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -32,7 +32,7 @@ namespace Rayni
 
 	std::string VersionInfo::copyright()
 	{
-		return "Copyright \xc2\xa9 2013-2015 Martin Ejdestig";
+		return "Copyright \xc2\xa9 2013-2016 Martin Ejdestig";
 	}
 
 	std::string VersionInfo::version()

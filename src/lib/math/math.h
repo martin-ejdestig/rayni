@@ -34,17 +34,16 @@ namespace Rayni
 
 	static constexpr real_t PI = real_t(3.14159265358979323846);
 
-	static inline real_t lerp(real_t t, real_t x0, real_t x1)
+	template <typename T>
+	static inline T lerp(real_t t, const T &x0, const T &x1)
 	{
 		return x0 + t * (x1 - x0);
 	}
 
-	static inline real_t blerp(real_t tx, real_t ty, real_t x00, real_t x10, real_t x01, real_t x11)
+	template <typename T>
+	static inline T blerp(real_t tx, real_t ty, const T &x00, const T &x10, const T &x01, const T &x11)
 	{
-		real_t x0 = lerp(tx, x00, x10);
-		real_t x1 = lerp(tx, x01, x11);
-
-		return lerp(ty, x0, x1);
+		return lerp(ty, lerp(tx, x00, x10), lerp(tx, x01, x11));
 	}
 
 	static inline real_t frac(real_t x)

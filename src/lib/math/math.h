@@ -27,9 +27,9 @@
 namespace Rayni
 {
 #ifdef RAYNI_DOUBLE_PRECISION
-	typedef double real_t;
+	using real_t = double;
 #else
-	typedef float real_t;
+	using real_t = float;
 #endif
 
 	static constexpr real_t PI = real_t(3.14159265358979323846);

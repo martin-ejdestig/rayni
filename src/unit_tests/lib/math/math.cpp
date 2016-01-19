@@ -69,44 +69,44 @@ namespace Rayni
 
 	TEST_F(MathTest, Lerp)
 	{
-		EXPECT_REAL_EQ(5.0, lerp(-0.5, 10, 20));
-		EXPECT_REAL_EQ(10.0, lerp(0.0, 10, 20));
-		EXPECT_REAL_EQ(15.0, lerp(0.5, 10, 20));
-		EXPECT_REAL_EQ(20.0, lerp(1.0, 10, 20));
-		EXPECT_REAL_EQ(25.0, lerp(1.5, 10, 20));
+		EXPECT_EQ(5, lerp(-0.5, 10, 20));
+		EXPECT_EQ(10, lerp(0.0, 10, 20));
+		EXPECT_EQ(15, lerp(0.5, 10, 20));
+		EXPECT_EQ(20, lerp(1.0, 10, 20));
+		EXPECT_EQ(25, lerp(1.5, 10, 20));
 	}
 
 	TEST_F(MathTest, Blerp)
 	{
-		EXPECT_REAL_EQ(-5.0, blerp(-0.5, -0.5, 10, 20, 30, 40));
-		EXPECT_REAL_EQ(0.0, blerp(0.0, -0.5, 10, 20, 30, 40));
-		EXPECT_REAL_EQ(5.0, blerp(0.5, -0.5, 10, 20, 30, 40));
-		EXPECT_REAL_EQ(10.0, blerp(1.0, -0.5, 10, 20, 30, 40));
-		EXPECT_REAL_EQ(15.0, blerp(1.5, -0.5, 10, 20, 30, 40));
+		EXPECT_EQ(-5, blerp(-0.5, -0.5, 10, 20, 30, 40));
+		EXPECT_EQ(0, blerp(0.0, -0.5, 10, 20, 30, 40));
+		EXPECT_EQ(5, blerp(0.5, -0.5, 10, 20, 30, 40));
+		EXPECT_EQ(10, blerp(1.0, -0.5, 10, 20, 30, 40));
+		EXPECT_EQ(15, blerp(1.5, -0.5, 10, 20, 30, 40));
 
-		EXPECT_REAL_EQ(5.0, blerp(-0.5, 0, 10, 20, 30, 40));
-		EXPECT_REAL_EQ(10.0, blerp(0.0, 0, 10, 20, 30, 40));
-		EXPECT_REAL_EQ(15.0, blerp(0.5, 0, 10, 20, 30, 40));
-		EXPECT_REAL_EQ(20.0, blerp(1.0, 0, 10, 20, 30, 40));
-		EXPECT_REAL_EQ(25.0, blerp(1.5, 0, 10, 20, 30, 40));
+		EXPECT_EQ(5, blerp(-0.5, 0, 10, 20, 30, 40));
+		EXPECT_EQ(10, blerp(0.0, 0, 10, 20, 30, 40));
+		EXPECT_EQ(15, blerp(0.5, 0, 10, 20, 30, 40));
+		EXPECT_EQ(20, blerp(1.0, 0, 10, 20, 30, 40));
+		EXPECT_EQ(25, blerp(1.5, 0, 10, 20, 30, 40));
 
-		EXPECT_REAL_EQ(15.0, blerp(-0.5, 0.5, 10, 20, 30, 40));
-		EXPECT_REAL_EQ(20.0, blerp(0.0, 0.5, 10, 20, 30, 40));
-		EXPECT_REAL_EQ(25.0, blerp(0.5, 0.5, 10, 20, 30, 40));
-		EXPECT_REAL_EQ(30.0, blerp(1.0, 0.5, 10, 20, 30, 40));
-		EXPECT_REAL_EQ(35.0, blerp(1.5, 0.5, 10, 20, 30, 40));
+		EXPECT_EQ(15, blerp(-0.5, 0.5, 10, 20, 30, 40));
+		EXPECT_EQ(20, blerp(0.0, 0.5, 10, 20, 30, 40));
+		EXPECT_EQ(25, blerp(0.5, 0.5, 10, 20, 30, 40));
+		EXPECT_EQ(30, blerp(1.0, 0.5, 10, 20, 30, 40));
+		EXPECT_EQ(35, blerp(1.5, 0.5, 10, 20, 30, 40));
 
-		EXPECT_REAL_EQ(25.0, blerp(-0.5, 1.0, 10, 20, 30, 40));
-		EXPECT_REAL_EQ(30.0, blerp(0.0, 1.0, 10, 20, 30, 40));
-		EXPECT_REAL_EQ(35.0, blerp(0.5, 1.0, 10, 20, 30, 40));
-		EXPECT_REAL_EQ(40.0, blerp(1.0, 1.0, 10, 20, 30, 40));
-		EXPECT_REAL_EQ(45.0, blerp(1.5, 1.0, 10, 20, 30, 40));
+		EXPECT_EQ(25, blerp(-0.5, 1.0, 10, 20, 30, 40));
+		EXPECT_EQ(30, blerp(0.0, 1.0, 10, 20, 30, 40));
+		EXPECT_EQ(35, blerp(0.5, 1.0, 10, 20, 30, 40));
+		EXPECT_EQ(40, blerp(1.0, 1.0, 10, 20, 30, 40));
+		EXPECT_EQ(45, blerp(1.5, 1.0, 10, 20, 30, 40));
 
-		EXPECT_REAL_EQ(35.0, blerp(-0.5, 1.5, 10, 20, 30, 40));
-		EXPECT_REAL_EQ(40.0, blerp(0.0, 1.5, 10, 20, 30, 40));
-		EXPECT_REAL_EQ(45.0, blerp(0.5, 1.5, 10, 20, 30, 40));
-		EXPECT_REAL_EQ(50.0, blerp(1.0, 1.5, 10, 20, 30, 40));
-		EXPECT_REAL_EQ(55.0, blerp(1.5, 1.5, 10, 20, 30, 40));
+		EXPECT_EQ(35, blerp(-0.5, 1.5, 10, 20, 30, 40));
+		EXPECT_EQ(40, blerp(0.0, 1.5, 10, 20, 30, 40));
+		EXPECT_EQ(45, blerp(0.5, 1.5, 10, 20, 30, 40));
+		EXPECT_EQ(50, blerp(1.0, 1.5, 10, 20, 30, 40));
+		EXPECT_EQ(55, blerp(1.5, 1.5, 10, 20, 30, 40));
 	}
 
 	TEST_F(MathTest, Slerp)

@@ -22,7 +22,6 @@
 #include <cmath>
 
 #include "lib/math/math.h"
-#include "unit_tests/lib/expect_real_eq.h"
 
 namespace Rayni
 {
@@ -136,10 +135,10 @@ namespace Rayni
 
 	TEST_F(MathTest, Frac)
 	{
-		EXPECT_REAL_EQ(0.1, frac(-1.9));
-		EXPECT_REAL_EQ(0.1, frac(-0.9));
-		EXPECT_REAL_EQ(0.1, frac(0.1));
-		EXPECT_REAL_EQ(0.1, frac(1.1));
+		EXPECT_NEAR(0.1, frac(-1.9), 0.0000001);
+		EXPECT_NEAR(0.1, frac(-0.9), 0.0000001);
+		EXPECT_NEAR(0.1, frac(0.1), 0.0000001);
+		EXPECT_NEAR(0.1, frac(1.1), 0.0000001);
 	}
 
 	TEST_F(MathTest, Ifloor)
@@ -157,6 +156,6 @@ namespace Rayni
 	TEST_F(MathTest, RadiansFromDegrees)
 	{
 		for (int i = -8; i <= 8; i++)
-			EXPECT_REAL_EQ(2 * PI * i / 8, radians_from_degrees(360 * i / 8)) << "i: " << i;
+			EXPECT_NEAR(2 * PI * i / 8, radians_from_degrees(360 * i / 8), 0.000001) << "i: " << i;
 	}
 }

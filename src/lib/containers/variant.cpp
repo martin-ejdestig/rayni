@@ -55,10 +55,8 @@ namespace Rayni
 			// TODO: This should be:
 			// value.string.std::string::~string();
 			// But want to be able to test compile with Clang as well as GCC and there
-			// is a bug in Clang: http://llvm.org/bugs/show_bug.cgi?id=12350
-			// Temporary workaround with using until Clang has been fixed or it has
-			// been clarified if most other compilers or Clang is correct. Add String
-			// in Variant if it is Clang (do not want to have using here)?
+			// is a bug in Clang. See http://llvm.org/bugs/show_bug.cgi?id=12350 and its
+			// dependencies. Temporary workaround with using until Clang has been fixed.
 			using String = std::string;
 			value.string.~String();
 			break;

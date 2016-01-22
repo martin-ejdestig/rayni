@@ -126,8 +126,8 @@ namespace Rayni
 				{
 					Point p = slerp(real_t(i) / STEPS, start_point, end_point);
 					real_t angle = start_angle + (end_angle - start_angle) * i / STEPS;
-					EXPECT_NEAR(std::cos(angle), p.x, 0.000001);
-					EXPECT_NEAR(std::sin(angle), p.y, 0.000001);
+					EXPECT_NEAR(std::cos(angle), p.x, 1e-6);
+					EXPECT_NEAR(std::sin(angle), p.y, 1e-6);
 				}
 			}
 		}
@@ -135,10 +135,10 @@ namespace Rayni
 
 	TEST_F(MathTest, Frac)
 	{
-		EXPECT_NEAR(0.1, frac(-1.9), 0.0000001);
-		EXPECT_NEAR(0.1, frac(-0.9), 0.0000001);
-		EXPECT_NEAR(0.1, frac(0.1), 0.0000001);
-		EXPECT_NEAR(0.1, frac(1.1), 0.0000001);
+		EXPECT_NEAR(0.1, frac(-1.9), 1e-7);
+		EXPECT_NEAR(0.1, frac(-0.9), 1e-7);
+		EXPECT_NEAR(0.1, frac(0.1), 1e-7);
+		EXPECT_NEAR(0.1, frac(1.1), 1e-7);
 	}
 
 	TEST_F(MathTest, Ifloor)
@@ -156,6 +156,6 @@ namespace Rayni
 	TEST_F(MathTest, RadiansFromDegrees)
 	{
 		for (int i = -8; i <= 8; i++)
-			EXPECT_NEAR(2 * PI * i / 8, radians_from_degrees(360 * i / 8), 0.000001) << "i: " << i;
+			EXPECT_NEAR(2 * PI * i / 8, radians_from_degrees(360 * i / 8), 1e-6) << "i: " << i;
 	}
 }

@@ -19,6 +19,8 @@
 
 #include <gtest/gtest.h>
 
+#include <utility>
+
 #include "lib/containers/variant.h"
 #include "lib/math/quaternion.h"
 

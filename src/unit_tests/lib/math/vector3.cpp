@@ -44,7 +44,7 @@ namespace Rayni
 		EXPECT_THROW(vector_variant(2).to<Vector3>(), Variant::Exception);
 		EXPECT_NO_THROW(vector_variant(4).to<Vector3>()); // TODO: Reconsider?
 
-		EXPECT_THROW(Variant().to<Vector3>(), Variant::Exception);
+		EXPECT_THROW(Variant(0).to<Vector3>(), Variant::Exception);
 	}
 
 	TEST(Vector3Test, ComponentMinMax)

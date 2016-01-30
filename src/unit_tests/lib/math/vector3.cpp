@@ -128,9 +128,9 @@ namespace Rayni
 		EXPECT_NEAR(-1, Vector3(0, 0, -2).normalize().z(), 1e-100);
 
 		Vector3 v = Vector3(2, -2, 2).normalize();
-		EXPECT_NEAR(0.5773502588, v.x(), 1e-10);
-		EXPECT_NEAR(-0.5773502588, v.y(), 1e-10);
-		EXPECT_NEAR(0.5773502588, v.z(), 1e-10);
+		EXPECT_NEAR(0.5773502588, v.x(), 1e-7);
+		EXPECT_NEAR(-0.5773502588, v.y(), 1e-7);
+		EXPECT_NEAR(0.5773502588, v.z(), 1e-7);
 	}
 
 	TEST(Vector3Test, Dot)

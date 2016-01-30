@@ -19,6 +19,7 @@
 
 #include <algorithm>
 #include <cctype>
+#include <iterator>
 #include <locale>
 #include <sstream>
 #include <string>
@@ -90,10 +91,10 @@ namespace Rayni
 
 	std::string string_to_lower(const std::string &str)
 	{
-		std::string result = str;
-		std::transform(result.begin(),
-		               result.end(),
-		               result.begin(),
+		std::string result;
+		std::transform(str.begin(),
+		               str.end(),
+		               std::back_inserter(result),
 		               [](int c)
 		               {
 			               return std::tolower(c);

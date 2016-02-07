@@ -38,10 +38,6 @@ namespace Rayni
 		{
 		}
 
-		explicit AABB(const Vector3 &point) : AABB(point, point)
-		{
-		}
-
 		AABB(const Vector3 &minimum, const Vector3 &maximum) : minimum(minimum), maximum(maximum)
 		{
 		}

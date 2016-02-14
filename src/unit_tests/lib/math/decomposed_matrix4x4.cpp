@@ -29,13 +29,13 @@ namespace Rayni
 	TEST(DecomposedMatrix4x4Test, Interpolate)
 	{
 		Matrix4x4 start({2, 0, 0, 2},
-		                {0, std::cos(1) * 2, -std::sin(1) * 2, 3},
-		                {0, std::sin(1) * 2, std::cos(1) * 2, 4},
+		                {0, std::cos(real_t(1)) * 2, -std::sin(real_t(1)) * 2, 3},
+		                {0, std::sin(real_t(1)) * 2, std::cos(real_t(1)) * 2, 4},
 		                {0, 0, 0, 1});
 
 		Matrix4x4 end({4, 0, 0, 4},
-		              {0, std::cos(3) * 4, -std::sin(3) * 4, 5},
-		              {0, std::sin(3) * 4, std::cos(3) * 4, 6},
+		              {0, std::cos(real_t(3)) * 4, -std::sin(real_t(3)) * 4, 5},
+		              {0, std::sin(real_t(3)) * 4, std::cos(real_t(3)) * 4, 6},
 		              {0, 0, 0, 1});
 
 		Matrix4x4 middle = DecomposedMatrix4x4(start).interpolate(0.5, DecomposedMatrix4x4(end)).compose();
@@ -46,13 +46,13 @@ namespace Rayni
 		EXPECT_NEAR(3, middle(0, 3), 1e-6);
 
 		EXPECT_NEAR(0, middle(1, 0), 1e-6);
-		EXPECT_NEAR(std::cos(2) * 3, middle(1, 1), 1e-6);
-		EXPECT_NEAR(-std::sin(2) * 3, middle(1, 2), 1e-6);
+		EXPECT_NEAR(std::cos(real_t(2)) * 3, middle(1, 1), 1e-6);
+		EXPECT_NEAR(-std::sin(real_t(2)) * 3, middle(1, 2), 1e-6);
 		EXPECT_NEAR(4, middle(1, 3), 1e-6);
 
 		EXPECT_NEAR(0, middle(2, 0), 1e-6);
-		EXPECT_NEAR(std::sin(2) * 3, middle(2, 1), 1e-6);
-		EXPECT_NEAR(std::cos(2) * 3, middle(2, 2), 1e-6);
+		EXPECT_NEAR(std::sin(real_t(2)) * 3, middle(2, 1), 1e-6);
+		EXPECT_NEAR(std::cos(real_t(2)) * 3, middle(2, 2), 1e-6);
 		EXPECT_NEAR(5, middle(2, 3), 1e-6);
 
 		EXPECT_NEAR(0, middle(3, 0), 1e-6);

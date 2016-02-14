@@ -30,12 +30,12 @@ namespace Rayni
 	class Matrix4x4Test : public testing::Test
 	{
 	protected:
-		static testing::AssertionResult matrices_near_pred_format(const char *m1_expr,
-		                                                          const char *m2_expr,
-		                                                          const char *abs_error_expr,
-		                                                          const Matrix4x4 &m1,
-		                                                          const Matrix4x4 &m2,
-		                                                          real_t abs_error)
+		static testing::AssertionResult matrix_near(const char *m1_expr,
+		                                            const char *m2_expr,
+		                                            const char *abs_error_expr,
+		                                            const Matrix4x4 &m1,
+		                                            const Matrix4x4 &m2,
+		                                            real_t abs_error)
 		{
 			std::string error_elements;
 
@@ -69,7 +69,7 @@ namespace Rayni
 
 	TEST_F(Matrix4x4Test, Inverse)
 	{
-		EXPECT_PRED_FORMAT3(matrices_near_pred_format,
+		EXPECT_PRED_FORMAT3(matrix_near,
 		                    Matrix4x4({0.2272727, -0.0454545, -0.4090909, 0.1363636},
 		                              {0.0454545, -0.0757576, 0.3181818, -0.1060606},
 		                              {-0.1727273, 0.4212121, -0.4090909, 0.0696970},
@@ -80,7 +80,7 @@ namespace Rayni
 
 	TEST_F(Matrix4x4Test, Transpose)
 	{
-		EXPECT_PRED_FORMAT3(matrices_near_pred_format,
+		EXPECT_PRED_FORMAT3(matrix_near,
 		                    Matrix4x4({0, 4, 8, 12}, {1, 5, 9, 13}, {2, 6, 10, 14}, {3, 7, 11, 15}),
 		                    Matrix4x4({0, 1, 2, 3}, {4, 5, 6, 7}, {8, 9, 10, 11}, {12, 13, 14, 15}).transpose(),
 		                    1e-100);
@@ -150,7 +150,7 @@ namespace Rayni
 		            {-0.159345, 0.307584, 2.92551, 0},
 		            {0, 0, 0, 1});
 
-		EXPECT_PRED_FORMAT3(matrices_near_pred_format,
+		EXPECT_PRED_FORMAT3(matrix_near,
 		                    Matrix4x4({0.936293, -0.289629, 0.198669, 0},
 		                              {0.312992, 0.944703, -0.0978434, 0},
 		                              {-0.159345, 0.153792, 0.97517, 0},
@@ -158,7 +158,7 @@ namespace Rayni
 		                    m.polar_decomposition().rotation,
 		                    1e-4);
 
-		EXPECT_PRED_FORMAT3(matrices_near_pred_format,
+		EXPECT_PRED_FORMAT3(matrix_near,
 		                    Matrix4x4({1, 0, 0, 0}, {0, 2, 0, 0}, {0, 0, 3, 0}, {0, 0, 0, 1}),
 		                    m.polar_decomposition().scale,
 		                    1e-4);

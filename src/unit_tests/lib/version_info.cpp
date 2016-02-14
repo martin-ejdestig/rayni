@@ -26,7 +26,7 @@
 
 namespace Rayni
 {
-	TEST(VersionInfo, Authors)
+	TEST(VersionInfoTest, Authors)
 	{
 		EXPECT_FALSE(VersionInfo::authors().empty());
 
@@ -34,7 +34,7 @@ namespace Rayni
 			EXPECT_GE(author.size(), 4);
 	}
 
-	TEST(VersionInfo, Copyright)
+	TEST(VersionInfoTest, Copyright)
 	{
 		const std::string COPYRIGHT_STRING_AND_SIGN = "Copyright \xc2\xa9";
 		const std::string YEAR_OR_YEARS = "20[0-9]{2}(-20[0-9]{2})?";
@@ -45,7 +45,7 @@ namespace Rayni
 		EXPECT_TRUE(std::regex_match(VersionInfo::copyright(), copyright_regex));
 	}
 
-	TEST(VersionInfo, Version)
+	TEST(VersionInfoTest, Version)
 	{
 		const std::string GIT_HASH = "[0-9a-f]{7,40}";
 		const std::string TAG = "[0-9]+\\.[0-9]+";

@@ -19,8 +19,6 @@
 
 #include <gtest/gtest.h>
 
-#include <utility>
-
 #include "lib/containers/variant.h"
 #include "lib/math/vector3.h"
 
@@ -28,23 +26,15 @@ namespace Rayni
 {
 	TEST(Vector3Test, Variant)
 	{
-		auto vector_variant = [](unsigned int size)
-		{
-			Variant::Vector v;
-			for (unsigned int i = 0; i < size; i++)
-				v.emplace_back(i + 1);
-			return Variant(std::move(v));
-		};
-
-		Vector3 v3 = vector_variant(3).to<Vector3>();
+		Vector3 v3 = Variant::vector({1, 2, 3}).to<Vector3>();
 		EXPECT_NEAR(1, v3.x(), 1e-100);
 		EXPECT_NEAR(2, v3.y(), 1e-100);
 		EXPECT_NEAR(3, v3.z(), 1e-100);
 
-		EXPECT_THROW(vector_variant(0).to<Vector3>(), Variant::Exception);
-		EXPECT_THROW(vector_variant(1).to<Vector3>(), Variant::Exception);
-		EXPECT_THROW(vector_variant(2).to<Vector3>(), Variant::Exception);
-		EXPECT_NO_THROW(vector_variant(4).to<Vector3>()); // TODO: Reconsider?
+		EXPECT_THROW(Variant::vector<int>({}).to<Vector3>(), Variant::Exception);
+		EXPECT_THROW(Variant::vector({1}).to<Vector3>(), Variant::Exception);
+		EXPECT_THROW(Variant::vector({1, 2}).to<Vector3>(), Variant::Exception);
+		EXPECT_NO_THROW(Variant::vector({1, 2, 3, 4}).to<Vector3>()); // TODO: Reconsider?
 
 		EXPECT_THROW(Variant(0).to<Vector3>(), Variant::Exception);
 	}

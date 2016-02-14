@@ -20,6 +20,7 @@
 #ifndef _RAYNI_LIB_CONTAINERS_VARIANT_H_
 #define _RAYNI_LIB_CONTAINERS_VARIANT_H_
 
+#include <initializer_list>
 #include <map>
 #include <new>
 #include <stdexcept>
@@ -62,10 +63,31 @@ namespace Rayni
 			reparent_children();
 		}
 
+		// TODO: Variant::map() should be replaced with a
+		//       Variant(std::initializer_list<Map::value_type>). Not possible right
+		//       now since std::initializer_list requires the type to be copyable.
+		//       Will be fixed in C++17 with N4166?
+		template <typename... Args>
+		static Variant map(Args &&... args)
+		{
+			return Variant(create_map(std::forward<Args>(args)...));
+		}
+
 		explicit Variant(Vector &&vector) : type(Type::VECTOR)
 		{
 			new (&value.vector) Vector(std::move(vector));
 			reparent_children();
+		}
+
+		// TODO: Variant::vector() should be replaced with a
+		//       Variant(std::initializer_list<Variant>). See TODO for Variant::map() above.
+		template <typename T>
+		static Variant vector(std::initializer_list<T> values)
+		{
+			Vector v;
+			for (auto &value : values)
+				v.emplace_back(value);
+			return Variant(std::move(v));
 		}
 
 		explicit Variant(bool boolean) : type(Type::BOOL)
@@ -320,6 +342,35 @@ namespace Rayni
 
 			STRING
 		};
+
+		// TODO: create_map() should be removed when std::initializer_list can handle
+		//       non-copyable types. See TODO for Variant::map() above.
+		static Map create_map(const std::string &key, Variant &&value)
+		{
+			Map m;
+			m.emplace(key, std::move(value));
+			return m;
+		}
+
+		template <typename V>
+		static Map create_map(const std::string &key, const V &value)
+		{
+			return create_map(key, Variant(value));
+		}
+
+		template <typename... Args>
+		static Map create_map(const std::string &key, Variant &&value, Args &&... args)
+		{
+			auto m = create_map(std::forward<Args>(args)...);
+			m.emplace(key, std::move(value));
+			return m;
+		}
+
+		template <typename V, typename... Args>
+		static Map create_map(const std::string &key, const V &value, Args &&... args)
+		{
+			return create_map(key, Variant(value), std::forward<Args>(args)...);
+		}
 
 		void reset_to_none() noexcept;
 		void initialize_from(Variant &&other) noexcept;

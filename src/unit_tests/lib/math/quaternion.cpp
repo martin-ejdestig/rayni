@@ -19,8 +19,6 @@
 
 #include <gtest/gtest.h>
 
-#include <utility>
-
 #include "lib/containers/variant.h"
 #include "lib/math/quaternion.h"
 
@@ -28,25 +26,17 @@ namespace Rayni
 {
 	TEST(QuaternionTest, Variant)
 	{
-		auto vector_variant = [](unsigned int size)
-		{
-			Variant::Vector v;
-			for (unsigned int i = 0; i < size; i++)
-				v.emplace_back(i + 1);
-			return Variant(std::move(v));
-		};
-
-		Quaternion q = vector_variant(4).to<Quaternion>();
+		Quaternion q = Variant::vector({1, 2, 3, 4}).to<Quaternion>();
 		EXPECT_NEAR(1, q.x(), 1e-100);
 		EXPECT_NEAR(2, q.y(), 1e-100);
 		EXPECT_NEAR(3, q.z(), 1e-100);
 		EXPECT_NEAR(4, q.w(), 1e-100);
 
-		EXPECT_THROW(vector_variant(0).to<Quaternion>(), Variant::Exception);
-		EXPECT_THROW(vector_variant(1).to<Quaternion>(), Variant::Exception);
-		EXPECT_THROW(vector_variant(2).to<Quaternion>(), Variant::Exception);
-		EXPECT_THROW(vector_variant(3).to<Quaternion>(), Variant::Exception);
-		EXPECT_NO_THROW(vector_variant(5).to<Quaternion>()); // TODO: Reconsider?
+		EXPECT_THROW(Variant::vector<int>({}).to<Quaternion>(), Variant::Exception);
+		EXPECT_THROW(Variant::vector({1}).to<Quaternion>(), Variant::Exception);
+		EXPECT_THROW(Variant::vector({1, 2}).to<Quaternion>(), Variant::Exception);
+		EXPECT_THROW(Variant::vector({1, 2, 3}).to<Quaternion>(), Variant::Exception);
+		EXPECT_NO_THROW(Variant::vector({1, 2, 3, 4, 5}).to<Quaternion>()); // TODO: Reconsider?
 
 		EXPECT_THROW(Variant(0).to<Quaternion>(), Variant::Exception);
 	}

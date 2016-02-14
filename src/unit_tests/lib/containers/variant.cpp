@@ -120,15 +120,9 @@ namespace Rayni
 		EXPECT_DOUBLE_EQ(1.0, Variant(1.0).to_double());
 		EXPECT_THROW(Variant().to_double(), Variant::Exception);
 
-		Variant::Map map;
-		map.emplace("key1", Variant(123));
-		map.emplace("key2", Variant("abc"));
-		EXPECT_EQ("{ key1: 123, key2: abc }", Variant(std::move(map)).to_string());
+		EXPECT_EQ("{ key1: 123, key2: abc }", Variant::map("key1", 123, "key2", "abc").to_string());
 
-		Variant::Vector vector;
-		vector.emplace_back(123);
-		vector.emplace_back("abc");
-		EXPECT_EQ("[ 123, abc ]", Variant(std::move(vector)).to_string());
+		EXPECT_EQ("[ 123, 456 ]", Variant::vector({123, 456}).to_string());
 
 		EXPECT_EQ("1", Variant(1).to_string());
 		EXPECT_EQ("1", Variant(1u).to_string());
@@ -207,10 +201,7 @@ namespace Rayni
 
 	TEST(VariantTest, GetFromMap)
 	{
-		Variant::Map map;
-		map.emplace("key1", Variant(123));
-		map.emplace("key2", Variant("abc"));
-		Variant variant(std::move(map));
+		auto variant = Variant::map("key1", 123, "key2", "abc");
 
 		EXPECT_EQ(123, variant.get("key1").get_int());
 		EXPECT_EQ(123, variant.get<int>("key1"));
@@ -264,12 +255,8 @@ namespace Rayni
 		EXPECT_EQ("['key2'][0]", variant.get("key2").get(0).get_path());
 		EXPECT_EQ("['key2'][1]", variant.get("key2").get(1).get_path());
 
-		map.emplace("key1", Variant(123));
-		map.emplace("key2", Variant("abc"));
-		vector.emplace_back(std::move(map));
-		map.emplace("key1", Variant(456));
-		map.emplace("key2", Variant("def"));
-		vector.emplace_back(std::move(map));
+		vector.emplace_back(Variant::map("key1", 123, "key2", "abc"));
+		vector.emplace_back(Variant::map("key1", 456, "key2", "def"));
 		variant = Variant(std::move(vector));
 
 		EXPECT_EQ("", variant.get_path());

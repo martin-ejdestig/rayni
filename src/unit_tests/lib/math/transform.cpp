@@ -34,7 +34,9 @@ namespace Rayni
 	class TransformTest : public testing::Test
 	{
 	protected:
-		testing::AssertionResult transform_near(const Transform &t1, const Transform &t2, real_t abs_error)
+		static testing::AssertionResult transform_near(const Transform &t1,
+		                                               const Transform &t2,
+		                                               real_t abs_error)
 		{
 			for (unsigned int i = 0; i < 4; i++)
 			{
@@ -46,22 +48,22 @@ namespace Rayni
 			return testing::AssertionSuccess();
 		}
 
-		testing::AssertionResult transform_near(const char *t1_expr,
-		                                        const char *t2_expr,
-		                                        const char *abs_error_expr,
-		                                        const Transform &t1,
-		                                        const Transform &t2,
-		                                        real_t abs_error)
+		static testing::AssertionResult transform_near(const char *t1_expr,
+		                                               const char *t2_expr,
+		                                               const char *abs_error_expr,
+		                                               const Transform &t1,
+		                                               const Transform &t2,
+		                                               real_t abs_error)
 		{
 			return transform_near(t1, t2, abs_error) << t1_expr << " has elements that differ more than "
 			                                         << abs_error_expr << " from elements of " << t2_expr
 			                                         << ".";
 		}
 
-		testing::AssertionResult verify_inverse(const char *expr,
-		                                        const char *abs_error_expr,
-		                                        const Transform &t,
-		                                        real_t abs_error)
+		static testing::AssertionResult verify_inverse(const char *expr,
+		                                               const char *abs_error_expr,
+		                                               const Transform &t,
+		                                               real_t abs_error)
 		{
 			return transform_near(t.inverse(),
 			                      Transform(t.get_matrix().inverse(), t.get_matrix()),

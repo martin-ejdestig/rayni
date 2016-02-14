@@ -30,12 +30,12 @@ namespace Rayni
 	class Matrix4x4Test : public testing::Test
 	{
 	protected:
-		testing::AssertionResult matrices_near_pred_format(const char *m1_expr,
-		                                                   const char *m2_expr,
-		                                                   const char *abs_error_expr,
-		                                                   const Matrix4x4 &m1,
-		                                                   const Matrix4x4 &m2,
-		                                                   real_t abs_error)
+		static testing::AssertionResult matrices_near_pred_format(const char *m1_expr,
+		                                                          const char *m2_expr,
+		                                                          const char *abs_error_expr,
+		                                                          const Matrix4x4 &m1,
+		                                                          const Matrix4x4 &m2,
+		                                                          real_t abs_error)
 		{
 			std::string error_elements;
 

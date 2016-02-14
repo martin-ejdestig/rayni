@@ -2,6 +2,7 @@ option('double_precision',
 	type : 'boolean',
 	value : false,
 	description : 'Build with double (instead of single) precision')
+
 option('extra_warnings',
 	type : 'boolean',
 	value : true,

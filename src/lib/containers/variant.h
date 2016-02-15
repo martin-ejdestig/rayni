@@ -67,6 +67,11 @@ namespace Rayni
 		//       Variant(std::initializer_list<Map::value_type>). Not possible right
 		//       now since std::initializer_list requires the type to be copyable.
 		//       Will be fixed in C++17 with N4166?
+		static Variant map()
+		{
+			return Variant(Map());
+		}
+
 		template <typename... Args>
 		static Variant map(Args &&... args)
 		{

@@ -32,7 +32,7 @@ namespace Rayni
 		EXPECT_TRUE(Variant().is_none());
 
 		EXPECT_TRUE(Variant::vector().is_vector());
-		EXPECT_TRUE(Variant(Variant::Map()).is_map());
+		EXPECT_TRUE(Variant::map().is_map());
 		EXPECT_TRUE(Variant(false).is_bool());
 		EXPECT_TRUE(Variant(0).is_int());
 		EXPECT_TRUE(Variant(0u).is_unsigned_int());
@@ -41,7 +41,7 @@ namespace Rayni
 		EXPECT_TRUE(Variant("").is_string());
 
 		EXPECT_TRUE(Variant::vector().is<Variant::Vector>());
-		EXPECT_TRUE(Variant(Variant::Map()).is<Variant::Map>());
+		EXPECT_TRUE(Variant::map().is<Variant::Map>());
 		EXPECT_TRUE(Variant(false).is<bool>());
 		EXPECT_TRUE(Variant(0).is<int>());
 		EXPECT_TRUE(Variant(0u).is<unsigned int>());
@@ -66,7 +66,7 @@ namespace Rayni
 
 	TEST(VariantTest, GetValue)
 	{
-		EXPECT_EQ(0, Variant(Variant::Map()).get_map().size());
+		EXPECT_EQ(0, Variant::map().get_map().size());
 		EXPECT_EQ(0, Variant::vector().get_vector().size());
 		EXPECT_EQ(true, Variant(true).get_bool());
 		EXPECT_EQ(1, Variant(1).get_int());
@@ -75,7 +75,7 @@ namespace Rayni
 		EXPECT_DOUBLE_EQ(1.0, Variant(1.0).get_double());
 		EXPECT_EQ("abc", Variant("abc").get_string());
 
-		EXPECT_EQ(0, Variant(Variant::Map()).get_value<Variant::Map>().size());
+		EXPECT_EQ(0, Variant::map().get_value<Variant::Map>().size());
 		EXPECT_EQ(0, Variant::vector().get_value<Variant::Vector>().size());
 		EXPECT_EQ(true, Variant(true).get_value<bool>());
 		EXPECT_EQ(1, Variant(1).get_value<int>());

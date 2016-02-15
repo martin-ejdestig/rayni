@@ -131,8 +131,7 @@ namespace Rayni
 		                    1e-100);
 
 		EXPECT_PRED_FORMAT3(transform_near,
-		                    Variant::map("rotate",
-		                                 Variant::map("angle", 30, "axis", Variant::vector(1, 2, 3)))
+		                    Variant::map("rotate", Variant::map("angle", 30, "axis", Variant::vector(1, 2, 3)))
 		                            .to<Transform>(),
 		                    Transform::rotate(radians_from_degrees(30), {1, 2, 3}),
 		                    1e-100);

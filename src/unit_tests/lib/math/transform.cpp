@@ -89,18 +89,18 @@ namespace Rayni
 	TEST_F(TransformTest, VariantMapTranslate)
 	{
 		EXPECT_PRED_FORMAT3(transform_near,
-		                    Variant::map("translate", Variant::vector({1, 2, 3})).to<Transform>(),
+		                    Variant::map("translate", Variant::vector(1, 2, 3)).to<Transform>(),
 		                    Transform::translate({1, 2, 3}),
 		                    1e-100);
 
-		EXPECT_THROW(Variant::map("translate", Variant::vector({1, 2})).to<Transform>(), Variant::Exception);
+		EXPECT_THROW(Variant::map("translate", Variant::vector(1, 2)).to<Transform>(), Variant::Exception);
 		EXPECT_THROW(Variant::map("translate", 1).to<Transform>(), Variant::Exception);
 	}
 
 	TEST_F(TransformTest, VariantMapScale)
 	{
 		EXPECT_PRED_FORMAT3(transform_near,
-		                    Variant::map("scale", Variant::vector({1, 2, 3})).to<Transform>(),
+		                    Variant::map("scale", Variant::vector(1, 2, 3)).to<Transform>(),
 		                    Transform::scale(1, 2, 3),
 		                    1e-100);
 
@@ -109,7 +109,7 @@ namespace Rayni
 		                    Transform::scale(2),
 		                    1e-100);
 
-		EXPECT_THROW(Variant::map("scale", Variant::vector({1, 2})).to<Transform>(), Variant::Exception);
+		EXPECT_THROW(Variant::map("scale", Variant::vector(1, 2)).to<Transform>(), Variant::Exception);
 		EXPECT_THROW(Variant::map("scale", "foo").to<Transform>(), Variant::Exception);
 	}
 
@@ -132,13 +132,13 @@ namespace Rayni
 
 		EXPECT_PRED_FORMAT3(transform_near,
 		                    Variant::map("rotate",
-		                                 Variant::map("angle", 30, "axis", Variant::vector({1, 2, 3})))
+		                                 Variant::map("angle", 30, "axis", Variant::vector(1, 2, 3)))
 		                            .to<Transform>(),
 		                    Transform::rotate(radians_from_degrees(30), {1, 2, 3}),
 		                    1e-100);
 
 		EXPECT_PRED_FORMAT3(transform_near,
-		                    Variant::map("rotate", Variant::vector({1, 2, 3, 4})).to<Transform>(),
+		                    Variant::map("rotate", Variant::vector(1, 2, 3, 4)).to<Transform>(),
 		                    Transform::rotate({1, 2, 3, 4}),
 		                    1e-100);
 
@@ -150,11 +150,11 @@ namespace Rayni
 		EXPECT_PRED_FORMAT3(transform_near,
 		                    Variant::map("look_at",
 		                                 Variant::map("translation",
-		                                              Variant::vector({1, 2, 3}),
+		                                              Variant::vector(1, 2, 3),
 		                                              "center",
-		                                              Variant::vector({4, 5, 6}),
+		                                              Variant::vector(4, 5, 6),
 		                                              "up",
-		                                              Variant::vector({7, 8, 9})))
+		                                              Variant::vector(7, 8, 9)))
 		                            .to<Transform>(),
 		                    Transform::look_at({1, 2, 3}, {4, 5, 6}, {7, 8, 9}),
 		                    1e-6);
@@ -167,12 +167,10 @@ namespace Rayni
 
 	TEST_F(TransformTest, VariantVector)
 	{
-		Variant::Vector v;
-		v.emplace_back(Variant::map("scale", 2));
-		v.emplace_back(Variant::map("translate", Variant::vector({10, 20, 30})));
-
 		EXPECT_PRED_FORMAT3(transform_near,
-		                    Variant(std::move(v)).to<Transform>(),
+		                    Variant::vector(Variant::map("scale", 2),
+		                                    Variant::map("translate", Variant::vector(10, 20, 30)))
+		                            .to<Transform>(),
 		                    Transform::combine(Transform::scale(2), Transform::translate(10, 20, 30)),
 		                    1e-100);
 

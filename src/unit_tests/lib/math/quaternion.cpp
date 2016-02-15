@@ -26,17 +26,17 @@ namespace Rayni
 {
 	TEST(QuaternionTest, Variant)
 	{
-		Quaternion q = Variant::vector({1, 2, 3, 4}).to<Quaternion>();
+		Quaternion q = Variant::vector(1, 2, 3, 4).to<Quaternion>();
 		EXPECT_NEAR(1, q.x(), 1e-100);
 		EXPECT_NEAR(2, q.y(), 1e-100);
 		EXPECT_NEAR(3, q.z(), 1e-100);
 		EXPECT_NEAR(4, q.w(), 1e-100);
 
 		EXPECT_THROW(Variant::vector<int>({}).to<Quaternion>(), Variant::Exception);
-		EXPECT_THROW(Variant::vector({1}).to<Quaternion>(), Variant::Exception);
-		EXPECT_THROW(Variant::vector({1, 2}).to<Quaternion>(), Variant::Exception);
-		EXPECT_THROW(Variant::vector({1, 2, 3}).to<Quaternion>(), Variant::Exception);
-		EXPECT_NO_THROW(Variant::vector({1, 2, 3, 4, 5}).to<Quaternion>()); // TODO: Reconsider?
+		EXPECT_THROW(Variant::vector(1).to<Quaternion>(), Variant::Exception);
+		EXPECT_THROW(Variant::vector(1, 2).to<Quaternion>(), Variant::Exception);
+		EXPECT_THROW(Variant::vector(1, 2, 3).to<Quaternion>(), Variant::Exception);
+		EXPECT_NO_THROW(Variant::vector(1, 2, 3, 4, 5).to<Quaternion>()); // TODO: Reconsider?
 
 		EXPECT_THROW(Variant(0).to<Quaternion>(), Variant::Exception);
 	}

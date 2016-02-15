@@ -81,13 +81,17 @@ namespace Rayni
 
 		// TODO: Variant::vector() should be replaced with a
 		//       Variant(std::initializer_list<Variant>). See TODO for Variant::map() above.
-		template <typename T>
-		static Variant vector(std::initializer_list<T> values)
+		static Variant vector()
 		{
-			Vector v;
-			for (auto &value : values)
-				v.emplace_back(value);
-			return Variant(std::move(v));
+			return Variant(Vector());
+		}
+
+		template <typename... Args>
+		static Variant vector(Args &&... args)
+		{
+			Vector vector;
+			fill_vector(vector, std::forward<Args>(args)...);
+			return Variant(std::move(vector));
 		}
 
 		explicit Variant(bool boolean) : type(Type::BOOL)
@@ -370,6 +374,32 @@ namespace Rayni
 		static Map create_map(const std::string &key, const V &value, Args &&... args)
 		{
 			return create_map(key, Variant(value), std::forward<Args>(args)...);
+		}
+
+		// TODO: fill_vector() should be removed when std::initializer_list can handle
+		//       non-copyable types. See TODO for Variant::vector() above.
+		static void fill_vector(Vector &vector, Variant &&value)
+		{
+			vector.emplace_back(std::move(value));
+		}
+
+		template <typename T>
+		static void fill_vector(Vector &vector, const T &value)
+		{
+			return fill_vector(vector, Variant(value));
+		}
+
+		template <typename... Args>
+		static void fill_vector(Vector &vector, Variant &&value, Args &&... args)
+		{
+			vector.emplace_back(std::move(value));
+			fill_vector(vector, std::forward<Args>(args)...);
+		}
+
+		template <typename T, typename... Args>
+		static void fill_vector(Vector &vector, const T &value, Args &&... args)
+		{
+			return fill_vector(vector, Variant(value), std::forward<Args>(args)...);
 		}
 
 		void reset_to_none() noexcept;

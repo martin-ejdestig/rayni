@@ -31,7 +31,7 @@ namespace Rayni
 	{
 		EXPECT_TRUE(Variant().is_none());
 
-		EXPECT_TRUE(Variant(Variant::Vector()).is_vector());
+		EXPECT_TRUE(Variant::vector().is_vector());
 		EXPECT_TRUE(Variant(Variant::Map()).is_map());
 		EXPECT_TRUE(Variant(false).is_bool());
 		EXPECT_TRUE(Variant(0).is_int());
@@ -40,7 +40,7 @@ namespace Rayni
 		EXPECT_TRUE(Variant(0.0).is_double());
 		EXPECT_TRUE(Variant("").is_string());
 
-		EXPECT_TRUE(Variant(Variant::Vector()).is<Variant::Vector>());
+		EXPECT_TRUE(Variant::vector().is<Variant::Vector>());
 		EXPECT_TRUE(Variant(Variant::Map()).is<Variant::Map>());
 		EXPECT_TRUE(Variant(false).is<bool>());
 		EXPECT_TRUE(Variant(0).is<int>());
@@ -67,7 +67,7 @@ namespace Rayni
 	TEST(VariantTest, GetValue)
 	{
 		EXPECT_EQ(0, Variant(Variant::Map()).get_map().size());
-		EXPECT_EQ(0, Variant(Variant::Vector()).get_vector().size());
+		EXPECT_EQ(0, Variant::vector().get_vector().size());
 		EXPECT_EQ(true, Variant(true).get_bool());
 		EXPECT_EQ(1, Variant(1).get_int());
 		EXPECT_EQ(1u, Variant(1u).get_unsigned_int());
@@ -76,7 +76,7 @@ namespace Rayni
 		EXPECT_EQ("abc", Variant("abc").get_string());
 
 		EXPECT_EQ(0, Variant(Variant::Map()).get_value<Variant::Map>().size());
-		EXPECT_EQ(0, Variant(Variant::Vector()).get_value<Variant::Vector>().size());
+		EXPECT_EQ(0, Variant::vector().get_value<Variant::Vector>().size());
 		EXPECT_EQ(true, Variant(true).get_value<bool>());
 		EXPECT_EQ(1, Variant(1).get_value<int>());
 		EXPECT_EQ(1u, Variant(1u).get_value<unsigned int>());
@@ -122,7 +122,7 @@ namespace Rayni
 
 		EXPECT_EQ("{ key1: 123, key2: abc }", Variant::map("key1", 123, "key2", "abc").to_string());
 
-		EXPECT_EQ("[ 123, 456 ]", Variant::vector({123, 456}).to_string());
+		EXPECT_EQ("[ 123, abc ]", Variant::vector(123, "abc").to_string());
 
 		EXPECT_EQ("1", Variant(1).to_string());
 		EXPECT_EQ("1", Variant(1u).to_string());
@@ -218,10 +218,7 @@ namespace Rayni
 
 	TEST(VariantTest, GetFromVector)
 	{
-		Variant::Vector vector;
-		vector.emplace_back(123);
-		vector.emplace_back("abc");
-		Variant variant(std::move(vector));
+		Variant variant = Variant::vector(123, "abc");
 
 		EXPECT_EQ(123, variant.get(0).get_int());
 		EXPECT_EQ(123, variant.get<int>(0));
@@ -235,17 +232,12 @@ namespace Rayni
 	TEST(VariantTest, GetPath)
 	{
 		Variant::Map map;
-		Variant::Vector vector;
 		Variant variant;
 
 		EXPECT_EQ("", variant.get_path());
 
-		vector.emplace_back(123);
-		vector.emplace_back("abc");
-		map.emplace("key1", Variant(std::move(vector)));
-		vector.emplace_back(456);
-		vector.emplace_back("def");
-		map.emplace("key2", Variant(std::move(vector)));
+		map.emplace("key1", Variant::vector(123, "abc"));
+		map.emplace("key2", Variant::vector(456, "def"));
 		variant = Variant(std::move(map));
 
 		EXPECT_EQ("['key1']", variant.get("key1").get_path());
@@ -255,10 +247,8 @@ namespace Rayni
 		EXPECT_EQ("['key2'][0]", variant.get("key2").get(0).get_path());
 		EXPECT_EQ("['key2'][1]", variant.get("key2").get(1).get_path());
 
-		vector.emplace_back(Variant::map("key1", 123, "key2", "abc"));
-		vector.emplace_back(Variant::map("key1", 456, "key2", "def"));
-		variant = Variant(std::move(vector));
-
+		variant = Variant::vector(Variant::map("key1", 123, "key2", "abc"),
+		                          Variant::map("key1", 456, "key2", "def"));
 		EXPECT_EQ("", variant.get_path());
 		EXPECT_EQ("[0]", variant.get(0).get_path());
 		EXPECT_EQ("[1]", variant.get(1).get_path());

@@ -33,10 +33,10 @@ namespace Rayni
 		EXPECT_EQ(Color::green(), Variant("green").to<Color>());
 		EXPECT_EQ(Color::blue(), Variant("blue").to<Color>());
 
-		EXPECT_EQ(Color(0.1, 0.2, 0.3), Variant::vector({0.1, 0.2, 0.3}).to<Color>());
+		EXPECT_EQ(Color(0.1, 0.2, 0.3), Variant::vector(0.1, 0.2, 0.3).to<Color>());
 
 		EXPECT_THROW(Variant().to<Color>(), Variant::Exception);
-		EXPECT_THROW(Variant::vector({0}).to<Color>(), Variant::Exception);
+		EXPECT_THROW(Variant::vector(0).to<Color>(), Variant::Exception);
 		EXPECT_THROW(Variant(true).to<Color>(), Variant::Exception);
 		EXPECT_THROW(Variant(0).to<Color>(), Variant::Exception);
 		EXPECT_THROW(Variant("").to<Color>(), Variant::Exception);

@@ -26,15 +26,15 @@ namespace Rayni
 {
 	TEST(Vector3Test, Variant)
 	{
-		Vector3 v3 = Variant::vector({1, 2, 3}).to<Vector3>();
+		Vector3 v3 = Variant::vector(1, 2, 3).to<Vector3>();
 		EXPECT_NEAR(1, v3.x(), 1e-100);
 		EXPECT_NEAR(2, v3.y(), 1e-100);
 		EXPECT_NEAR(3, v3.z(), 1e-100);
 
-		EXPECT_THROW(Variant::vector<int>({}).to<Vector3>(), Variant::Exception);
-		EXPECT_THROW(Variant::vector({1}).to<Vector3>(), Variant::Exception);
-		EXPECT_THROW(Variant::vector({1, 2}).to<Vector3>(), Variant::Exception);
-		EXPECT_NO_THROW(Variant::vector({1, 2, 3, 4}).to<Vector3>()); // TODO: Reconsider?
+		EXPECT_THROW(Variant::vector().to<Vector3>(), Variant::Exception);
+		EXPECT_THROW(Variant::vector(1).to<Vector3>(), Variant::Exception);
+		EXPECT_THROW(Variant::vector(1, 2).to<Vector3>(), Variant::Exception);
+		EXPECT_NO_THROW(Variant::vector(1, 2, 3, 4).to<Vector3>()); // TODO: Reconsider?
 
 		EXPECT_THROW(Variant(0).to<Vector3>(), Variant::Exception);
 	}

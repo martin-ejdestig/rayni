@@ -75,7 +75,9 @@ namespace Rayni
 		template <typename... Args>
 		static Variant map(Args &&... args)
 		{
-			return Variant(create_map(std::forward<Args>(args)...));
+			Map map;
+			fill_map(map, std::forward<Args>(args)...);
+			return Variant(std::move(map));
 		}
 
 		explicit Variant(Vector &&vector) : type(Type::VECTOR)
@@ -352,33 +354,30 @@ namespace Rayni
 			STRING
 		};
 
-		// TODO: create_map() should be removed when std::initializer_list can handle
+		// TODO: fill_map() should be removed when std::initializer_list can handle
 		//       non-copyable types. See TODO for Variant::map() above.
-		static Map create_map(const std::string &key, Variant &&value)
+		static void fill_map(Map &map, const std::string &key, Variant &&value)
 		{
-			Map m;
-			m.emplace(key, std::move(value));
-			return m;
+			map.emplace(key, std::move(value));
 		}
 
-		template <typename V>
-		static Map create_map(const std::string &key, const V &value)
+		template <typename T>
+		static void fill_map(Map &map, const std::string &key, const T &value)
 		{
-			return create_map(key, Variant(value));
+			fill_map(map, key, Variant(value));
 		}
 
 		template <typename... Args>
-		static Map create_map(const std::string &key, Variant &&value, Args &&... args)
+		static void fill_map(Map &map, const std::string &key, Variant &&value, Args &&... args)
 		{
-			auto m = create_map(std::forward<Args>(args)...);
-			m.emplace(key, std::move(value));
-			return m;
+			map.emplace(key, std::move(value));
+			fill_map(map, std::forward<Args>(args)...);
 		}
 
-		template <typename V, typename... Args>
-		static Map create_map(const std::string &key, const V &value, Args &&... args)
+		template <typename T, typename... Args>
+		static void fill_map(Map &map, const std::string &key, const T &value, Args &&... args)
 		{
-			return create_map(key, Variant(value), std::forward<Args>(args)...);
+			return fill_map(map, key, Variant(value), std::forward<Args>(args)...);
 		}
 
 		// TODO: fill_vector() should be removed when std::initializer_list can handle

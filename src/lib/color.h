@@ -23,7 +23,6 @@
 #include <algorithm>
 #include <cmath>
 #include <cstdint>
-#include <ostream>
 
 #include "lib/containers/variant.h"
 #include "lib/math/math.h"
@@ -155,14 +154,6 @@ namespace Rayni
 			return *this;
 		}
 
-		bool operator==(const Color &c) const
-		{
-			constexpr real_t COMPONENT_MAX_DIFF = real_t(0.001);
-			return std::abs(r() - c.r()) <= COMPONENT_MAX_DIFF &&
-			       std::abs(g() - c.g()) <= COMPONENT_MAX_DIFF &&
-			       std::abs(b() - c.b()) <= COMPONENT_MAX_DIFF;
-		}
-
 		Color clamp() const
 		{
 			return Color(std::min(std::max(r(), real_t(0)), real_t(1)),
@@ -173,12 +164,6 @@ namespace Rayni
 	private:
 		real_t r_ = 0, g_ = 0, b_ = 0;
 	};
-
-	static inline std::ostream &operator<<(std::ostream &ostream, const Color &color)
-	{
-		ostream << "(" << color.r() << "," << color.g() << "," << color.b() << ")";
-		return ostream;
-	}
 }
 
 #endif // _RAYNI_LIB_COLOR_H_

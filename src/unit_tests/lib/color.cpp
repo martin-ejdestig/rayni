@@ -19,21 +19,46 @@
 
 #include <gtest/gtest.h>
 
+#include <cmath>
+
 #include "lib/color.h"
 #include "lib/containers/variant.h"
 
 namespace Rayni
 {
-	TEST(ColorTest, Variant)
+	class ColorTest : public testing::Test
 	{
-		EXPECT_EQ(Color::black(), Variant("black").to<Color>());
-		EXPECT_EQ(Color::white(), Variant("white").to<Color>());
-		EXPECT_EQ(Color::red(), Variant("red").to<Color>());
-		EXPECT_EQ(Color::yellow(), Variant("yellow").to<Color>());
-		EXPECT_EQ(Color::green(), Variant("green").to<Color>());
-		EXPECT_EQ(Color::blue(), Variant("blue").to<Color>());
+	protected:
+		static testing::AssertionResult color_near(const char *c1_expr,
+		                                           const char *c2_expr,
+		                                           const Color &c1,
+		                                           const Color &c2)
+		{
+			static const real_t COMPONENT_MAX_DIFF = 0.001;
 
-		EXPECT_EQ(Color(0.1, 0.2, 0.3), Variant::vector(0.1, 0.2, 0.3).to<Color>());
+			if (std::abs(c1.r() - c2.r()) > COMPONENT_MAX_DIFF ||
+			    std::abs(c1.g() - c2.g()) > COMPONENT_MAX_DIFF ||
+			    std::abs(c1.b() - c2.b()) > COMPONENT_MAX_DIFF)
+			{
+				return testing::AssertionFailure()
+				       << c1_expr << " and " << c2_expr << " componentwise difference is ("
+				       << c1.r() - c2.r() << ", " << c1.g() - c2.g() << ", " << c1.b() - c2.b() << ").";
+			}
+
+			return testing::AssertionSuccess();
+		}
+	};
+
+	TEST_F(ColorTest, Variant)
+	{
+		EXPECT_PRED_FORMAT2(color_near, Color::black(), Variant("black").to<Color>());
+		EXPECT_PRED_FORMAT2(color_near, Color::white(), Variant("white").to<Color>());
+		EXPECT_PRED_FORMAT2(color_near, Color::red(), Variant("red").to<Color>());
+		EXPECT_PRED_FORMAT2(color_near, Color::yellow(), Variant("yellow").to<Color>());
+		EXPECT_PRED_FORMAT2(color_near, Color::green(), Variant("green").to<Color>());
+		EXPECT_PRED_FORMAT2(color_near, Color::blue(), Variant("blue").to<Color>());
+
+		EXPECT_PRED_FORMAT2(color_near, Color(0.1, 0.2, 0.3), Variant::vector(0.1, 0.2, 0.3).to<Color>());
 
 		EXPECT_THROW(Variant().to<Color>(), Variant::Exception);
 		EXPECT_THROW(Variant::vector(0).to<Color>(), Variant::Exception);
@@ -42,10 +67,10 @@ namespace Rayni
 		EXPECT_THROW(Variant("").to<Color>(), Variant::Exception);
 	}
 
-	TEST(ColorTest, Clamp)
+	TEST_F(ColorTest, Clamp)
 	{
-		EXPECT_EQ(Color::black(), Color(-0.1, -0.2, -0.3).clamp());
-		EXPECT_EQ(Color(0.3, 0.5, 0.7), Color(0.3, 0.5, 0.7).clamp());
-		EXPECT_EQ(Color::white(), Color(1.1, 1.2, 1.3).clamp());
+		EXPECT_PRED_FORMAT2(color_near, Color::black(), Color(-0.1, -0.2, -0.3).clamp());
+		EXPECT_PRED_FORMAT2(color_near, Color(0.3, 0.5, 0.7), Color(0.3, 0.5, 0.7).clamp());
+		EXPECT_PRED_FORMAT2(color_near, Color::white(), Color(1.1, 1.2, 1.3).clamp());
 	}
 }

@@ -19,6 +19,7 @@
 
 #include <gtest/gtest.h>
 
+#include <cmath>
 #include <vector>
 
 #include "lib/color.h"
@@ -50,15 +51,29 @@ namespace Rayni
 				image.write_pixel(pixel.x, pixel.y, pixel.color);
 		}
 
-		static void expect_pixels(const Image &image, const std::vector<Pixel> &pixels)
+		static testing::AssertionResult expect_pixels(const char *image_expr,
+		                                              const char *pixels_expr,
+		                                              const Image &image,
+		                                              const std::vector<Pixel> &pixels)
 		{
+			auto color_near = [](auto c1, auto c2)
+			{
+				static const real_t COMPONENT_MAX_DIFF = 0.001;
+
+				return std::abs(c1.r() - c2.r()) <= COMPONENT_MAX_DIFF &&
+				       std::abs(c1.g() - c2.g()) <= COMPONENT_MAX_DIFF &&
+				       std::abs(c1.b() - c2.b()) <= COMPONENT_MAX_DIFF;
+			};
+
 			for (auto &pixel : pixels)
 			{
-				ASSERT_LT(pixel.x, image.get_width());
-				ASSERT_LT(pixel.y, image.get_height());
-				EXPECT_EQ(pixel.color, image.read_pixel(pixel.x, pixel.y)) << "pixel.x: " << pixel.x
-				                                                           << ", pixel.y: " << pixel.y;
+				if (pixel.x > image.get_width() || pixel.y > image.get_height() ||
+				    !color_near(pixel.color, image.read_pixel(pixel.x, pixel.y)))
+					return testing::AssertionFailure() << image_expr << " does not contain "
+					                                   << pixels_expr << ".";
 			}
+
+			return testing::AssertionSuccess();
 		}
 	};
 
@@ -96,7 +111,7 @@ namespace Rayni
 	{
 		Image image(2, 2);
 		write_pixels(image, pixels_2x2());
-		expect_pixels(image, pixels_2x2());
+		EXPECT_PRED_FORMAT2(expect_pixels, image, pixels_2x2());
 	}
 
 	TEST_F(ImageTest, MoveConstructor)
@@ -105,7 +120,7 @@ namespace Rayni
 		write_pixels(image1, pixels_2x2());
 		Image image2(std::move(image1));
 
-		expect_pixels(image2, pixels_2x2());
+		EXPECT_PRED_FORMAT2(expect_pixels, image2, pixels_2x2());
 		EXPECT_TRUE(image1.is_empty());
 	}
 
@@ -115,7 +130,7 @@ namespace Rayni
 		write_pixels(image1, pixels_2x2());
 		Image image2 = std::move(image1);
 
-		expect_pixels(image2, pixels_2x2());
+		EXPECT_PRED_FORMAT2(expect_pixels, image2, pixels_2x2());
 		EXPECT_TRUE(image1.is_empty());
 	}
 }

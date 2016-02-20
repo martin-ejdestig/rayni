@@ -300,11 +300,9 @@ namespace Rayni
 	void Variant::require_type(Type required_type) const
 	{
 		if (type != required_type)
-		{
 			throw Exception(*this,
 			                "expected \"" + type_to_string(required_type) + "\" instead of \"" +
 			                        type_to_string(type) + "\"");
-		}
 	}
 
 	std::string Variant::type_to_string(Type type)

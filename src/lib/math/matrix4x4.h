@@ -186,14 +186,10 @@ namespace Rayni
 			Matrix4x4 result;
 
 			for (unsigned int i = 0; i < 4; i++)
-			{
 				for (unsigned int j = 0; j < 4; j++)
-				{
 					result.rows[i][j] =
 					        rows[i][0] * right.rows[0][j] + rows[i][1] * right.rows[1][j] +
 					        rows[i][2] * right.rows[2][j] + rows[i][3] * right.rows[3][j];
-				}
-			}
 
 			return result;
 		}

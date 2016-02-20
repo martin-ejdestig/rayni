@@ -87,11 +87,9 @@ namespace Rayni
 		}
 
 		if (type == "look_at")
-		{
 			return Transform::look_at(args.get<Vector3>("translation"),
 			                          args.get<Vector3>("center"),
 			                          args.get<Vector3>("up"));
-		}
 
 		throw Variant::Exception(v, "unknown transform type \"" + type + "\"");
 	}

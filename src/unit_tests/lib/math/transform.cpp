@@ -39,11 +39,9 @@ namespace Rayni
 		                                               real_t abs_error)
 		{
 			for (unsigned int i = 0; i < 4; i++)
-			{
 				for (unsigned int j = 0; j < 4; j++)
 					if (std::abs(t1.get_matrix()(i, j) - t2.get_matrix()(i, j)) > abs_error)
 						return testing::AssertionFailure();
-			}
 
 			return testing::AssertionSuccess();
 		}

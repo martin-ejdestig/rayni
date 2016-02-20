@@ -52,18 +52,15 @@ namespace Rayni
 
 			for (unsigned int row = 0; row < 4; row++)
 			{
-				if (pivot_used[row] != 1)
+				if (pivot_used[row] == 1)
+					continue;
+
+				for (unsigned int column = 0; column < 4; column++)
 				{
-					for (unsigned int column = 0; column < 4; column++)
+					if (pivot_used[column] == 0 && std::abs(rows[row][column]) >= max)
 					{
-						if (pivot_used[column] == 0)
-						{
-							if (std::abs(rows[row][column]) >= max)
-							{
-								max = std::abs(rows[row][column]);
-								positions[i] = {row, column};
-							}
-						}
+						max = std::abs(rows[row][column]);
+						positions[i] = {row, column};
 					}
 				}
 			}

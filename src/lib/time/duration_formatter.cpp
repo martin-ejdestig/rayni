@@ -25,7 +25,7 @@
 
 namespace Rayni
 {
-	std::string DurationFormatter::format(unsigned int hh, unsigned int mm, float ss) const
+	std::string DurationFormatter::format(std::chrono::hours::rep hh, std::chrono::minutes::rep mm, float ss) const
 	{
 		std::ostringstream stream;
 

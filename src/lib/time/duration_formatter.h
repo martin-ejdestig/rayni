@@ -21,6 +21,7 @@
 #define RAYNI_LIB_TIME_DURATION_FORMATTER_H
 
 #include <chrono>
+#include <cstdint>
 #include <ios>
 #include <string>
 
@@ -29,7 +30,7 @@ namespace Rayni
 	class DurationFormatter
 	{
 	public:
-		DurationFormatter &set_seconds_precision(std::streamsize seconds_precision)
+		DurationFormatter &set_seconds_precision(std::uint8_t seconds_precision)
 		{
 			this->seconds_precision = seconds_precision;
 			return *this;
@@ -54,9 +55,9 @@ namespace Rayni
 		}
 
 	private:
-		std::string format(unsigned int hh, unsigned int mm, float ss) const;
+		std::string format(std::chrono::hours::rep hh, std::chrono::minutes::rep mm, float ss) const;
 
-		std::streamsize seconds_precision = 0;
+		std::uint8_t seconds_precision = 0;
 		bool floor_seconds = false;
 	};
 }

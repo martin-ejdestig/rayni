@@ -7,3 +7,8 @@ option('extra_warnings',
 	type : 'boolean',
 	value : true,
 	description : 'Enable extra compiler warnings')
+
+option('ofast_native',
+	type : 'boolean',
+	value : false,
+	description : 'Build with -Ofast, -march=native and some other optimization flags')

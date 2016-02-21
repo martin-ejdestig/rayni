@@ -6,22 +6,31 @@ project('rayni-staging', 'cpp',
 		'werror=true'
 	])
 
+cpp_args = []
+cpp_link_args = []
+
 if get_option('extra_warnings')
-	extra_warnings = [
+	cpp_args = [
 		'-Wold-style-cast',
 		'-Woverloaded-virtual',
 		'-Wformat=2',
 		'-Wsign-conversion'
 	]
 	if meson.get_compiler('cpp').get_id() == 'gcc'
-		extra_warnings += [
+		cpp_args += [
 			'-Wdouble-promotion',
 			'-Wsuggest-override',
 			'-Wzero-as-null-pointer-constant'
 		]
 	endif
-	add_global_arguments(extra_warnings, language : 'cpp')
 endif
+
+if get_option('ofast_native')
+	cpp_args += ['-DNDEBUG', '-Ofast', '-march=native', '-funroll-loops']
+	cpp_link_args = ['-Ofast', '-march=native']
+endif
+
+add_global_arguments(cpp_args, language : 'cpp')
 
 config_data = configuration_data()
 config_data.set('RAYNI_DOUBLE_PRECISION', get_option('double_precision'))
@@ -87,6 +96,7 @@ gtest = dependency('gtest', main : true)
 
 lib_unit_tests = executable('librayni-unit_tests',
 	include_directories : src_incdir,
+	link_args : cpp_link_args,
 	link_with : lib,
 	dependencies : gtest,
 	sources : [

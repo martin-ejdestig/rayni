@@ -17,8 +17,8 @@
  * along with Rayni. If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef _RAYNI_LIB_TIME_DURATION_FORMATTER_H_
-#define _RAYNI_LIB_TIME_DURATION_FORMATTER_H_
+#ifndef RAYNI_LIB_TIME_DURATION_FORMATTER_H
+#define RAYNI_LIB_TIME_DURATION_FORMATTER_H
 
 #include <chrono>
 #include <ios>
@@ -61,4 +61,4 @@ namespace Rayni
 	};
 }
 
-#endif // _RAYNI_LIB_TIME_DURATION_FORMATTER_H_
+#endif // RAYNI_LIB_TIME_DURATION_FORMATTER_H

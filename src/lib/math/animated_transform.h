@@ -17,8 +17,8 @@
  * along with Rayni. If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef _RAYNI_LIB_MATH_ANIMATED_TRANSFORM_H_
-#define _RAYNI_LIB_MATH_ANIMATED_TRANSFORM_H_
+#ifndef RAYNI_LIB_MATH_ANIMATED_TRANSFORM_H
+#define RAYNI_LIB_MATH_ANIMATED_TRANSFORM_H
 
 #include "lib/containers/variant.h"
 #include "lib/math/decomposed_matrix4x4.h"
@@ -50,4 +50,4 @@ namespace Rayni
 	};
 }
 
-#endif // _RAYNI_LIB_MATH_ANIMATED_TRANSFORM_H_
+#endif // RAYNI_LIB_MATH_ANIMATED_TRANSFORM_H

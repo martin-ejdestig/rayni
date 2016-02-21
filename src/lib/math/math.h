@@ -17,8 +17,8 @@
  * along with Rayni. If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef _RAYNI_LIB_MATH_MATH_H_
-#define _RAYNI_LIB_MATH_MATH_H_
+#ifndef RAYNI_LIB_MATH_MATH_H
+#define RAYNI_LIB_MATH_MATH_H
 
 #include <algorithm>
 #include <cmath>
@@ -78,4 +78,4 @@ namespace Rayni
 	}
 }
 
-#endif // _RAYNI_LIB_MATH_MATH_H_
+#endif // RAYNI_LIB_MATH_MATH_H

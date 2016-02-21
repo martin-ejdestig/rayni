@@ -17,8 +17,8 @@
  * along with Rayni. If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef _RAYNI_LIB_IMAGE_H_
-#define _RAYNI_LIB_IMAGE_H_
+#ifndef RAYNI_LIB_IMAGE_H
+#define RAYNI_LIB_IMAGE_H
 
 #include <cassert>
 #include <cstddef>
@@ -126,4 +126,4 @@ namespace Rayni
 	}
 }
 
-#endif // _RAYNI_LIB_IMAGE_H_
+#endif // RAYNI_LIB_IMAGE_H

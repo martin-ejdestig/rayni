@@ -17,8 +17,8 @@
  * along with Rayni. If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef _RAYNI_LIB_VERSION_INFO_H_
-#define _RAYNI_LIB_VERSION_INFO_H_
+#ifndef RAYNI_LIB_VERSION_INFO_H
+#define RAYNI_LIB_VERSION_INFO_H
 
 #include <string>
 #include <vector>
@@ -34,4 +34,4 @@ namespace Rayni
 	};
 }
 
-#endif // _RAYNI_LIB_VERSION_INFO_H_
+#endif // RAYNI_LIB_VERSION_INFO_H

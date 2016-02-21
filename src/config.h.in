@@ -17,9 +17,9 @@
  * along with Rayni. If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef _RAYNI_CONFIG_H_
-#define _RAYNI_CONFIG_H_
+#ifndef RAYNI_CONFIG_H
+#define RAYNI_CONFIG_H
 
 #mesondefine RAYNI_DOUBLE_PRECISION
 
-#endif // _RAYNI_CONFIG_H_
+#endif // RAYNI_CONFIG_H

@@ -17,8 +17,8 @@
  * along with Rayni. If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef _RAYNI_GIT_DESCRIBE_VERSION_H_
-#define _RAYNI_GIT_DESCRIBE_VERSION_H_
+#ifndef RAYNI_GIT_DESCRIBE_VERSION_H
+#define RAYNI_GIT_DESCRIBE_VERSION_H
 
 #ifndef RAYNI_GIT_DESCRIBE_VERSION_INCLUDED_FROM_SRC_LIB_VERSION_INFO_CPP
 #error May only be included from src/lib/version_info.cpp
@@ -34,4 +34,4 @@ namespace Rayni
 	}
 }
 
-#endif // _RAYNI_GIT_DESCRIBE_VERSION_H_
+#endif // RAYNI_GIT_DESCRIBE_VERSION_H

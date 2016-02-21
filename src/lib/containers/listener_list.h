@@ -17,8 +17,8 @@
  * along with Rayni. If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef _RAYNI_LIB_CONTAINERS_LISTENER_LIST_H_
-#define _RAYNI_LIB_CONTAINERS_LISTENER_LIST_H_
+#ifndef RAYNI_LIB_CONTAINERS_LISTENER_LIST_H
+#define RAYNI_LIB_CONTAINERS_LISTENER_LIST_H
 
 #include <algorithm>
 #include <type_traits>
@@ -89,4 +89,4 @@ namespace Rayni
 	};
 }
 
-#endif // _RAYNI_LIB_CONTAINERS_LISTENER_LIST_H_
+#endif // RAYNI_LIB_CONTAINERS_LISTENER_LIST_H

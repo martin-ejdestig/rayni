@@ -17,8 +17,8 @@
  * along with Rayni. If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef _RAYNI_LIB_MATH_HASH_H_
-#define _RAYNI_LIB_MATH_HASH_H_
+#ifndef RAYNI_LIB_MATH_HASH_H
+#define RAYNI_LIB_MATH_HASH_H
 
 #include <cstddef>
 #include <functional>
@@ -43,4 +43,4 @@ namespace Rayni
 	}
 }
 
-#endif // _RAYNI_LIB_MATH_HASH_H_
+#endif // RAYNI_LIB_MATH_HASH_H

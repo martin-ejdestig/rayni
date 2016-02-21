@@ -17,8 +17,8 @@
  * along with Rayni. If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef _RAYNI_LIB_CONTAINERS_VARIANT_H_
-#define _RAYNI_LIB_CONTAINERS_VARIANT_H_
+#ifndef RAYNI_LIB_CONTAINERS_VARIANT_H
+#define RAYNI_LIB_CONTAINERS_VARIANT_H
 
 #include <initializer_list>
 #include <map>
@@ -549,4 +549,4 @@ namespace Rayni
 	}
 }
 
-#endif // _RAYNI_LIB_CONTAINERS_VARIANT_H_
+#endif // RAYNI_LIB_CONTAINERS_VARIANT_H

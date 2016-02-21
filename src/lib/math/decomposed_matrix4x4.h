@@ -17,8 +17,8 @@
  * along with Rayni. If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef _RAYNI_LIB_MATH_DECOMPOSED_MATRIX4x4_H_
-#define _RAYNI_LIB_MATH_DECOMPOSED_MATRIX4x4_H_
+#ifndef RAYNI_LIB_MATH_DECOMPOSED_MATRIX4x4_H
+#define RAYNI_LIB_MATH_DECOMPOSED_MATRIX4x4_H
 
 #include "lib/math/math.h"
 #include "lib/math/matrix4x4.h"
@@ -62,4 +62,4 @@ namespace Rayni
 	};
 }
 
-#endif // _RAYNI_LIB_MATH_DECOMPOSED_MATRIX4x4_H_
+#endif // RAYNI_LIB_MATH_DECOMPOSED_MATRIX4x4_H

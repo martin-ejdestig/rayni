@@ -17,8 +17,8 @@
  * along with Rayni. If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef _RAYNI_LIB_TIME_SCOPED_STOPWATCH_H_
-#define _RAYNI_LIB_TIME_SCOPED_STOPWATCH_H_
+#ifndef RAYNI_LIB_TIME_SCOPED_STOPWATCH_H
+#define RAYNI_LIB_TIME_SCOPED_STOPWATCH_H
 
 #include <iostream>
 #include <ostream>
@@ -55,4 +55,4 @@ namespace Rayni
 	};
 }
 
-#endif // _RAYNI_LIB_TIME_SCOPED_STOPWATCH_H_
+#endif // RAYNI_LIB_TIME_SCOPED_STOPWATCH_H

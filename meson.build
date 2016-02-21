@@ -30,6 +30,19 @@ if get_option('ofast_native')
 	cpp_link_args = ['-Ofast', '-march=native']
 endif
 
+if get_option('sanitize_address')
+	cpp_args += ['-fsanitize=address']
+	cpp_link_args += ['-fsanitize=address']
+endif
+if get_option('sanitize_thread')
+	cpp_args += ['-fsanitize=thread', '-fPIE']
+	cpp_link_args += ['-fsanitize=thread', '-pie']
+endif
+if get_option('sanitize_undefined')
+	cpp_args += ['-fsanitize=undefined']
+	cpp_link_args += ['-fsanitize=undefined']
+endif
+
 add_global_arguments(cpp_args, language : 'cpp')
 
 config_data = configuration_data()

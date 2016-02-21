@@ -12,3 +12,18 @@ option('ofast_native',
 	type : 'boolean',
 	value : false,
 	description : 'Build with -Ofast, -march=native and some other optimization flags')
+
+option('sanitize_address',
+	type : 'boolean',
+	value : false,
+	description : 'Enable address sanitizer in GCC/Clang')
+
+option('sanitize_thread',
+	type : 'boolean',
+	value : false,
+	description : 'Enable thread sanitizer in GCC/Clang')
+
+option('sanitize_undefined',
+	type : 'boolean',
+	value : false,
+	description : 'Enable undefined behavior sanitizer in GCC/Clang')

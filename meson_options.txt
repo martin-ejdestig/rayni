@@ -8,6 +8,11 @@ option('extra_warnings',
 	value : true,
 	description : 'Enable extra compiler warnings')
 
+option('link_time_optimization',
+	type : 'boolean',
+	value : false,
+	description : 'Enable link time optimization')
+
 option('ofast_native',
 	type : 'boolean',
 	value : false,

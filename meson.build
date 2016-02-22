@@ -6,6 +6,7 @@ project('rayni-staging', 'cpp',
 		'werror=true'
 	])
 
+cpp = meson.get_compiler('cpp')
 cpp_args = []
 cpp_link_args = []
 
@@ -16,7 +17,7 @@ if get_option('extra_warnings')
 		'-Wformat=2',
 		'-Wsign-conversion'
 	]
-	if meson.get_compiler('cpp').get_id() == 'gcc'
+	if cpp.get_id() == 'gcc'
 		cpp_args += [
 			'-Wdouble-promotion',
 			'-Wsuggest-override',

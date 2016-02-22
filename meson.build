@@ -17,7 +17,7 @@ cpp_args = []
 cpp_link_args = []
 
 if get_option('extra_warnings')
-	cpp_args = [
+	cpp_args += [
 		'-Wold-style-cast',
 		'-Woverloaded-virtual',
 		'-Wformat=2',
@@ -39,7 +39,7 @@ endif
 
 if get_option('ofast_native')
 	cpp_args += ['-DNDEBUG', '-Ofast', '-march=native', '-funroll-loops']
-	cpp_link_args = ['-Ofast', '-march=native']
+	cpp_link_args += ['-Ofast', '-march=native']
 endif
 
 if get_option('sanitize_address')

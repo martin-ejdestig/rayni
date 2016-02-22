@@ -32,6 +32,17 @@ if get_option('extra_warnings')
 	endif
 endif
 
+if get_option('libcxx')
+	cpp_args += ['-stdlib=libc++']
+	cpp_link_args += ['-stdlib=libc++', '-lc++abi']
+	# libc++ does not fully implement C++11 thread_local on its own. Declaring a
+	# variable with a destructor thread_local and linking outputs:
+	# undefined reference to symbol '__cxa_thread_atexit@@CXXABI_1.3.7'
+	# Link with libsupc++ from GCC to fix this.
+	# TODO: Has this been fixed in libc++ yet?
+	cpp_link_args += ['-lsupc++']
+endif
+
 if get_option('link_time_optimization')
 	cpp_args += ['-flto']
 	cpp_link_args += ['-flto']

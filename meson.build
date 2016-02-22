@@ -6,6 +6,12 @@ project('rayni-staging', 'cpp',
 		'werror=true'
 	])
 
+### Dependencies ###
+
+gtest = dependency('gtest', main : true)
+
+### Compiler and linker flags ###
+
 cpp = meson.get_compiler('cpp')
 cpp_args = []
 cpp_link_args = []
@@ -35,16 +41,20 @@ if get_option('sanitize_address')
 	cpp_args += ['-fsanitize=address']
 	cpp_link_args += ['-fsanitize=address']
 endif
+
 if get_option('sanitize_thread')
 	cpp_args += ['-fsanitize=thread', '-fPIE']
 	cpp_link_args += ['-fsanitize=thread', '-pie']
 endif
+
 if get_option('sanitize_undefined')
 	cpp_args += ['-fsanitize=undefined']
 	cpp_link_args += ['-fsanitize=undefined']
 endif
 
 add_global_arguments(cpp_args, language : 'cpp')
+
+### librayni ###
 
 config_data = configuration_data()
 config_data.set('RAYNI_DOUBLE_PRECISION', get_option('double_precision'))
@@ -105,8 +115,6 @@ lib = static_library('rayni',
 		config_header,
 		git_describe_version_header
 	])
-
-gtest = dependency('gtest', main : true)
 
 lib_unit_tests = executable('librayni-unit_tests',
 	include_directories : src_incdir,

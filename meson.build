@@ -1,5 +1,6 @@
 project('rayni-staging', 'cpp',
 	license : 'GPLv3+',
+	version : '0.0.1',
 	default_options : [
 		'cpp_std=c++14',
 		'warning_level=3',
@@ -83,7 +84,7 @@ config_header = configure_file(
 git_describe_version_header = vcs_tag(
 	input : 'src/git_describe_version.h.in',
 	output : 'git_describe_version.h',
-	fallback : '<git describe fallback>',
+	fallback : meson.project_version(),
 	command : ['git', 'describe', '--always', '--first-parent', '--dirty'])
 
 src_incdir = include_directories('src')

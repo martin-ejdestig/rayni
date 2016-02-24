@@ -7,11 +7,9 @@ project('rayni-staging', 'cpp',
 		'werror=true'
 	])
 
-### Dependencies ###
-
 gtest = dependency('gtest', main : true)
 
-### Compiler and linker flags ###
+src_incdir = include_directories('src')
 
 cpp = meson.get_compiler('cpp')
 cpp_args = []
@@ -71,96 +69,4 @@ endif
 
 add_global_arguments(cpp_args, language : 'cpp')
 
-### librayni ###
-
-config_data = configuration_data()
-config_data.set('RAYNI_DOUBLE_PRECISION', get_option('double_precision'))
-
-config_header = configure_file(
-	input : 'src/config.h.in',
-	output : 'config.h',
-	configuration : config_data)
-
-git_describe_version_header = vcs_tag(
-	input : 'src/git_describe_version.h.in',
-	output : 'git_describe_version.h',
-	fallback : meson.project_version(),
-	command : ['git', 'describe', '--always', '--first-parent', '--dirty'])
-
-src_incdir = include_directories('src')
-
-lib = static_library('rayni',
-	include_directories : src_incdir,
-	sources : [
-		'src/lib/color.cpp',
-		'src/lib/color.h',
-		'src/lib/containers/fixed_size_stack.h',
-		'src/lib/containers/listener_list.h',
-		'src/lib/containers/variant.cpp',
-		'src/lib/containers/variant.h',
-		'src/lib/image.cpp',
-		'src/lib/image.h',
-		'src/lib/math/aabb.cpp',
-		'src/lib/math/aabb.h',
-		'src/lib/math/animated_transform.cpp',
-		'src/lib/math/animated_transform.h',
-		'src/lib/math/decomposed_matrix4x4.cpp',
-		'src/lib/math/decomposed_matrix4x4.h',
-		'src/lib/math/enum.h',
-		'src/lib/math/hash.h',
-		'src/lib/math/math.h',
-		'src/lib/math/matrix4x4.cpp',
-		'src/lib/math/matrix4x4.h',
-		'src/lib/math/quaternion.h',
-		'src/lib/math/ray.h',
-		'src/lib/math/transform.cpp',
-		'src/lib/math/transform.h',
-		'src/lib/math/vector3.h',
-		'src/lib/math/vector4.h',
-		'src/lib/string/string.cpp',
-		'src/lib/string/string.h',
-		'src/lib/system/command.cpp',
-		'src/lib/system/command.h',
-		'src/lib/time/duration_formatter.cpp',
-		'src/lib/time/duration_formatter.h',
-		'src/lib/time/scoped_stopwatch.cpp',
-		'src/lib/time/scoped_stopwatch.h',
-		'src/lib/time/stopwatch.cpp',
-		'src/lib/time/stopwatch.h',
-		'src/lib/version_info.cpp',
-		'src/lib/version_info.h',
-		config_header,
-		git_describe_version_header
-	])
-
-lib_unit_tests = executable('librayni-unit_tests',
-	include_directories : src_incdir,
-	link_args : cpp_link_args,
-	link_with : lib,
-	dependencies : gtest,
-	sources : [
-		'src/unit_tests/lib/color.cpp',
-		'src/unit_tests/lib/containers/fixed_size_stack.cpp',
-		'src/unit_tests/lib/containers/listener_list.cpp',
-		'src/unit_tests/lib/containers/variant.cpp',
-		'src/unit_tests/lib/image.cpp',
-		'src/unit_tests/lib/math/aabb.cpp',
-		'src/unit_tests/lib/math/animated_transform.cpp',
-		'src/unit_tests/lib/math/decomposed_matrix4x4.cpp',
-		'src/unit_tests/lib/math/enum.cpp',
-		'src/unit_tests/lib/math/hash.cpp',
-		'src/unit_tests/lib/math/math.cpp',
-		'src/unit_tests/lib/math/matrix4x4.cpp',
-		'src/unit_tests/lib/math/quaternion.cpp',
-		'src/unit_tests/lib/math/transform.cpp',
-		'src/unit_tests/lib/math/vector3.cpp',
-		'src/unit_tests/lib/math/vector4.cpp',
-		'src/unit_tests/lib/string/string.cpp',
-		'src/unit_tests/lib/system/command.cpp',
-		'src/unit_tests/lib/time/duration_formatter.cpp',
-		'src/unit_tests/lib/time/scoped_stopwatch.cpp',
-		'src/unit_tests/lib/time/stopwatch.cpp',
-		'src/unit_tests/lib/version_info.cpp'
-	])
-
-test('librayni tests', lib_unit_tests)
+subdir('src')

@@ -29,7 +29,7 @@ if get_option('extra_warnings')
 	endif
 endif
 
-if get_option('libcxx')
+if cpp.get_id() == 'clang'
 	cpp_args += ['-stdlib=libc++']
 	cpp_link_args += ['-stdlib=libc++', '-lc++abi']
 	# libc++ does not fully implement C++11 thread_local on its own. Declaring a

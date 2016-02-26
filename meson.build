@@ -7,8 +7,6 @@ project('rayni-staging', 'cpp',
 		'werror=true'
 	])
 
-gtest = dependency('gtest', main : true)
-
 src_incdir = include_directories('src')
 
 cpp = meson.get_compiler('cpp')
@@ -68,5 +66,7 @@ if get_option('sanitize_undefined')
 endif
 
 add_global_arguments(cpp_args, language : 'cpp')
+
+subdir('third_party')
 
 subdir('src')

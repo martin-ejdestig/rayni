@@ -66,6 +66,7 @@ namespace Rayni
 
 	TEST(Base85Test, DecodeOverflow)
 	{
+		EXPECT_FALSE(base85_decode("|NsC1"));
 		EXPECT_FALSE(base85_decode("|NsD0"));
 		EXPECT_FALSE(base85_decode("|NtC0"));
 		EXPECT_FALSE(base85_decode("|OsC0"));

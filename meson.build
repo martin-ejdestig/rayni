@@ -71,6 +71,5 @@ endif
 
 add_global_arguments(cpp_args, language : 'cpp')
 
-subdir('third_party')
-
+subdir('external')
 subdir('src')

@@ -73,3 +73,4 @@ add_global_arguments(cpp_args, language : 'cpp')
 
 subdir('external')
 subdir('src')
+subdir('tools')

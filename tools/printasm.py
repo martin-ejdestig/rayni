@@ -17,6 +17,8 @@
 # You should have received a copy of the GNU General Public License
 # along with Rayni. If not, see <http://www.gnu.org/licenses/>.
 
+# pylint: disable=missing-docstring
+
 import json
 import os
 import re

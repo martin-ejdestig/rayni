@@ -29,13 +29,10 @@ def read_compile_commands(build_dir):
     with open(os.path.join(build_dir, 'compile_commands.json')) as file:
         return json.load(file)
 
-def paths_point_to_same_file(path1, path2):
-    return os.path.abspath(path1) == os.path.abspath(path2)
-
 def get_compile_command(build_dir, source_file):
     for command in read_compile_commands(build_dir):
-        if paths_point_to_same_file(source_file,
-                                    os.path.join(command['directory'], command['file'])):
+        if os.path.samefile(source_file,
+                            os.path.join(command['directory'], command['file'])):
             return command
     return None
 

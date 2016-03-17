@@ -7,8 +7,6 @@ project('rayni-staging', 'cpp',
 		'werror=true'
 	])
 
-src_incdir = include_directories('src')
-
 cpp = meson.get_compiler('cpp')
 cpp_args = []
 cpp_link_args = []

@@ -1,3 +1,5 @@
+src_incdir = include_directories('.')
+
 config_data = configuration_data()
 config_data.set('RAYNI_DOUBLE_PRECISION', get_option('double_precision'))
 

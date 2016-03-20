@@ -66,7 +66,8 @@ def run_analyzer(command):
                                stdout=subprocess.PIPE,
                                stderr=subprocess.STDOUT,
                                shell=True,
-                               cwd=command.work_dir)
+                               cwd=command.work_dir,
+                               universal_newlines=True)
     return process.communicate()[0]
 
 def analyze(source_dir, build_dir):

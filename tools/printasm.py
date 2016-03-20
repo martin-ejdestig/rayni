@@ -19,46 +19,39 @@
 
 # pylint: disable=missing-docstring
 
-import json
 import os
 import re
 import subprocess
 import sys
 
-def read_compile_commands(build_dir):
-    with open(os.path.join(build_dir, 'compile_commands.json')) as file:
-        return json.load(file)
+from compile_commands import read_compile_commands
 
-def get_compile_command(build_dir, source_file):
-    for command in read_compile_commands(build_dir):
-        if os.path.samefile(source_file,
-                            os.path.join(command['directory'], command['file'])):
-            return command
-    return None
+def print_assembler_invokation_for_command(command):
+    args = command.invokation
+    args = re.sub(r" -c ", ' -S ', args)
+    args = re.sub(r" -o '?.*\.o'? ", ' -o- ', args)
+    args = re.sub(r" '?-M(?:[MGPD]|MD)?'?(?= )", '', args)
+    args = re.sub(r" '?-M[FTQ]'? '?.*?\.[do]'?(?= )", '', args)
+    return args
 
-def transform_command(command):
-    command = re.sub(r" -c ", ' -S ', command)
-    command = re.sub(r" -o '?.*\.o'? ", ' -o- ', command)
-    command = re.sub(r" '?-M(?:[MGPD]|MD)?'?(?= )", '', command)
-    command = re.sub(r" '?-M[FTQ]'? '?.*?\.[do]'?(?= )", '', command)
-    return command
-
-def print_assembler(build_dir, source_file):
-    command = get_compile_command(build_dir, source_file)
+def print_assembler(source_dir, build_dir, source_file):
+    src_relpath = os.path.relpath(source_file, start=source_dir)
+    command = read_compile_commands(source_dir, build_dir).get(src_relpath)
     if not command:
         sys.exit('Do not know how to compile "{0}".'.format(source_file))
 
-    with subprocess.Popen(transform_command(command['command']),
-                          cwd=command['directory'],
+    with subprocess.Popen(print_assembler_invokation_for_command(command),
+                          cwd=command.work_dir,
                           shell=True) as process:
         if process.wait() != 0:
             sys.exit('Failed to run compiler command for outputting assembler.')
 
 def main():
-    if len(sys.argv) != 3:
-        sys.exit('Usage: {0} <build directory> <source file>'.format(os.path.basename(sys.argv[0])))
+    if len(sys.argv) != 4:
+        sys.exit('Usage: {0} <source directory> <build directory> <source file>'.
+                 format(os.path.basename(sys.argv[0])))
 
-    print_assembler(sys.argv[1], sys.argv[2])
+    print_assembler(sys.argv[1], sys.argv[2], sys.argv[3])
 
 if __name__ == '__main__':
     main()

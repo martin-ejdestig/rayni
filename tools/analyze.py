@@ -48,6 +48,7 @@ import subprocess
 import sys
 
 from compile_commands import read_compile_commands
+from progress_printer import ProgressPrinter
 
 def analyzer_invocation_for_command(command):
     args = command.invokation
@@ -61,17 +62,22 @@ def analyzer_invocation_for_command(command):
     return args
 
 def run_analyzer(command):
-    print("Analyzing {0}".format(command.src_path))
     process = subprocess.Popen(analyzer_invocation_for_command(command),
-                               cwd=command.work_dir,
-                               shell=True)
-    process.wait()
+                               stdout=subprocess.PIPE,
+                               stderr=subprocess.STDOUT,
+                               shell=True,
+                               cwd=command.work_dir)
+    return process.communicate()[0]
 
 def analyze(source_dir, build_dir):
     commands = read_compile_commands(source_dir, build_dir)
-    executor = concurrent.futures.ThreadPoolExecutor(os.cpu_count() or 1)
-    executor.map(run_analyzer, commands.values())
-    executor.shutdown(wait=True)
+    progress_printer = ProgressPrinter()
+    progress_printer.start('Analyzing source', len(commands))
+
+    with concurrent.futures.ThreadPoolExecutor(os.cpu_count() or 1) as executor:
+        futures = [executor.submit(run_analyzer, c) for c in commands.values()]
+        for future in concurrent.futures.as_completed(futures):
+            progress_printer.result(future.result())
 
 def main():
     if len(sys.argv) != 3:

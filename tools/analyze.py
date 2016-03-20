@@ -42,26 +42,15 @@
 # a single issue.
 
 import concurrent.futures
-import json
 import os
 import re
 import subprocess
 import sys
 
-SRC_PATH_EXCLUDE_REGEX = re.compile(r"external/.*")
-
-def read_compile_commands(build_dir):
-    with open(os.path.join(build_dir, 'compile_commands.json')) as file:
-        return json.load(file)
-
-def src_path(source_dir, command):
-    return os.path.relpath(os.path.join(command['directory'], command['file']), start=source_dir)
-
-def command_should_be_analyzed(source_dir, command):
-    return SRC_PATH_EXCLUDE_REGEX.match(src_path(source_dir, command)) is None
+from compile_commands import read_compile_commands
 
 def analyzer_invocation_for_command(command):
-    args = command['command']
+    args = command.invokation
     args = re.sub(r"^.*?\+\+", 'clang++ --analyze -Xanalyzer -analyzer-output=text', args)
     args = re.sub(r" -c", '', args)
     args = re.sub(r" -o '?.*\.o'?", '', args)
@@ -71,19 +60,17 @@ def analyzer_invocation_for_command(command):
     args = re.sub(r" '?-M[FTQ]'? '?.*?\.[do]'?(?= )", '', args)
     return args
 
-def run_analyzer(source_dir, command):
-    print("Analyzing {0}".format(src_path(source_dir, command)))
+def run_analyzer(command):
+    print("Analyzing {0}".format(command.src_path))
     process = subprocess.Popen(analyzer_invocation_for_command(command),
-                               cwd=command['directory'],
+                               cwd=command.work_dir,
                                shell=True)
     process.wait()
 
 def analyze(source_dir, build_dir):
-    commands = [c for c in read_compile_commands(build_dir)
-                if command_should_be_analyzed(source_dir, c)]
-
+    commands = read_compile_commands(source_dir, build_dir)
     executor = concurrent.futures.ThreadPoolExecutor(os.cpu_count() or 1)
-    executor.map(lambda c: run_analyzer(source_dir, c), commands)
+    executor.map(run_analyzer, commands.values())
     executor.shutdown(wait=True)
 
 def main():

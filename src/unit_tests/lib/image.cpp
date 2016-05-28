@@ -36,6 +36,36 @@ namespace Rayni
 			Color color;
 		};
 
+		static testing::AssertionResult expect_color_at(const char *image_expr,
+		                                                const char * /*x_expr*/,
+		                                                const char * /*y_expr*/,
+		                                                const char *color_expr,
+		                                                const Image &image,
+		                                                unsigned int x,
+		                                                unsigned int y,
+		                                                const Color &color)
+		{
+			static const real_t COMPONENT_MAX_DIFF = 0.001;
+
+			if (x > image.get_width() || y > image.get_height())
+				return testing::AssertionFailure() << image_expr << " does not contain (" << x << ", "
+				                                   << y << ") (too small)";
+
+			Color image_color = image.read_pixel(x, y);
+
+			if (std::abs(color.r() - image_color.r()) > COMPONENT_MAX_DIFF ||
+			    std::abs(color.g() - image_color.g()) > COMPONENT_MAX_DIFF ||
+			    std::abs(color.b() - image_color.b()) > COMPONENT_MAX_DIFF)
+			{
+				return testing::AssertionFailure()
+				       << color_expr << " and " << image_expr << " color at (" << x << ", " << y
+				       << ") componentwise difference is (" << color.r() - image_color.r() << ", "
+				       << color.g() - image_color.g() << ", " << color.b() - image_color.b() << ").";
+			}
+
+			return testing::AssertionSuccess();
+		}
+
 		static const std::vector<Pixel> &pixels_2x2()
 		{
 			static const std::vector<Pixel> pixels = {{0, 0, Color::black()},
@@ -56,21 +86,19 @@ namespace Rayni
 		                                              const Image &image,
 		                                              const std::vector<Pixel> &pixels)
 		{
-			auto color_near = [](auto c1, auto c2)
+			for (std::vector<Pixel>::size_type i = 0; i < pixels.size(); i++)
 			{
-				static const real_t COMPONENT_MAX_DIFF = 0.001;
-
-				return std::abs(c1.r() - c2.r()) <= COMPONENT_MAX_DIFF &&
-				       std::abs(c1.g() - c2.g()) <= COMPONENT_MAX_DIFF &&
-				       std::abs(c1.b() - c2.b()) <= COMPONENT_MAX_DIFF;
-			};
-
-			for (auto &pixel : pixels)
-			{
-				if (pixel.x > image.get_width() || pixel.y > image.get_height() ||
-				    !color_near(pixel.color, image.read_pixel(pixel.x, pixel.y)))
-					return testing::AssertionFailure() << image_expr << " does not contain "
-					                                   << pixels_expr << ".";
+				std::string pixels_expr_i = std::string(pixels_expr) + "[" + std::to_string(i) + "]";
+				auto result = expect_color_at(image_expr,
+				                              (pixels_expr_i + ".x").c_str(),
+				                              (pixels_expr_i + ".y").c_str(),
+				                              (pixels_expr_i + ".color").c_str(),
+				                              image,
+				                              pixels[i].x,
+				                              pixels[i].y,
+				                              pixels[i].color);
+				if (!result)
+					return result;
 			}
 
 			return testing::AssertionSuccess();
@@ -105,6 +133,15 @@ namespace Rayni
 		EXPECT_EQ(0, area.y);
 		EXPECT_EQ(WIDTH, area.width);
 		EXPECT_EQ(HEIGHT, area.height);
+	}
+
+	TEST_F(ImageTest, BlackByDefault)
+	{
+		Image image(2, 2);
+
+		for (unsigned int y = 0; y < image.get_height(); y++)
+			for (unsigned int x = 0; x < image.get_width(); x++)
+				EXPECT_PRED_FORMAT4(expect_color_at, image, x, y, Color::black());
 	}
 
 	TEST_F(ImageTest, Pixels)

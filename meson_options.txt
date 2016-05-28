@@ -23,6 +23,11 @@ option('sanitize_address',
 	value : false,
 	description : 'Enable address sanitizer in GCC/Clang')
 
+option('sanitize_memory',
+        type : 'boolean',
+        value : false,
+        description : 'Enable memory sanitizer in Clang (currently not available in GCC 5.3)')
+
 option('sanitize_thread',
 	type : 'boolean',
 	value : false,

@@ -53,8 +53,8 @@ if get_option('ofast_native')
 endif
 
 if get_option('sanitize_address')
-	cpp_args += ['-fsanitize=address']
-	cpp_link_args += ['-fsanitize=address']
+	cpp_args += ['-fsanitize=address', '-fno-omit-frame-pointer']
+	cpp_link_args += ['-fsanitize=address', '-fno-omit-frame-pointer']
 endif
 
 if get_option('sanitize_thread')

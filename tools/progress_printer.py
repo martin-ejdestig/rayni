@@ -34,7 +34,8 @@ class ProgressPrinter:
     def result(self, result_string):
         self._count += 1
         if result_string:
-            sys.stdout.write('\r' + result_string + '\n')
+            clear_entire_line = '\x1b[2K'
+            sys.stdout.write(clear_entire_line + '\r' + result_string + '\n')
         self._print()
 
     def _print(self):

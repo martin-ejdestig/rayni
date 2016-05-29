@@ -115,7 +115,7 @@ def check_header_include_guard(path, content):
                        for group, found_guard in enumerate(match.groups(), start=1)
                        if found_guard != guard]
 
-    output = ['{}:{}:{}: error: include guard should be {}'.format(path, *position, guard)
+    output = ['{}:{}:{}: error: include guard name should be {}'.format(path, *position, guard)
               for position in error_positions]
 
     return '\n'.join(output)

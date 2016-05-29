@@ -22,7 +22,7 @@ import json
 import os
 import re
 
-CompileCommand = collections.namedtuple('CompileCommand', ['src_path', 'invokation', 'work_dir'])
+CompileCommand = collections.namedtuple('CompileCommand', ['invokation', 'work_dir', 'file'])
 
 def read_compile_commands(source_dir, build_dir):
     src_path_exclude_regex = re.compile(r"external/.*")
@@ -34,8 +34,8 @@ def read_compile_commands(source_dir, build_dir):
                                        start=source_dir)
 
             if src_path_exclude_regex.match(src_path) is None:
-                commands[src_path] = CompileCommand(src_path,
-                                                    command['command'],
-                                                    command['directory'])
+                commands[src_path] = CompileCommand(command['command'],
+                                                    command['directory'],
+                                                    command['file'])
 
     return commands

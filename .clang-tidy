@@ -13,6 +13,7 @@ google-global-names-in-headers,\
 google-readability-casting,\
 misc-*,\
 -misc-noexcept-move-constructor,\
+performance-*,\
 readability-*,\
 -readability-implicit-bool-cast,\
 "

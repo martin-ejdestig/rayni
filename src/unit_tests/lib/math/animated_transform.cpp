@@ -62,8 +62,7 @@ namespace Rayni
 
 	TEST_F(AnimatedTransformTest, Variant)
 	{
-		auto double_scale_variant = [](real_t start_time, real_t end_time)
-		{
+		auto double_scale_variant = [](real_t start_time, real_t end_time) {
 			return Variant::map("start_time",
 			                    start_time,
 			                    "start_transform",
@@ -90,8 +89,7 @@ namespace Rayni
 		const unsigned int ANIM_END_TIME = ANIM_START_TIME + 4;
 		const unsigned int END_TIME = ANIM_END_TIME + 1;
 
-		auto create_transform = [&](unsigned int time)
-		{
+		auto create_transform = [&](unsigned int time) {
 			real_t ratio;
 
 			if (time <= ANIM_START_TIME)

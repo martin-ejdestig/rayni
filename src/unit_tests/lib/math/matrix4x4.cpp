@@ -39,8 +39,7 @@ namespace Rayni
 		{
 			std::string error_elements;
 
-			auto error_elements_append = [&](auto row, auto column)
-			{
+			auto error_elements_append = [&](auto row, auto column) {
 				if (!error_elements.empty())
 					error_elements += ", ";
 

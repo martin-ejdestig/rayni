@@ -37,12 +37,9 @@ namespace Rayni
 	          typename U = typename std::underlying_type<E>::type>
 	static std::experimental::optional<E> enum_from_value(const EnumValues &enum_values, U value)
 	{
-		auto iterator = std::find_if(enum_values.cbegin(),
-		                             enum_values.cend(),
-		                             [&](const E &enum_value)
-		                             {
-			                             return value == static_cast<U>(enum_value);
-			                     });
+		auto iterator = std::find_if(enum_values.cbegin(), enum_values.cend(), [&](const E &enum_value) {
+			return value == static_cast<U>(enum_value);
+		});
 
 		return iterator == enum_values.cend() ? std::experimental::nullopt :
 		                                        std::experimental::make_optional(*iterator);

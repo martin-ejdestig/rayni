@@ -92,13 +92,9 @@ namespace Rayni
 	std::string string_to_lower(const std::string &str)
 	{
 		std::string result;
-		std::transform(str.begin(),
-		               str.end(),
-		               std::back_inserter(result),
-		               [](int c)
-		               {
-			               return std::tolower(c);
-			       });
+		std::transform(str.begin(), str.end(), std::back_inserter(result), [](int c) {
+			return std::tolower(c);
+		});
 		return result;
 	}
 

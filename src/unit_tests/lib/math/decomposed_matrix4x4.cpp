@@ -21,8 +21,8 @@
 
 #include <cmath>
 
-#include "lib/math/matrix4x4.h"
 #include "lib/math/decomposed_matrix4x4.h"
+#include "lib/math/matrix4x4.h"
 
 namespace Rayni
 {

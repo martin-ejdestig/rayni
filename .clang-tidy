@@ -1,6 +1,10 @@
 ---
 # - misc-noexcept-move-constructor is disabled because of a bug with = default.
 #   See https://llvm.org/bugs/show_bug.cgi?id=24712 .
+# - readability-implicit-bool-cast is disabled since it currently is too
+#   agressive. Even if AllowConditionalPointerCasts is enabled it only allows
+#   casts in if statements, not in e.g. while and for statements. See
+#   https://llvm.org/bugs/show_bug.cgi?id=27911 .
 Checks: "\
 google-build-namespaces,\
 google-build-using-namespace,\
@@ -10,6 +14,7 @@ google-readability-casting,\
 misc-*,\
 -misc-noexcept-move-constructor,\
 readability-*,\
+-readability-implicit-bool-cast,\
 "
 
 HeaderFilterRegex: '^src/'
@@ -19,5 +24,7 @@ CheckOptions:
     value: '8'
   - key:   readability-function-size.LineThreshold
     value: '64'
+  - key:   readability-implicit-bool-cast.AllowConditionalPointerCasts
+    value: '1'
 ...
 

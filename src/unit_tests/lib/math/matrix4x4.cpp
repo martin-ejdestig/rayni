@@ -60,8 +60,9 @@ namespace Rayni
 			if (error_elements.empty())
 				return testing::AssertionSuccess();
 
-			return testing::AssertionFailure() << "The matrix:\n" << m1_expr << "\nand matrix:\n" << m2_expr
-			                                   << "\ndiffer more than " << abs_error_expr
+			return testing::AssertionFailure() << "The matrix:\n"
+			                                   << m1_expr << "\nand matrix:\n"
+			                                   << m2_expr << "\ndiffer more than " << abs_error_expr
 			                                   << " in the following elements:\n" + error_elements;
 		}
 	};

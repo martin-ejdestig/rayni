@@ -17,9 +17,9 @@
  * along with Rayni. If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include <cassert>
-
 #include "lib/time/stopwatch.h"
+
+#include <cassert>
 
 namespace Rayni
 {

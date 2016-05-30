@@ -17,11 +17,11 @@
  * along with Rayni. If not, see <http://www.gnu.org/licenses/>.
  */
 
+#include "lib/time/duration_formatter.h"
+
 #include <cmath>
 #include <iomanip>
 #include <sstream>
-
-#include "lib/time/duration_formatter.h"
 
 namespace Rayni
 {

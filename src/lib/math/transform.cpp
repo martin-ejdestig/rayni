@@ -17,13 +17,14 @@
  * along with Rayni. If not, see <http://www.gnu.org/licenses/>.
  */
 
+#include "lib/math/transform.h"
+
 #include <vector>
 
 #include "lib/containers/variant.h"
 #include "lib/math/math.h"
 #include "lib/math/matrix4x4.h"
 #include "lib/math/quaternion.h"
-#include "lib/math/transform.h"
 #include "lib/math/vector3.h"
 
 namespace Rayni

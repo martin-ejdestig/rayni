@@ -17,10 +17,10 @@
  * along with Rayni. If not, see <http://www.gnu.org/licenses/>.
  */
 
+#include "lib/containers/variant.h"
+
 #include <cassert>
 #include <string>
-
-#include "lib/containers/variant.h"
 
 namespace Rayni
 {

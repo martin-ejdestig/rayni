@@ -17,14 +17,14 @@
  * along with Rayni. If not, see <http://www.gnu.org/licenses/>.
  */
 
+#include "lib/string/string.h"
+
 #include <algorithm>
 #include <cctype>
 #include <iterator>
 #include <locale>
 #include <sstream>
 #include <string>
-
-#include "lib/string/string.h"
 
 namespace
 {

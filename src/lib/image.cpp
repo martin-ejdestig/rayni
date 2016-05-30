@@ -17,6 +17,8 @@
  * along with Rayni. If not, see <http://www.gnu.org/licenses/>.
  */
 
+#include "lib/image.h"
+
 #include <cassert>
 #include <cstddef>
 #include <cstdint>
@@ -24,7 +26,6 @@
 #include <utility>
 
 #include "lib/color.h"
-#include "lib/image.h"
 
 namespace Rayni
 {

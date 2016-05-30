@@ -17,6 +17,8 @@
  * along with Rayni. If not, see <http://www.gnu.org/licenses/>.
  */
 
+#include "lib/system/command.h"
+
 #include <sys/wait.h>
 
 #include <array>
@@ -24,8 +26,6 @@
 #include <experimental/optional>
 #include <memory>
 #include <string>
-
-#include "lib/system/command.h"
 
 // TODO: Non POSIX compliant systems. Prepared to do minor things (i.e. for Windows add
 //       "std::FILE *popen() { return _popen(); }" in an anonymous namespace etc.) but if it is too

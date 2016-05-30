@@ -17,10 +17,11 @@
  * along with Rayni. If not, see <http://www.gnu.org/licenses/>.
  */
 
+#include "lib/time/scoped_stopwatch.h"
+
 #include <ostream>
 
 #include "lib/time/duration_formatter.h"
-#include "lib/time/scoped_stopwatch.h"
 
 namespace Rayni
 {

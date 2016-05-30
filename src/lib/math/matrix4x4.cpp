@@ -17,12 +17,13 @@
  * along with Rayni. If not, see <http://www.gnu.org/licenses/>.
  */
 
+#include "lib/math/matrix4x4.h"
+
 #include <algorithm>
 #include <cassert>
 #include <cmath>
 
 #include "lib/math/math.h"
-#include "lib/math/matrix4x4.h"
 
 namespace Rayni
 {

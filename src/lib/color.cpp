@@ -18,6 +18,7 @@
  */
 
 #include "lib/color.h"
+
 #include "lib/containers/variant.h"
 
 namespace Rayni

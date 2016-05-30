@@ -17,10 +17,11 @@
  * along with Rayni. If not, see <http://www.gnu.org/licenses/>.
  */
 
+#include "lib/math/animated_transform.h"
+
 #include <algorithm>
 
 #include "lib/math/aabb.h"
-#include "lib/math/animated_transform.h"
 #include "lib/math/math.h"
 
 namespace Rayni

@@ -17,11 +17,11 @@
  * along with Rayni. If not, see <http://www.gnu.org/licenses/>.
  */
 
+#include "lib/version_info.h"
+
 #define RAYNI_GIT_DESCRIBE_VERSION_INCLUDED_FROM_SRC_LIB_VERSION_INFO_CPP
 #include "git_describe_version.h"
 #undef RAYNI_GIT_DESCRIBE_VERSION_INCLUDED_FROM_SRC_LIB_VERSION_INFO_CPP
-
-#include "lib/version_info.h"
 
 namespace Rayni
 {

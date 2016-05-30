@@ -17,10 +17,11 @@
  * along with Rayni. If not, see <http://www.gnu.org/licenses/>.
  */
 
+#include "lib/math/aabb.h"
+
 #include <algorithm>
 #include <limits>
 
-#include "lib/math/aabb.h"
 #include "lib/math/ray.h"
 #include "lib/math/vector3.h"
 

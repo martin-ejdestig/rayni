@@ -17,11 +17,11 @@
  * along with Rayni. If not, see <http://www.gnu.org/licenses/>.
  */
 
+#include "lib/string/base85.h"
+
 #include <algorithm>
 #include <array>
 #include <cstdint>
-
-#include "lib/string/base85.h"
 
 namespace
 {

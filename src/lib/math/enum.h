@@ -22,6 +22,7 @@
 
 #include <algorithm>
 #include <experimental/optional>
+#include <initializer_list>
 #include <type_traits>
 
 namespace Rayni
@@ -37,12 +38,19 @@ namespace Rayni
 	          typename U = typename std::underlying_type<E>::type>
 	static std::experimental::optional<E> enum_from_value(const EnumValues &enum_values, U value)
 	{
-		auto iterator = std::find_if(enum_values.cbegin(), enum_values.cend(), [&](const E &enum_value) {
+		auto iterator = std::find_if(enum_values.begin(), enum_values.end(), [&](const E &enum_value) {
 			return value == static_cast<U>(enum_value);
 		});
 
-		return iterator == enum_values.cend() ? std::experimental::nullopt :
-		                                        std::experimental::make_optional(*iterator);
+		return iterator == enum_values.end() ? std::experimental::nullopt :
+		                                       std::experimental::make_optional(*iterator);
+	}
+
+	template <typename E, typename U = typename std::underlying_type<E>::type>
+	static std::experimental::optional<E> enum_from_value(std::initializer_list<E> enum_values, U value)
+	{
+		// NOTE: Explicit template types in call to avoid endless recursion.
+		return enum_from_value<std::initializer_list<E>, E, U>(enum_values, value);
 	}
 }
 

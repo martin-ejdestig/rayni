@@ -33,13 +33,16 @@ namespace Rayni
 			BAZ = 456
 		};
 
-		static const std::array<Foo, 2> enum_values = {Foo::BAR, Foo::BAZ};
-
 		EXPECT_EQ(123, enum_to_value(Foo::BAR));
 		EXPECT_EQ(456, enum_to_value(Foo::BAZ));
 
+		static const std::array<Foo, 2> enum_values = {Foo::BAR, Foo::BAZ};
 		EXPECT_EQ(Foo::BAR, enum_from_value(enum_values, 123).value());
 		EXPECT_EQ(Foo::BAZ, enum_from_value(enum_values, 456).value());
 		EXPECT_FALSE(enum_from_value(enum_values, 789));
+
+		EXPECT_EQ(Foo::BAR, enum_from_value({Foo::BAR, Foo::BAZ}, 123).value());
+		EXPECT_EQ(Foo::BAZ, enum_from_value({Foo::BAR, Foo::BAZ}, 456).value());
+		EXPECT_FALSE(enum_from_value({Foo::BAR, Foo::BAZ}, 789));
 	}
 }

@@ -20,6 +20,8 @@ readability-*,\
 HeaderFilterRegex: '^src/'
 
 CheckOptions:
+  - key:   misc-assert-side-effect.CheckFunctionCalls
+    value: '1'
   - key:   readability-braces-around-statements.ShortStatementLines
     value: '8'
   - key:   readability-function-size.LineThreshold

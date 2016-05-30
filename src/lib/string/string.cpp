@@ -46,25 +46,19 @@ namespace
 	 * 8.0s - std::istringstream + imbue
 	 * 4.5s - std::istringstream + imbue + thread local reuse
 	 */
-	class classic_locale_istringstream : public std::istringstream
+	static std::istringstream &classic_locale_istringstream_get_with_string(const std::string &str)
 	{
-	public:
-		static std::istringstream &get_with_string(const std::string &str)
-		{
-			static thread_local classic_locale_istringstream stream;
-
-			stream.clear();
-			stream.str(str);
-
+		static thread_local std::istringstream stream = [] {
+			std::istringstream stream;
+			stream.imbue(std::locale::classic());
 			return stream;
-		}
+		}();
 
-	private:
-		classic_locale_istringstream()
-		{
-			imbue(std::locale::classic());
-		}
-	};
+		stream.clear();
+		stream.str(str);
+
+		return stream;
+	}
 }
 
 namespace Rayni
@@ -100,7 +94,7 @@ namespace Rayni
 
 	std::experimental::optional<float> string_to_float(const std::string &str)
 	{
-		std::istringstream &stream = classic_locale_istringstream::get_with_string(str);
+		std::istringstream &stream = classic_locale_istringstream_get_with_string(str);
 		float value;
 
 		stream >> value;
@@ -111,7 +105,7 @@ namespace Rayni
 
 	std::experimental::optional<double> string_to_double(const std::string &str)
 	{
-		std::istringstream &stream = classic_locale_istringstream::get_with_string(str);
+		std::istringstream &stream = classic_locale_istringstream_get_with_string(str);
 		double value;
 
 		stream >> value;

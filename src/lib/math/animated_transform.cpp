@@ -59,7 +59,7 @@ namespace Rayni
 	AABB AnimatedTransform::motion_bounds(const AABB &aabb) const
 	{
 		// TODO: Find maxima and minima instead of stepping
-		const unsigned int STEPS = 256;
+		static constexpr unsigned int STEPS = 256;
 		AABB bounds;
 
 		for (unsigned int i = 0; i < STEPS; i++)

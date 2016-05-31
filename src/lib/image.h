@@ -90,11 +90,11 @@ namespace Rayni
 		// always set to 0xff. The reason for including an alpha channel is to avoid pixel
 		// conversions when drawing an Image to the screen. Some toolkits (e.g. Cairo) do
 		// not support RGB24.
-		static const unsigned int A_PIXEL_OFFSET = 3;
-		static const unsigned int R_PIXEL_OFFSET = 2;
-		static const unsigned int G_PIXEL_OFFSET = 1;
-		static const unsigned int B_PIXEL_OFFSET = 0;
-		static const unsigned int BYTES_PER_PIXEL = 4;
+		static constexpr unsigned int A_PIXEL_OFFSET = 3;
+		static constexpr unsigned int R_PIXEL_OFFSET = 2;
+		static constexpr unsigned int G_PIXEL_OFFSET = 1;
+		static constexpr unsigned int B_PIXEL_OFFSET = 0;
+		static constexpr unsigned int BYTES_PER_PIXEL = 4;
 
 		inline std::size_t offset_to(unsigned int x, unsigned int y) const;
 

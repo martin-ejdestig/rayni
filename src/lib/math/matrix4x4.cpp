@@ -141,7 +141,7 @@ namespace Rayni
 	 */
 	Matrix4x4::PolarDecomposition Matrix4x4::polar_decomposition() const
 	{
-		const unsigned int MAX_STEPS = 100;
+		static constexpr unsigned int MAX_STEPS = 100;
 
 		Matrix4x4 rotation_start = *this;
 		rotation_start.set_row(3, {0, 0, 0, 1});

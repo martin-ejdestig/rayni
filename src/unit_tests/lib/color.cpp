@@ -34,7 +34,7 @@ namespace Rayni
 		                                           const Color &c1,
 		                                           const Color &c2)
 		{
-			static const real_t COMPONENT_MAX_DIFF = 0.001;
+			static constexpr real_t COMPONENT_MAX_DIFF = 0.001;
 
 			if (std::abs(c1.r() - c2.r()) > COMPONENT_MAX_DIFF ||
 			    std::abs(c1.g() - c2.g()) > COMPONENT_MAX_DIFF ||

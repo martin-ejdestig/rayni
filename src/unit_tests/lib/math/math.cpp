@@ -110,8 +110,8 @@ namespace Rayni
 
 	TEST_F(MathTest, Slerp)
 	{
-		const int CIRCLE_STEPS = 8;
-		const int STEPS = 64;
+		static constexpr int CIRCLE_STEPS = 8;
+		static constexpr int STEPS = 64;
 
 		for (int start = 0; start < CIRCLE_STEPS; start++)
 		{

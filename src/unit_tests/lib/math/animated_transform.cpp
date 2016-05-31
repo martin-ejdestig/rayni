@@ -84,10 +84,10 @@ namespace Rayni
 
 	TEST_F(AnimatedTransformTest, Interpolate)
 	{
-		const unsigned int START_TIME = 0;
-		const unsigned int ANIM_START_TIME = START_TIME + 1;
-		const unsigned int ANIM_END_TIME = ANIM_START_TIME + 4;
-		const unsigned int END_TIME = ANIM_END_TIME + 1;
+		static constexpr unsigned int START_TIME = 0;
+		static constexpr unsigned int ANIM_START_TIME = START_TIME + 1;
+		static constexpr unsigned int ANIM_END_TIME = ANIM_START_TIME + 4;
+		static constexpr unsigned int END_TIME = ANIM_END_TIME + 1;
 
 		auto create_transform = [&](unsigned int time) {
 			real_t ratio;

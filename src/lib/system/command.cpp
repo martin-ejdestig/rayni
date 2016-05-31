@@ -53,7 +53,7 @@ namespace Rayni
 
 			// See pclose() (on Linux) for magic,,, buggy POSIX spec. magic. Cannot
 			// determine if it was shell or command that was not found.
-			static const int SHELL_OR_COMMAND_NOT_FOUND_EXIT_CODE = 127;
+			static constexpr int SHELL_OR_COMMAND_NOT_FOUND_EXIT_CODE = 127;
 
 			return WEXITSTATUS(return_value) != SHELL_OR_COMMAND_NOT_FOUND_EXIT_CODE;
 		}

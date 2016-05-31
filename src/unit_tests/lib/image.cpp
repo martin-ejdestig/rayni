@@ -45,7 +45,7 @@ namespace Rayni
 		                                                unsigned int y,
 		                                                const Color &color)
 		{
-			static const real_t COMPONENT_MAX_DIFF = 0.001;
+			static constexpr real_t COMPONENT_MAX_DIFF = 0.001;
 
 			if (x > image.get_width() || y > image.get_height())
 				return testing::AssertionFailure() << image_expr << " does not contain (" << x << ", "

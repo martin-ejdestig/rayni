@@ -237,8 +237,7 @@ namespace Rayni
 		{
 			assert(row1_index < 4 && row2_index < 4 && row1_index != row2_index);
 
-			for (unsigned int i = 0; i < 4; i++)
-				std::swap(rows[row1_index][i], rows[row2_index][i]);
+			std::swap(rows[row1_index], rows[row2_index]);
 		}
 
 		void swap_columns(unsigned int column1_index, unsigned int column2_index)

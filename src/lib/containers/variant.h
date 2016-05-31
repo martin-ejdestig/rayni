@@ -20,7 +20,6 @@
 #ifndef RAYNI_LIB_CONTAINERS_VARIANT_H
 #define RAYNI_LIB_CONTAINERS_VARIANT_H
 
-#include <initializer_list>
 #include <map>
 #include <new>
 #include <stdexcept>

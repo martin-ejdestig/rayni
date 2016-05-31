@@ -67,6 +67,50 @@ namespace Rayni
 		}
 	};
 
+	TEST_F(Matrix4x4Test, SetRow)
+	{
+		Matrix4x4 m({0, 1, 2, 3}, {4, 5, 6, 7}, {8, 9, 10, 11}, {12, 13, 14, 15});
+		m.set_row(1, {20, 30, 40, 50});
+
+		EXPECT_PRED_FORMAT3(matrix_near,
+		                    Matrix4x4({0, 1, 2, 3}, {20, 30, 40, 50}, {8, 9, 10, 11}, {12, 13, 14, 15}),
+		                    m,
+		                    1e-100);
+	}
+
+	TEST_F(Matrix4x4Test, SetColumn)
+	{
+		Matrix4x4 m({0, 1, 2, 3}, {4, 5, 6, 7}, {8, 9, 10, 11}, {12, 13, 14, 15});
+		m.set_column(1, {20, 30, 40, 50});
+
+		EXPECT_PRED_FORMAT3(matrix_near,
+		                    Matrix4x4({0, 20, 2, 3}, {4, 30, 6, 7}, {8, 40, 10, 11}, {12, 50, 14, 15}),
+		                    m,
+		                    1e-100);
+	}
+
+	TEST_F(Matrix4x4Test, SwapRows)
+	{
+		Matrix4x4 m({0, 1, 2, 3}, {4, 5, 6, 7}, {8, 9, 10, 11}, {12, 13, 14, 15});
+		m.swap_rows(0, 3);
+
+		EXPECT_PRED_FORMAT3(matrix_near,
+		                    Matrix4x4({12, 13, 14, 15}, {4, 5, 6, 7}, {8, 9, 10, 11}, {0, 1, 2, 3}),
+		                    m,
+		                    1e-100);
+	}
+
+	TEST_F(Matrix4x4Test, SwapColumns)
+	{
+		Matrix4x4 m({0, 1, 2, 3}, {4, 5, 6, 7}, {8, 9, 10, 11}, {12, 13, 14, 15});
+		m.swap_columns(0, 3);
+
+		EXPECT_PRED_FORMAT3(matrix_near,
+		                    Matrix4x4({3, 1, 2, 0}, {7, 5, 6, 4}, {11, 9, 10, 8}, {15, 13, 14, 12}),
+		                    m,
+		                    1e-100);
+	}
+
 	TEST_F(Matrix4x4Test, Inverse)
 	{
 		EXPECT_PRED_FORMAT3(matrix_near,

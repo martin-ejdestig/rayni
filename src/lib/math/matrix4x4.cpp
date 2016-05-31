@@ -43,13 +43,13 @@ namespace Rayni
 	 */
 	void Matrix4x4::in_place_inverse()
 	{
-		PivotPosition positions[4];
+		PivotPosition pivot_positions[4];
 		unsigned int pivot_used[4] = {0, 0, 0, 0};
 
-		for (unsigned int i = 0; i < 4; i++)
+		for (auto &pivot_position : pivot_positions)
 		{
 			real_t max = 0;
-			positions[i] = {0, 0};
+			pivot_position = {0, 0};
 
 			for (unsigned int row = 0; row < 4; row++)
 			{
@@ -61,15 +61,15 @@ namespace Rayni
 					if (pivot_used[column] == 0 && std::abs(rows[row][column]) >= max)
 					{
 						max = std::abs(rows[row][column]);
-						positions[i] = {row, column};
+						pivot_position = {row, column};
 					}
 				}
 			}
 
-			if (positions[i].row != positions[i].column)
-				swap_rows(positions[i].row, positions[i].column);
+			if (pivot_position.row != pivot_position.column)
+				swap_rows(pivot_position.row, pivot_position.column);
 
-			unsigned int pos = positions[i].column;
+			unsigned int pos = pivot_position.column;
 			assert(max > 0 && pivot_used[pos] == 0); // Singular matrix?
 			pivot_used[pos]++;
 
@@ -89,8 +89,8 @@ namespace Rayni
 		}
 
 		for (int i = 3; i >= 0; i--)
-			if (positions[i].row != positions[i].column)
-				swap_columns(positions[i].row, positions[i].column);
+			if (pivot_positions[i].row != pivot_positions[i].column)
+				swap_columns(pivot_positions[i].row, pivot_positions[i].column);
 	}
 
 	Quaternion Matrix4x4::get_rotation() const

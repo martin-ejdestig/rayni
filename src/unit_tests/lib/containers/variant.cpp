@@ -236,6 +236,7 @@ namespace Rayni
 		EXPECT_EQ("", variant.get_path());
 
 		variant = Variant::map("key1", Variant::vector(123, "abc"), "key2", Variant::vector(456, "def"));
+		EXPECT_EQ("", variant.get_path());
 		EXPECT_EQ("['key1']", variant.get("key1").get_path());
 		EXPECT_EQ("['key2']", variant.get("key2").get_path());
 		EXPECT_EQ("['key1'][0]", variant.get("key1").get(0).get_path());

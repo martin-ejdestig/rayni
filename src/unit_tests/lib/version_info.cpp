@@ -36,24 +36,24 @@ namespace Rayni
 
 	TEST(VersionInfoTest, Copyright)
 	{
-		const std::string COPYRIGHT_STRING_AND_SIGN = "Copyright \xc2\xa9";
-		const std::string YEAR_OR_YEARS = "20[0-9]{2}(-20[0-9]{2})?";
-		const std::string WHO = ".{4,}";
+		const std::string copyright_string_and_sign = "Copyright \xc2\xa9";
+		const std::string year_or_years = "20[0-9]{2}(-20[0-9]{2})?";
+		const std::string who = ".{4,}";
 
-		std::regex copyright_regex(COPYRIGHT_STRING_AND_SIGN + " " + YEAR_OR_YEARS + " " + WHO);
+		std::regex copyright_regex(copyright_string_and_sign + " " + year_or_years + " " + who);
 
 		EXPECT_TRUE(std::regex_match(VersionInfo::copyright(), copyright_regex));
 	}
 
 	TEST(VersionInfoTest, Version)
 	{
-		const std::string GIT_HASH = "[0-9a-f]{7,40}";
-		const std::string TAG = "[0-9]+\\.[0-9]+";
-		const std::string COMMITS_AFTER_TAG = "[0-9]+";
-		const std::string TAG_DESCRIPTION = TAG + "(-" + COMMITS_AFTER_TAG + "-g" + GIT_HASH + ")?";
-		const std::string TREE_DIRTY = "-dirty";
+		const std::string git_hash = "[0-9a-f]{7,40}";
+		const std::string tag = "[0-9]+\\.[0-9]+";
+		const std::string commits_after_tag = "[0-9]+";
+		const std::string tag_description = tag + "(-" + commits_after_tag + "-g" + git_hash + ")?";
+		const std::string tree_dirty = "-dirty";
 
-		std::regex version_regex("(" + GIT_HASH + "|" + TAG_DESCRIPTION + ")(" + TREE_DIRTY + ")?");
+		std::regex version_regex("(" + git_hash + "|" + tag_description + ")(" + tree_dirty + ")?");
 
 		EXPECT_TRUE(std::regex_match(VersionInfo::version(), version_regex));
 	}

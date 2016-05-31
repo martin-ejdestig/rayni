@@ -73,6 +73,7 @@ if get_option('sanitize_undefined')
 endif
 
 add_global_arguments(cpp_args, language : 'cpp')
+add_global_link_arguments(cpp_link_args, language : 'cpp')
 
 subdir('external')
 subdir('src')

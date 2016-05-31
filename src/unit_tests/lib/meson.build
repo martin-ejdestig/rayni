@@ -1,6 +1,5 @@
 lib_unit_tests = executable('librayni-unit_tests',
 	include_directories : src_incdir,
-	link_args : cpp_link_args,
 	link_with : lib,
 	dependencies : gtest,
 	sources : [

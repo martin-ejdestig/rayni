@@ -214,18 +214,21 @@ namespace Rayni
 		const Vector4 &get_row(unsigned int row_index) const
 		{
 			assert(row_index < 4);
+
 			return rows[row_index];
 		}
 
 		void set_row(unsigned int row_index, const Vector4 &row)
 		{
 			assert(row_index < 4);
+
 			rows[row_index] = row;
 		}
 
 		void set_column(unsigned int column_index, const Vector4 &column)
 		{
 			assert(column_index < 4);
+
 			for (unsigned int i = 0; i < 4; i++)
 				rows[i][column_index] = column[i];
 		}

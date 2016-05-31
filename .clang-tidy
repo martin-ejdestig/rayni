@@ -1,10 +1,20 @@
 ---
 # - misc-noexcept-move-constructor is disabled because of a bug with = default.
 #   See https://llvm.org/bugs/show_bug.cgi?id=24712 .
+#
+# - modernize-pass-by-value is disabled because it causes many "false" warnings
+#   and I have never really liked the recommendation in general. It is too
+#   broad. It also seems like the C++ community has swung around a bit on this
+#   in later years. See for instance Effective Modern C++ by Scott Meyers.
+#
+# - modernize-use-default is disabled because of a bug with unions. See
+#   https://llvm.org/bugs/show_bug.cgi?id=27926 .
+#
 # - readability-implicit-bool-cast is disabled since it currently is too
 #   agressive. Even if AllowConditionalPointerCasts is enabled it only allows
 #   casts in if statements, not in e.g. while and for statements. See
 #   https://llvm.org/bugs/show_bug.cgi?id=27911 .
+
 Checks: "\
 google-build-namespaces,\
 google-build-using-namespace,\
@@ -13,6 +23,9 @@ google-global-names-in-headers,\
 google-readability-casting,\
 misc-*,\
 -misc-noexcept-move-constructor,\
+modernize-*,\
+-modernize-pass-by-value,\
+-modernize-use-default,\
 performance-*,\
 readability-*,\
 -readability-implicit-bool-cast,\
@@ -23,6 +36,8 @@ HeaderFilterRegex: '^src/'
 CheckOptions:
   - key:   misc-assert-side-effect.CheckFunctionCalls
     value: '1'
+  - key:   modernize-loop-convert.NamingStyle
+    value: lower_case
   - key:   readability-braces-around-statements.ShortStatementLines
     value: '8'
   - key:   readability-function-size.LineThreshold

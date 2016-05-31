@@ -43,13 +43,12 @@ namespace Rayni
 	 */
 	void Matrix4x4::in_place_inverse()
 	{
-		PivotPosition pivot_positions[4];
+		PivotPosition pivot_positions[4] = {{0, 0}, {0, 0}, {0, 0}, {0, 0}};
 		unsigned int pivot_used[4] = {0, 0, 0, 0};
 
 		for (auto &pivot_position : pivot_positions)
 		{
 			real_t max = 0;
-			pivot_position = {0, 0};
 
 			for (unsigned int row = 0; row < 4; row++)
 			{

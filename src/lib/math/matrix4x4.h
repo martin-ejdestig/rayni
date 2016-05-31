@@ -244,8 +244,8 @@ namespace Rayni
 		{
 			assert(column1_index < 4 && column2_index < 4 && column1_index != column2_index);
 
-			for (unsigned int i = 0; i < 4; i++)
-				std::swap(rows[i][column1_index], rows[i][column2_index]);
+			for (auto &row : rows)
+				std::swap(row[column1_index], row[column2_index]);
 		}
 
 		Vector3 get_x_axis() const

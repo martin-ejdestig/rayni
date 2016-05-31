@@ -107,9 +107,9 @@ namespace Rayni
 			return Color(r() + c.r(), g() + c.g(), b() + c.b());
 		}
 
-		Color operator-(const Color &v) const
+		Color operator-(const Color &c) const
 		{
-			return Color(r() - v.r(), g() - v.g(), b() - v.b());
+			return Color(r() - c.r(), g() - c.g(), b() - c.b());
 		}
 
 		Color &operator+=(const Color &c)

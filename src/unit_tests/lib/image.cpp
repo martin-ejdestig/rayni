@@ -51,16 +51,15 @@ namespace Rayni
 				return testing::AssertionFailure() << image_expr << " does not contain (" << x << ", "
 				                                   << y << ") (too small)";
 
-			Color image_color = image.read_pixel(x, y);
+			Color diff = color - image.read_pixel(x, y);
 
-			if (std::abs(color.r() - image_color.r()) > COMPONENT_MAX_DIFF ||
-			    std::abs(color.g() - image_color.g()) > COMPONENT_MAX_DIFF ||
-			    std::abs(color.b() - image_color.b()) > COMPONENT_MAX_DIFF)
+			if (std::abs(diff.r()) > COMPONENT_MAX_DIFF || std::abs(diff.g()) > COMPONENT_MAX_DIFF ||
+			    std::abs(diff.b()) > COMPONENT_MAX_DIFF)
 			{
 				return testing::AssertionFailure()
 				       << color_expr << " and " << image_expr << " color at (" << x << ", " << y
-				       << ") componentwise difference is (" << color.r() - image_color.r() << ", "
-				       << color.g() - image_color.g() << ", " << color.b() - image_color.b() << ").";
+				       << ") componentwise difference is (" << diff.r() << ", " << diff.g() << ", "
+				       << diff.b() << ").";
 			}
 
 			return testing::AssertionSuccess();

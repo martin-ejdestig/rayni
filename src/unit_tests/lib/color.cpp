@@ -35,14 +35,14 @@ namespace Rayni
 		                                           const Color &c2)
 		{
 			static constexpr real_t COMPONENT_MAX_DIFF = 0.001;
+			Color diff = c1 - c2;
 
-			if (std::abs(c1.r() - c2.r()) > COMPONENT_MAX_DIFF ||
-			    std::abs(c1.g() - c2.g()) > COMPONENT_MAX_DIFF ||
-			    std::abs(c1.b() - c2.b()) > COMPONENT_MAX_DIFF)
+			if (std::abs(diff.r()) > COMPONENT_MAX_DIFF || std::abs(diff.g()) > COMPONENT_MAX_DIFF ||
+			    std::abs(diff.b()) > COMPONENT_MAX_DIFF)
 			{
-				return testing::AssertionFailure()
-				       << c1_expr << " and " << c2_expr << " componentwise difference is ("
-				       << c1.r() - c2.r() << ", " << c1.g() - c2.g() << ", " << c1.b() - c2.b() << ").";
+				return testing::AssertionFailure() << c1_expr << " and " << c2_expr
+				                                   << " componentwise difference is (" << diff.r()
+				                                   << ", " << diff.g() << ", " << diff.b() << ").";
 			}
 
 			return testing::AssertionSuccess();

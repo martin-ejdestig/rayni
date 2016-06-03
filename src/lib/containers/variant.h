@@ -201,10 +201,22 @@ namespace Rayni
 		template <typename T>
 		bool is() const;
 
+		Map &get_map()
+		{
+			require_type(Type::MAP);
+			return value.map;
+		}
+
 		const Map &get_map() const
 		{
 			require_type(Type::MAP);
 			return value.map;
+		}
+
+		Vector &get_vector()
+		{
+			require_type(Type::VECTOR);
+			return value.vector;
 		}
 
 		const Vector &get_vector() const

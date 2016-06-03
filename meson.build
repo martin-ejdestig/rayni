@@ -57,6 +57,11 @@ if get_option('sanitize_address')
 	cpp_link_args += ['-fsanitize=address', '-fno-omit-frame-pointer']
 endif
 
+if get_option('sanitize_control_flow_integrity')
+	cpp_args += ['-fsanitize=cfi']
+	cpp_link_args += ['-fsanitize=cfi']
+endif
+
 if get_option('sanitize_memory')
 	cpp_args += ['-fsanitize=memory', '-fsanitize-memory-track-origins', '-fno-omit-frame-pointer']
 	cpp_link_args += ['-fsanitize=memory', '-fsanitize-memory-track-origins', '-fno-omit-frame-pointer']

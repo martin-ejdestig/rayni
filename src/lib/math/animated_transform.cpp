@@ -22,6 +22,7 @@
 #include <algorithm>
 
 #include "lib/math/aabb.h"
+#include "lib/math/lerp.h"
 #include "lib/math/math.h"
 
 namespace Rayni

@@ -20,6 +20,7 @@
 #ifndef RAYNI_LIB_MATH_DECOMPOSED_MATRIX4X4_H
 #define RAYNI_LIB_MATH_DECOMPOSED_MATRIX4X4_H
 
+#include "lib/math/lerp.h"
 #include "lib/math/math.h"
 #include "lib/math/matrix4x4.h"
 #include "lib/math/quaternion.h"

@@ -20,7 +20,6 @@
 #ifndef RAYNI_LIB_MATH_MATH_H
 #define RAYNI_LIB_MATH_MATH_H
 
-#include <algorithm>
 #include <cmath>
 
 #include "config.h"
@@ -34,33 +33,6 @@ namespace Rayni
 #endif
 
 	static constexpr real_t PI = real_t(3.14159265358979323846);
-
-	template <typename T>
-	static inline T lerp(real_t t, const T &x0, const T &x1)
-	{
-		return x0 + t * (x1 - x0);
-	}
-
-	template <typename T>
-	static inline T blerp(real_t tx, real_t ty, const T &x00, const T &x10, const T &x01, const T &x11)
-	{
-		return lerp(ty, lerp(tx, x00, x10), lerp(tx, x01, x11));
-	}
-
-	template <typename T>
-	static inline T slerp(real_t t, const T &x0, const T &x1)
-	{
-		real_t dot = x0.dot(x1);
-
-		if (dot > real_t(0.9995))
-			return lerp(t, x0, x1).normalize();
-
-		real_t angle = std::acos(std::min(std::max(dot, real_t(-1)), real_t(1)));
-		real_t angle_t = angle * t;
-		T orthogonal_to_x0 = (x1 - x0 * dot).normalize();
-
-		return x0 * std::cos(angle_t) + orthogonal_to_x0 * std::sin(angle_t);
-	}
 
 	static inline real_t frac(real_t x)
 	{

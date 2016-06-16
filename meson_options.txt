@@ -1,44 +1,44 @@
 option('double_precision',
-	type : 'boolean',
-	value : false,
-	description : 'Build with double (instead of single) precision')
+       type : 'boolean',
+       value : false,
+       description : 'Build with double (instead of single) precision')
 
 option('extra_warnings',
-	type : 'boolean',
-	value : true,
-	description : 'Enable extra compiler warnings')
+       type : 'boolean',
+       value : true,
+       description : 'Enable extra compiler warnings')
 
 option('link_time_optimization',
-	type : 'boolean',
-	value : false,
-	description : 'Enable link time optimization')
+       type : 'boolean',
+       value : false,
+       description : 'Enable link time optimization')
 
 option('ofast_native',
-	type : 'boolean',
-	value : false,
-	description : 'Build with -Ofast, -march=native and some other optimization flags')
+       type : 'boolean',
+       value : false,
+       description : 'Build with -Ofast, -march=native and some other optimization flags')
 
 option('sanitize_address',
-	type : 'boolean',
-	value : false,
-	description : 'Enable address sanitizer in GCC/Clang')
+       type : 'boolean',
+       value : false,
+       description : 'Enable address sanitizer in GCC/Clang')
 
 option('sanitize_control_flow_integrity',
-        type : 'boolean',
-        value : false,
-        description : 'Enable control flow integrity sanitizer in Clang (currently not available in GCC 6.1). Requires LTO.')
+       type : 'boolean',
+       value : false,
+       description : 'Enable control flow integrity sanitizer in Clang (currently not available in GCC 6.1). Requires LTO.')
 
 option('sanitize_memory',
-        type : 'boolean',
-        value : false,
-        description : 'Enable memory sanitizer in Clang (currently not available in GCC 5.3)')
+       type : 'boolean',
+       value : false,
+       description : 'Enable memory sanitizer in Clang (currently not available in GCC 5.3)')
 
 option('sanitize_thread',
-	type : 'boolean',
-	value : false,
-	description : 'Enable thread sanitizer in GCC/Clang')
+       type : 'boolean',
+       value : false,
+       description : 'Enable thread sanitizer in GCC/Clang')
 
 option('sanitize_undefined',
-	type : 'boolean',
-	value : false,
-	description : 'Enable undefined behavior sanitizer in GCC/Clang')
+       type : 'boolean',
+       value : false,
+       description : 'Enable undefined behavior sanitizer in GCC/Clang')

@@ -91,4 +91,3 @@ add_global_link_arguments(cpp_link_args, language : 'cpp')
 
 subdir('external')
 subdir('src')
-subdir('tools')

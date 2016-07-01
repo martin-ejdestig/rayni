@@ -12,3 +12,15 @@ libgtest = static_library('gtest',
 gtest = declare_dependency(dependencies : dependency('threads'),
                            include_directories : gtest_incdir,
                            link_with : libgtest)
+
+sork = find_program('sork/sork.py')
+
+run_target('analyze',
+           sork,
+           '--build-path', meson.build_root(),
+           'analyze', meson.source_root())
+
+run_target('style_check',
+           sork,
+           '--build-path', meson.build_root(),
+           'check', meson.source_root())

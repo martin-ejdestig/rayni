@@ -1,0 +1,7 @@
+{
+    "source_paths": ["src"],
+
+    "checks.include_guard": {
+        "prefix": "RAYNI_"
+    }
+}

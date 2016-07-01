@@ -54,19 +54,13 @@ namespace
 
 		return table;
 	}
-
-	const Base85DecodingTable &base85_decoding_table()
-	{
-		static const Base85DecodingTable table = base85_generate_decoding_table();
-		return table;
-	}
 }
 
 namespace Rayni
 {
 	std::experimental::optional<std::vector<std::uint8_t>> base85_decode(const std::string &str)
 	{
-		auto &decoding_table = base85_decoding_table();
+		static const Base85DecodingTable decoding_table = base85_generate_decoding_table();
 		std::vector<std::uint8_t> decoded_data;
 
 		for (std::string::size_type pos = 0; pos < str.length(); pos += 5)

@@ -46,7 +46,7 @@ namespace
 	 * 8.0s - std::istringstream + imbue
 	 * 4.5s - std::istringstream + imbue + thread local reuse
 	 */
-	static std::istringstream &classic_locale_istringstream_get_with_string(const std::string &str)
+	std::istringstream &classic_locale_istringstream_get_with_string(const std::string &str)
 	{
 		static thread_local std::istringstream stream = [] {
 			std::istringstream stream;

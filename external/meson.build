@@ -14,13 +14,5 @@ gtest = declare_dependency(dependencies : dependency('threads'),
                            link_with : libgtest)
 
 sork = find_program('sork/sork.py')
-
-run_target('analyze',
-           sork,
-           '--build-path', meson.build_root(),
-           'analyze', meson.source_root())
-
-run_target('style_check',
-           sork,
-           '--build-path', meson.build_root(),
-           'check', meson.source_root())
+run_target('analyze', command : [sork, '--build-path', meson.build_root(), 'analyze', meson.source_root()])
+run_target('style_check', command : [sork, '--build-path', meson.build_root(), 'check', meson.source_root()])

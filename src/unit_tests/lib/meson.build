@@ -3,6 +3,7 @@ lib_unit_tests_sources = [
     'containers/fixed_size_stack.cpp',
     'containers/listener_list.cpp',
     'containers/variant.cpp',
+    'file_formats/image/image_format.cpp',
     'image.cpp',
     'math/aabb.cpp',
     'math/animated_transform.cpp',

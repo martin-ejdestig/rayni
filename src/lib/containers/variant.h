@@ -201,68 +201,68 @@ namespace Rayni
 		template <typename T>
 		bool is() const;
 
-		Map &get_map()
+		Map &as_map()
 		{
 			require_type(Type::MAP);
 			return value.map;
 		}
 
-		const Map &get_map() const
+		const Map &as_map() const
 		{
 			require_type(Type::MAP);
 			return value.map;
 		}
 
-		Vector &get_vector()
+		Vector &as_vector()
 		{
 			require_type(Type::VECTOR);
 			return value.vector;
 		}
 
-		const Vector &get_vector() const
+		const Vector &as_vector() const
 		{
 			require_type(Type::VECTOR);
 			return value.vector;
 		}
 
-		const bool &get_bool() const
+		const bool &as_bool() const
 		{
 			require_type(Type::BOOL);
 			return value.boolean;
 		}
 
-		const int &get_int() const
+		const int &as_int() const
 		{
 			require_type(Type::INT);
 			return value.number_int;
 		}
 
-		const unsigned int &get_unsigned_int() const
+		const unsigned int &as_unsigned_int() const
 		{
 			require_type(Type::UNSIGNED_INT);
 			return value.number_unsigned_int;
 		}
 
-		const float &get_float() const
+		const float &as_float() const
 		{
 			require_type(Type::FLOAT);
 			return value.number_float;
 		}
 
-		const double &get_double() const
+		const double &as_double() const
 		{
 			require_type(Type::DOUBLE);
 			return value.number_double;
 		}
 
-		const std::string &get_string() const
+		const std::string &as_string() const
 		{
 			require_type(Type::STRING);
 			return value.string;
 		}
 
 		template <typename T>
-		const T &get_value() const;
+		const T &as() const;
 
 		const Variant &get(const std::string &key) const;
 
@@ -275,7 +275,7 @@ namespace Rayni
 		template <typename T>
 		T get(const std::string &key, const T &default_value) const
 		{
-			auto i = get_map_iterator(key);
+			auto i = map_iterator(key);
 			return i == value.map.cend() ? default_value : i->second.to<T>();
 		}
 
@@ -345,7 +345,7 @@ namespace Rayni
 			return std::remove_pointer<T>::type::get_from_variant(*this);
 		}
 
-		std::string get_path() const;
+		std::string path() const;
 
 	private:
 		enum class Type
@@ -421,7 +421,7 @@ namespace Rayni
 		void initialize_from(Variant &&other) noexcept;
 		void reparent_children();
 
-		Map::const_iterator get_map_iterator(const std::string &key) const;
+		Map::const_iterator map_iterator(const std::string &key) const;
 
 		std::string prepend_path_if_has_parent(const std::string &str) const;
 
@@ -512,51 +512,51 @@ namespace Rayni
 	}
 
 	template <>
-	inline const Variant::Map &Variant::get_value() const
+	inline const Variant::Map &Variant::as() const
 	{
-		return get_map();
+		return as_map();
 	}
 
 	template <>
-	inline const Variant::Vector &Variant::get_value() const
+	inline const Variant::Vector &Variant::as() const
 	{
-		return get_vector();
+		return as_vector();
 	}
 
 	template <>
-	inline const bool &Variant::get_value() const
+	inline const bool &Variant::as() const
 	{
-		return get_bool();
+		return as_bool();
 	}
 
 	template <>
-	inline const int &Variant::get_value() const
+	inline const int &Variant::as() const
 	{
-		return get_int();
+		return as_int();
 	}
 
 	template <>
-	inline const unsigned int &Variant::get_value() const
+	inline const unsigned int &Variant::as() const
 	{
-		return get_unsigned_int();
+		return as_unsigned_int();
 	}
 
 	template <>
-	inline const float &Variant::get_value() const
+	inline const float &Variant::as() const
 	{
-		return get_float();
+		return as_float();
 	}
 
 	template <>
-	inline const double &Variant::get_value() const
+	inline const double &Variant::as() const
 	{
-		return get_double();
+		return as_double();
 	}
 
 	template <>
-	inline const std::string &Variant::get_value() const
+	inline const std::string &Variant::as() const
 	{
-		return get_string();
+		return as_string();
 	}
 }
 

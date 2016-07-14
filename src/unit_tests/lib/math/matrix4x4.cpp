@@ -134,31 +134,31 @@ namespace Rayni
 	{
 		auto m = Matrix4x4::from_axes({1, 2, 3}, {4, 5, 6}, {7, 8, 9});
 
-		EXPECT_NEAR(1, m.get_x_axis().x(), 1e-100);
-		EXPECT_NEAR(2, m.get_x_axis().y(), 1e-100);
-		EXPECT_NEAR(3, m.get_x_axis().z(), 1e-100);
+		EXPECT_NEAR(1, m.x_axis().x(), 1e-100);
+		EXPECT_NEAR(2, m.x_axis().y(), 1e-100);
+		EXPECT_NEAR(3, m.x_axis().z(), 1e-100);
 
-		EXPECT_NEAR(4, m.get_y_axis().x(), 1e-100);
-		EXPECT_NEAR(5, m.get_y_axis().y(), 1e-100);
-		EXPECT_NEAR(6, m.get_y_axis().z(), 1e-100);
+		EXPECT_NEAR(4, m.y_axis().x(), 1e-100);
+		EXPECT_NEAR(5, m.y_axis().y(), 1e-100);
+		EXPECT_NEAR(6, m.y_axis().z(), 1e-100);
 
-		EXPECT_NEAR(7, m.get_z_axis().x(), 1e-100);
-		EXPECT_NEAR(8, m.get_z_axis().y(), 1e-100);
-		EXPECT_NEAR(9, m.get_z_axis().z(), 1e-100);
+		EXPECT_NEAR(7, m.z_axis().x(), 1e-100);
+		EXPECT_NEAR(8, m.z_axis().y(), 1e-100);
+		EXPECT_NEAR(9, m.z_axis().z(), 1e-100);
 	}
 
 	TEST_F(Matrix4x4Test, GetTranslation)
 	{
 		auto m = Matrix4x4::translate({2, 4, 8});
 
-		EXPECT_NEAR(2, m.get_translation().x(), 1e-100);
-		EXPECT_NEAR(4, m.get_translation().y(), 1e-100);
-		EXPECT_NEAR(8, m.get_translation().z(), 1e-100);
+		EXPECT_NEAR(2, m.translation().x(), 1e-100);
+		EXPECT_NEAR(4, m.translation().y(), 1e-100);
+		EXPECT_NEAR(8, m.translation().z(), 1e-100);
 	}
 
 	TEST_F(Matrix4x4Test, GetRotation)
 	{
-		auto q = Matrix4x4::rotate({0.18257, 0.36515, 0.54772, 0.73030}).get_rotation();
+		auto q = Matrix4x4::rotate({0.18257, 0.36515, 0.54772, 0.73030}).rotation();
 
 		EXPECT_NEAR(0.18257, q.x(), 1e-5);
 		EXPECT_NEAR(0.36515, q.y(), 1e-5);

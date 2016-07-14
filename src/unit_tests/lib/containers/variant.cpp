@@ -64,34 +64,34 @@ namespace Rayni
 		EXPECT_TRUE(v3.is_bool());
 	}
 
-	TEST(VariantTest, GetValue)
+	TEST(VariantTest, As)
 	{
-		EXPECT_EQ(0, Variant::map().get_map().size());
-		EXPECT_EQ(0, Variant::vector().get_vector().size());
-		EXPECT_EQ(true, Variant(true).get_bool());
-		EXPECT_EQ(1, Variant(1).get_int());
-		EXPECT_EQ(1u, Variant(1u).get_unsigned_int());
-		EXPECT_FLOAT_EQ(1.0f, Variant(1.0f).get_float());
-		EXPECT_DOUBLE_EQ(1.0, Variant(1.0).get_double());
-		EXPECT_EQ("abc", Variant("abc").get_string());
+		EXPECT_EQ(0, Variant::map().as_map().size());
+		EXPECT_EQ(0, Variant::vector().as_vector().size());
+		EXPECT_EQ(true, Variant(true).as_bool());
+		EXPECT_EQ(1, Variant(1).as_int());
+		EXPECT_EQ(1u, Variant(1u).as_unsigned_int());
+		EXPECT_FLOAT_EQ(1.0f, Variant(1.0f).as_float());
+		EXPECT_DOUBLE_EQ(1.0, Variant(1.0).as_double());
+		EXPECT_EQ("abc", Variant("abc").as_string());
 
-		EXPECT_EQ(0, Variant::map().get_value<Variant::Map>().size());
-		EXPECT_EQ(0, Variant::vector().get_value<Variant::Vector>().size());
-		EXPECT_EQ(true, Variant(true).get_value<bool>());
-		EXPECT_EQ(1, Variant(1).get_value<int>());
-		EXPECT_EQ(1u, Variant(1u).get_value<unsigned int>());
-		EXPECT_FLOAT_EQ(1.0f, Variant(1.0f).get_value<float>());
-		EXPECT_DOUBLE_EQ(1.0, Variant(1.0).get_value<double>());
-		EXPECT_EQ("abc", Variant("abc").get_value<std::string>());
+		EXPECT_EQ(0, Variant::map().as<Variant::Map>().size());
+		EXPECT_EQ(0, Variant::vector().as<Variant::Vector>().size());
+		EXPECT_EQ(true, Variant(true).as<bool>());
+		EXPECT_EQ(1, Variant(1).as<int>());
+		EXPECT_EQ(1u, Variant(1u).as<unsigned int>());
+		EXPECT_FLOAT_EQ(1.0f, Variant(1.0f).as<float>());
+		EXPECT_DOUBLE_EQ(1.0, Variant(1.0).as<double>());
+		EXPECT_EQ("abc", Variant("abc").as<std::string>());
 
-		EXPECT_THROW(Variant().get_map(), Variant::Exception);
-		EXPECT_THROW(Variant().get_vector(), Variant::Exception);
-		EXPECT_THROW(Variant().get_bool(), Variant::Exception);
-		EXPECT_THROW(Variant().get_int(), Variant::Exception);
-		EXPECT_THROW(Variant().get_unsigned_int(), Variant::Exception);
-		EXPECT_THROW(Variant().get_float(), Variant::Exception);
-		EXPECT_THROW(Variant().get_double(), Variant::Exception);
-		EXPECT_THROW(Variant().get_string(), Variant::Exception);
+		EXPECT_THROW(Variant().as_map(), Variant::Exception);
+		EXPECT_THROW(Variant().as_vector(), Variant::Exception);
+		EXPECT_THROW(Variant().as_bool(), Variant::Exception);
+		EXPECT_THROW(Variant().as_int(), Variant::Exception);
+		EXPECT_THROW(Variant().as_unsigned_int(), Variant::Exception);
+		EXPECT_THROW(Variant().as_float(), Variant::Exception);
+		EXPECT_THROW(Variant().as_double(), Variant::Exception);
+		EXPECT_THROW(Variant().as_string(), Variant::Exception);
 	}
 
 	TEST(VariantTest, To)
@@ -203,12 +203,12 @@ namespace Rayni
 	{
 		auto variant = Variant::map("key1", 123, "key2", "abc");
 
-		EXPECT_EQ(123, variant.get("key1").get_int());
+		EXPECT_EQ(123, variant.get("key1").as_int());
 		EXPECT_EQ(123, variant.get<int>("key1"));
 		EXPECT_EQ(123, variant.get("key1", 456));
 		EXPECT_EQ(456, variant.get("key3", 456));
 
-		EXPECT_EQ("abc", variant.get("key2").get_string());
+		EXPECT_EQ("abc", variant.get("key2").as_string());
 		EXPECT_EQ("abc", variant.get<std::string>("key2"));
 		EXPECT_EQ("abc", variant.get("key2", std::string("def")));
 		EXPECT_EQ("def", variant.get("key3", std::string("def")));
@@ -220,38 +220,38 @@ namespace Rayni
 	{
 		Variant variant = Variant::vector(123, "abc");
 
-		EXPECT_EQ(123, variant.get(0).get_int());
+		EXPECT_EQ(123, variant.get(0).as_int());
 		EXPECT_EQ(123, variant.get<int>(0));
 
-		EXPECT_EQ("abc", variant.get(1).get_string());
+		EXPECT_EQ("abc", variant.get(1).as_string());
 		EXPECT_EQ("abc", variant.get<std::string>(1));
 
 		EXPECT_THROW(variant.get(2), Variant::Exception);
 	}
 
-	TEST(VariantTest, GetPath)
+	TEST(VariantTest, Path)
 	{
 		Variant variant;
 
-		EXPECT_EQ("", variant.get_path());
+		EXPECT_EQ("", variant.path());
 
 		variant = Variant::map("key1", Variant::vector(123, "abc"), "key2", Variant::vector(456, "def"));
-		EXPECT_EQ("", variant.get_path());
-		EXPECT_EQ("['key1']", variant.get("key1").get_path());
-		EXPECT_EQ("['key2']", variant.get("key2").get_path());
-		EXPECT_EQ("['key1'][0]", variant.get("key1").get(0).get_path());
-		EXPECT_EQ("['key1'][1]", variant.get("key1").get(1).get_path());
-		EXPECT_EQ("['key2'][0]", variant.get("key2").get(0).get_path());
-		EXPECT_EQ("['key2'][1]", variant.get("key2").get(1).get_path());
+		EXPECT_EQ("", variant.path());
+		EXPECT_EQ("['key1']", variant.get("key1").path());
+		EXPECT_EQ("['key2']", variant.get("key2").path());
+		EXPECT_EQ("['key1'][0]", variant.get("key1").get(0).path());
+		EXPECT_EQ("['key1'][1]", variant.get("key1").get(1).path());
+		EXPECT_EQ("['key2'][0]", variant.get("key2").get(0).path());
+		EXPECT_EQ("['key2'][1]", variant.get("key2").get(1).path());
 
 		variant = Variant::vector(Variant::map("key1", 123, "key2", "abc"),
 		                          Variant::map("key1", 456, "key2", "def"));
-		EXPECT_EQ("", variant.get_path());
-		EXPECT_EQ("[0]", variant.get(0).get_path());
-		EXPECT_EQ("[1]", variant.get(1).get_path());
-		EXPECT_EQ("[0]['key1']", variant.get(0).get("key1").get_path());
-		EXPECT_EQ("[0]['key2']", variant.get(0).get("key2").get_path());
-		EXPECT_EQ("[1]['key1']", variant.get(1).get("key1").get_path());
-		EXPECT_EQ("[1]['key2']", variant.get(1).get("key2").get_path());
+		EXPECT_EQ("", variant.path());
+		EXPECT_EQ("[0]", variant.get(0).path());
+		EXPECT_EQ("[1]", variant.get(1).path());
+		EXPECT_EQ("[0]['key1']", variant.get(0).get("key1").path());
+		EXPECT_EQ("[0]['key2']", variant.get(0).get("key2").path());
+		EXPECT_EQ("[1]['key1']", variant.get(1).get("key1").path());
+		EXPECT_EQ("[1]['key2']", variant.get(1).get("key2").path());
 	}
 }

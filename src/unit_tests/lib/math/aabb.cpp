@@ -32,12 +32,12 @@ namespace Rayni
 		        .merge(AABB({-1, -2, -3}, {0, 0, 0}))
 		        .merge(AABB({-0.5, -0.5, -0.5}, {0.5, 0.5, 0.5}));
 
-		EXPECT_NEAR(-1, aabb.get_minimum().x(), 1e-100);
-		EXPECT_NEAR(-2, aabb.get_minimum().y(), 1e-100);
-		EXPECT_NEAR(-3, aabb.get_minimum().z(), 1e-100);
-		EXPECT_NEAR(1, aabb.get_maximum().x(), 1e-100);
-		EXPECT_NEAR(2, aabb.get_maximum().y(), 1e-100);
-		EXPECT_NEAR(3, aabb.get_maximum().z(), 1e-100);
+		EXPECT_NEAR(-1, aabb.minimum().x(), 1e-100);
+		EXPECT_NEAR(-2, aabb.minimum().y(), 1e-100);
+		EXPECT_NEAR(-3, aabb.minimum().z(), 1e-100);
+		EXPECT_NEAR(1, aabb.maximum().x(), 1e-100);
+		EXPECT_NEAR(2, aabb.maximum().y(), 1e-100);
+		EXPECT_NEAR(3, aabb.maximum().z(), 1e-100);
 	}
 
 	TEST(AABBTest, MergePoints)
@@ -46,12 +46,12 @@ namespace Rayni
 
 		aabb.merge({1, 2, 3}).merge({-1, -2, -3}).merge({0.5, 0.5, 0.5}).merge({-0.5, -0.5, -0.5});
 
-		EXPECT_NEAR(-1, aabb.get_minimum().x(), 1e-100);
-		EXPECT_NEAR(-2, aabb.get_minimum().y(), 1e-100);
-		EXPECT_NEAR(-3, aabb.get_minimum().z(), 1e-100);
-		EXPECT_NEAR(1, aabb.get_maximum().x(), 1e-100);
-		EXPECT_NEAR(2, aabb.get_maximum().y(), 1e-100);
-		EXPECT_NEAR(3, aabb.get_maximum().z(), 1e-100);
+		EXPECT_NEAR(-1, aabb.minimum().x(), 1e-100);
+		EXPECT_NEAR(-2, aabb.minimum().y(), 1e-100);
+		EXPECT_NEAR(-3, aabb.minimum().z(), 1e-100);
+		EXPECT_NEAR(1, aabb.maximum().x(), 1e-100);
+		EXPECT_NEAR(2, aabb.maximum().y(), 1e-100);
+		EXPECT_NEAR(3, aabb.maximum().z(), 1e-100);
 	}
 
 	TEST(AABBTest, IntersectsHit)
@@ -131,12 +131,12 @@ namespace Rayni
 		AABB intersection =
 		        AABB({-10, -100, -1000}, {5, 50, 500}).intersection(AABB({-5, -50, -500}, {10, 100, 1000}));
 
-		EXPECT_NEAR(-5, intersection.get_minimum().x(), 1e-100);
-		EXPECT_NEAR(-50, intersection.get_minimum().y(), 1e-100);
-		EXPECT_NEAR(-500, intersection.get_minimum().z(), 1e-100);
-		EXPECT_NEAR(5, intersection.get_maximum().x(), 1e-100);
-		EXPECT_NEAR(50, intersection.get_maximum().y(), 1e-100);
-		EXPECT_NEAR(500, intersection.get_maximum().z(), 1e-100);
+		EXPECT_NEAR(-5, intersection.minimum().x(), 1e-100);
+		EXPECT_NEAR(-50, intersection.minimum().y(), 1e-100);
+		EXPECT_NEAR(-500, intersection.minimum().z(), 1e-100);
+		EXPECT_NEAR(5, intersection.maximum().x(), 1e-100);
+		EXPECT_NEAR(50, intersection.maximum().y(), 1e-100);
+		EXPECT_NEAR(500, intersection.maximum().z(), 1e-100);
 	}
 
 	TEST(AABBTest, SurfaceArea)
@@ -148,54 +148,54 @@ namespace Rayni
 	{
 		auto split_x = AABB({10, 100, 1000}, {20, 200, 2000}).split(0, 15);
 
-		EXPECT_NEAR(10, split_x.left.get_minimum().x(), 1e-100);
-		EXPECT_NEAR(100, split_x.left.get_minimum().y(), 1e-100);
-		EXPECT_NEAR(1000, split_x.left.get_minimum().z(), 1e-100);
-		EXPECT_NEAR(15, split_x.left.get_maximum().x(), 1e-100);
-		EXPECT_NEAR(200, split_x.left.get_maximum().y(), 1e-100);
-		EXPECT_NEAR(2000, split_x.left.get_maximum().z(), 1e-100);
-		EXPECT_NEAR(15, split_x.right.get_minimum().x(), 1e-100);
-		EXPECT_NEAR(100, split_x.right.get_minimum().y(), 1e-100);
-		EXPECT_NEAR(1000, split_x.right.get_minimum().z(), 1e-100);
-		EXPECT_NEAR(20, split_x.right.get_maximum().x(), 1e-100);
-		EXPECT_NEAR(200, split_x.right.get_maximum().y(), 1e-100);
-		EXPECT_NEAR(2000, split_x.right.get_maximum().z(), 1e-100);
+		EXPECT_NEAR(10, split_x.left.minimum().x(), 1e-100);
+		EXPECT_NEAR(100, split_x.left.minimum().y(), 1e-100);
+		EXPECT_NEAR(1000, split_x.left.minimum().z(), 1e-100);
+		EXPECT_NEAR(15, split_x.left.maximum().x(), 1e-100);
+		EXPECT_NEAR(200, split_x.left.maximum().y(), 1e-100);
+		EXPECT_NEAR(2000, split_x.left.maximum().z(), 1e-100);
+		EXPECT_NEAR(15, split_x.right.minimum().x(), 1e-100);
+		EXPECT_NEAR(100, split_x.right.minimum().y(), 1e-100);
+		EXPECT_NEAR(1000, split_x.right.minimum().z(), 1e-100);
+		EXPECT_NEAR(20, split_x.right.maximum().x(), 1e-100);
+		EXPECT_NEAR(200, split_x.right.maximum().y(), 1e-100);
+		EXPECT_NEAR(2000, split_x.right.maximum().z(), 1e-100);
 	}
 
 	TEST(AABBTest, SplitY)
 	{
 		auto split_y = AABB({10, 100, 1000}, {20, 200, 2000}).split(1, 150);
 
-		EXPECT_NEAR(10, split_y.left.get_minimum().x(), 1e-100);
-		EXPECT_NEAR(100, split_y.left.get_minimum().y(), 1e-100);
-		EXPECT_NEAR(1000, split_y.left.get_minimum().z(), 1e-100);
-		EXPECT_NEAR(20, split_y.left.get_maximum().x(), 1e-100);
-		EXPECT_NEAR(150, split_y.left.get_maximum().y(), 1e-100);
-		EXPECT_NEAR(2000, split_y.left.get_maximum().z(), 1e-100);
-		EXPECT_NEAR(10, split_y.right.get_minimum().x(), 1e-100);
-		EXPECT_NEAR(150, split_y.right.get_minimum().y(), 1e-100);
-		EXPECT_NEAR(1000, split_y.right.get_minimum().z(), 1e-100);
-		EXPECT_NEAR(20, split_y.right.get_maximum().x(), 1e-100);
-		EXPECT_NEAR(200, split_y.right.get_maximum().y(), 1e-100);
-		EXPECT_NEAR(2000, split_y.right.get_maximum().z(), 1e-100);
+		EXPECT_NEAR(10, split_y.left.minimum().x(), 1e-100);
+		EXPECT_NEAR(100, split_y.left.minimum().y(), 1e-100);
+		EXPECT_NEAR(1000, split_y.left.minimum().z(), 1e-100);
+		EXPECT_NEAR(20, split_y.left.maximum().x(), 1e-100);
+		EXPECT_NEAR(150, split_y.left.maximum().y(), 1e-100);
+		EXPECT_NEAR(2000, split_y.left.maximum().z(), 1e-100);
+		EXPECT_NEAR(10, split_y.right.minimum().x(), 1e-100);
+		EXPECT_NEAR(150, split_y.right.minimum().y(), 1e-100);
+		EXPECT_NEAR(1000, split_y.right.minimum().z(), 1e-100);
+		EXPECT_NEAR(20, split_y.right.maximum().x(), 1e-100);
+		EXPECT_NEAR(200, split_y.right.maximum().y(), 1e-100);
+		EXPECT_NEAR(2000, split_y.right.maximum().z(), 1e-100);
 	}
 
 	TEST(AABBTest, SplitZ)
 	{
 		auto split_z = AABB({10, 100, 1000}, {20, 200, 2000}).split(2, 1500);
 
-		EXPECT_NEAR(10, split_z.left.get_minimum().x(), 1e-100);
-		EXPECT_NEAR(100, split_z.left.get_minimum().y(), 1e-100);
-		EXPECT_NEAR(1000, split_z.left.get_minimum().z(), 1e-100);
-		EXPECT_NEAR(20, split_z.left.get_maximum().x(), 1e-100);
-		EXPECT_NEAR(200, split_z.left.get_maximum().y(), 1e-100);
-		EXPECT_NEAR(1500, split_z.left.get_maximum().z(), 1e-100);
-		EXPECT_NEAR(10, split_z.right.get_minimum().x(), 1e-100);
-		EXPECT_NEAR(100, split_z.right.get_minimum().y(), 1e-100);
-		EXPECT_NEAR(1500, split_z.right.get_minimum().z(), 1e-100);
-		EXPECT_NEAR(20, split_z.right.get_maximum().x(), 1e-100);
-		EXPECT_NEAR(200, split_z.right.get_maximum().y(), 1e-100);
-		EXPECT_NEAR(2000, split_z.right.get_maximum().z(), 1e-100);
+		EXPECT_NEAR(10, split_z.left.minimum().x(), 1e-100);
+		EXPECT_NEAR(100, split_z.left.minimum().y(), 1e-100);
+		EXPECT_NEAR(1000, split_z.left.minimum().z(), 1e-100);
+		EXPECT_NEAR(20, split_z.left.maximum().x(), 1e-100);
+		EXPECT_NEAR(200, split_z.left.maximum().y(), 1e-100);
+		EXPECT_NEAR(1500, split_z.left.maximum().z(), 1e-100);
+		EXPECT_NEAR(10, split_z.right.minimum().x(), 1e-100);
+		EXPECT_NEAR(100, split_z.right.minimum().y(), 1e-100);
+		EXPECT_NEAR(1500, split_z.right.minimum().z(), 1e-100);
+		EXPECT_NEAR(20, split_z.right.maximum().x(), 1e-100);
+		EXPECT_NEAR(200, split_z.right.maximum().y(), 1e-100);
+		EXPECT_NEAR(2000, split_z.right.maximum().z(), 1e-100);
 	}
 
 	TEST(AABBTest, IsPlanar)

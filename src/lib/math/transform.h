@@ -36,7 +36,7 @@ namespace Rayni
 	{
 	public:
 		Transform(const Matrix4x4 &matrix, const Matrix4x4 &inverse_matrix)
-		        : matrix(matrix), inverse_matrix(inverse_matrix)
+		        : matrix_(matrix), inverse_matrix_(inverse_matrix)
 		{
 		}
 
@@ -110,17 +110,22 @@ namespace Rayni
 
 		static Transform combine(const Transform &t1, const Transform &t2)
 		{
-			return Transform(t1.matrix * t2.matrix, t2.inverse_matrix * t1.inverse_matrix);
+			return Transform(t1.matrix() * t2.matrix(), t2.inverse_matrix() * t1.inverse_matrix());
 		}
 
 		Transform inverse() const
 		{
-			return Transform(inverse_matrix, matrix);
+			return Transform(inverse_matrix(), matrix());
 		}
 
-		const Matrix4x4 &get_matrix() const
+		const Matrix4x4 &matrix() const
 		{
-			return matrix;
+			return matrix_;
+		}
+
+		const Matrix4x4 &inverse_matrix() const
+		{
+			return inverse_matrix_;
 		}
 
 		/**
@@ -140,9 +145,9 @@ namespace Rayni
 		Vector3 transform_point(const Vector3 &v) const
 		{
 			Vector4 p(v.x(), v.y(), v.z(), 1);
-			real_t x = matrix.get_row(0).dot(p);
-			real_t y = matrix.get_row(1).dot(p);
-			real_t z = matrix.get_row(2).dot(p);
+			real_t x = matrix().row(0).dot(p);
+			real_t y = matrix().row(1).dot(p);
+			real_t z = matrix().row(2).dot(p);
 			return Vector3(x, y, z);
 		}
 
@@ -165,9 +170,9 @@ namespace Rayni
 		Vector3 transform_direction(const Vector3 &v) const
 		{
 			Vector4 d(v.x(), v.y(), v.z(), 0);
-			real_t x = matrix.get_row(0).dot(d);
-			real_t y = matrix.get_row(1).dot(d);
-			real_t z = matrix.get_row(2).dot(d);
+			real_t x = matrix().row(0).dot(d);
+			real_t y = matrix().row(1).dot(d);
+			real_t z = matrix().row(2).dot(d);
 			return Vector3(x, y, z);
 		}
 
@@ -192,10 +197,10 @@ namespace Rayni
 		Vector3 transform_normal(const Vector3 &v) const
 		{
 			Vector4 n(v.x(), v.y(), v.z(), 0);
-			Matrix4x4 t = inverse_matrix.transpose();
-			real_t x = t.get_row(0).dot(n);
-			real_t y = t.get_row(1).dot(n);
-			real_t z = t.get_row(2).dot(n);
+			Matrix4x4 t = inverse_matrix().transpose();
+			real_t x = t.row(0).dot(n);
+			real_t y = t.row(1).dot(n);
+			real_t z = t.row(2).dot(n);
 			return Vector3(x, y, z).normalize();
 		}
 
@@ -240,16 +245,16 @@ namespace Rayni
 		 */
 		AABB transform_aabb(const AABB &aabb) const
 		{
-			Vector3 x1 = matrix.get_x_axis() * aabb.get_minimum().x();
-			Vector3 x2 = matrix.get_x_axis() * aabb.get_maximum().x();
-			Vector3 y1 = matrix.get_y_axis() * aabb.get_minimum().y();
-			Vector3 y2 = matrix.get_y_axis() * aabb.get_maximum().y();
-			Vector3 z1 = matrix.get_z_axis() * aabb.get_minimum().z();
-			Vector3 z2 = matrix.get_z_axis() * aabb.get_maximum().z();
+			Vector3 x1 = matrix().x_axis() * aabb.minimum().x();
+			Vector3 x2 = matrix().x_axis() * aabb.maximum().x();
+			Vector3 y1 = matrix().y_axis() * aabb.minimum().y();
+			Vector3 y2 = matrix().y_axis() * aabb.maximum().y();
+			Vector3 z1 = matrix().z_axis() * aabb.minimum().z();
+			Vector3 z2 = matrix().z_axis() * aabb.maximum().z();
 			Vector3 min = Vector3::min(x1, x2) + Vector3::min(y1, y2) + Vector3::min(z1, z2) +
-			              matrix.get_translation();
+			              matrix().translation();
 			Vector3 max = Vector3::max(x1, x2) + Vector3::max(y1, y2) + Vector3::max(z1, z2) +
-			              matrix.get_translation();
+			              matrix().translation();
 			return AABB(min, max);
 		}
 
@@ -265,8 +270,8 @@ namespace Rayni
 		static Transform from_variant_map(const Variant &v);
 		static Transform from_variant_vector(const Variant &v);
 
-		Matrix4x4 matrix;
-		Matrix4x4 inverse_matrix;
+		Matrix4x4 matrix_;
+		Matrix4x4 inverse_matrix_;
 	};
 }
 

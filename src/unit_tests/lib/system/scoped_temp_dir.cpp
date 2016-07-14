@@ -39,7 +39,7 @@ namespace Rayni
 
 		{
 			ScopedTempDir dir;
-			path = dir.get_path();
+			path = dir.path();
 
 			output_to_file(path / "foo", "bla bla");
 

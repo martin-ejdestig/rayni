@@ -46,38 +46,38 @@ namespace Rayni
 
 		bool is_empty() const
 		{
-			return width == 0 || height == 0;
+			return width() == 0 || height() == 0;
 		}
 
-		unsigned int get_width() const
+		unsigned int width() const
 		{
-			return width;
+			return width_;
 		}
 
-		unsigned int get_height() const
+		unsigned int height() const
 		{
-			return height;
+			return height_;
 		}
 
-		unsigned int get_stride() const
+		unsigned int stride() const
 		{
-			return width * BYTES_PER_PIXEL;
+			return width() * BYTES_PER_PIXEL;
 		}
 
-		std::vector<std::uint8_t> &get_buffer()
+		std::vector<std::uint8_t> &buffer()
 		{
-			return buffer;
+			return buffer_;
 		}
 
-		const std::vector<std::uint8_t> &get_buffer() const
+		const std::vector<std::uint8_t> &buffer() const
 		{
-			return buffer;
+			return buffer_;
 		}
 
 		std::uint8_t &start_of_row(unsigned int y)
 		{
-			assert(y < height);
-			return buffer[y * get_stride()];
+			assert(y < height());
+			return buffer()[y * stride()];
 		}
 
 		Area whole_area() const;
@@ -98,9 +98,9 @@ namespace Rayni
 
 		inline std::size_t offset_to(unsigned int x, unsigned int y) const;
 
-		unsigned int width = 0;
-		unsigned int height = 0;
-		std::vector<std::uint8_t> buffer;
+		unsigned int width_ = 0;
+		unsigned int height_ = 0;
+		std::vector<std::uint8_t> buffer_;
 	};
 
 	struct Image::Area
@@ -122,7 +122,7 @@ namespace Rayni
 
 	inline Image::Area Image::whole_area() const
 	{
-		return {0, 0, get_width(), get_height()};
+		return {0, 0, width(), height()};
 	}
 }
 

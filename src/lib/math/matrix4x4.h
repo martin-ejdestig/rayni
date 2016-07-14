@@ -211,7 +211,7 @@ namespace Rayni
 			                 {rows[0][3], rows[1][3], rows[2][3], rows[3][3]});
 		}
 
-		const Vector4 &get_row(unsigned int row_index) const
+		const Vector4 &row(unsigned int row_index) const
 		{
 			assert(row_index < 4);
 
@@ -248,27 +248,27 @@ namespace Rayni
 				std::swap(row[column1_index], row[column2_index]);
 		}
 
-		Vector3 get_x_axis() const
+		Vector3 x_axis() const
 		{
 			return Vector3(rows[0][0], rows[1][0], rows[2][0]);
 		}
 
-		Vector3 get_y_axis() const
+		Vector3 y_axis() const
 		{
 			return Vector3(rows[0][1], rows[1][1], rows[2][1]);
 		}
 
-		Vector3 get_z_axis() const
+		Vector3 z_axis() const
 		{
 			return Vector3(rows[0][2], rows[1][2], rows[2][2]);
 		}
 
-		Vector3 get_translation() const
+		Vector3 translation() const
 		{
 			return Vector3(rows[0][3], rows[1][3], rows[2][3]);
 		}
 
-		Quaternion get_rotation() const;
+		Quaternion rotation() const;
 
 		real_t upper3x3_trace() const
 		{
@@ -292,7 +292,7 @@ namespace Rayni
 
 		bool preserves_orientation_of_basis() const
 		{
-			real_t determinant = get_x_axis().cross(get_y_axis()).dot(get_z_axis());
+			real_t determinant = x_axis().cross(y_axis()).dot(z_axis());
 			return determinant > 0;
 		}
 

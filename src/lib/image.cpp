@@ -33,21 +33,23 @@ namespace Rayni
 	{
 	}
 
-	Image::Image(Image &&other) noexcept : width(other.width), height(other.height), buffer(std::move(other.buffer))
+	Image::Image(Image &&other) noexcept : width_(other.width_),
+	                                       height_(other.height_),
+	                                       buffer_(std::move(other.buffer_))
 	{
-		other.width = 0;
-		other.height = 0;
+		other.width_ = 0;
+		other.height_ = 0;
 	}
 
 	Image::Image(unsigned int width, unsigned int height)
-	        : width(width), height(height), buffer(get_stride() * height)
+	        : width_(width), height_(height), buffer_(stride() * height)
 	{
-		for (unsigned int i = 0; i < buffer.size(); i += BYTES_PER_PIXEL)
+		for (unsigned int i = 0; i < buffer().size(); i += BYTES_PER_PIXEL)
 		{
-			buffer[i + A_PIXEL_OFFSET] = 0xff;
-			buffer[i + R_PIXEL_OFFSET] = 0x00;
-			buffer[i + G_PIXEL_OFFSET] = 0x00;
-			buffer[i + B_PIXEL_OFFSET] = 0x00;
+			buffer()[i + A_PIXEL_OFFSET] = 0xff;
+			buffer()[i + R_PIXEL_OFFSET] = 0x00;
+			buffer()[i + G_PIXEL_OFFSET] = 0x00;
+			buffer()[i + B_PIXEL_OFFSET] = 0x00;
 		}
 	}
 
@@ -55,11 +57,11 @@ namespace Rayni
 	{
 		assert(this != &other);
 
-		width = other.width;
-		other.width = 0;
-		height = other.height;
-		other.height = 0;
-		buffer = std::move(other.buffer);
+		width_ = other.width_;
+		other.width_ = 0;
+		height_ = other.height_;
+		other.height_ = 0;
+		buffer_ = std::move(other.buffer_);
 
 		return *this;
 	}
@@ -68,9 +70,9 @@ namespace Rayni
 	{
 		std::size_t i = offset_to(x, y);
 
-		buffer[i + R_PIXEL_OFFSET] = color.r() < 1 ? static_cast<std::uint8_t>(color.r() * 256) : 255;
-		buffer[i + G_PIXEL_OFFSET] = color.g() < 1 ? static_cast<std::uint8_t>(color.g() * 256) : 255;
-		buffer[i + B_PIXEL_OFFSET] = color.b() < 1 ? static_cast<std::uint8_t>(color.b() * 256) : 255;
+		buffer()[i + R_PIXEL_OFFSET] = color.r() < 1 ? static_cast<std::uint8_t>(color.r() * 256) : 255;
+		buffer()[i + G_PIXEL_OFFSET] = color.g() < 1 ? static_cast<std::uint8_t>(color.g() * 256) : 255;
+		buffer()[i + B_PIXEL_OFFSET] = color.b() < 1 ? static_cast<std::uint8_t>(color.b() * 256) : 255;
 	}
 
 	Color Image::read_pixel(unsigned int x, unsigned int y) const
@@ -78,15 +80,15 @@ namespace Rayni
 		Color color;
 		std::size_t i = offset_to(x, y);
 
-		color.r() = static_cast<real_t>(buffer[i + R_PIXEL_OFFSET]) / 255;
-		color.g() = static_cast<real_t>(buffer[i + G_PIXEL_OFFSET]) / 255;
-		color.b() = static_cast<real_t>(buffer[i + B_PIXEL_OFFSET]) / 255;
+		color.r() = static_cast<real_t>(buffer()[i + R_PIXEL_OFFSET]) / 255;
+		color.g() = static_cast<real_t>(buffer()[i + G_PIXEL_OFFSET]) / 255;
+		color.b() = static_cast<real_t>(buffer()[i + B_PIXEL_OFFSET]) / 255;
 
 		return color;
 	}
 
 	inline std::size_t Image::offset_to(unsigned int x, unsigned int y) const
 	{
-		return get_stride() * y + x * BYTES_PER_PIXEL;
+		return stride() * y + x * BYTES_PER_PIXEL;
 	}
 }

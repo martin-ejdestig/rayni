@@ -40,7 +40,7 @@ namespace Rayni
 		{
 			for (unsigned int i = 0; i < 4; i++)
 				for (unsigned int j = 0; j < 4; j++)
-					if (std::abs(t1.get_matrix()(i, j) - t2.get_matrix()(i, j)) > abs_error)
+					if (std::abs(t1.matrix()(i, j) - t2.matrix()(i, j)) > abs_error)
 						return testing::AssertionFailure();
 
 			return testing::AssertionSuccess();
@@ -63,9 +63,7 @@ namespace Rayni
 		                                               const Transform &t,
 		                                               real_t abs_error)
 		{
-			return transform_near(t.inverse(),
-			                      Transform(t.get_matrix().inverse(), t.get_matrix()),
-			                      abs_error)
+			return transform_near(t.inverse(), Transform(t.matrix().inverse(), t.matrix()), abs_error)
 			       << "Inverse of " << expr << ", calculated directly from input values if possible, has "
 			       << "elements that differ more than " << abs_error_expr << " from elements of inverse "
 			       << "calculated from transformation matrix.";
@@ -253,12 +251,12 @@ namespace Rayni
 		Transform t = Transform::combine(Transform::rotate_z(PI), Transform::translate(10, 20, 30));
 
 		AABB aabb = t.transform_aabb({{1, 2, 3}, {4, 5, 6}});
-		EXPECT_NEAR(-14, aabb.get_minimum().x(), 1e-5);
-		EXPECT_NEAR(-25, aabb.get_minimum().y(), 1e-5);
-		EXPECT_NEAR(33, aabb.get_minimum().z(), 1e-5);
-		EXPECT_NEAR(-11, aabb.get_maximum().x(), 1e-5);
-		EXPECT_NEAR(-22, aabb.get_maximum().y(), 1e-5);
-		EXPECT_NEAR(36, aabb.get_maximum().z(), 1e-5);
+		EXPECT_NEAR(-14, aabb.minimum().x(), 1e-5);
+		EXPECT_NEAR(-25, aabb.minimum().y(), 1e-5);
+		EXPECT_NEAR(33, aabb.minimum().z(), 1e-5);
+		EXPECT_NEAR(-11, aabb.maximum().x(), 1e-5);
+		EXPECT_NEAR(-22, aabb.maximum().y(), 1e-5);
+		EXPECT_NEAR(36, aabb.maximum().z(), 1e-5);
 	}
 
 	TEST_F(TransformTest, TransformRay)

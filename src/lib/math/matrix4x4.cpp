@@ -92,7 +92,7 @@ namespace Rayni
 				swap_columns(pivot_positions[i].row, pivot_positions[i].column);
 	}
 
-	Quaternion Matrix4x4::get_rotation() const
+	Quaternion Matrix4x4::rotation() const
 	{
 		real_t xyz[3], w;
 		real_t trace = upper3x3_trace();

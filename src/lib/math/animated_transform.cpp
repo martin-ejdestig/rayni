@@ -32,9 +32,9 @@ namespace Rayni
 	                                     real_t end_time,
 	                                     const Transform &end_transform)
 	        : start_time(start_time),
-	          start(start_transform.get_matrix()),
+	          start(start_transform.matrix()),
 	          end_time(end_time),
-	          end(end_transform.get_matrix())
+	          end(end_transform.matrix())
 	{
 	}
 

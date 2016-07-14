@@ -30,13 +30,13 @@ namespace Rayni
 		ScopedTempDir();
 		~ScopedTempDir();
 
-		const std::experimental::filesystem::path &get_path() const
+		const std::experimental::filesystem::path &path() const
 		{
-			return path;
+			return path_;
 		}
 
 	private:
-		const std::experimental::filesystem::path path;
+		const std::experimental::filesystem::path path_;
 	};
 }
 

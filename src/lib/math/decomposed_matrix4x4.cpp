@@ -25,12 +25,12 @@ namespace Rayni
 	{
 		auto pd = matrix.polar_decomposition();
 
-		rotation = pd.rotation.get_rotation();
+		rotation = pd.rotation.rotation();
 
-		scale_x = pd.scale.get_x_axis();
-		scale_y = pd.scale.get_y_axis();
-		scale_z = pd.scale.get_z_axis();
+		scale_x = pd.scale.x_axis();
+		scale_y = pd.scale.y_axis();
+		scale_z = pd.scale.z_axis();
 
-		translation = matrix.get_translation();
+		translation = matrix.translation();
 	}
 }

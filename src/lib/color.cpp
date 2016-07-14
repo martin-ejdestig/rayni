@@ -27,7 +27,7 @@ namespace Rayni
 	{
 		if (v.is_string())
 		{
-			const std::string &str = v.get_string();
+			const std::string &str = v.as_string();
 
 			if (str == "black")
 				return Color::black();

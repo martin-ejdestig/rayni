@@ -29,8 +29,6 @@ namespace Rayni
 	{
 	public:
 		using clock = std::chrono::steady_clock;
-		using time_point = clock::time_point;
-		using duration = clock::duration;
 
 		static_assert(clock::is_steady, "Stopwatch clock must be steady");
 
@@ -44,20 +42,20 @@ namespace Rayni
 			stop(clock::now());
 		}
 
-		void start(time_point time_point);
-		void stop(time_point time_point);
+		void start(clock::time_point time_point);
+		void stop(clock::time_point time_point);
 
 		bool is_started() const
 		{
 			return started;
 		}
 
-		duration get_duration() const;
+		clock::duration duration() const;
 
 	private:
 		bool started = false;
-		time_point time_start;
-		time_point time_end;
+		clock::time_point time_start;
+		clock::time_point time_end;
 	};
 }
 

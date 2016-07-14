@@ -35,8 +35,8 @@ namespace Rayni
 		for (unsigned int i = 0; i < 3; i++)
 		{
 			real_t inv_ray_dir = 1 / ray.direction[i];
-			real_t t_near = (minimum[i] - ray.origin[i]) * inv_ray_dir;
-			real_t t_far = (maximum[i] - ray.origin[i]) * inv_ray_dir;
+			real_t t_near = (minimum()[i] - ray.origin[i]) * inv_ray_dir;
+			real_t t_far = (maximum()[i] - ray.origin[i]) * inv_ray_dir;
 
 			if (t_far < t_near)
 				std::swap(t_near, t_far);

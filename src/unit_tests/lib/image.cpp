@@ -47,7 +47,7 @@ namespace Rayni
 		{
 			static constexpr real_t COMPONENT_MAX_DIFF = 0.001;
 
-			if (x > image.get_width() || y > image.get_height())
+			if (x > image.width() || y > image.height())
 				return testing::AssertionFailure() << image_expr << " does not contain (" << x << ", "
 				                                   << y << ") (too small)";
 
@@ -112,14 +112,14 @@ namespace Rayni
 		Image empty_image;
 
 		EXPECT_FALSE(image.is_empty());
-		EXPECT_EQ(WIDTH, image.get_width());
-		EXPECT_EQ(HEIGHT, image.get_height());
-		EXPECT_LE(WIDTH, image.get_stride());
+		EXPECT_EQ(WIDTH, image.width());
+		EXPECT_EQ(HEIGHT, image.height());
+		EXPECT_LE(WIDTH, image.stride());
 
 		EXPECT_TRUE(empty_image.is_empty());
-		EXPECT_EQ(0, empty_image.get_width());
-		EXPECT_EQ(0, empty_image.get_height());
-		EXPECT_EQ(0, empty_image.get_stride());
+		EXPECT_EQ(0, empty_image.width());
+		EXPECT_EQ(0, empty_image.height());
+		EXPECT_EQ(0, empty_image.stride());
 	}
 
 	TEST_F(ImageTest, Area)
@@ -138,8 +138,8 @@ namespace Rayni
 	{
 		Image image(2, 2);
 
-		for (unsigned int y = 0; y < image.get_height(); y++)
-			for (unsigned int x = 0; x < image.get_width(); x++)
+		for (unsigned int y = 0; y < image.height(); y++)
+			for (unsigned int x = 0; x < image.width(); x++)
 				EXPECT_PRED_FORMAT4(expect_color_at, image, x, y, Color::black());
 	}
 

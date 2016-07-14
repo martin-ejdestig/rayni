@@ -43,7 +43,7 @@ namespace Rayni
 
 	Transform Transform::from_variant_string(const Variant &v)
 	{
-		const std::string &str = v.get_string();
+		const std::string &str = v.as_string();
 
 		if (str == "identity")
 			return Transform::identity();
@@ -53,7 +53,7 @@ namespace Rayni
 
 	Transform Transform::from_variant_map(const Variant &v)
 	{
-		auto &map = v.get_map();
+		auto &map = v.as_map();
 
 		if (map.size() != 1)
 			throw Variant::Exception(v, "transform map must contain a single key value pair");
@@ -97,7 +97,7 @@ namespace Rayni
 
 	Transform Transform::from_variant_vector(const Variant &v)
 	{
-		auto &vector = v.get_vector();
+		auto &vector = v.as_vector();
 
 		if (vector.size() < 2)
 			throw Variant::Exception(v, "transform vector must contain at least 2 elements");

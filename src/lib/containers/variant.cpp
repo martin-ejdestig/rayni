@@ -121,13 +121,13 @@ namespace Rayni
 
 	const Variant &Variant::get(const std::string &key) const
 	{
-		auto i = get_map_iterator(key);
+		auto i = map_iterator(key);
 		if (i == value.map.cend())
 			throw Exception(*this, "key \"" + key + "\" not found");
 		return i->second;
 	}
 
-	Variant::Map::const_iterator Variant::get_map_iterator(const std::string &key) const
+	Variant::Map::const_iterator Variant::map_iterator(const std::string &key) const
 	{
 		require_type(Type::MAP);
 		return value.map.find(key);
@@ -264,12 +264,12 @@ namespace Rayni
 		return str;
 	}
 
-	std::string Variant::get_path() const
+	std::string Variant::path() const
 	{
 		if (!parent)
 			return "";
 
-		std::string path = parent->get_path();
+		std::string parent_path = parent->path();
 
 		if (parent->is_map())
 		{
@@ -278,23 +278,22 @@ namespace Rayni
 				if (&key_value.second == this)
 				{
 					const std::string &key = key_value.first;
-					path += "['" + key + "']";
-					break;
+					return parent_path + "['" + key + "']";
 				}
 			}
 		}
 		else if (parent->is_vector())
 		{
 			auto index = this - &parent->value.vector[0];
-			path += "[" + std::to_string(index) + "]";
+			return parent_path + "[" + std::to_string(index) + "]";
 		}
 
-		return path;
+		return parent_path;
 	}
 
 	std::string Variant::prepend_path_if_has_parent(const std::string &str) const
 	{
-		return parent ? get_path() + ": " + str : str;
+		return parent ? path() + ": " + str : str;
 	}
 
 	void Variant::require_type(Type required_type) const

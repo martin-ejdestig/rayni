@@ -27,7 +27,7 @@ namespace Rayni
 {
 	void ScopedStopwatch::print_result() const
 	{
-		std::string duration = DurationFormatter().set_seconds_precision(6).format(stopwatch.get_duration());
+		std::string duration = DurationFormatter().set_seconds_precision(6).format(stopwatch.duration());
 		ostream << prefix << ": " << duration << '\n';
 	}
 }

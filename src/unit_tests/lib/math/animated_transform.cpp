@@ -40,10 +40,10 @@ namespace Rayni
 		        real_t abs_error)
 		{
 			auto transform_at_time = animated_transform.interpolate(time);
-			auto m1 = transform_at_time.get_matrix();
-			auto m1_inv = transform_at_time.inverse().get_matrix();
-			auto m2 = transform.get_matrix();
-			auto m2_inv = transform.inverse().get_matrix();
+			auto m1 = transform_at_time.matrix();
+			auto m1_inv = transform_at_time.inverse_matrix();
+			auto m2 = transform.matrix();
+			auto m2_inv = transform.inverse_matrix();
 
 			for (unsigned int i = 0; i < 4; i++)
 			{
@@ -138,11 +138,11 @@ namespace Rayni
 		AABB aabb = AnimatedTransform(0, Transform::identity(), 1, Transform::scale(2))
 		                    .motion_bounds(AABB({-1, -2, -3}, {4, 5, 6}));
 
-		EXPECT_NEAR(-2, aabb.get_minimum().x(), 1e-6);
-		EXPECT_NEAR(-4, aabb.get_minimum().y(), 1e-6);
-		EXPECT_NEAR(-6, aabb.get_minimum().z(), 1e-6);
-		EXPECT_NEAR(8, aabb.get_maximum().x(), 1e-6);
-		EXPECT_NEAR(10, aabb.get_maximum().y(), 1e-6);
-		EXPECT_NEAR(12, aabb.get_maximum().z(), 1e-6);
+		EXPECT_NEAR(-2, aabb.minimum().x(), 1e-6);
+		EXPECT_NEAR(-4, aabb.minimum().y(), 1e-6);
+		EXPECT_NEAR(-6, aabb.minimum().z(), 1e-6);
+		EXPECT_NEAR(8, aabb.maximum().x(), 1e-6);
+		EXPECT_NEAR(10, aabb.maximum().y(), 1e-6);
+		EXPECT_NEAR(12, aabb.maximum().z(), 1e-6);
 	}
 }

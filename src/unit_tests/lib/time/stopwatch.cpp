@@ -40,23 +40,23 @@ namespace Rayni
 	{
 		Stopwatch stopwatch;
 
-		auto duration0 = stopwatch.get_duration();
+		auto duration0 = stopwatch.duration();
 		stopwatch.start();
-		auto duration1 = stopwatch.get_duration();
-		auto duration2 = stopwatch.get_duration();
+		auto duration1 = stopwatch.duration();
+		auto duration2 = stopwatch.duration();
 		stopwatch.stop();
-		auto duration3 = stopwatch.get_duration();
-		auto duration4 = stopwatch.get_duration();
+		auto duration3 = stopwatch.duration();
+		auto duration4 = stopwatch.duration();
 		EXPECT_EQ(duration0.count(), 0);
 		EXPECT_GE(duration1.count(), 0);
 		EXPECT_GE(duration2.count(), duration1.count());
 		EXPECT_GE(duration3.count(), duration2.count());
 		EXPECT_EQ(duration4.count(), duration3.count());
 
-		Stopwatch::time_point time_point1;
-		Stopwatch::time_point time_point2 = time_point1 + std::chrono::seconds(10);
+		Stopwatch::clock::time_point time_point1;
+		Stopwatch::clock::time_point time_point2 = time_point1 + std::chrono::seconds(10);
 		stopwatch.start(time_point1);
 		stopwatch.stop(time_point2);
-		EXPECT_EQ((time_point2 - time_point1).count(), stopwatch.get_duration().count());
+		EXPECT_EQ((time_point2 - time_point1).count(), stopwatch.duration().count());
 	}
 }

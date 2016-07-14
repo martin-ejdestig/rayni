@@ -38,24 +38,24 @@ namespace Rayni
 		{
 		}
 
-		AABB(const Vector3 &minimum, const Vector3 &maximum) : minimum(minimum), maximum(maximum)
+		AABB(const Vector3 &minimum, const Vector3 &maximum) : minimum_(minimum), maximum_(maximum)
 		{
 		}
 
-		const Vector3 &get_minimum() const
+		const Vector3 &minimum() const
 		{
-			return minimum;
+			return minimum_;
 		}
 
-		const Vector3 &get_maximum() const
+		const Vector3 &maximum() const
 		{
-			return maximum;
+			return maximum_;
 		}
 
 		AABB &merge(const AABB &aabb)
 		{
-			minimum = Vector3::min(minimum, aabb.minimum);
-			maximum = Vector3::max(maximum, aabb.maximum);
+			minimum_ = Vector3::min(minimum(), aabb.minimum());
+			maximum_ = Vector3::max(maximum(), aabb.maximum());
 			return *this;
 		}
 
@@ -73,12 +73,12 @@ namespace Rayni
 
 		AABB intersection(const AABB &aabb) const
 		{
-			return AABB(Vector3::max(minimum, aabb.minimum), Vector3::min(maximum, aabb.maximum));
+			return AABB(Vector3::max(minimum(), aabb.minimum()), Vector3::min(maximum(), aabb.maximum()));
 		}
 
 		real_t surface_area() const
 		{
-			Vector3 d = maximum - minimum;
+			Vector3 d = maximum() - minimum();
 			return 2 * (d.x() * d.y() + d.x() * d.z() + d.y() * d.z());
 		}
 
@@ -86,12 +86,12 @@ namespace Rayni
 
 		bool is_planar(unsigned int axis) const
 		{
-			return minimum[axis] == maximum[axis];
+			return minimum()[axis] == maximum()[axis];
 		}
 
 	private:
-		Vector3 minimum = Vector3::infinity();
-		Vector3 maximum = -Vector3::infinity();
+		Vector3 minimum_ = Vector3::infinity();
+		Vector3 maximum_ = -Vector3::infinity();
 	};
 
 	struct AABB::Split
@@ -101,11 +101,11 @@ namespace Rayni
 
 	inline AABB::Split AABB::split(unsigned int axis, real_t pos) const
 	{
-		assert(pos >= minimum[axis] && pos <= maximum[axis]);
+		assert(pos >= minimum()[axis] && pos <= maximum()[axis]);
 
 		AABB left = *this, right = *this;
-		left.maximum[axis] = pos;
-		right.minimum[axis] = pos;
+		left.maximum_[axis] = pos;
+		right.minimum_[axis] = pos;
 
 		return {left, right};
 	}

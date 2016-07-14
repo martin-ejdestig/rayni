@@ -23,21 +23,21 @@
 
 namespace Rayni
 {
-	void Stopwatch::start(time_point time_point)
+	void Stopwatch::start(clock::time_point time_point)
 	{
 		started = true;
 		time_start = time_point;
 		time_end = time_start;
 	}
 
-	void Stopwatch::stop(time_point time_point)
+	void Stopwatch::stop(clock::time_point time_point)
 	{
 		assert(started && time_start <= time_point);
 		started = false;
 		time_end = time_point;
 	}
 
-	Stopwatch::duration Stopwatch::get_duration() const
+	Stopwatch::clock::duration Stopwatch::duration() const
 	{
 		return (started ? clock::now() : time_end) - time_start;
 	}

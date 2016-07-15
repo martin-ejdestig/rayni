@@ -5,6 +5,7 @@ lib_sources = [
     'containers/listener_list.h',
     'containers/variant.cpp',
     'containers/variant.h',
+    'file_formats/file_format_exception.h',
     'file_formats/image/image_format.cpp',
     'file_formats/image/image_format.h',
     'image.cpp',

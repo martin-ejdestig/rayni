@@ -1,3 +1,7 @@
+lib_dependencies = [
+    dependency('libpng', version : '>=1.6')
+]
+
 lib_sources = [
     'color.cpp',
     'color.h',
@@ -8,6 +12,8 @@ lib_sources = [
     'file_formats/file_format_exception.h',
     'file_formats/image/image_format.cpp',
     'file_formats/image/image_format.h',
+    'file_formats/image/png_reader.cpp',
+    'file_formats/image/png_reader.h',
     'image.cpp',
     'image.h',
     'math/aabb.cpp',
@@ -51,5 +57,6 @@ lib_sources = [
 ]
 
 lib = static_library('rayni',
+                     dependencies : lib_dependencies,
                      include_directories : src_incdir,
                      sources : lib_sources)

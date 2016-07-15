@@ -4,6 +4,7 @@ lib_unit_tests_sources = [
     'containers/listener_list.cpp',
     'containers/variant.cpp',
     'file_formats/image/image_format.cpp',
+    'file_formats/image/png_reader.cpp',
     'image.cpp',
     'math/aabb.cpp',
     'math/animated_transform.cpp',

@@ -107,7 +107,7 @@ namespace Rayni
 		};
 
 		EXPECT_EQ(ImageFormat::Type::UNDETERMINED,
-		          create_and_determine_type("exr_corrupt0_magic.bin", corrupt(exr_magic())));
+		          create_and_determine_type("exr_corrupt_magic.bin", corrupt(exr_magic())));
 
 		EXPECT_EQ(ImageFormat::Type::UNDETERMINED,
 		          create_and_determine_type("jpeg_corrupt_magic.bin", corrupt(jpeg_magic())));

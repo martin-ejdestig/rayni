@@ -41,8 +41,8 @@ namespace Rayni
 		static Type determine_type_from_file(const std::string &file_name);
 
 	private:
-		static Type determine_type_from_extension(const std::string &file_name);
 		static Type determine_type_from_magic(const std::string &file_name);
+		static Type determine_type_from_extension(const std::string &file_name);
 	};
 }
 

@@ -62,8 +62,7 @@ namespace Rayni
 	private:
 		static void write_data_to_file(const std::string &path, const std::vector<std::uint8_t> &data)
 		{
-			std::ofstream file;
-			file.open(path, std::ios_base::binary);
+			std::ofstream file(path, std::ios_base::binary);
 			std::copy(data.begin(), data.end(), std::ostream_iterator<std::uint8_t>(file));
 			if (!file.good())
 				FAIL() << "Failed to write to " << path;

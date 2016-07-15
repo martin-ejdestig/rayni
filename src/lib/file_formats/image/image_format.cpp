@@ -17,6 +17,8 @@
  * along with Rayni. If not, see <http://www.gnu.org/licenses/>.
  */
 
+#include "lib/file_formats/image/image_format.h"
+
 #include <algorithm>
 #include <cstdint>
 #include <experimental/filesystem>
@@ -25,7 +27,6 @@
 #include <string>
 #include <vector>
 
-#include "lib/file_formats/image/image_format.h"
 #include "lib/string/string.h"
 
 namespace Rayni

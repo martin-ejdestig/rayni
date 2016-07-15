@@ -43,11 +43,8 @@ namespace Rayni
 
 			output_to_file(path / "foo", "bla bla");
 
-			// TODO: Bug in libstdc++ 6.0.22. remove_all() does not recursively remove.
-			//       See https://gcc.gnu.org/bugzilla/show_bug.cgi?id=71313 . Hope that
-			//       it is fixed in a point release soon.
-			// std::experimental::filesystem::create_directory(path / "bar");
-			// output_to_file(path / "bar" / "baz", "yada yada");
+			std::experimental::filesystem::create_directory(path / "bar");
+			output_to_file(path / "bar" / "baz", "yada yada");
 		}
 
 		EXPECT_FALSE(std::experimental::filesystem::exists(path));

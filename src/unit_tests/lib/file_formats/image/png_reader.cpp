@@ -19,12 +19,12 @@
 
 #include <gtest/gtest.h>
 
-#include <algorithm>
 #include <cstdint>
-#include <fstream>
+#include <string>
 #include <vector>
 
 #include "lib/file_formats/image/png_reader.h"
+#include "lib/file_formats/write_to_file.h"
 #include "lib/image.h"
 #include "lib/system/scoped_temp_dir.h"
 
@@ -33,14 +33,6 @@ namespace Rayni
 	class PNGReaderTest : public testing::Test
 	{
 	protected:
-		static void create_png(const std::string &path, const std::vector<std::uint8_t> &data)
-		{
-			std::ofstream file(path, std::ios_base::binary);
-			std::copy(data.begin(), data.end(), std::ostream_iterator<std::uint8_t>(file));
-			if (!file.good())
-				FAIL() << "Failed to write to " << path;
-		}
-
 		static std::vector<std::uint8_t> png_data()
 		{
 			return {0x89, 0x50, 0x4e, 0x47, 0x0d, 0x0a, 0x1a, 0x0a, 0x00, 0x00, 0x00, 0x0d, 0x49, 0x48,
@@ -75,8 +67,8 @@ namespace Rayni
 		const std::string corrupt_path = temp_dir.path() / "corrupt.png";
 		const std::string does_not_exist_path = temp_dir.path() / "does_not_exist.png";
 
-		create_png(valid_path, png_data());
-		create_png(corrupt_path, corrupt_png_data());
+		write_to_file(valid_path, png_data());
+		write_to_file(corrupt_path, corrupt_png_data());
 
 		Image image = PNGReader().read_file(valid_path);
 

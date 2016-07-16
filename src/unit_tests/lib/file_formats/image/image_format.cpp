@@ -19,12 +19,12 @@
 
 #include <gtest/gtest.h>
 
-#include <algorithm>
 #include <cstdint>
-#include <fstream>
+#include <string>
 #include <vector>
 
 #include "lib/file_formats/image/image_format.h"
+#include "lib/file_formats/write_to_file.h"
 #include "lib/system/scoped_temp_dir.h"
 
 namespace Rayni
@@ -36,7 +36,7 @@ namespace Rayni
 		                                            const std::vector<std::uint8_t> &data)
 		{
 			std::experimental::filesystem::path path = temp_dir.path() / file_name;
-			write_data_to_file(path, data);
+			write_to_file(path, data);
 			return ImageFormat::determine_type_from_file(path);
 		}
 
@@ -61,14 +61,6 @@ namespace Rayni
 		}
 
 	private:
-		static void write_data_to_file(const std::string &path, const std::vector<std::uint8_t> &data)
-		{
-			std::ofstream file(path, std::ios_base::binary);
-			std::copy(data.begin(), data.end(), std::ostream_iterator<std::uint8_t>(file));
-			if (!file.good())
-				FAIL() << "Failed to write to " << path;
-		}
-
 		ScopedTempDir temp_dir;
 	};
 

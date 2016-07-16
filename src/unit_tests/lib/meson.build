@@ -5,6 +5,7 @@ lib_unit_tests_sources = [
     'containers/variant.cpp',
     'file_formats/image/image_format.cpp',
     'file_formats/image/png_reader.cpp',
+    'file_formats/image/png_writer.cpp',
     'file_formats/write_to_file.cpp',
     'image.cpp',
     'math/aabb.cpp',

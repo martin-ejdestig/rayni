@@ -14,6 +14,8 @@ lib_sources = [
     'file_formats/image/image_format.h',
     'file_formats/image/png_reader.cpp',
     'file_formats/image/png_reader.h',
+    'file_formats/image/png_writer.cpp',
+    'file_formats/image/png_writer.h',
     'file_formats/write_to_file.cpp',
     'file_formats/write_to_file.h',
     'image.cpp',

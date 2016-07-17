@@ -4,6 +4,7 @@ lib_unit_tests_sources = [
     'containers/listener_list.cpp',
     'containers/variant.cpp',
     'file_formats/image/image_format.cpp',
+    'file_formats/image/jpeg_reader.cpp',
     'file_formats/image/png_reader.cpp',
     'file_formats/image/png_writer.cpp',
     'file_formats/image/webp_reader.cpp',

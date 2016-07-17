@@ -1,4 +1,5 @@
 lib_dependencies = [
+    dependency('libjpeg', version : '>=0.29'),
     dependency('libpng', version : '>=1.6'),
     dependency('libwebp', version : '>=0.4')
 ]
@@ -13,6 +14,8 @@ lib_sources = [
     'file_formats/file_format_exception.h',
     'file_formats/image/image_format.cpp',
     'file_formats/image/image_format.h',
+    'file_formats/image/jpeg_reader.cpp',
+    'file_formats/image/jpeg_reader.h',
     'file_formats/image/png_reader.cpp',
     'file_formats/image/png_reader.h',
     'file_formats/image/png_writer.cpp',

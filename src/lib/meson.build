@@ -1,7 +1,8 @@
 lib_dependencies = [
     dependency('libjpeg', version : '>=0.29'),
     dependency('libpng', version : '>=1.6'),
-    dependency('libwebp', version : '>=0.4')
+    dependency('libwebp', version : '>=0.4'),
+    dependency('OpenEXR', version : '>=2.2.0')
 ]
 
 lib_sources = [
@@ -12,6 +13,8 @@ lib_sources = [
     'containers/variant.cpp',
     'containers/variant.h',
     'file_formats/file_format_exception.h',
+    'file_formats/image/exr_reader.cpp',
+    'file_formats/image/exr_reader.h',
     'file_formats/image/image_format.cpp',
     'file_formats/image/image_format.h',
     'file_formats/image/jpeg_reader.cpp',

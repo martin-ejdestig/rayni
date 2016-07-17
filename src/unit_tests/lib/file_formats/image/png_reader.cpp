@@ -63,13 +63,9 @@ namespace Rayni
 		static constexpr Color VALID_COLORS[VALID_HEIGHT][VALID_WIDTH] = {{Color::red(), Color::yellow()},
 		                                                                  {Color::green(), Color::blue()}};
 		ScopedTempDir temp_dir;
+
 		const std::string valid_path = temp_dir.path() / "valid.png";
-		const std::string corrupt_path = temp_dir.path() / "corrupt.png";
-		const std::string does_not_exist_path = temp_dir.path() / "does_not_exist.png";
-
 		write_to_file(valid_path, png_data());
-		write_to_file(corrupt_path, corrupt_png_data());
-
 		Image image = PNGReader().read_file(valid_path);
 
 		ASSERT_EQ(VALID_WIDTH, image.width());
@@ -88,7 +84,10 @@ namespace Rayni
 			}
 		}
 
+		const std::string corrupt_path = temp_dir.path() / "corrupt.png";
+		write_to_file(corrupt_path, corrupt_png_data());
 		EXPECT_THROW(PNGReader().read_file(corrupt_path), PNGReader::Exception);
-		EXPECT_THROW(PNGReader().read_file(does_not_exist_path), PNGReader::Exception);
+
+		EXPECT_THROW(PNGReader().read_file(temp_dir.path() / "does_not_exist.png"), PNGReader::Exception);
 	}
 }

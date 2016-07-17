@@ -1,5 +1,6 @@
 lib_dependencies = [
-    dependency('libpng', version : '>=1.6')
+    dependency('libpng', version : '>=1.6'),
+    dependency('libwebp', version : '>=0.4')
 ]
 
 lib_sources = [
@@ -16,6 +17,8 @@ lib_sources = [
     'file_formats/image/png_reader.h',
     'file_formats/image/png_writer.cpp',
     'file_formats/image/png_writer.h',
+    'file_formats/image/webp_reader.cpp',
+    'file_formats/image/webp_reader.h',
     'file_formats/write_to_file.cpp',
     'file_formats/write_to_file.h',
     'image.cpp',

@@ -8,6 +8,7 @@ lib_unit_tests_sources = [
     'file_formats/image/jpeg_reader.cpp',
     'file_formats/image/png_reader.cpp',
     'file_formats/image/png_writer.cpp',
+    'file_formats/image/tga_reader.cpp',
     'file_formats/image/webp_reader.cpp',
     'file_formats/write_to_file.cpp',
     'image.cpp',

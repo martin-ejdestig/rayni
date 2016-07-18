@@ -23,6 +23,8 @@ lib_sources = [
     'file_formats/image/png_reader.h',
     'file_formats/image/png_writer.cpp',
     'file_formats/image/png_writer.h',
+    'file_formats/image/tga_reader.cpp',
+    'file_formats/image/tga_reader.h',
     'file_formats/image/webp_reader.cpp',
     'file_formats/image/webp_reader.h',
     'file_formats/write_to_file.cpp',

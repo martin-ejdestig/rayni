@@ -17,6 +17,8 @@ lib_sources = [
     'file_formats/image/exr_reader.h',
     'file_formats/image/image_format.cpp',
     'file_formats/image/image_format.h',
+    'file_formats/image/image_reader.cpp',
+    'file_formats/image/image_reader.h',
     'file_formats/image/jpeg_reader.cpp',
     'file_formats/image/jpeg_reader.h',
     'file_formats/image/png_reader.cpp',

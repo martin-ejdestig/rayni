@@ -89,6 +89,7 @@ namespace Rayni
 
 	inline std::size_t Image::offset_to(unsigned int x, unsigned int y) const
 	{
+		assert(x < width() && y < height());
 		return stride() * y + x * BYTES_PER_PIXEL;
 	}
 }

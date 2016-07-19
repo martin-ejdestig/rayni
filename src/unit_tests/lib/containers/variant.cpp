@@ -201,7 +201,7 @@ namespace Rayni
 
 	TEST(VariantTest, GetFromMap)
 	{
-		auto variant = Variant::map("key1", 123, "key2", "abc");
+		Variant variant = Variant::map("key1", 123, "key2", "abc");
 
 		EXPECT_EQ(123, variant.get("key1").as_int());
 		EXPECT_EQ(123, variant.get<int>("key1"));

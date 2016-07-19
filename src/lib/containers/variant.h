@@ -264,6 +264,12 @@ namespace Rayni
 		template <typename T>
 		const T &as() const;
 
+		bool has(const std::string &key) const
+		{
+			auto i = map_iterator(key);
+			return i != value.map.cend();
+		}
+
 		const Variant &get(const std::string &key) const;
 
 		template <typename T>

@@ -199,6 +199,24 @@ namespace Rayni
 		EXPECT_EQ(123, Variant(123).to<Foo *>()->bar);
 	}
 
+	TEST(VariantTest, Has)
+	{
+		Variant variant = Variant::map("key1", 123, "key2", "abc");
+
+		EXPECT_TRUE(variant.has("key1"));
+		EXPECT_TRUE(variant.has("key2"));
+		EXPECT_FALSE(variant.has("key3"));
+
+		EXPECT_THROW(Variant().has("key"), Variant::Exception);
+		EXPECT_THROW(Variant::vector().has("key"), Variant::Exception);
+		EXPECT_THROW(Variant(false).has("key"), Variant::Exception);
+		EXPECT_THROW(Variant(0).has("key"), Variant::Exception);
+		EXPECT_THROW(Variant(0u).has("key"), Variant::Exception);
+		EXPECT_THROW(Variant(0.0f).has("key"), Variant::Exception);
+		EXPECT_THROW(Variant(0.0).has("key"), Variant::Exception);
+		EXPECT_THROW(Variant("").has("key"), Variant::Exception);
+	}
+
 	TEST(VariantTest, GetFromMap)
 	{
 		Variant variant = Variant::map("key1", 123, "key2", "abc");

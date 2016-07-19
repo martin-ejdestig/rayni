@@ -26,6 +26,7 @@
 #include <utility>
 
 #include "lib/color.h"
+#include "lib/file_formats/image/image_reader.h"
 
 namespace Rayni
 {
@@ -50,6 +51,18 @@ namespace Rayni
 			buffer()[i + R_PIXEL_OFFSET] = 0x00;
 			buffer()[i + G_PIXEL_OFFSET] = 0x00;
 			buffer()[i + B_PIXEL_OFFSET] = 0x00;
+		}
+	}
+
+	Image Image::from_variant(const Variant &v)
+	{
+		try
+		{
+			return ImageReader().read_file(v.get<std::string>("path"));
+		}
+		catch (ImageReader::Exception &e)
+		{
+			throw Variant::Exception(v, e.what());
 		}
 	}
 

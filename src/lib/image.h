@@ -27,6 +27,7 @@
 #include <vector>
 
 #include "lib/color.h"
+#include "lib/containers/variant.h"
 #include "lib/math/math.h"
 
 namespace Rayni
@@ -40,6 +41,8 @@ namespace Rayni
 		Image(const Image &other) = delete;
 		Image(Image &&other) noexcept;
 		Image(unsigned int width, unsigned int height);
+
+		static Image from_variant(const Variant &v);
 
 		Image &operator=(const Image &other) = delete;
 		Image &operator=(Image &&other) noexcept;

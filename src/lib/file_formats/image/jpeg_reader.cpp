@@ -90,6 +90,8 @@ namespace Rayni
 	 * Also note that the return value of various libjpeg(-turbo) functions are ignored below
 	 * since they can only return false when a suspending input source is used according to the
 	 * API documentation. Take advantage of this to limit calls to jpeg_destroy_decompress().
+	 * See libjpeg.txt and example.c in the libjpeg-turbo source root directory for more
+	 * information.
 	 */
 	bool JPEGReader::decode_file_to_image(std::FILE &file, Image &image) const
 	{

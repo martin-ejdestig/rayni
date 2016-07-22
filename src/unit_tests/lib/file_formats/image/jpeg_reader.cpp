@@ -78,6 +78,13 @@ namespace Rayni
 			data.at(20) ^= 0x01;
 			return data;
 		}
+
+		static std::vector<std::uint8_t> short_jpeg_data()
+		{
+			auto data = jpeg_data();
+			data.resize(data.size() - 198);
+			return data;
+		}
 	};
 
 	TEST_F(JPEGReaderTest, ReadFile)
@@ -111,6 +118,10 @@ namespace Rayni
 		const std::string corrupt_path = temp_dir.path() / "corrupt.jpg";
 		write_to_file(corrupt_path, corrupt_jpeg_data());
 		EXPECT_THROW(JPEGReader().read_file(corrupt_path), JPEGReader::Exception);
+
+		const std::string short_path = temp_dir.path() / "short.jpg";
+		write_to_file(short_path, short_jpeg_data());
+		EXPECT_THROW(JPEGReader().read_file(short_path), JPEGReader::Exception);
 
 		EXPECT_THROW(JPEGReader().read_file(temp_dir.path() / "does_not_exist.jpg"), JPEGReader::Exception);
 	}

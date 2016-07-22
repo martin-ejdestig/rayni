@@ -70,6 +70,13 @@ namespace Rayni
 			data.at(data.size() - 20) ^= 0x01;
 			return data;
 		}
+
+		static std::vector<std::uint8_t> short_exr_data()
+		{
+			auto data = exr_data();
+			data.pop_back();
+			return data;
+		}
 	};
 
 	TEST_F(EXRReaderTest, ReadFile)
@@ -103,6 +110,10 @@ namespace Rayni
 		const std::string corrupt_path = temp_dir.path() / "corrupt.exr";
 		write_to_file(corrupt_path, corrupt_exr_data());
 		EXPECT_THROW(EXRReader().read_file(corrupt_path), EXRReader::Exception);
+
+		const std::string short_path = temp_dir.path() / "short.exr";
+		write_to_file(short_path, short_exr_data());
+		EXPECT_THROW(EXRReader().read_file(short_path), EXRReader::Exception);
 
 		EXPECT_THROW(EXRReader().read_file(temp_dir.path() / "does_not_exist.exr"), EXRReader::Exception);
 	}

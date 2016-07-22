@@ -46,6 +46,13 @@ namespace Rayni
 			data.at(16) ^= 0x01;
 			return data;
 		}
+
+		static std::vector<std::uint8_t> short_tga_data()
+		{
+			auto data = tga_data();
+			data.pop_back();
+			return data;
+		}
 	};
 
 	TEST_F(TGAReaderTest, ReadFile)
@@ -79,6 +86,10 @@ namespace Rayni
 		const std::string corrupt_path = temp_dir.path() / "corrupt.tga";
 		write_to_file(corrupt_path, corrupt_tga_data());
 		EXPECT_THROW(TGAReader().read_file(corrupt_path), TGAReader::Exception);
+
+		const std::string short_path = temp_dir.path() / "short.tga";
+		write_to_file(short_path, short_tga_data());
+		EXPECT_THROW(TGAReader().read_file(short_path), TGAReader::Exception);
 
 		EXPECT_THROW(TGAReader().read_file(temp_dir.path() / "does_not_exist.tga"), TGAReader::Exception);
 	}

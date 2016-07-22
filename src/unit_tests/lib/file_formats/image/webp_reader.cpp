@@ -47,6 +47,13 @@ namespace Rayni
 			data.at(data.size() - 6) ^= 0x01;
 			return data;
 		}
+
+		static std::vector<std::uint8_t> short_webp_data()
+		{
+			auto data = webp_data();
+			data.pop_back();
+			return data;
+		}
 	};
 
 	TEST_F(WebPReaderTest, ReadFile)
@@ -78,6 +85,10 @@ namespace Rayni
 		const std::string corrupt_path = temp_dir.path() / "corrupt.webp";
 		write_to_file(corrupt_path, corrupt_webp_data());
 		EXPECT_THROW(WebPReader().read_file(corrupt_path), WebPReader::Exception);
+
+		const std::string short_path = temp_dir.path() / "short.webp";
+		write_to_file(short_path, short_webp_data());
+		EXPECT_THROW(WebPReader().read_file(short_path), WebPReader::Exception);
 
 		EXPECT_THROW(WebPReader().read_file(temp_dir.path() / "does_not_exist.webp"), WebPReader::Exception);
 	}

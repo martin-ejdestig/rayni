@@ -12,6 +12,7 @@ lib_unit_tests_sources = [
     'file_formats/image/tga_reader.cpp',
     'file_formats/image/webp_reader.cpp',
     'file_formats/write_to_file.cpp',
+    'function/scope_exit.cpp',
     'image.cpp',
     'math/aabb.cpp',
     'math/animated_transform.cpp',

@@ -31,6 +31,7 @@ lib_sources = [
     'file_formats/image/webp_reader.h',
     'file_formats/write_to_file.cpp',
     'file_formats/write_to_file.h',
+    'function/scope_exit.h',
     'image.cpp',
     'image.h',
     'math/aabb.cpp',

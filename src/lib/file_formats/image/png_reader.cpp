@@ -25,30 +25,17 @@
 #include <string>
 #include <vector>
 
+#include "lib/function/scope_exit.h"
 #include "lib/image.h"
 
 namespace Rayni
 {
-	struct PNGReader::PNGImageFreer
-	{
-		explicit PNGImageFreer(png_image &image) : image(image)
-		{
-		}
-
-		~PNGImageFreer()
-		{
-			png_image_free(&image);
-		}
-
-		png_image &image;
-	};
-
 	Image PNGReader::read_file(const std::string &file_name)
 	{
 		png_image pngimage;
 		std::memset(&pngimage, 0, sizeof pngimage);
 		pngimage.version = PNG_IMAGE_VERSION;
-		PNGImageFreer pngimage_freer(pngimage);
+		auto pngimage_freer = scope_exit([&] { png_image_free(&pngimage); });
 
 		if (!png_image_begin_read_from_file(&pngimage, file_name.c_str()))
 			throw Exception(file_name, pngimage.message);

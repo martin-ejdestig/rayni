@@ -33,9 +33,6 @@ namespace Rayni
 		using Exception = FileFormatException;
 
 		Image read_file(const std::string &file_name);
-
-	private:
-		struct PNGImageFreer;
 	};
 }
 

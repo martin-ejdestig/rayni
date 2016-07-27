@@ -23,8 +23,6 @@
 #include <cstdio>
 #include <string>
 
-#include <jpeglib.h>
-
 #include "lib/file_formats/file_format_exception.h"
 #include "lib/image.h"
 
@@ -42,7 +40,6 @@ namespace Rayni
 		struct ErrorManager;
 
 		bool decode_file_to_image(std::FILE &file, Image &image) const;
-		bool color_space_requires_manual_conversion(J_COLOR_SPACE color_space) const;
 	};
 }
 

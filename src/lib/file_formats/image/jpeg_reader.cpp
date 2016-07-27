@@ -19,14 +19,22 @@
 
 #include "lib/file_formats/image/jpeg_reader.h"
 
+#include <jpeglib.h>
+
 #include <csetjmp>
 #include <cstdio>
 #include <memory>
 #include <string>
 
-#include <jpeglib.h>
-
 #include "lib/image.h"
+
+namespace
+{
+	bool color_space_requires_manual_conversion(J_COLOR_SPACE color_space)
+	{
+		return color_space != JCS_GRAYSCALE && color_space != JCS_RGB && color_space != JCS_YCbCr;
+	}
+}
 
 namespace Rayni
 {
@@ -134,10 +142,5 @@ namespace Rayni
 		jpeg_destroy_decompress(&jpeg_decompress);
 
 		return true;
-	}
-
-	bool JPEGReader::color_space_requires_manual_conversion(J_COLOR_SPACE color_space) const
-	{
-		return color_space != JCS_GRAYSCALE && color_space != JCS_RGB && color_space != JCS_YCbCr;
 	}
 }

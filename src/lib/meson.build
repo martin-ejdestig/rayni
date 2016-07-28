@@ -1,5 +1,5 @@
 lib_dependencies = [
-    dependency('libjpeg', version : '>=0.29'),
+    dependency('libjpeg', version : '>=1.5.0'),
     dependency('libpng', version : '>=1.6'),
     dependency('libwebp', version : '>=0.4'),
     dependency('OpenEXR', version : '>=2.2.0')

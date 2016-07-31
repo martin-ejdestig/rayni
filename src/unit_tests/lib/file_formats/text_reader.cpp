@@ -242,7 +242,7 @@ namespace Rayni
 				if (skip_string("false"))
 					return false;
 
-				throw Exception(position(), "expected boolean true or false");
+				throw Exception(position(), "expected \"true\" or \"false\"");
 			}
 		};
 

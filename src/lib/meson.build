@@ -29,6 +29,8 @@ lib_sources = [
     'file_formats/image/tga_reader.h',
     'file_formats/image/webp_reader.cpp',
     'file_formats/image/webp_reader.h',
+    'file_formats/text_reader.cpp',
+    'file_formats/text_reader.h',
     'file_formats/write_to_file.cpp',
     'file_formats/write_to_file.h',
     'function/scope_exit.h',

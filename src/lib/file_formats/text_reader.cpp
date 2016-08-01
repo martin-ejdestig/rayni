@@ -92,7 +92,7 @@ namespace Rayni
 	std::string TextReader::Position::to_string() const
 	{
 		if (!is_set())
-			return "";
+			return prefix;
 
 		std::string str;
 

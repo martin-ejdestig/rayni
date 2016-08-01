@@ -97,7 +97,7 @@ namespace Rayni
 		EXPECT_EQ("3:11", position.to_string());
 
 		position = TextReader::Position("prefix");
-		EXPECT_EQ("", position.to_string());
+		EXPECT_EQ("prefix", position.to_string());
 
 		position.next_line();
 		EXPECT_EQ("prefix:1:1", position.to_string());

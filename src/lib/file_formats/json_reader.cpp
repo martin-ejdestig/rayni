@@ -23,7 +23,6 @@
 #include <utility>
 
 #include "lib/containers/variant.h"
-#include "lib/math/math.h"
 #include "lib/string/string.h"
 
 namespace Rayni

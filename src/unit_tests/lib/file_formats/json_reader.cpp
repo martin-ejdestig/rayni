@@ -153,11 +153,15 @@ namespace Rayni
 		EXPECT_THROW(JSONReader().read_string("{"), JSONReader::Exception);
 		EXPECT_THROW(JSONReader().read_string("{ "), JSONReader::Exception);
 		EXPECT_THROW(JSONReader().read_string("{\"a: }"), JSONReader::Exception);
+		EXPECT_THROW(JSONReader().read_string("{\"a\" }"), JSONReader::Exception);
 		EXPECT_THROW(JSONReader().read_string("{\"a\": "), JSONReader::Exception);
+		EXPECT_THROW(JSONReader().read_string("{\"a\" 1}"), JSONReader::Exception);
 		EXPECT_THROW(JSONReader().read_string("{\"a\": }"), JSONReader::Exception);
 		EXPECT_THROW(JSONReader().read_string("{\"a\": 1,}"), JSONReader::Exception);
 		EXPECT_THROW(JSONReader().read_string("{\"a\": 1 ,}"), JSONReader::Exception);
 		EXPECT_THROW(JSONReader().read_string("{\"a\": 1 , }"), JSONReader::Exception);
+
+		EXPECT_THROW(JSONReader().read_string("{\"duplicate\": 1, \"duplicate\": 2}"), JSONReader::Exception);
 	}
 
 	TEST(JSONReaderTest, Nested)

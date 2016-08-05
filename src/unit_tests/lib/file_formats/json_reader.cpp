@@ -78,6 +78,8 @@ namespace Rayni
 
 		EXPECT_THROW(JSONReader().read_string("[123.]"), JSONReader::Exception);
 		EXPECT_THROW(JSONReader().read_string("[-123.]"), JSONReader::Exception);
+		EXPECT_THROW(JSONReader().read_string("[.123]"), JSONReader::Exception);
+		EXPECT_THROW(JSONReader().read_string("[-.123]"), JSONReader::Exception);
 
 		EXPECT_NEAR(123e2, JSONReader().read_string("[123e2]").get(0).as_double(), 1e-100);
 		EXPECT_NEAR(-123e2, JSONReader().read_string("[-123e2]").get(0).as_double(), 1e-100);
@@ -94,6 +96,10 @@ namespace Rayni
 		EXPECT_THROW(JSONReader().read_string("[-123e+]"), JSONReader::Exception);
 		EXPECT_THROW(JSONReader().read_string("[123e-]"), JSONReader::Exception);
 		EXPECT_THROW(JSONReader().read_string("[-123e-]"), JSONReader::Exception);
+		EXPECT_THROW(JSONReader().read_string("[123E2]"), JSONReader::Exception);
+		EXPECT_THROW(JSONReader().read_string("[-123E2]"), JSONReader::Exception);
+		EXPECT_THROW(JSONReader().read_string("[123e2.0]"), JSONReader::Exception);
+		EXPECT_THROW(JSONReader().read_string("[-123e2.0]"), JSONReader::Exception);
 	}
 
 	TEST(JSONReaderTest, String)

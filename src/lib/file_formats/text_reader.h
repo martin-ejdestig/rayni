@@ -109,6 +109,14 @@ namespace Rayni
 			return at('\n');
 		}
 
+		bool at_eof() const
+		{
+			if (line.empty())
+				return true;
+
+			return line.size() - 1 == position_.line_index() && istream->eof();
+		}
+
 		bool skip_char(char c)
 		{
 			if (!at(c))

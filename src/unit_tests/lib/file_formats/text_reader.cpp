@@ -173,8 +173,11 @@ namespace Rayni
 		EXPECT_FALSE(reader.at_digit());
 		EXPECT_FALSE(reader.at_space());
 		EXPECT_FALSE(reader.at_newline());
+		EXPECT_TRUE(reader.at_eof());
 
 		reader.set_string("abc059d \t\r\ne");
+
+		EXPECT_FALSE(reader.at_eof());
 
 		EXPECT_TRUE(reader.at('a'));
 		reader.next();
@@ -198,13 +201,18 @@ namespace Rayni
 		EXPECT_TRUE(reader.at_space()); // '\t'
 		reader.next();
 		EXPECT_TRUE(reader.at_space()); // '\r'
+		EXPECT_FALSE(reader.at_newline());
 		reader.next();
 		EXPECT_TRUE(reader.at_space()); // '\n'
+		EXPECT_TRUE(reader.at_newline());
 		reader.next();
 
-		EXPECT_FALSE(reader.at_newline()); // 'e'
+		EXPECT_TRUE(reader.at('e'));
+		EXPECT_FALSE(reader.at_newline());
+		EXPECT_FALSE(reader.at_eof());
 		reader.next();
-		EXPECT_TRUE(reader.at_newline()); // '\n'
+		EXPECT_FALSE(reader.at('e'));
+		EXPECT_TRUE(reader.at_eof());
 	}
 
 	TEST(TextReaderTest, Skip)

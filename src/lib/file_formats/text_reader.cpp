@@ -83,8 +83,12 @@ namespace Rayni
 		}
 
 		// NOTE: std::getline() strips '\n'. There is no way to detect if '\n' was in
-		//       stream or not when end is reached. Remove use of std::getline()?
+		//       stream or not when end is reached. Also have to peek for istream->eof()
+		//       to be set if at last line and input ends with a '\n'. If this is not done
+		//       at_eof() will not work correctly as it is currently implemented. Remove use
+		//       of std::getline() to get rid of these quirks?
 		line += '\n';
+		istream->peek();
 
 		position_.next_line();
 	}

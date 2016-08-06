@@ -29,12 +29,17 @@ namespace Rayni
 {
 	Variant JSONReader::parse()
 	{
-		skip_space();
+		Variant value = parse_value();
 
-		if (!at('{') && !at('['))
-			throw Exception(position(), "expected { or [");
+		while (!at_eof())
+		{
+			if (!at_space())
+				throw Exception(position(), "expected space or end of document");
 
-		return parse_value();
+			next();
+		}
+
+		return value;
 	}
 
 	Variant JSONReader::parse_value()

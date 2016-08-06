@@ -24,96 +24,77 @@
 
 namespace Rayni
 {
-	TEST(JSONReaderTest, RootMustBeObjectOrArray)
-	{
-		EXPECT_TRUE(JSONReader().read_string("{}").is_map());
-		EXPECT_TRUE(JSONReader().read_string("[]").is_vector());
-
-		EXPECT_THROW(JSONReader().read_string(""), JSONReader::Exception);
-		EXPECT_THROW(JSONReader().read_string("\"abc\""), JSONReader::Exception);
-		EXPECT_THROW(JSONReader().read_string("123"), JSONReader::Exception);
-		EXPECT_THROW(JSONReader().read_string("true"), JSONReader::Exception);
-		EXPECT_THROW(JSONReader().read_string("null"), JSONReader::Exception);
-	}
-
-	TEST(JSONReaderTest, LeadingAndTrailingSpaceIgnored)
-	{
-		EXPECT_TRUE(JSONReader().read_string(" \n   \r\n \t {} \n  \r\n \t ").is_map());
-		EXPECT_TRUE(JSONReader().read_string(" \n   \r\n \t [] \n  \r\n \t ").is_vector());
-	}
-
 	TEST(JSONReaderTest, Null)
 	{
-		EXPECT_TRUE(JSONReader().read_string("[null]").get(0).is_none());
+		EXPECT_TRUE(JSONReader().read_string("null").is_none());
 	}
 
 	TEST(JSONReaderTest, Bool)
 	{
-		EXPECT_EQ(true, JSONReader().read_string("[true]").get(0).as_bool());
-		EXPECT_EQ(false, JSONReader().read_string("[false]").get(0).as_bool());
+		EXPECT_EQ(true, JSONReader().read_string("true").as_bool());
+		EXPECT_EQ(false, JSONReader().read_string("false").as_bool());
 	}
 
 	TEST(JSONReaderTest, Number)
 	{
-		EXPECT_THROW(JSONReader().read_string("[-]"), JSONReader::Exception);
+		EXPECT_THROW(JSONReader().read_string("-"), JSONReader::Exception);
 
-		EXPECT_NEAR(0, JSONReader().read_string("[0]").get(0).as_double(), 1e-100);
-		EXPECT_NEAR(0, JSONReader().read_string("[-0]").get(0).as_double(), 1e-100);
+		EXPECT_NEAR(0, JSONReader().read_string("0").as_double(), 1e-100);
+		EXPECT_NEAR(0, JSONReader().read_string("-0").as_double(), 1e-100);
 
-		EXPECT_THROW(JSONReader().read_string("[00]"), JSONReader::Exception);
-		EXPECT_THROW(JSONReader().read_string("[-00]"), JSONReader::Exception);
+		EXPECT_THROW(JSONReader().read_string("00"), JSONReader::Exception);
+		EXPECT_THROW(JSONReader().read_string("-00"), JSONReader::Exception);
 
-		EXPECT_NEAR(123, JSONReader().read_string("[123]").get(0).as_double(), 1e-100);
-		EXPECT_NEAR(-123, JSONReader().read_string("[-123]").get(0).as_double(), 1e-100);
+		EXPECT_NEAR(123, JSONReader().read_string("123").as_double(), 1e-100);
+		EXPECT_NEAR(-123, JSONReader().read_string("-123").as_double(), 1e-100);
 
-		EXPECT_THROW(JSONReader().read_string("[0123]"), JSONReader::Exception);
-		EXPECT_THROW(JSONReader().read_string("[-0123]"), JSONReader::Exception);
-		EXPECT_THROW(JSONReader().read_string("[123a]"), JSONReader::Exception);
-		EXPECT_THROW(JSONReader().read_string("[-123a]"), JSONReader::Exception);
+		EXPECT_THROW(JSONReader().read_string("0123"), JSONReader::Exception);
+		EXPECT_THROW(JSONReader().read_string("-0123"), JSONReader::Exception);
+		EXPECT_THROW(JSONReader().read_string("123a"), JSONReader::Exception);
+		EXPECT_THROW(JSONReader().read_string("-123a"), JSONReader::Exception);
 
-		EXPECT_NEAR(1.23, JSONReader().read_string("[1.23]").get(0).as_double(), 1e-100);
-		EXPECT_NEAR(-1.23, JSONReader().read_string("[-1.23]").get(0).as_double(), 1e-100);
-		EXPECT_NEAR(12.3, JSONReader().read_string("[12.3]").get(0).as_double(), 1e-100);
-		EXPECT_NEAR(-12.3, JSONReader().read_string("[-12.3]").get(0).as_double(), 1e-100);
+		EXPECT_NEAR(1.23, JSONReader().read_string("1.23").as_double(), 1e-100);
+		EXPECT_NEAR(-1.23, JSONReader().read_string("-1.23").as_double(), 1e-100);
+		EXPECT_NEAR(12.3, JSONReader().read_string("12.3").as_double(), 1e-100);
+		EXPECT_NEAR(-12.3, JSONReader().read_string("-12.3").as_double(), 1e-100);
 
-		EXPECT_THROW(JSONReader().read_string("[123.]"), JSONReader::Exception);
-		EXPECT_THROW(JSONReader().read_string("[-123.]"), JSONReader::Exception);
-		EXPECT_THROW(JSONReader().read_string("[.123]"), JSONReader::Exception);
-		EXPECT_THROW(JSONReader().read_string("[-.123]"), JSONReader::Exception);
+		EXPECT_THROW(JSONReader().read_string("123."), JSONReader::Exception);
+		EXPECT_THROW(JSONReader().read_string("-123."), JSONReader::Exception);
+		EXPECT_THROW(JSONReader().read_string(".123"), JSONReader::Exception);
+		EXPECT_THROW(JSONReader().read_string("-.123"), JSONReader::Exception);
 
-		EXPECT_NEAR(123e2, JSONReader().read_string("[123e2]").get(0).as_double(), 1e-100);
-		EXPECT_NEAR(-123e2, JSONReader().read_string("[-123e2]").get(0).as_double(), 1e-100);
-		EXPECT_NEAR(123e+2, JSONReader().read_string("[123e+2]").get(0).as_double(), 1e-100);
-		EXPECT_NEAR(-123e+2, JSONReader().read_string("[-123e+2]").get(0).as_double(), 1e-100);
-		EXPECT_NEAR(123e-2, JSONReader().read_string("[123e-2]").get(0).as_double(), 1e-100);
-		EXPECT_NEAR(-123e-2, JSONReader().read_string("[-123e-2]").get(0).as_double(), 1e-100);
+		EXPECT_NEAR(123e2, JSONReader().read_string("123e2").as_double(), 1e-100);
+		EXPECT_NEAR(-123e2, JSONReader().read_string("-123e2").as_double(), 1e-100);
+		EXPECT_NEAR(123e+2, JSONReader().read_string("123e+2").as_double(), 1e-100);
+		EXPECT_NEAR(-123e+2, JSONReader().read_string("-123e+2").as_double(), 1e-100);
+		EXPECT_NEAR(123e-2, JSONReader().read_string("123e-2").as_double(), 1e-100);
+		EXPECT_NEAR(-123e-2, JSONReader().read_string("-123e-2").as_double(), 1e-100);
 
-		EXPECT_THROW(JSONReader().read_string("[123e]"), JSONReader::Exception);
-		EXPECT_THROW(JSONReader().read_string("[-123e]"), JSONReader::Exception);
-		EXPECT_THROW(JSONReader().read_string("[123e.]"), JSONReader::Exception);
-		EXPECT_THROW(JSONReader().read_string("[-123e.]"), JSONReader::Exception);
-		EXPECT_THROW(JSONReader().read_string("[123e+]"), JSONReader::Exception);
-		EXPECT_THROW(JSONReader().read_string("[-123e+]"), JSONReader::Exception);
-		EXPECT_THROW(JSONReader().read_string("[123e-]"), JSONReader::Exception);
-		EXPECT_THROW(JSONReader().read_string("[-123e-]"), JSONReader::Exception);
-		EXPECT_THROW(JSONReader().read_string("[123E2]"), JSONReader::Exception);
-		EXPECT_THROW(JSONReader().read_string("[-123E2]"), JSONReader::Exception);
-		EXPECT_THROW(JSONReader().read_string("[123e2.0]"), JSONReader::Exception);
-		EXPECT_THROW(JSONReader().read_string("[-123e2.0]"), JSONReader::Exception);
+		EXPECT_THROW(JSONReader().read_string("123e"), JSONReader::Exception);
+		EXPECT_THROW(JSONReader().read_string("-123e"), JSONReader::Exception);
+		EXPECT_THROW(JSONReader().read_string("123e."), JSONReader::Exception);
+		EXPECT_THROW(JSONReader().read_string("-123e."), JSONReader::Exception);
+		EXPECT_THROW(JSONReader().read_string("123e+"), JSONReader::Exception);
+		EXPECT_THROW(JSONReader().read_string("-123e+"), JSONReader::Exception);
+		EXPECT_THROW(JSONReader().read_string("123e-"), JSONReader::Exception);
+		EXPECT_THROW(JSONReader().read_string("-123e-"), JSONReader::Exception);
+		EXPECT_THROW(JSONReader().read_string("123E2"), JSONReader::Exception);
+		EXPECT_THROW(JSONReader().read_string("-123E2"), JSONReader::Exception);
+		EXPECT_THROW(JSONReader().read_string("123e2.0"), JSONReader::Exception);
+		EXPECT_THROW(JSONReader().read_string("-123e2.0"), JSONReader::Exception);
 	}
 
 	TEST(JSONReaderTest, String)
 	{
-		EXPECT_EQ("", JSONReader().read_string("[\"\"]").get(0).as_string());
-		EXPECT_EQ("a", JSONReader().read_string("[\"a\"]").get(0).as_string());
-		EXPECT_EQ("abc", JSONReader().read_string("[\"abc\"]").get(0).as_string());
-		EXPECT_EQ("\b\t\n\f\r\"\\",
-		          JSONReader().read_string("[\"\\b\\t\\n\\f\\r\\\"\\\\\"]").get(0).as_string());
+		EXPECT_EQ("", JSONReader().read_string("\"\"").as_string());
+		EXPECT_EQ("a", JSONReader().read_string("\"a\"").as_string());
+		EXPECT_EQ("abc", JSONReader().read_string("\"abc\"").as_string());
+		EXPECT_EQ("\b\t\n\f\r\"\\", JSONReader().read_string("\"\\b\\t\\n\\f\\r\\\"\\\\\"").as_string());
 
-		EXPECT_THROW(JSONReader().read_string("[\"]"), JSONReader::Exception);
-		EXPECT_THROW(JSONReader().read_string("[\"abc\n\"]"), JSONReader::Exception);
-		EXPECT_THROW(JSONReader().read_string("[\"\\\u001f\"]"), JSONReader::Exception);
-		EXPECT_THROW(JSONReader().read_string("[\"\\a\"]"), JSONReader::Exception);
+		EXPECT_THROW(JSONReader().read_string("\""), JSONReader::Exception);
+		EXPECT_THROW(JSONReader().read_string("\"abc\n\""), JSONReader::Exception);
+		EXPECT_THROW(JSONReader().read_string("\"\\\u001f\""), JSONReader::Exception);
+		EXPECT_THROW(JSONReader().read_string("\"\\a\""), JSONReader::Exception);
 	}
 
 	TEST(JSONReaderTest, Array)
@@ -179,5 +160,22 @@ namespace Rayni
 		EXPECT_NEAR(3, root.get("a").get(1).get(1).as_double(), 1e-100);
 		EXPECT_NEAR(4, root.get("a").get(2).get("aa").as_double(), 1e-100);
 		EXPECT_NEAR(5, root.get("a").get(2).get("ab").get("abc").as_double(), 1e-100);
+	}
+
+	TEST(JSONReaderTest, LeadingAndTrailingSpaceIgnored)
+	{
+		EXPECT_TRUE(JSONReader().read_string("true\n").as_bool());
+		EXPECT_TRUE(JSONReader().read_string("\ntrue").as_bool());
+		EXPECT_TRUE(JSONReader().read_string("\ntrue\n").as_bool());
+		EXPECT_TRUE(JSONReader().read_string(" \n   \r\n \t true \n  \r\n \t ").as_bool());
+		EXPECT_TRUE(JSONReader().read_string(" \n   \r\n \t true \n  \r\n \t ").as_bool());
+	}
+
+	TEST(JSONReaderTest, TrailingGarbage)
+	{
+		EXPECT_THROW(JSONReader().read_string("true true"), JSONReader::Exception);
+		EXPECT_THROW(JSONReader().read_string("true \ntrue"), JSONReader::Exception);
+		EXPECT_THROW(JSONReader().read_string("true \ntrue "), JSONReader::Exception);
+		EXPECT_THROW(JSONReader().read_string("true \n true "), JSONReader::Exception);
 	}
 }

@@ -168,7 +168,13 @@ namespace Rayni
 	TEST(TextReaderTest, At)
 	{
 		TextReader reader;
-		reader.set_string("abc059d \t\r\ne\n");
+
+		EXPECT_FALSE(reader.at('a'));
+		EXPECT_FALSE(reader.at_digit());
+		EXPECT_FALSE(reader.at_space());
+		EXPECT_FALSE(reader.at_newline());
+
+		reader.set_string("abc059d \t\r\ne");
 
 		EXPECT_TRUE(reader.at('a'));
 		reader.next();

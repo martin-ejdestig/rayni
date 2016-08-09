@@ -18,6 +18,7 @@ lib_unit_tests_sources = [
     'image.cpp',
     'math/aabb.cpp',
     'math/animated_transform.cpp',
+    'math/big_endian_reader.cpp',
     'math/decomposed_matrix4x4.cpp',
     'math/enum.cpp',
     'math/hash.cpp',

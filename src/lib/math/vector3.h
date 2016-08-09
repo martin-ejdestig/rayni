@@ -21,6 +21,7 @@
 #define RAYNI_LIB_MATH_VECTOR3_H
 
 #include <algorithm>
+#include <array>
 #include <cassert>
 #include <cmath>
 #include <cstddef>
@@ -40,6 +41,11 @@ namespace Rayni
 		}
 
 		constexpr Vector3(real_t x, real_t y, real_t z) : xyz{x, y, z}
+		{
+		}
+
+		constexpr explicit Vector3(const std::array<real_t, 3> &xyz)
+		        : Vector3(std::get<0>(xyz), std::get<1>(xyz), std::get<2>(xyz))
 		{
 		}
 

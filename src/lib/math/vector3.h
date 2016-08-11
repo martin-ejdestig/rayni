@@ -44,8 +44,7 @@ namespace Rayni
 		{
 		}
 
-		constexpr explicit Vector3(const std::array<real_t, 3> &xyz)
-		        : Vector3(std::get<0>(xyz), std::get<1>(xyz), std::get<2>(xyz))
+		constexpr explicit Vector3(const std::array<real_t, 3> &xyz) : Vector3(xyz[0], xyz[1], xyz[2])
 		{
 		}
 

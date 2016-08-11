@@ -153,8 +153,7 @@ namespace Rayni
 	{
 		struct Foo
 		{
-			explicit Foo(const std::array<std::int8_t, 2> &array)
-			        : x(std::get<0>(array)), y(std::get<1>(array))
+			explicit Foo(const std::array<std::int8_t, 2> &array) : x(array[0]), y(array[1])
 			{
 			}
 
@@ -186,7 +185,7 @@ namespace Rayni
 	{
 		struct Foo
 		{
-			explicit Foo(const std::array<real_t, 2> &array) : x(std::get<0>(array)), y(std::get<1>(array))
+			explicit Foo(const std::array<real_t, 2> &array) : x(array[0]), y(array[1])
 			{
 			}
 

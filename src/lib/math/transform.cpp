@@ -62,10 +62,11 @@ namespace Rayni
 		const Variant &args = map.cbegin()->second;
 
 		if (type == "translate")
-			return Transform::translate(Vector3(args));
+			return Transform::translate(args.to<Vector3>());
 
 		if (type == "scale")
-			return args.is_vector() ? Transform::scale(Vector3(args)) : Transform::scale(args.to<real_t>());
+			return args.is_vector() ? Transform::scale(args.to<Vector3>()) :
+			                          Transform::scale(args.to<real_t>());
 
 		if (type == "rotate_x")
 			return Transform::rotate_x(radians_from_degrees(args.to<real_t>()));
@@ -97,15 +98,15 @@ namespace Rayni
 
 	Transform Transform::from_variant_vector(const Variant &v)
 	{
-		auto &vector = v.as_vector();
+		auto num_transforms = v.as_vector().size();
 
-		if (vector.size() < 2)
+		if (num_transforms < 2)
 			throw Variant::Exception(v, "transform vector must contain at least 2 elements");
 
-		Transform t = Transform::from_variant(vector[0]);
+		Transform t = v.get<Transform>(0);
 
-		for (std::size_t i = 1; i < vector.size(); i++)
-			t = Transform::combine(t, Transform::from_variant(vector[i]));
+		for (std::size_t i = 1; i < num_transforms; i++)
+			t = Transform::combine(t, v.get<Transform>(i));
 
 		return t;
 	}

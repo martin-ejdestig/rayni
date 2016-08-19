@@ -330,7 +330,8 @@ namespace Rayni
 		}
 
 		template <typename T>
-		std::enable_if_t<std::is_constructible<T, const Variant &>::value, T> to() const
+		std::enable_if_t<std::is_constructible<T, const Variant &>::value && std::is_class<T>::value, T> to()
+		        const
 		{
 			return T(*this);
 		}

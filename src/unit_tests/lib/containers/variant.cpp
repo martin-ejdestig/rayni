@@ -179,24 +179,27 @@ namespace Rayni
 			{
 			}
 
-			static Foo *get_from_variant(const Variant &v)
+			static Foo &get_from_variant(const Variant &v)
 			{
 				static std::vector<Foo> foos;
 				int bar = v.to_int();
 
 				for (auto &foo : foos)
 					if (foo.bar == bar)
-						return &foo;
+						return foo;
 
 				foos.emplace_back(bar);
 
-				return &foos.back();
+				return foos.back();
 			}
 
 			int bar = 0;
 		};
 
+		EXPECT_EQ(123, Variant(123).to<Foo &>().bar);
+		EXPECT_EQ(123, Variant(123).to<const Foo &>().bar);
 		EXPECT_EQ(123, Variant(123).to<Foo *>()->bar);
+		EXPECT_EQ(123, Variant(123).to<const Foo *>()->bar);
 	}
 
 	TEST(VariantTest, Has)

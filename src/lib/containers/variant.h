@@ -345,10 +345,15 @@ namespace Rayni
 		}
 
 		template <typename T>
+		std::enable_if_t<std::is_lvalue_reference<T>::value, T> to() const
+		{
+			return std::remove_reference<T>::type::get_from_variant(*this);
+		}
+
+		template <typename T>
 		std::enable_if_t<std::is_pointer<T>::value, T> to() const
 		{
-			// Ownership is NOT transfered!
-			return std::remove_pointer<T>::type::get_from_variant(*this);
+			return &std::remove_pointer<T>::type::get_from_variant(*this);
 		}
 
 		std::string path() const;

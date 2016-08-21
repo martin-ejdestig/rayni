@@ -62,6 +62,8 @@ namespace Rayni
 		EXPECT_THROW(JSONReader().read_string("-123."), JSONReader::Exception);
 		EXPECT_THROW(JSONReader().read_string(".123"), JSONReader::Exception);
 		EXPECT_THROW(JSONReader().read_string("-.123"), JSONReader::Exception);
+		EXPECT_THROW(JSONReader().read_string("12,3"), JSONReader::Exception);
+		EXPECT_THROW(JSONReader().read_string("-12,3"), JSONReader::Exception);
 
 		EXPECT_NEAR(123e2, JSONReader().read_string("123e2").as_double(), 1e-100);
 		EXPECT_NEAR(-123e2, JSONReader().read_string("-123e2").as_double(), 1e-100);
@@ -82,6 +84,8 @@ namespace Rayni
 		EXPECT_THROW(JSONReader().read_string("-123E2"), JSONReader::Exception);
 		EXPECT_THROW(JSONReader().read_string("123e2.0"), JSONReader::Exception);
 		EXPECT_THROW(JSONReader().read_string("-123e2.0"), JSONReader::Exception);
+		EXPECT_THROW(JSONReader().read_string("123e2,0"), JSONReader::Exception);
+		EXPECT_THROW(JSONReader().read_string("-123e2,0"), JSONReader::Exception);
 	}
 
 	TEST(JSONReaderTest, String)
@@ -149,6 +153,8 @@ namespace Rayni
 		EXPECT_THROW(JSONReader().read_string("{\"a\": 1 , }"), JSONReader::Exception);
 
 		EXPECT_THROW(JSONReader().read_string("{\"duplicate\": 1, \"duplicate\": 2}"), JSONReader::Exception);
+
+		EXPECT_THROW(JSONReader().read_string("{12: \"key type not string\"}"), JSONReader::Exception);
 	}
 
 	TEST(JSONReaderTest, Nested)

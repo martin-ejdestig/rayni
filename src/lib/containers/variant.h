@@ -21,6 +21,7 @@
 #define RAYNI_LIB_CONTAINERS_VARIANT_H
 
 #include <map>
+#include <memory>
 #include <new>
 #include <stdexcept>
 #include <string>
@@ -337,7 +338,14 @@ namespace Rayni
 		}
 
 		template <typename T>
+		std::enable_if_t<std::is_abstract<T>::value, std::unique_ptr<T>> to() const
+		{
+			return T::from_variant(*this);
+		}
+
+		template <typename T>
 		std::enable_if_t<!std::is_constructible<T, const Variant &>::value && std::is_class<T>::value &&
+		                         !std::is_abstract<T>::value &&
 		                         !std::is_same<T, std::string>::value,
 		                 T>
 		to() const

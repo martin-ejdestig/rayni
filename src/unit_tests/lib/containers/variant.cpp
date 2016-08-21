@@ -19,6 +19,7 @@
 
 #include <gtest/gtest.h>
 
+#include <memory>
 #include <string>
 #include <utility>
 #include <vector>
@@ -169,6 +170,48 @@ namespace Rayni
 		};
 
 		EXPECT_EQ(123, Variant(123).to<Foo>().bar);
+	}
+
+	TEST(VariantTest, ToFromVariantAbstract)
+	{
+		struct Foo
+		{
+			virtual ~Foo() = default;
+			virtual int value() const = 0;
+
+			static std::unique_ptr<Foo> from_variant(const Variant &v)
+			{
+				// Subclasses would normally be put outside of from_variant() but placed here for
+				// convenience in test (not possible to put static method of local struct outside).
+				struct Bar : public Foo
+				{
+					int value() const override
+					{
+						return 123;
+					}
+				};
+
+				struct Baz : public Foo
+				{
+					int value() const override
+					{
+						return 456;
+					}
+				};
+
+				const std::string &type = v.as_string();
+
+				if (type == "bar")
+					return std::make_unique<Bar>();
+				if (type == "baz")
+					return std::make_unique<Baz>();
+
+				throw Variant::Exception(v, "Unknown type " + type);
+			}
+		};
+
+		EXPECT_EQ(123, Variant("bar").to<Foo>()->value());
+		EXPECT_EQ(456, Variant("baz").to<Foo>()->value());
 	}
 
 	TEST(VariantTest, ToGetFromVariant)

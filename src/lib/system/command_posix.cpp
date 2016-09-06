@@ -25,6 +25,7 @@
 #include <cstdio>
 #include <experimental/optional>
 #include <memory>
+#include <numeric>
 #include <string>
 
 namespace
@@ -68,6 +69,11 @@ namespace Rayni
 {
 	std::experimental::optional<Command::Result> Command::run() const
 	{
+		std::string command_string =
+		        std::accumulate(args.begin(), args.end(), std::string(""), [](auto &l, auto &r) {
+			        return l.empty() ? r : l + " " + r;
+			});
+
 		std::unique_ptr<std::FILE, PcloseDeleter> file(popen(command_string.c_str(), "r"));
 		if (!file)
 			return std::experimental::nullopt;

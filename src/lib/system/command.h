@@ -22,6 +22,8 @@
 
 #include <experimental/optional>
 #include <string>
+#include <utility>
+#include <vector>
 
 namespace Rayni
 {
@@ -30,14 +32,14 @@ namespace Rayni
 	public:
 		struct Result;
 
-		explicit Command(const std::string &command_string) : command_string(command_string)
+		explicit Command(std::vector<std::string> &&args) : args(std::move(args))
 		{
 		}
 
 		std::experimental::optional<Result> run() const;
 
 	private:
-		const std::string command_string;
+		std::vector<std::string> args;
 	};
 
 	struct Command::Result

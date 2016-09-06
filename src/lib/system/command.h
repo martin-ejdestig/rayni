@@ -39,7 +39,7 @@ namespace Rayni
 		std::experimental::optional<Result> run() const;
 
 	private:
-		std::vector<std::string> args;
+		const std::vector<std::string> args;
 	};
 
 	struct Command::Result

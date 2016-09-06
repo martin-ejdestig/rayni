@@ -17,34 +17,14 @@
  * along with Rayni. If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef RAYNI_LIB_SYSTEM_COMMAND_H
-#define RAYNI_LIB_SYSTEM_COMMAND_H
-
-#include <experimental/optional>
-#include <string>
+#include "lib/system/command.h"
 
 namespace Rayni
 {
-	class Command
+	std::experimental::optional<Command::Result> Command::run() const
 	{
-	public:
-		struct Result;
-
-		explicit Command(const std::string &command_string) : command_string(command_string)
-		{
-		}
-
-		std::experimental::optional<Result> run() const;
-
-	private:
-		const std::string command_string;
-	};
-
-	struct Command::Result
-	{
-		std::string stdout;
-		int exit_code = 0;
-	};
+		// TODO: Implement.
+		static_assert(false, "not implemented");
+		return std::experimental::nullopt;
+	}
 }
-
-#endif // RAYNI_LIB_SYSTEM_COMMAND_H

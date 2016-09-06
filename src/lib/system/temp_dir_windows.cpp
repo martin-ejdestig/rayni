@@ -1,7 +1,7 @@
 /**
  * This file is part of Rayni.
  *
- * Copyright (C) 2013-2016 Martin Ejdestig <marejde@gmail.com>
+ * Copyright (C) 2016 Martin Ejdestig <marejde@gmail.com>
  *
  * Rayni is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -17,34 +17,16 @@
  * along with Rayni. If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef RAYNI_LIB_SYSTEM_COMMAND_H
-#define RAYNI_LIB_SYSTEM_COMMAND_H
-
-#include <experimental/optional>
-#include <string>
+#include "lib/system/temp_dir.h"
 
 namespace Rayni
 {
-	class Command
+	std::experimental::filesystem::path temp_dir_create_unique()
 	{
-	public:
-		struct Result;
-
-		explicit Command(const std::string &command_string) : command_string(command_string)
-		{
-		}
-
-		std::experimental::optional<Result> run() const;
-
-	private:
-		const std::string command_string;
-	};
-
-	struct Command::Result
-	{
-		std::string stdout;
-		int exit_code = 0;
-	};
+		// TODO: Implement. Or will there be something in the final version of
+		//       std::filesystem in C++17? See TODO in temp_dir_posix.cpp for why available
+		//       functionality in draft is not enough.
+		static_assert(false, "not implemented");
+		return std::experimental::filesystem::path();
+	}
 }
-
-#endif // RAYNI_LIB_SYSTEM_COMMAND_H

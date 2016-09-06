@@ -26,11 +26,13 @@
 
 namespace Rayni
 {
-	// TODO: Non POSIX compliant OS:es?
+	// TODO: Possible to implement with final version of C++17 std::filesystem?
 	//
-	// Or wait until this can be done in a race-free manner with std::filesystem? (Not possible
+	// If so, do it in temp_dir.cpp and remove OS specific temp_dir_*.cpp files.
+	//
+	// Cannot be done in a race-free manner with std::filesystem in draft. It is not possible
 	// to determine if directory already existed with std::filesystem::create_directory().
-	// Checking before with std::filesystem::exists() introduces a race condition.)
+	// Checking before with std::filesystem::exists() introduces a race condition.
 	//
 	// Or will there be something for this in the standard? Boost has unique_path() but I
 	// suspect the standard group removed it from the TS since they found it inadequate.

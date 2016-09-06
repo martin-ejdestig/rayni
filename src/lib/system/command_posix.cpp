@@ -27,13 +27,9 @@
 #include <memory>
 #include <string>
 
-// TODO: Non POSIX compliant systems. Prepared to do minor things (i.e. for Windows add
-//       "std::FILE *popen() { return _popen(); }" in an anonymous namespace etc.) but if it is too
-//       much work, forget about it.
-
-namespace Rayni
+namespace
 {
-	class Command::PcloseDeleter
+	class PcloseDeleter
 	{
 	public:
 		void operator()(std::FILE *file)
@@ -66,7 +62,10 @@ namespace Rayni
 	private:
 		int return_value = 0;
 	};
+}
 
+namespace Rayni
+{
 	std::experimental::optional<Command::Result> Command::run() const
 	{
 		std::unique_ptr<std::FILE, PcloseDeleter> file(popen(command_string.c_str(), "r"));

@@ -104,6 +104,7 @@ namespace Rayni
 		EXPECT_FLOAT_EQ(0.0123f, string_to_float("123e-4").value());
 		EXPECT_FLOAT_EQ(1230000.0f, string_to_float("123e+4").value());
 
+		EXPECT_FALSE(string_to_float(""));
 		EXPECT_FALSE(string_to_float("1,0"));
 		EXPECT_FALSE(string_to_float(",1"));
 		EXPECT_FALSE(string_to_float("1,"));
@@ -134,6 +135,7 @@ namespace Rayni
 		EXPECT_DOUBLE_EQ(0.0123, string_to_double("123e-4").value());
 		EXPECT_DOUBLE_EQ(1230000.0, string_to_double("123e+4").value());
 
+		EXPECT_FALSE(string_to_double(""));
 		EXPECT_FALSE(string_to_double("1,0"));
 		EXPECT_FALSE(string_to_double(",1"));
 		EXPECT_FALSE(string_to_double("1,"));

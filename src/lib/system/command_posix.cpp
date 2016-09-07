@@ -20,79 +20,163 @@
 #include "lib/system/command.h"
 
 #include <sys/wait.h>
+#include <unistd.h>
 
+#include <algorithm>
 #include <array>
-#include <cstdio>
-#include <experimental/optional>
-#include <memory>
-#include <numeric>
-#include <string>
+#include <cstdlib>
 
 namespace
 {
-	class PcloseDeleter
+	constexpr int CHILD_SETUP_EXIT_FAILURE = 127;
+
+	class Pipe
 	{
 	public:
-		void operator()(std::FILE *file)
+		~Pipe()
 		{
-			return_value = pclose(file);
+			close_fds();
 		}
 
-		bool pclose_failed() const
+		bool open()
 		{
-			return return_value == -1;
+			return pipe(fds.data()) == 0;
 		}
 
-		bool child_ran_and_exited_normally() const
+		void close_fds()
 		{
-			if (!WIFEXITED(return_value))
-				return false;
-
-			// See pclose() (on Linux) for magic,,, buggy POSIX spec. magic. Cannot
-			// determine if it was shell or command that was not found.
-			static constexpr int SHELL_OR_COMMAND_NOT_FOUND_EXIT_CODE = 127;
-
-			return WEXITSTATUS(return_value) != SHELL_OR_COMMAND_NOT_FOUND_EXIT_CODE;
+			close_read_fd();
+			close_write_fd();
 		}
 
-		int exit_code() const
+		void close_read_fd()
 		{
-			return WEXITSTATUS(return_value);
+			safe_close(fds[0]);
+		}
+
+		void close_write_fd()
+		{
+			safe_close(fds[1]);
+		}
+
+		int read_fd() const
+		{
+			return fds[0];
+		}
+
+		int write_fd() const
+		{
+			return fds[1];
 		}
 
 	private:
-		int return_value = 0;
+		static void safe_close(int &fd)
+		{
+			if (fd != -1)
+			{
+				close(fd);
+				fd = -1;
+			}
+		}
+
+		std::array<int, 2> fds = {-1, -1};
 	};
+
+	bool dup2_handle_eintr(int fd1, int fd2)
+	{
+		while (dup2(fd1, fd2) == -1)
+			if (errno != EINTR)
+				return false;
+		return true;
+	}
+
+	bool waitpid_handle_eintr(pid_t pid, int *status)
+	{
+		while (waitpid(pid, status, 0) == -1)
+			if (errno != EINTR)
+				return false;
+		return true;
+	}
+
+	template <typename Buffer>
+	ssize_t read_handle_eintr(int fd, Buffer &buffer)
+	{
+		ssize_t bytes_read;
+
+		while (true)
+		{
+			bytes_read = read(fd, buffer.data(), buffer.size());
+
+			if (bytes_read >= 0)
+				break;
+			if (errno != EINTR)
+				break;
+		}
+
+		return bytes_read;
+	}
+
+	[[noreturn]] void child_exit_failure()
+	{
+		std::_Exit(CHILD_SETUP_EXIT_FAILURE);
+	}
+
+	[[noreturn]] void child_exec(const std::vector<std::string> &args)
+	{
+		std::vector<char *> argv(args.size() + 1, nullptr);
+		std::transform(args.begin(), args.end(), argv.begin(), [](auto &s) {
+			return const_cast<char *>(s.data());
+		});
+
+		execvp(argv[0], &argv[0]);
+		child_exit_failure();
+	}
 }
 
 namespace Rayni
 {
 	std::experimental::optional<Command::Result> Command::run() const
 	{
-		std::string command_string =
-		        std::accumulate(args.begin(), args.end(), std::string(""), [](auto &l, auto &r) {
-			        return l.empty() ? r : l + " " + r;
-			});
-
-		std::unique_ptr<std::FILE, PcloseDeleter> file(popen(command_string.c_str(), "r"));
-		if (!file)
+		Pipe stdout_pipe;
+		if (!stdout_pipe.open())
 			return std::experimental::nullopt;
+
+		pid_t pid = fork();
+		if (pid == -1)
+			return std::experimental::nullopt;
+
+		if (pid == 0)
+		{
+			if (!dup2_handle_eintr(stdout_pipe.write_fd(), STDOUT_FILENO))
+				child_exit_failure();
+			stdout_pipe.close_fds();
+
+			child_exec(args);
+		}
+
+		stdout_pipe.close_write_fd();
 
 		Result result;
+		ssize_t bytes_read = 0;
 		std::array<char, 1024> buffer;
 
-		while (std::fgets(buffer.data(), buffer.size(), file.get()))
-			result.stdout += buffer.data();
+		while (true)
+		{
+			bytes_read = read_handle_eintr(stdout_pipe.read_fd(), buffer);
+			if (bytes_read <= 0)
+				break;
 
-		if (!std::feof(file.get()))
+			result.stdout.append(buffer.data(), static_cast<std::string::size_type>(bytes_read));
+		}
+
+		int status;
+		if (!waitpid_handle_eintr(pid, &status))
 			return std::experimental::nullopt;
 
-		file.reset();
-
-		if (file.get_deleter().pclose_failed() || !file.get_deleter().child_ran_and_exited_normally())
+		if (bytes_read < 0 || !WIFEXITED(status) || WEXITSTATUS(status) == CHILD_SETUP_EXIT_FAILURE)
 			return std::experimental::nullopt;
 
-		result.exit_code = file.get_deleter().exit_code();
+		result.exit_code = WEXITSTATUS(status);
 
 		return std::experimental::make_optional(result);
 	}

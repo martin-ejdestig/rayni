@@ -33,7 +33,7 @@ namespace Rayni
 
 	TEST(CommandTest, ExitCodeOtherThan0)
 	{
-		auto result = Command({"exit", "12"}).run();
+		auto result = Command({"sh", "-c", "exit 12"}).run();
 		ASSERT_TRUE(static_cast<bool>(result));
 		EXPECT_EQ("", result->stdout);
 		EXPECT_EQ(12, result->exit_code);
@@ -41,6 +41,6 @@ namespace Rayni
 
 	TEST(CommandTest, DoesNotExist)
 	{
-		EXPECT_FALSE(Command({"does_not_exist", "2>/dev/null"}).run());
+		EXPECT_FALSE(Command({"does_not_exist"}).run());
 	}
 }

@@ -19,6 +19,7 @@
 
 #include "lib/system/command.h"
 
+#include <poll.h>
 #include <sys/wait.h>
 #include <unistd.h>
 
@@ -122,10 +123,56 @@ namespace
 
 namespace Rayni
 {
+	static bool read_pipes(Pipe &stdout_pipe, Pipe &stderr_pipe, Command::Result &result)
+	{
+		std::array<char, 1024> buffer;
+		std::array<pollfd, 2> poll_fds;
+
+		poll_fds[0].fd = stdout_pipe.read_fd();
+		poll_fds[0].events = POLLIN | POLLHUP;
+		poll_fds[1].fd = stderr_pipe.read_fd();
+		poll_fds[1].events = POLLIN | POLLHUP;
+
+		while (poll_fds[0].fd >= 0 || poll_fds[1].fd >= 0)
+		{
+			while (poll(poll_fds.data(), poll_fds.size(), -1) == -1)
+				if (errno != EINTR)
+					return false;
+
+			if (poll_fds[0].revents & (POLLIN | POLLHUP))
+			{
+				ssize_t bytes_read = stdout_pipe.read(buffer);
+
+				if (bytes_read > 0)
+					result.stdout.append(buffer.data(),
+					                     static_cast<std::string::size_type>(bytes_read));
+				else if (bytes_read == 0)
+					poll_fds[0].fd = -1;
+				else
+					return false;
+			}
+
+			if (poll_fds[1].revents & (POLLIN | POLLHUP))
+			{
+				ssize_t bytes_read = stderr_pipe.read(buffer);
+
+				if (bytes_read > 0)
+					result.stderr.append(buffer.data(),
+					                     static_cast<std::string::size_type>(bytes_read));
+				else if (bytes_read == 0)
+					poll_fds[1].fd = -1;
+				else
+					return false;
+			}
+		}
+
+		return true;
+	}
+
 	std::experimental::optional<Command::Result> Command::run() const
 	{
-		Pipe stdout_pipe;
-		if (!stdout_pipe.open())
+		Pipe stdout_pipe, stderr_pipe;
+		if (!stdout_pipe.open() || !stderr_pipe.open())
 			return std::experimental::nullopt;
 
 		pid_t pid = fork();
@@ -134,37 +181,37 @@ namespace Rayni
 
 		if (pid == 0)
 		{
-			if (!stdout_pipe.duplicate_write_fd_to(STDOUT_FILENO))
+			if (!stdout_pipe.duplicate_write_fd_to(STDOUT_FILENO) ||
+			    !stderr_pipe.duplicate_write_fd_to(STDERR_FILENO))
 				child_exit_failure();
+
 			stdout_pipe.close_fds();
+			stderr_pipe.close_fds();
 
 			child_exec(args);
 		}
 
 		stdout_pipe.close_write_fd();
+		stderr_pipe.close_write_fd();
 
 		Result result;
-		ssize_t bytes_read = 0;
-		std::array<char, 1024> buffer;
-
-		while (true)
-		{
-			bytes_read = stdout_pipe.read(buffer);
-			if (bytes_read <= 0)
-				break;
-
-			result.stdout.append(buffer.data(), static_cast<std::string::size_type>(bytes_read));
-		}
-
+		bool read_success = read_pipes(stdout_pipe, stderr_pipe, result);
 		int status;
+
+		stdout_pipe.close_read_fd();
+		stderr_pipe.close_read_fd();
+
 		while (waitpid(pid, &status, 0) == -1)
 			if (errno != EINTR)
 				return std::experimental::nullopt;
 
-		if (bytes_read < 0 || !WIFEXITED(status) || WEXITSTATUS(status) == CHILD_SETUP_EXIT_FAILURE)
+		if (!WIFEXITED(status))
 			return std::experimental::nullopt;
 
 		result.exit_code = WEXITSTATUS(status);
+
+		if (result.exit_code == CHILD_SETUP_EXIT_FAILURE || !read_success)
+			return std::experimental::nullopt;
 
 		return std::experimental::make_optional(result);
 	}

@@ -45,6 +45,7 @@ namespace Rayni
 	struct Command::Result
 	{
 		std::string stdout;
+		std::string stderr;
 		int exit_code = 0;
 	};
 }

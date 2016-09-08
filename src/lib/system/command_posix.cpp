@@ -64,9 +64,30 @@ namespace
 			return fds[0];
 		}
 
-		int write_fd() const
+		bool duplicate_write_fd_to(int other_fd) const
 		{
-			return fds[1];
+			while (dup2(fds[1], other_fd) == -1)
+				if (errno != EINTR)
+					return false;
+			return true;
+		}
+
+		template <typename Buffer>
+		ssize_t read(Buffer &buffer) const
+		{
+			ssize_t bytes_read;
+
+			while (true)
+			{
+				bytes_read = ::read(fds[0], buffer.data(), buffer.size());
+
+				if (bytes_read >= 0)
+					break;
+				if (errno != EINTR)
+					break;
+			}
+
+			return bytes_read;
 		}
 
 	private:
@@ -81,40 +102,6 @@ namespace
 
 		std::array<int, 2> fds = {-1, -1};
 	};
-
-	bool dup2_handle_eintr(int fd1, int fd2)
-	{
-		while (dup2(fd1, fd2) == -1)
-			if (errno != EINTR)
-				return false;
-		return true;
-	}
-
-	bool waitpid_handle_eintr(pid_t pid, int *status)
-	{
-		while (waitpid(pid, status, 0) == -1)
-			if (errno != EINTR)
-				return false;
-		return true;
-	}
-
-	template <typename Buffer>
-	ssize_t read_handle_eintr(int fd, Buffer &buffer)
-	{
-		ssize_t bytes_read;
-
-		while (true)
-		{
-			bytes_read = read(fd, buffer.data(), buffer.size());
-
-			if (bytes_read >= 0)
-				break;
-			if (errno != EINTR)
-				break;
-		}
-
-		return bytes_read;
-	}
 
 	[[noreturn]] void child_exit_failure()
 	{
@@ -147,7 +134,7 @@ namespace Rayni
 
 		if (pid == 0)
 		{
-			if (!dup2_handle_eintr(stdout_pipe.write_fd(), STDOUT_FILENO))
+			if (!stdout_pipe.duplicate_write_fd_to(STDOUT_FILENO))
 				child_exit_failure();
 			stdout_pipe.close_fds();
 
@@ -162,7 +149,7 @@ namespace Rayni
 
 		while (true)
 		{
-			bytes_read = read_handle_eintr(stdout_pipe.read_fd(), buffer);
+			bytes_read = stdout_pipe.read(buffer);
 			if (bytes_read <= 0)
 				break;
 
@@ -170,8 +157,9 @@ namespace Rayni
 		}
 
 		int status;
-		if (!waitpid_handle_eintr(pid, &status))
-			return std::experimental::nullopt;
+		while (waitpid(pid, &status, 0) == -1)
+			if (errno != EINTR)
+				return std::experimental::nullopt;
 
 		if (bytes_read < 0 || !WIFEXITED(status) || WEXITSTATUS(status) == CHILD_SETUP_EXIT_FAILURE)
 			return std::experimental::nullopt;

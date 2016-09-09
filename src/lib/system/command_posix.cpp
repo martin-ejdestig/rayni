@@ -104,16 +104,11 @@ namespace
 		std::array<int, 2> fds = {-1, -1};
 	};
 
-	[[noreturn]] void child_setup_failure_exit()
-	{
-		std::_Exit(CHILD_SETUP_FAILURE_EXIT_CODE);
-	}
-
 	[[noreturn]] void child_exec(const std::vector<std::string> &args, Pipe &stdout_pipe, Pipe &stderr_pipe)
 	{
 		if (!stdout_pipe.duplicate_write_fd_to(STDOUT_FILENO) ||
 		    !stderr_pipe.duplicate_write_fd_to(STDERR_FILENO))
-			child_setup_failure_exit();
+			std::_Exit(CHILD_SETUP_FAILURE_EXIT_CODE);
 
 		stdout_pipe.close_fds();
 		stderr_pipe.close_fds();
@@ -124,7 +119,7 @@ namespace
 		});
 
 		execvp(argv[0], &argv[0]);
-		child_setup_failure_exit();
+		std::_Exit(CHILD_SETUP_FAILURE_EXIT_CODE);
 	}
 }
 

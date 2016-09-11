@@ -23,7 +23,6 @@
 #include <sys/wait.h>
 #include <unistd.h>
 
-#include <algorithm>
 #include <array>
 #include <cstdlib>
 
@@ -113,10 +112,10 @@ namespace
 		stdout_pipe.close_fds();
 		stderr_pipe.close_fds();
 
-		std::vector<char *> argv(args.size() + 1, nullptr);
-		std::transform(args.begin(), args.end(), argv.begin(), [](auto &s) {
-			return const_cast<char *>(s.data());
-		});
+		std::vector<char *> argv;
+		for (const std::string &arg : args)
+			argv.push_back(const_cast<char *>(arg.data()));
+		argv.push_back(nullptr);
 
 		execvp(argv[0], &argv[0]);
 		std::_Exit(CHILD_SETUP_FAILURE_EXIT_CODE);

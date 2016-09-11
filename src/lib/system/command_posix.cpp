@@ -121,11 +121,8 @@ namespace
 		execvp(argv[0], &argv[0]);
 		std::_Exit(CHILD_SETUP_FAILURE_EXIT_CODE);
 	}
-}
 
-namespace Rayni
-{
-	static bool read_pipes(Pipe &stdout_pipe, Pipe &stderr_pipe, Command::Result &result)
+	bool read_pipes(Pipe &stdout_pipe, Pipe &stderr_pipe, std::string &stdout_str, std::string &stderr_str)
 	{
 		static constexpr short int PIPE_READ_EVENTS = POLLIN | POLLHUP;
 
@@ -158,14 +155,17 @@ namespace Rayni
 				if (errno != EINTR)
 					return false;
 
-			if (!read_pipe_if_event_occurred(poll_fds[0], stdout_pipe, result.stdout) ||
-			    !read_pipe_if_event_occurred(poll_fds[1], stderr_pipe, result.stderr))
+			if (!read_pipe_if_event_occurred(poll_fds[0], stdout_pipe, stdout_str) ||
+			    !read_pipe_if_event_occurred(poll_fds[1], stderr_pipe, stderr_str))
 				return false;
 		}
 
 		return true;
 	}
+}
 
+namespace Rayni
+{
 	std::experimental::optional<Command::Result> Command::run() const
 	{
 		Pipe stdout_pipe, stderr_pipe;
@@ -183,7 +183,7 @@ namespace Rayni
 		stderr_pipe.close_write_fd();
 
 		Result result;
-		bool read_success = read_pipes(stdout_pipe, stderr_pipe, result);
+		bool read_success = read_pipes(stdout_pipe, stderr_pipe, result.stdout, result.stderr);
 
 		stdout_pipe.close_read_fd();
 		stderr_pipe.close_read_fd();

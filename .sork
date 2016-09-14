@@ -3,5 +3,8 @@
 
     "checks.include_guard": {
         "prefix": "RAYNI_"
+    },
+    "checks.license_header": {
+        "project": "Rayni"
     }
 }

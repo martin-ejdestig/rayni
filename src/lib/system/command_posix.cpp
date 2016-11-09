@@ -201,6 +201,6 @@ namespace Rayni
 		if (result.exit_code == CHILD_SETUP_FAILURE_EXIT_CODE || !read_success)
 			return std::experimental::nullopt;
 
-		return std::experimental::make_optional(result);
+		return result;
 	}
 }

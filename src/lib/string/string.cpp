@@ -99,8 +99,10 @@ namespace Rayni
 
 		stream >> value;
 
-		return stream.fail() || !stream.eof() ? std::experimental::nullopt :
-		                                        std::experimental::make_optional(value);
+		if (stream.fail() || !stream.eof())
+			return std::experimental::nullopt;
+
+		return value;
 	}
 
 	std::experimental::optional<double> string_to_double(const std::string &str)
@@ -110,7 +112,9 @@ namespace Rayni
 
 		stream >> value;
 
-		return stream.fail() || !stream.eof() ? std::experimental::nullopt :
-		                                        std::experimental::make_optional(value);
+		if (stream.fail() || !stream.eof())
+			return std::experimental::nullopt;
+
+		return value;
 	}
 }

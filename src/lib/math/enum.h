@@ -42,8 +42,10 @@ namespace Rayni
 			return value == static_cast<U>(enum_value);
 		});
 
-		return iterator == enum_values.end() ? std::experimental::nullopt :
-		                                       std::experimental::make_optional(*iterator);
+		if (iterator == enum_values.end())
+			return std::experimental::nullopt;
+
+		return *iterator;
 	}
 
 	template <typename E, typename U = typename std::underlying_type<E>::type>

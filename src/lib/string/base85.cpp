@@ -96,6 +96,6 @@ namespace Rayni
 			}
 		}
 
-		return std::experimental::make_optional(decoded_data);
+		return decoded_data;
 	}
 }

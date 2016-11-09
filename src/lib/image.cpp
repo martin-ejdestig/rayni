@@ -34,9 +34,8 @@ namespace Rayni
 	{
 	}
 
-	Image::Image(Image &&other) noexcept : width_(other.width_),
-	                                       height_(other.height_),
-	                                       buffer_(std::move(other.buffer_))
+	Image::Image(Image &&other) noexcept
+	        : width_(other.width_), height_(other.height_), buffer_(std::move(other.buffer_))
 	{
 		other.width_ = 0;
 		other.height_ = 0;

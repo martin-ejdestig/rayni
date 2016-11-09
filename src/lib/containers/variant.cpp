@@ -20,6 +20,7 @@
 #include "lib/containers/variant.h"
 
 #include <cassert>
+#include <cmath>
 #include <string>
 
 namespace Rayni
@@ -148,9 +149,9 @@ namespace Rayni
 		if (is_unsigned_int())
 			return static_cast<int>(value.number_unsigned_int);
 		if (is_float())
-			return static_cast<int>(value.number_float + 0.5f);
+			return static_cast<int>(std::round(value.number_float));
 		if (is_double())
-			return static_cast<int>(value.number_double + 0.5);
+			return static_cast<int>(std::round(value.number_double));
 
 		throw Exception(*this, "cannot convert \"" + type_to_string() + "\" to \"int\"");
 	}
@@ -162,9 +163,9 @@ namespace Rayni
 		if (is_unsigned_int())
 			return value.number_unsigned_int;
 		if (is_float())
-			return static_cast<unsigned int>(value.number_float + 0.5f);
+			return static_cast<unsigned int>(std::round(value.number_float));
 		if (is_double())
-			return static_cast<unsigned int>(value.number_double + 0.5);
+			return static_cast<unsigned int>(std::round(value.number_double));
 
 		throw Exception(*this, "cannot convert \"" + type_to_string() + "\" to \"unsigned int\"");
 	}

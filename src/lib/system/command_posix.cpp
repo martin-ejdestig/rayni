@@ -24,6 +24,7 @@
 #include <unistd.h>
 
 #include <array>
+#include <cerrno>
 #include <cstdlib>
 
 namespace

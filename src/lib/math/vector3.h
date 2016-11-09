@@ -33,7 +33,7 @@
 
 namespace Rayni
 {
-	class Vector3
+	class Vector3 // NOLINT Remove when https://llvm.org/bugs/show_bug.cgi?id=30965 is fixed.
 	{
 	public:
 		Vector3()

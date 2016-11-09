@@ -26,7 +26,7 @@
 
 namespace Rayni
 {
-	class Vector4
+	class Vector4 // NOLINT Remove when https://llvm.org/bugs/show_bug.cgi?id=30965 is fixed.
 	{
 	public:
 		Vector4()

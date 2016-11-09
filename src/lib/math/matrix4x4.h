@@ -31,7 +31,7 @@
 
 namespace Rayni
 {
-	class Matrix4x4
+	class Matrix4x4 // NOLINT Remove when https://llvm.org/bugs/show_bug.cgi?id=30965 is fixed.
 	{
 	public:
 		struct PolarDecomposition;

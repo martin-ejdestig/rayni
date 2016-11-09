@@ -79,8 +79,7 @@ namespace Rayni
 
 		std::uint8_t &start_of_row(unsigned int y)
 		{
-			assert(y < height());
-			return buffer()[y * stride()];
+			return buffer()[offset_to(0, y)];
 		}
 
 		Area whole_area() const;
@@ -99,7 +98,11 @@ namespace Rayni
 		static constexpr unsigned int B_PIXEL_OFFSET = 0;
 		static constexpr unsigned int BYTES_PER_PIXEL = 4;
 
-		inline std::size_t offset_to(unsigned int x, unsigned int y) const;
+		inline unsigned int offset_to(unsigned int x, unsigned int y) const
+		{
+			assert(x < width() && y < height());
+			return stride() * y + x * BYTES_PER_PIXEL;
+		}
 
 		unsigned int width_ = 0;
 		unsigned int height_ = 0;

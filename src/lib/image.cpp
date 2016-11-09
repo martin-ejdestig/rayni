@@ -44,7 +44,7 @@ namespace Rayni
 	Image::Image(unsigned int width, unsigned int height)
 	        : width_(width), height_(height), buffer_(stride() * height)
 	{
-		for (unsigned int i = 0; i < buffer().size(); i += BYTES_PER_PIXEL)
+		for (std::size_t i = 0; i < buffer().size(); i += BYTES_PER_PIXEL)
 		{
 			buffer()[i + A_PIXEL_OFFSET] = 0xff;
 			buffer()[i + R_PIXEL_OFFSET] = 0x00;
@@ -97,11 +97,5 @@ namespace Rayni
 		color.b() = static_cast<real_t>(buffer()[i + B_PIXEL_OFFSET]) / 255;
 
 		return color;
-	}
-
-	inline std::size_t Image::offset_to(unsigned int x, unsigned int y) const
-	{
-		assert(x < width() && y < height());
-		return stride() * y + x * BYTES_PER_PIXEL;
 	}
 }

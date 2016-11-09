@@ -214,8 +214,9 @@ namespace Rayni
 
 	Color TGAReader::pixel_to_color(const std::vector<std::uint8_t> &bytes, unsigned int pixel_offset) const
 	{
-		assert(pixel_offset * bytes_per_pixel() < bytes.size());
-		const std::uint8_t *pixel = &bytes[pixel_offset * bytes_per_pixel()];
+		std::size_t byte_offset = std::size_t(pixel_offset) * bytes_per_pixel();
+		assert(byte_offset < bytes.size());
+		const std::uint8_t *pixel = &bytes[byte_offset];
 
 		if (header.image_type == ImageType::RGB)
 		{

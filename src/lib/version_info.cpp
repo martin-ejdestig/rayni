@@ -32,7 +32,7 @@ namespace Rayni
 
 	std::string VersionInfo::copyright()
 	{
-		return "Copyright \xc2\xa9 2013-2016 Martin Ejdestig";
+		return R"(Copyright © 2013-2016 Martin Ejdestig)";
 	}
 
 	std::string VersionInfo::version()

@@ -7,6 +7,9 @@
 #   broad. It also seems like the C++ community has swung around a bit on this
 #   in later years. See for instance Effective Modern C++ by Scott Meyers.
 #
+# - modernize-raw-string-literal is disabled because it is too agressive. See
+#   https://llvm.org/bugs/show_bug.cgi?id=30964
+#
 # - modernize-use-default is disabled because of a bug with unions. See
 #   https://llvm.org/bugs/show_bug.cgi?id=27926 .
 #
@@ -25,6 +28,7 @@ misc-*,\
 -misc-noexcept-move-constructor,\
 modernize-*,\
 -modernize-pass-by-value,\
+-modernize-raw-string-literal,\
 -modernize-use-default,\
 performance-*,\
 readability-*,\

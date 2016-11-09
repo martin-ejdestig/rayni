@@ -72,7 +72,7 @@ namespace Rayni
 				                        std::to_string(height) + ") in EXR image");
 
 			image = Image(static_cast<unsigned int>(width), static_cast<unsigned int>(height));
-			pixels.resize(static_cast<std::size_t>(width * height));
+			pixels.resize(static_cast<std::size_t>(width) * static_cast<std::size_t>(height));
 
 			file.setFrameBuffer(&pixels[0] - data_window.min.x - data_window.min.y * width,
 			                    1,
@@ -88,7 +88,7 @@ namespace Rayni
 		{
 			for (unsigned int x = 0; x < image.width(); x++)
 			{
-				const Imf::Rgba &pixel = pixels[y * image.width() + x];
+				const Imf::Rgba &pixel = pixels[std::size_t(y) * image.width() + std::size_t(x)];
 				image.write_pixel(x, y, Color(pixel.r * pixel.a, pixel.g * pixel.a, pixel.b * pixel.a));
 			}
 		}

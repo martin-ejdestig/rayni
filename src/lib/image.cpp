@@ -35,10 +35,10 @@ namespace Rayni
 	}
 
 	Image::Image(Image &&other) noexcept
-	        : width_(other.width_), height_(other.height_), buffer_(std::move(other.buffer_))
+	        : width_(std::exchange(other.width_, 0)),
+	          height_(std::exchange(other.height_, 0)),
+	          buffer_(std::move(other.buffer_))
 	{
-		other.width_ = 0;
-		other.height_ = 0;
 	}
 
 	Image::Image(unsigned int width, unsigned int height)
@@ -69,10 +69,8 @@ namespace Rayni
 	{
 		assert(this != &other);
 
-		width_ = other.width_;
-		other.width_ = 0;
-		height_ = other.height_;
-		other.height_ = 0;
+		width_ = std::exchange(other.width_, 0);
+		height_ = std::exchange(other.height_, 0);
 		buffer_ = std::move(other.buffer_);
 
 		return *this;

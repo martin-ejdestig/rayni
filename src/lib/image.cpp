@@ -59,7 +59,7 @@ namespace Rayni
 		{
 			return ImageReader().read_file(v.get<std::string>("path"));
 		}
-		catch (ImageReader::Exception &e)
+		catch (const ImageReader::Exception &e)
 		{
 			throw Variant::Exception(v, e.what());
 		}

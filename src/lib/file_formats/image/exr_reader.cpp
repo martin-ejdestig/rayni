@@ -79,7 +79,7 @@ namespace Rayni
 			                    static_cast<std::size_t>(width));
 			file.readPixels(data_window.min.y, data_window.max.y);
 		}
-		catch (Iex::BaseExc &e)
+		catch (const Iex::BaseExc &e)
 		{
 			throw Exception(file_name, std::string("failed to read EXR image (") + e.what() + ")");
 		}

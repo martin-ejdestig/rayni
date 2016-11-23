@@ -19,6 +19,7 @@
 
 #include "lib/system/command.h"
 
+#include <fcntl.h>
 #include <poll.h>
 #include <sys/wait.h>
 #include <unistd.h>
@@ -26,6 +27,7 @@
 #include <array>
 #include <cerrno>
 #include <cstdlib>
+#include <system_error>
 
 namespace
 {
@@ -34,14 +36,16 @@ namespace
 	class Pipe
 	{
 	public:
+		Pipe()
+		{
+			// Note: No O_NONBLOCK. Child should block if parent does not keep up with reading.
+			if (pipe2(fds.data(), O_CLOEXEC) != 0)
+				throw std::system_error(errno, std::system_category(), "pipe2() failed");
+		}
+
 		~Pipe()
 		{
 			close_fds();
-		}
-
-		bool open()
-		{
-			return pipe(fds.data()) == 0;
 		}
 
 		void close_fds()
@@ -176,8 +180,6 @@ namespace Rayni
 	std::experimental::optional<Command::Result> Command::run() const
 	{
 		Pipe stdout_pipe, stderr_pipe;
-		if (!stdout_pipe.open() || !stderr_pipe.open())
-			return std::experimental::nullopt;
 
 		pid_t pid = fork();
 		if (pid == -1)

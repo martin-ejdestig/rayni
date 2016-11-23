@@ -65,9 +65,14 @@ namespace
 			return fds[0];
 		}
 
+		int write_fd() const
+		{
+			return fds[1];
+		}
+
 		bool duplicate_write_fd_to(int other_fd) const
 		{
-			while (dup2(fds[1], other_fd) == -1)
+			while (dup2(write_fd(), other_fd) == -1)
 				if (errno != EINTR)
 					return false;
 			return true;

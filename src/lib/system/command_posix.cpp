@@ -80,7 +80,7 @@ namespace
 
 			while (true)
 			{
-				bytes_read = ::read(fds[0], buffer.data(), buffer.size());
+				bytes_read = ::read(read_fd(), buffer.data(), buffer.size());
 
 				if (bytes_read >= 0)
 					break;

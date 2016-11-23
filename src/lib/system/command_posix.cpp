@@ -28,6 +28,7 @@
 #include <cerrno>
 #include <cstdlib>
 #include <system_error>
+#include <utility>
 
 namespace
 {
@@ -43,9 +44,24 @@ namespace
 				throw std::system_error(errno, std::system_category(), "pipe2() failed");
 		}
 
+		Pipe(const Pipe &other) = delete;
+
+		Pipe(Pipe &&other) noexcept : fds(std::exchange(other.fds, {-1, -1}))
+		{
+		}
+
 		~Pipe()
 		{
 			close_fds();
+		}
+
+		Pipe &operator=(const Pipe &other) = delete;
+
+		Pipe &operator=(Pipe &&other) noexcept
+		{
+			close_fds();
+			fds = std::exchange(other.fds, {-1, -1});
+			return *this;
 		}
 
 		void close_fds()

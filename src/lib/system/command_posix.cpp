@@ -104,7 +104,9 @@ namespace
 		std::array<int, 2> fds = {-1, -1};
 	};
 
-	[[noreturn]] void child_exec(const std::vector<std::string> &args, Pipe &stdout_pipe, Pipe &stderr_pipe)
+	[[noreturn]] void child_exec(const std::vector<std::string> &args,
+	                             Pipe &stdout_pipe,
+	                             Pipe &stderr_pipe) noexcept
 	{
 		if (!stdout_pipe.duplicate_write_fd_to(STDOUT_FILENO) ||
 		    !stderr_pipe.duplicate_write_fd_to(STDERR_FILENO))

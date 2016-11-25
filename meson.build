@@ -28,12 +28,12 @@ if get_option('extra_warnings')
     endif
 endif
 
-if cpp.get_id() == 'gcc'
-    # TODO: For std::experimental::filesystem. Remove when libstdc++ with C++17 is released.
-    cpp_link_args += ['-lstdc++fs']
+if cpp.get_id() == 'clang'
+    # TODO: https://llvm.org/bugs/show_bug.cgi?id=21629
+    cpp_args += ['-Wno-missing-braces']
 endif
 
-if cpp.get_id() == 'clang'
+if get_option('libcxx')
     cpp_args += ['-stdlib=libc++']
     cpp_link_args += ['-stdlib=libc++', '-lc++abi']
 
@@ -44,11 +44,11 @@ if cpp.get_id() == 'clang'
     # TODO: Has this been fixed in libc++ yet?
     cpp_link_args += ['-lsupc++']
 
-    # TODO: https://llvm.org/bugs/show_bug.cgi?id=21629
-    cpp_args += ['-Wno-missing-braces']
-
     # TODO: For std::experimental::filesystem. Remove when libc++ with C++17 is released.
     cpp_link_args += ['-llibc++experimental']
+else
+    # TODO: For std::experimental::filesystem. Remove when libstdc++ with C++17 is released.
+    cpp_link_args += ['-lstdc++fs']
 endif
 
 if get_option('link_time_optimization')

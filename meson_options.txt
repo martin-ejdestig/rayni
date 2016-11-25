@@ -8,6 +8,11 @@ option('extra_warnings',
        value : true,
        description : 'Enable extra compiler warnings')
 
+option('libcxx',
+       type : 'boolean',
+       value : false,
+       description : 'Build with Clang\'s libc++ instead of libstdc++ on Linux')
+
 option('link_time_optimization',
        type : 'boolean',
        value : false,

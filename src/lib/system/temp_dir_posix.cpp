@@ -46,8 +46,8 @@ namespace Rayni
 
 		if (!mkdtemp(buffer.data()))
 		{
-			std::error_code error_code(errno, std::generic_category());
-			throw std::experimental::filesystem::filesystem_error("mkdtemp failed",
+			std::error_code error_code(errno, std::system_category());
+			throw std::experimental::filesystem::filesystem_error("mkdtemp() failed",
 			                                                      template_path,
 			                                                      error_code);
 		}

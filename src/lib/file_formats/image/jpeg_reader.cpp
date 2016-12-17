@@ -53,9 +53,8 @@ namespace Rayni
 		return image;
 	}
 
-	struct JPEGReader::ErrorManager
+	struct JPEGReader::ErrorManager : public jpeg_error_mgr
 	{
-		struct jpeg_error_mgr base;
 		std::jmp_buf jump_buffer;
 	};
 
@@ -63,9 +62,11 @@ namespace Rayni
 	{
 		static void error_exit(j_common_ptr jpeg_common)
 		{
-			ErrorManager *error_manager = reinterpret_cast<ErrorManager *>(jpeg_common->err);
+			// cppcoreguidelines-pro-type-static-cast-downcast warning for static_cast,
+			// but dynamic_cast not possible since no control over base class.
+			auto error_manager = static_cast<ErrorManager *>(jpeg_common->err); // NOLINT
 
-			(*jpeg_common->err->output_message)(jpeg_common);
+			(*error_manager->output_message)(jpeg_common);
 
 			std::longjmp(error_manager->jump_buffer, 1);
 		}
@@ -106,9 +107,9 @@ namespace Rayni
 		jpeg_decompress_struct jpeg_decompress;
 		ErrorManager error_manager;
 
-		jpeg_decompress.err = jpeg_std_error(&error_manager.base);
-		error_manager.base.error_exit = Callbacks::error_exit;
-		error_manager.base.output_message = Callbacks::output_message;
+		jpeg_decompress.err = jpeg_std_error(&error_manager);
+		error_manager.error_exit = Callbacks::error_exit;
+		error_manager.output_message = Callbacks::output_message;
 
 		if (setjmp(error_manager.jump_buffer))
 		{

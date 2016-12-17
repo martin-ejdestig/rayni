@@ -59,7 +59,7 @@ namespace Rayni
 		void read_color_map();
 		Image read_image_data();
 
-		void read(std::uint8_t *dest, std::size_t size);
+		void read(void *dest, std::size_t size);
 
 		template <typename T>
 		void read(T &dest)

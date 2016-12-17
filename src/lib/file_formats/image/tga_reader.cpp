@@ -123,12 +123,9 @@ namespace Rayni
 		return image;
 	}
 
-	void TGAReader::read(std::uint8_t *dest, std::size_t size)
+	void TGAReader::read(void *dest, std::size_t size)
 	{
-		static_assert(sizeof(std::uint8_t) == sizeof(std::istream::char_type),
-		              "Size of std::uint8_t not the same as sizeof std::istream::char_type");
-
-		stream->read(reinterpret_cast<std::istream::char_type *>(dest), static_cast<std::streamsize>(size));
+		stream->read(static_cast<std::istream::char_type *>(dest), static_cast<std::streamsize>(size));
 
 		if (!stream->good())
 		{

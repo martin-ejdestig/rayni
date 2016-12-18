@@ -1,4 +1,28 @@
 ---
+# - cppcoreguidelines-pro-bounds-* checks are disabled since they in many cases
+#   suggest using the GSL. Should be alternatives in language/standard library.
+#   They also behave weirdly in some cases. See e.g.
+#   https://llvm.org/bugs/show_bug.cgi?id=31419 . Disable them until better
+#   alternatives are available and the checks are better. (Also often the case
+#   that e.g. array indexing with non constant is done in performance critical
+#   code where bounds checking is not wanted. Input can be validated before
+#   indexing. With an assert(), if nothing else, that is disabled in release.)
+#
+# - cppcoreguidelines-pro-type-member-init is disabled because there are too
+#   many false positives. See:
+#   https://llvm.org/bugs/show_bug.cgi?id=31039
+#   https://llvm.org/bugs/show_bug.cgi?id=31420
+#
+# - cppcoreguidelines-pro-type-union-access is disabled since C++17 is not
+#   released yet and hence std::variant, which the check suggests, cannot be
+#   used. Boost, which the check gives as an alternative, is not an option.
+#   It also warns when accessing unions in system headers, which is not
+#   something the user can change. See
+#   https://llvm.org/bugs/show_bug.cgi?id=31418 .
+#
+# - cppcoreguidelines-pro-type-vararg is disabled because it reports false
+#   positives in googletest. See https://llvm.org/bugs/show_bug.cgi?id=31194 .
+#
 # - misc-noexcept-move-constructor is disabled because of a bug with = default.
 #   See https://llvm.org/bugs/show_bug.cgi?id=24712 .
 #
@@ -19,6 +43,11 @@
 #   https://llvm.org/bugs/show_bug.cgi?id=27911 .
 
 Checks: "\
+cppcoreguidelines-*,\
+-cppcoreguidelines-pro-bounds-*,\
+-cppcoreguidelines-pro-type-member-init,\
+-cppcoreguidelines-pro-type-union-access,\
+-cppcoreguidelines-pro-type-vararg,\
 google-build-namespaces,\
 google-build-using-namespace,\
 google-default-arguments,\

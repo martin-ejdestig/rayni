@@ -88,4 +88,5 @@ lib_sources = [
 lib = static_library('rayni',
                      dependencies : lib_dependencies,
                      include_directories : src_incdir,
-                     sources : lib_sources)
+                     sources : lib_sources,
+                     pic : false)

@@ -55,6 +55,7 @@ lib_sources = [
     'math/hash.h',
     'math/lerp.h',
     'math/math.h',
+    'math/matrix3x3.h',
     'math/matrix4x4.cpp',
     'math/matrix4x4.h',
     'math/quaternion.h',

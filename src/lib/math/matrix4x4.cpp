@@ -95,7 +95,7 @@ namespace Rayni
 	Quaternion Matrix4x4::rotation() const
 	{
 		real_t xyz[3], w;
-		real_t trace = upper3x3_trace();
+		real_t trace = upper3x3().trace();
 
 		if (trace > 0)
 		{
@@ -109,7 +109,7 @@ namespace Rayni
 		}
 		else
 		{
-			unsigned int i = upper3x3_max_diagonal_position();
+			unsigned int i = upper3x3().max_diagonal_position();
 			unsigned int j = (i + 1) % 3;
 			unsigned int k = (j + 1) % 3;
 			real_t s = std::sqrt(rows[i][i] - rows[j][j] - rows[k][k] + 1);

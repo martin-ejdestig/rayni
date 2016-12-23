@@ -166,25 +166,21 @@ namespace Rayni
 		EXPECT_NEAR(0.73030, q.w(), 1e-5);
 	}
 
-	TEST_F(Matrix4x4Test, Upper3x3Trace)
+	TEST_F(Matrix4x4Test, Upper3x3)
 	{
-		EXPECT_NEAR(14,
-		            Matrix4x4({2, 100, 100, 100}, {100, 4, 100, 100}, {100, 100, 8, 100}, {100, 100, 100, 100})
-		                    .upper3x3_trace(),
-		            1e-100);
-	}
+		Matrix3x3 m = Matrix4x4({1, 2, 3, 4}, {5, 6, 7, 8}, {9, 10, 11, 12}, {13, 14, 15, 16}).upper3x3();
 
-	TEST_F(Matrix4x4Test, Upper3x3MaxDiagonalPosition)
-	{
-		EXPECT_EQ(0,
-		          Matrix4x4({3, 0, 0, 0}, {0, 1, 0, 0}, {0, 0, 2, 0}, {0, 0, 0, 4})
-		                  .upper3x3_max_diagonal_position());
-		EXPECT_EQ(1,
-		          Matrix4x4({2, 0, 0, 0}, {0, 3, 0, 0}, {0, 0, 1, 0}, {0, 0, 0, 4})
-		                  .upper3x3_max_diagonal_position());
-		EXPECT_EQ(2,
-		          Matrix4x4({1, 0, 0, 0}, {0, 2, 0, 0}, {0, 0, 3, 0}, {0, 0, 0, 4})
-		                  .upper3x3_max_diagonal_position());
+		EXPECT_NEAR(1, m(0, 0), 1e-100);
+		EXPECT_NEAR(2, m(0, 1), 1e-100);
+		EXPECT_NEAR(3, m(0, 2), 1e-100);
+
+		EXPECT_NEAR(5, m(1, 0), 1e-100);
+		EXPECT_NEAR(6, m(1, 1), 1e-100);
+		EXPECT_NEAR(7, m(1, 2), 1e-100);
+
+		EXPECT_NEAR(9, m(2, 0), 1e-100);
+		EXPECT_NEAR(10, m(2, 1), 1e-100);
+		EXPECT_NEAR(11, m(2, 2), 1e-100);
 	}
 
 	TEST_F(Matrix4x4Test, PolarDecomposition)

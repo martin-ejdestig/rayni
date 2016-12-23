@@ -24,6 +24,7 @@ lib_unit_tests_sources = [
     'math/hash.cpp',
     'math/lerp.cpp',
     'math/math.cpp',
+    'math/matrix3x3.cpp',
     'math/matrix4x4.cpp',
     'math/quaternion.cpp',
     'math/transform.cpp',

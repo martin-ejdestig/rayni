@@ -25,6 +25,7 @@
 #include <utility>
 
 #include "lib/math/math.h"
+#include "lib/math/matrix3x3.h"
 #include "lib/math/quaternion.h"
 #include "lib/math/vector3.h"
 #include "lib/math/vector4.h"
@@ -270,22 +271,11 @@ namespace Rayni
 
 		Quaternion rotation() const;
 
-		real_t upper3x3_trace() const
+		Matrix3x3 upper3x3() const
 		{
-			return rows[0][0] + rows[1][1] + rows[2][2];
-		}
-
-		unsigned int upper3x3_max_diagonal_position() const
-		{
-			unsigned int pos = 0;
-
-			if (rows[1][1] > rows[0][0])
-				pos = 1;
-
-			if (rows[2][2] > rows[pos][pos])
-				pos = 2;
-
-			return pos;
+			return Matrix3x3({rows[0].x(), rows[0].y(), rows[0].z()},
+			                 {rows[1].x(), rows[1].y(), rows[1].z()},
+			                 {rows[2].x(), rows[2].y(), rows[2].z()});
 		}
 
 		PolarDecomposition polar_decomposition() const;

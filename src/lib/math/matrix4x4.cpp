@@ -19,7 +19,6 @@
 
 #include "lib/math/matrix4x4.h"
 
-#include <algorithm>
 #include <cassert>
 #include <cmath>
 
@@ -151,13 +150,7 @@ namespace Rayni
 		for (unsigned int i = 0; i < MAX_STEPS; i++)
 		{
 			Matrix4x4 rotation_next = (rotation + rotation.transpose().inverse()) * real_t(0.5);
-			real_t norm_of_diff = 0;
-
-			for (unsigned int row = 0; row < 3; row++)
-				norm_of_diff = std::max(norm_of_diff,
-				                        std::abs(rotation(row, 0) - rotation_next(row, 0)) +
-				                                std::abs(rotation(row, 1) - rotation_next(row, 1)) +
-				                                std::abs(rotation(row, 2) - rotation_next(row, 2)));
+			real_t norm_of_diff = (rotation - rotation_next).upper3x3().max_absolute_row_sum_norm();
 
 			if (norm_of_diff <= real_t(0.0001))
 				break;

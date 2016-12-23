@@ -177,6 +177,14 @@ namespace Rayni
 			                 rows[3] + right.rows[3]);
 		}
 
+		Matrix4x4 operator-(const Matrix4x4 &right) const
+		{
+			return Matrix4x4(rows[0] - right.rows[0],
+			                 rows[1] - right.rows[1],
+			                 rows[2] - right.rows[2],
+			                 rows[3] - right.rows[3]);
+		}
+
 		Matrix4x4 operator*(real_t s) const
 		{
 			return Matrix4x4(rows[0] * s, rows[1] * s, rows[2] * s, rows[3] * s);

@@ -20,7 +20,9 @@
 #ifndef RAYNI_LIB_MATH_MATRIX3X3_H
 #define RAYNI_LIB_MATH_MATRIX3X3_H
 
+#include <algorithm>
 #include <cassert>
+#include <cmath>
 
 #include "lib/math/math.h"
 #include "lib/math/vector3.h"
@@ -66,6 +68,16 @@ namespace Rayni
 				pos = 2;
 
 			return pos;
+		}
+
+		real_t max_absolute_row_sum_norm() const
+		{
+			real_t norm = 0;
+
+			for (auto &row : rows)
+				norm = std::max(norm, std::abs(row.x()) + std::abs(row.y()) + std::abs(row.z()));
+
+			return norm;
 		}
 
 	private:

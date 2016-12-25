@@ -19,10 +19,6 @@
 
 #include <gtest/gtest.h>
 
-#include <cmath>
-#include <string>
-
-#include "lib/math/math.h"
 #include "lib/math/matrix3x3.h"
 
 namespace Rayni

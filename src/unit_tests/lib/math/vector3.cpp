@@ -56,11 +56,9 @@ namespace Rayni
 		EXPECT_NEAR(2, Vector3::max({1, 1, 1}, {1, 1, 2}).z(), 1e-100);
 	}
 
-	TEST(Vector3Test, Operators)
+	TEST(Vector3Test, OperatorSubscript)
 	{
-		Vector3 v;
-
-		v = Vector3(1, 2, 3);
+		Vector3 v(1, 2, 3);
 		EXPECT_EQ(v.x(), v[0]);
 		EXPECT_EQ(v.y(), v[1]);
 		EXPECT_EQ(v.z(), v[2]);
@@ -69,21 +67,35 @@ namespace Rayni
 		EXPECT_EQ(vc.x(), v[0]);
 		EXPECT_EQ(vc.y(), v[1]);
 		EXPECT_EQ(vc.z(), v[2]);
+	}
 
-		v = Vector3(1, 2, 3) + Vector3(4, 5, 6);
+	TEST(Vector3Test, OperatorAddition)
+	{
+		Vector3 v = Vector3(1, 2, 3) + Vector3(4, 5, 6);
 		EXPECT_NEAR(5, v.x(), 1e-100);
 		EXPECT_NEAR(7, v.y(), 1e-100);
 		EXPECT_NEAR(9, v.z(), 1e-100);
+	}
 
-		v = Vector3(6, 5, 4) - Vector3(1, 2, 3);
+	TEST(Vector3Test, OperatorSubtraction)
+	{
+		Vector3 v = Vector3(6, 5, 4) - Vector3(1, 2, 3);
 		EXPECT_NEAR(5, v.x(), 1e-100);
 		EXPECT_NEAR(3, v.y(), 1e-100);
 		EXPECT_NEAR(1, v.z(), 1e-100);
+	}
 
-		v = -Vector3(1, 2, 3);
+	TEST(Vector3Test, OperatorUnaryMinus)
+	{
+		Vector3 v = -Vector3(1, 2, 3);
 		EXPECT_EQ(-1, v.x());
 		EXPECT_EQ(-2, v.y());
 		EXPECT_EQ(-3, v.z());
+	}
+
+	TEST(Vector3Test, OperatorsMultiplicationScalar)
+	{
+		Vector3 v;
 
 		v = Vector3(1, 2, 3) * real_t(2);
 		EXPECT_NEAR(2, v.x(), 1e-100);
@@ -94,14 +106,20 @@ namespace Rayni
 		EXPECT_NEAR(6, v.x(), 1e-100);
 		EXPECT_NEAR(4, v.y(), 1e-100);
 		EXPECT_NEAR(2, v.z(), 1e-100);
+	}
 
-		v = Vector3(1, 2, 3);
+	TEST(Vector3Test, OperatorAdditionAssignment)
+	{
+		Vector3 v(1, 2, 3);
 		v += Vector3(4, 5, 6);
 		EXPECT_NEAR(5, v.x(), 1e-100);
 		EXPECT_NEAR(7, v.y(), 1e-100);
 		EXPECT_NEAR(9, v.z(), 1e-100);
+	}
 
-		v = Vector3(6, 5, 4);
+	TEST(Vector3Test, OperatorSubtractionAssignment)
+	{
+		Vector3 v(6, 5, 4);
 		v -= Vector3(1, 2, 3);
 		EXPECT_NEAR(5, v.x(), 1e-100);
 		EXPECT_NEAR(3, v.y(), 1e-100);

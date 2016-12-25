@@ -41,21 +41,27 @@ namespace Rayni
 		EXPECT_THROW(Variant(0).to<Quaternion>(), Variant::Exception);
 	}
 
-	TEST(QuaternionTest, Operators)
+	TEST(QuaternionTest, OperatorAddition)
 	{
-		Quaternion q;
-
-		q = Quaternion(1, 2, 3, 4) + Quaternion(5, 6, 7, 8);
+		Quaternion q = Quaternion(1, 2, 3, 4) + Quaternion(5, 6, 7, 8);
 		EXPECT_NEAR(6, q.x(), 1e-100);
 		EXPECT_NEAR(8, q.y(), 1e-100);
 		EXPECT_NEAR(10, q.z(), 1e-100);
 		EXPECT_NEAR(12, q.w(), 1e-100);
+	}
 
-		q = Quaternion(8, 7, 6, 5) - Quaternion(1, 2, 3, 4);
+	TEST(QuaternionTest, OperatorSubtraction)
+	{
+		Quaternion q = Quaternion(8, 7, 6, 5) - Quaternion(1, 2, 3, 4);
 		EXPECT_NEAR(7, q.x(), 1e-100);
 		EXPECT_NEAR(5, q.y(), 1e-100);
 		EXPECT_NEAR(3, q.z(), 1e-100);
 		EXPECT_NEAR(1, q.w(), 1e-100);
+	}
+
+	TEST(QuaternionTest, OperatorMultiplicationScalar)
+	{
+		Quaternion q;
 
 		q = Quaternion(1, 2, 3, 4) * real_t(2);
 		EXPECT_NEAR(2, q.x(), 1e-100);

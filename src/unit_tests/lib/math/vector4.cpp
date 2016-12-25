@@ -23,11 +23,9 @@
 
 namespace Rayni
 {
-	TEST(Vector4Test, Operators)
+	TEST(Vector4Test, OperatorSubscript)
 	{
-		Vector4 v;
-
-		v = Vector4(1, 2, 3, 4);
+		Vector4 v(1, 2, 3, 4);
 		EXPECT_EQ(v.x(), v[0]);
 		EXPECT_EQ(v.y(), v[1]);
 		EXPECT_EQ(v.z(), v[2]);
@@ -38,33 +36,48 @@ namespace Rayni
 		EXPECT_EQ(vc.y(), v[1]);
 		EXPECT_EQ(vc.z(), v[2]);
 		EXPECT_EQ(vc.w(), v[3]);
+	}
 
-		v = Vector4(1, 2, 3, 4) + Vector4(5, 6, 7, 8);
+	TEST(Vector4Test, OperatorAddition)
+	{
+		Vector4 v = Vector4(1, 2, 3, 4) + Vector4(5, 6, 7, 8);
 		EXPECT_NEAR(6, v.x(), 1e-100);
 		EXPECT_NEAR(8, v.y(), 1e-100);
 		EXPECT_NEAR(10, v.z(), 1e-100);
 		EXPECT_NEAR(12, v.w(), 1e-100);
+	}
 
-		v = Vector4(8, 7, 6, 5) - Vector4(1, 2, 3, 4);
+	TEST(Vector4Test, OperatorSubtraction)
+	{
+		Vector4 v = Vector4(8, 7, 6, 5) - Vector4(1, 2, 3, 4);
 		EXPECT_NEAR(7, v.x(), 1e-100);
 		EXPECT_NEAR(5, v.y(), 1e-100);
 		EXPECT_NEAR(3, v.z(), 1e-100);
 		EXPECT_NEAR(1, v.w(), 1e-100);
+	}
 
-		v = Vector4(1, 2, 3, 4) * real_t(2);
+	TEST(Vector4Test, OperatorMultiplicationScalar)
+	{
+		Vector4 v = Vector4(1, 2, 3, 4) * real_t(2);
 		EXPECT_NEAR(2, v.x(), 1e-100);
 		EXPECT_NEAR(4, v.y(), 1e-100);
 		EXPECT_NEAR(6, v.z(), 1e-100);
 		EXPECT_NEAR(8, v.w(), 1e-100);
+	}
 
-		v = Vector4(1, 2, 3, 4);
+	TEST(Vector4Test, OperatorAdditionAssignment)
+	{
+		Vector4 v(1, 2, 3, 4);
 		v += Vector4(5, 6, 7, 8);
 		EXPECT_NEAR(6, v.x(), 1e-100);
 		EXPECT_NEAR(8, v.y(), 1e-100);
 		EXPECT_NEAR(10, v.z(), 1e-100);
 		EXPECT_NEAR(12, v.w(), 1e-100);
+	}
 
-		v = Vector4(1, 2, 3, 4);
+	TEST(Vector4Test, OperatorMultiplicationAssignment)
+	{
+		Vector4 v(1, 2, 3, 4);
 		v *= real_t(2);
 		EXPECT_NEAR(2, v.x(), 1e-100);
 		EXPECT_NEAR(4, v.y(), 1e-100);

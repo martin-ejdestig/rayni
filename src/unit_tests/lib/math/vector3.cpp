@@ -26,10 +26,10 @@ namespace Rayni
 {
 	TEST(Vector3Test, Variant)
 	{
-		Vector3 v3 = Variant::vector(1, 2, 3).to<Vector3>();
-		EXPECT_NEAR(1, v3.x(), 1e-100);
-		EXPECT_NEAR(2, v3.y(), 1e-100);
-		EXPECT_NEAR(3, v3.z(), 1e-100);
+		Vector3 v = Variant::vector(1, 2, 3).to<Vector3>();
+		EXPECT_NEAR(1, v.x(), 1e-100);
+		EXPECT_NEAR(2, v.y(), 1e-100);
+		EXPECT_NEAR(3, v.z(), 1e-100);
 
 		EXPECT_THROW(Variant::vector().to<Vector3>(), Variant::Exception);
 		EXPECT_THROW(Variant::vector(1).to<Vector3>(), Variant::Exception);

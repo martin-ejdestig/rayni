@@ -25,6 +25,7 @@
 #include <cmath>
 
 #include "lib/math/math.h"
+#include "lib/math/quaternion.h"
 #include "lib/math/vector3.h"
 
 namespace Rayni
@@ -78,6 +79,39 @@ namespace Rayni
 				norm = std::max(norm, std::abs(row.x()) + std::abs(row.y()) + std::abs(row.z()));
 
 			return norm;
+		}
+
+		Quaternion rotation() const
+		{
+			real_t xyz[3], w;
+			real_t t = trace();
+
+			if (t > 0)
+			{
+				real_t s = std::sqrt(t + 1);
+
+				w = s * real_t(0.5);
+				s = real_t(0.5) / s;
+				xyz[0] = (rows[2][1] - rows[1][2]) * s;
+				xyz[1] = (rows[0][2] - rows[2][0]) * s;
+				xyz[2] = (rows[1][0] - rows[0][1]) * s;
+			}
+			else
+			{
+				unsigned int i = max_diagonal_position();
+				unsigned int j = (i + 1) % 3;
+				unsigned int k = (j + 1) % 3;
+				real_t s = std::sqrt(rows[i][i] - rows[j][j] - rows[k][k] + 1);
+
+				xyz[i] = s * real_t(0.5);
+				if (s != 0)
+					s = real_t(0.5) / s;
+				w = (rows[k][j] - rows[j][k]) * s;
+				xyz[j] = (rows[j][i] + rows[i][j]) * s;
+				xyz[k] = (rows[k][i] + rows[i][k]) * s;
+			}
+
+			return {xyz[0], xyz[1], xyz[2], w};
 		}
 
 	private:

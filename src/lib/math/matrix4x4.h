@@ -277,7 +277,10 @@ namespace Rayni
 			return Vector3(rows[0][3], rows[1][3], rows[2][3]);
 		}
 
-		Quaternion rotation() const;
+		Quaternion rotation() const
+		{
+			return upper3x3().rotation();
+		}
 
 		Matrix3x3 upper3x3() const
 		{

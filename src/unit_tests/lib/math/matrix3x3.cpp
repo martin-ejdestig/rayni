@@ -20,6 +20,7 @@
 #include <gtest/gtest.h>
 
 #include "lib/math/matrix3x3.h"
+#include "lib/math/quaternion.h"
 
 namespace Rayni
 {
@@ -45,5 +46,18 @@ namespace Rayni
 
 		EXPECT_NEAR(60, Matrix3x3({1, 2, 3}, {4, 5, 6}, {10, 20, 30}).max_absolute_row_sum_norm(), 1e-100);
 		EXPECT_NEAR(60, Matrix3x3({1, 2, 3}, {4, 5, 6}, {-10, -20, -30}).max_absolute_row_sum_norm(), 1e-100);
+	}
+
+	TEST(Matrix3x3Test, Rotation)
+	{
+		Quaternion q = Matrix3x3({0.133337, -0.666669, 0.733333},
+		                         {0.933331, 0.333342, 0.133338},
+		                         {-0.333344, 0.666662, 0.666667})
+		                       .rotation();
+
+		EXPECT_NEAR(0.18257, q.x(), 1e-5);
+		EXPECT_NEAR(0.36515, q.y(), 1e-5);
+		EXPECT_NEAR(0.54772, q.z(), 1e-5);
+		EXPECT_NEAR(0.73030, q.w(), 1e-5);
 	}
 }

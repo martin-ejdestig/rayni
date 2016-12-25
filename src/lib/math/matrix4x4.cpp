@@ -91,39 +91,6 @@ namespace Rayni
 				swap_columns(pivot_positions[i].row, pivot_positions[i].column);
 	}
 
-	Quaternion Matrix4x4::rotation() const
-	{
-		real_t xyz[3], w;
-		real_t trace = upper3x3().trace();
-
-		if (trace > 0)
-		{
-			real_t s = std::sqrt(trace + 1);
-
-			w = s * real_t(0.5);
-			s = real_t(0.5) / s;
-			xyz[0] = (rows[2][1] - rows[1][2]) * s;
-			xyz[1] = (rows[0][2] - rows[2][0]) * s;
-			xyz[2] = (rows[1][0] - rows[0][1]) * s;
-		}
-		else
-		{
-			unsigned int i = upper3x3().max_diagonal_position();
-			unsigned int j = (i + 1) % 3;
-			unsigned int k = (j + 1) % 3;
-			real_t s = std::sqrt(rows[i][i] - rows[j][j] - rows[k][k] + 1);
-
-			xyz[i] = s * real_t(0.5);
-			if (s != 0)
-				s = real_t(0.5) / s;
-			w = (rows[k][j] - rows[j][k]) * s;
-			xyz[j] = (rows[j][i] + rows[i][j]) * s;
-			xyz[k] = (rows[k][i] + rows[i][k]) * s;
-		}
-
-		return {xyz[0], xyz[1], xyz[2], w};
-	}
-
 	/**
 	 * Polar decomposition. Only consider upper 3x3 part since it is only used on affine
 	 * transformations and translation is never relevant when decomposing.

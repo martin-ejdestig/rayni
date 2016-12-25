@@ -34,4 +34,16 @@ namespace Rayni
 		EXPECT_EQ(1, Matrix3x3({2, 0, 0}, {0, 3, 0}, {0, 0, 1}).max_diagonal_position());
 		EXPECT_EQ(2, Matrix3x3({1, 0, 0}, {0, 2, 0}, {0, 0, 3}).max_diagonal_position());
 	}
+
+	TEST(Matrix3x3Test, MaxAbsoluteRowSumNorm)
+	{
+		EXPECT_NEAR(60, Matrix3x3({10, 20, 30}, {1, 2, 3}, {4, 5, 6}).max_absolute_row_sum_norm(), 1e-100);
+		EXPECT_NEAR(60, Matrix3x3({-10, -20, -30}, {1, 2, 3}, {4, 5, 6}).max_absolute_row_sum_norm(), 1e-100);
+
+		EXPECT_NEAR(60, Matrix3x3({1, 2, 3}, {10, 20, 30}, {4, 5, 6}).max_absolute_row_sum_norm(), 1e-100);
+		EXPECT_NEAR(60, Matrix3x3({1, 2, 3}, {-10, -20, -30}, {4, 5, 6}).max_absolute_row_sum_norm(), 1e-100);
+
+		EXPECT_NEAR(60, Matrix3x3({1, 2, 3}, {4, 5, 6}, {10, 20, 30}).max_absolute_row_sum_norm(), 1e-100);
+		EXPECT_NEAR(60, Matrix3x3({1, 2, 3}, {4, 5, 6}, {-10, -20, -30}).max_absolute_row_sum_norm(), 1e-100);
+	}
 }

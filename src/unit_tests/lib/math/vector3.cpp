@@ -59,14 +59,14 @@ namespace Rayni
 	TEST(Vector3Test, OperatorSubscript)
 	{
 		Vector3 v(1, 2, 3);
-		EXPECT_EQ(v.x(), v[0]);
-		EXPECT_EQ(v.y(), v[1]);
-		EXPECT_EQ(v.z(), v[2]);
+		EXPECT_NEAR(v.x(), v[0], 1e-100);
+		EXPECT_NEAR(v.y(), v[1], 1e-100);
+		EXPECT_NEAR(v.z(), v[2], 1e-100);
 
 		const Vector3 vc(1, 2, 3);
-		EXPECT_EQ(vc.x(), v[0]);
-		EXPECT_EQ(vc.y(), v[1]);
-		EXPECT_EQ(vc.z(), v[2]);
+		EXPECT_NEAR(vc.x(), v[0], 1e-100);
+		EXPECT_NEAR(vc.y(), v[1], 1e-100);
+		EXPECT_NEAR(vc.z(), v[2], 1e-100);
 	}
 
 	TEST(Vector3Test, OperatorAddition)
@@ -88,9 +88,9 @@ namespace Rayni
 	TEST(Vector3Test, OperatorUnaryMinus)
 	{
 		Vector3 v = -Vector3(1, 2, 3);
-		EXPECT_EQ(-1, v.x());
-		EXPECT_EQ(-2, v.y());
-		EXPECT_EQ(-3, v.z());
+		EXPECT_NEAR(-1, v.x(), 1e-100);
+		EXPECT_NEAR(-2, v.y(), 1e-100);
+		EXPECT_NEAR(-3, v.z(), 1e-100);
 	}
 
 	TEST(Vector3Test, OperatorsMultiplicationScalar)

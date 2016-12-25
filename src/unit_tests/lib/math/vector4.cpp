@@ -26,16 +26,16 @@ namespace Rayni
 	TEST(Vector4Test, OperatorSubscript)
 	{
 		Vector4 v(1, 2, 3, 4);
-		EXPECT_EQ(v.x(), v[0]);
-		EXPECT_EQ(v.y(), v[1]);
-		EXPECT_EQ(v.z(), v[2]);
-		EXPECT_EQ(v.w(), v[3]);
+		EXPECT_NEAR(v.x(), v[0], 1e-100);
+		EXPECT_NEAR(v.y(), v[1], 1e-100);
+		EXPECT_NEAR(v.z(), v[2], 1e-100);
+		EXPECT_NEAR(v.w(), v[3], 1e-100);
 
 		const Vector4 vc(1, 2, 3, 4);
-		EXPECT_EQ(vc.x(), v[0]);
-		EXPECT_EQ(vc.y(), v[1]);
-		EXPECT_EQ(vc.z(), v[2]);
-		EXPECT_EQ(vc.w(), v[3]);
+		EXPECT_NEAR(vc.x(), v[0], 1e-100);
+		EXPECT_NEAR(vc.y(), v[1], 1e-100);
+		EXPECT_NEAR(vc.z(), v[2], 1e-100);
+		EXPECT_NEAR(vc.w(), v[3], 1e-100);
 	}
 
 	TEST(Vector4Test, OperatorAddition)

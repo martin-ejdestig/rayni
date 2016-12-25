@@ -24,6 +24,31 @@
 
 namespace Rayni
 {
+	TEST(Matrix3x3Test, OperatorIndexing)
+	{
+		Matrix3x3 m({1, 2, 3}, {4, 5, 6}, {7, 8, 9});
+		EXPECT_NEAR(1, m(0, 0), 1e-100);
+		EXPECT_NEAR(2, m(0, 1), 1e-100);
+		EXPECT_NEAR(3, m(0, 2), 1e-100);
+		EXPECT_NEAR(4, m(1, 0), 1e-100);
+		EXPECT_NEAR(5, m(1, 1), 1e-100);
+		EXPECT_NEAR(6, m(1, 2), 1e-100);
+		EXPECT_NEAR(7, m(2, 0), 1e-100);
+		EXPECT_NEAR(8, m(2, 1), 1e-100);
+		EXPECT_NEAR(9, m(2, 2), 1e-100);
+
+		const Matrix3x3 mc({1, 2, 3}, {4, 5, 6}, {7, 8, 9});
+		EXPECT_NEAR(1, mc(0, 0), 1e-100);
+		EXPECT_NEAR(2, mc(0, 1), 1e-100);
+		EXPECT_NEAR(3, mc(0, 2), 1e-100);
+		EXPECT_NEAR(4, mc(1, 0), 1e-100);
+		EXPECT_NEAR(5, mc(1, 1), 1e-100);
+		EXPECT_NEAR(6, mc(1, 2), 1e-100);
+		EXPECT_NEAR(7, mc(2, 0), 1e-100);
+		EXPECT_NEAR(8, mc(2, 1), 1e-100);
+		EXPECT_NEAR(9, mc(2, 2), 1e-100);
+	}
+
 	TEST(Matrix3x3Test, Trace)
 	{
 		EXPECT_NEAR(14, Matrix3x3({2, 100, 100}, {100, 4, 100}, {100, 100, 8}).trace(), 1e-100);

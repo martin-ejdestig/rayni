@@ -67,6 +67,103 @@ namespace Rayni
 		}
 	};
 
+	TEST_F(Matrix4x4Test, OperatorIndexing)
+	{
+		Matrix4x4 m({1, 2, 3, 4}, {5, 6, 7, 8}, {9, 10, 11, 12}, {13, 14, 15, 16});
+		EXPECT_NEAR(1, m(0, 0), 1e-100);
+		EXPECT_NEAR(2, m(0, 1), 1e-100);
+		EXPECT_NEAR(3, m(0, 2), 1e-100);
+		EXPECT_NEAR(4, m(0, 3), 1e-100);
+		EXPECT_NEAR(5, m(1, 0), 1e-100);
+		EXPECT_NEAR(6, m(1, 1), 1e-100);
+		EXPECT_NEAR(7, m(1, 2), 1e-100);
+		EXPECT_NEAR(8, m(1, 3), 1e-100);
+		EXPECT_NEAR(9, m(2, 0), 1e-100);
+		EXPECT_NEAR(10, m(2, 1), 1e-100);
+		EXPECT_NEAR(11, m(2, 2), 1e-100);
+		EXPECT_NEAR(12, m(2, 3), 1e-100);
+		EXPECT_NEAR(13, m(3, 0), 1e-100);
+		EXPECT_NEAR(14, m(3, 1), 1e-100);
+		EXPECT_NEAR(15, m(3, 2), 1e-100);
+		EXPECT_NEAR(16, m(3, 3), 1e-100);
+
+		const Matrix4x4 mc({1, 2, 3, 4}, {5, 6, 7, 8}, {9, 10, 11, 12}, {13, 14, 15, 16});
+		EXPECT_NEAR(1, mc(0, 0), 1e-100);
+		EXPECT_NEAR(2, mc(0, 1), 1e-100);
+		EXPECT_NEAR(3, mc(0, 2), 1e-100);
+		EXPECT_NEAR(4, mc(0, 3), 1e-100);
+		EXPECT_NEAR(5, mc(1, 0), 1e-100);
+		EXPECT_NEAR(6, mc(1, 1), 1e-100);
+		EXPECT_NEAR(7, mc(1, 2), 1e-100);
+		EXPECT_NEAR(8, mc(1, 3), 1e-100);
+		EXPECT_NEAR(9, mc(2, 0), 1e-100);
+		EXPECT_NEAR(10, mc(2, 1), 1e-100);
+		EXPECT_NEAR(11, mc(2, 2), 1e-100);
+		EXPECT_NEAR(12, mc(2, 3), 1e-100);
+		EXPECT_NEAR(13, mc(3, 0), 1e-100);
+		EXPECT_NEAR(14, mc(3, 1), 1e-100);
+		EXPECT_NEAR(15, mc(3, 2), 1e-100);
+		EXPECT_NEAR(16, mc(3, 3), 1e-100);
+	}
+
+	TEST_F(Matrix4x4Test, OperatorAddition)
+	{
+		Matrix4x4 m = Matrix4x4({1, 2, 3, 4}, {5, 6, 7, 8}, {9, 10, 11, 12}, {13, 14, 15, 16}) +
+		              Matrix4x4({101, 102, 103, 104},
+		                        {105, 106, 107, 108},
+		                        {109, 110, 111, 112},
+		                        {113, 114, 115, 116});
+
+		EXPECT_PRED_FORMAT3(matrix_near,
+		                    Matrix4x4({102, 104, 106, 108},
+		                              {110, 112, 114, 116},
+		                              {118, 120, 122, 124},
+		                              {126, 128, 130, 132}),
+		                    m,
+		                    1e-100);
+	}
+
+	TEST_F(Matrix4x4Test, OperatorSubtraction)
+	{
+		Matrix4x4 m = Matrix4x4({101, 102, 103, 104},
+		                        {105, 106, 107, 108},
+		                        {109, 110, 111, 112},
+		                        {113, 114, 115, 116}) -
+		              Matrix4x4({16, 15, 14, 13}, {12, 11, 10, 9}, {8, 7, 6, 5}, {4, 3, 2, 1});
+
+		EXPECT_PRED_FORMAT3(matrix_near,
+		                    Matrix4x4({85, 87, 89, 91},
+		                              {93, 95, 97, 99},
+		                              {101, 103, 105, 107},
+		                              {109, 111, 113, 115}),
+		                    m,
+		                    1e-100);
+	}
+
+	TEST_F(Matrix4x4Test, OperatorMultiplication)
+	{
+		Matrix4x4 m = Matrix4x4({2, 16, 9, 11}, {7, 8, 13, 14}, {3, 15, 1, 13}, {13, 1, 14, 12}) *
+		              Matrix4x4({10, 3, 4, 6}, {13, 8, 5, 11}, {9, 10, 2, 16}, {1, 3, 2, 7});
+
+		EXPECT_PRED_FORMAT3(matrix_near,
+		                    Matrix4x4({320, 257, 128, 409},
+		                              {305, 257, 122, 436},
+		                              {247, 178, 115, 290},
+		                              {281, 223, 109, 397}),
+		                    m,
+		                    1e-100);
+	}
+
+	TEST_F(Matrix4x4Test, OperatorMultiplicationScalar)
+	{
+		Matrix4x4 m = Matrix4x4({1, 2, 3, 4}, {5, 6, 7, 8}, {9, 10, 11, 12}, {13, 14, 15, 16}) * 2;
+
+		EXPECT_PRED_FORMAT3(matrix_near,
+		                    Matrix4x4({2, 4, 6, 8}, {10, 12, 14, 16}, {18, 20, 22, 24}, {26, 28, 30, 32}),
+		                    m,
+		                    1e-100);
+	}
+
 	TEST_F(Matrix4x4Test, SetRow)
 	{
 		Matrix4x4 m({0, 1, 2, 3}, {4, 5, 6, 7}, {8, 9, 10, 11}, {12, 13, 14, 15});

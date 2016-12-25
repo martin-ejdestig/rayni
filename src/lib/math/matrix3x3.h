@@ -25,6 +25,7 @@
 #include <cmath>
 
 #include "lib/math/math.h"
+#include "lib/math/matrix_inverse.h"
 #include "lib/math/quaternion.h"
 #include "lib/math/vector3.h"
 
@@ -53,6 +54,38 @@ namespace Rayni
 		{
 			assert(row_index < SIZE && column_index < SIZE);
 			return rows[row_index][column_index];
+		}
+
+		Vector3 &row(unsigned int row_index)
+		{
+			assert(row_index < SIZE);
+
+			return rows[row_index];
+		}
+
+		void swap_rows(unsigned int row1_index, unsigned int row2_index)
+		{
+			assert(row1_index < SIZE && row2_index < SIZE && row1_index != row2_index);
+
+			std::swap(rows[row1_index], rows[row2_index]);
+		}
+
+		void swap_columns(unsigned int column1_index, unsigned int column2_index)
+		{
+			assert(column1_index < SIZE && column2_index < SIZE && column1_index != column2_index);
+
+			for (auto &row : rows)
+				std::swap(row[column1_index], row[column2_index]);
+		}
+
+		Matrix3x3 inverse() const
+		{
+			return MatrixInverse<Matrix3x3>::find(*this);
+		}
+
+		void in_place_inverse()
+		{
+			MatrixInverse<Matrix3x3>::find_in_place(*this);
 		}
 
 		real_t trace() const

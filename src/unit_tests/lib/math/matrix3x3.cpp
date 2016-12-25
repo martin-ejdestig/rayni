@@ -19,12 +19,56 @@
 
 #include <gtest/gtest.h>
 
+#include <cmath>
+#include <string>
+
+#include "lib/math/math.h"
 #include "lib/math/matrix3x3.h"
 #include "lib/math/quaternion.h"
 
 namespace Rayni
 {
-	TEST(Matrix3x3Test, OperatorIndexing)
+	class Matrix3x3Test : public testing::Test
+	{
+	protected:
+		static testing::AssertionResult matrix_near(const char *m1_expr,
+		                                            const char *m2_expr,
+		                                            const char *abs_error_expr,
+		                                            const Matrix3x3 &m1,
+		                                            const Matrix3x3 &m2,
+		                                            real_t abs_error)
+		{
+			std::string error_elements;
+
+			auto error_elements_append = [&](auto row, auto column) {
+				if (!error_elements.empty())
+					error_elements += ", ";
+
+				error_elements += "(" + std::to_string(row) + "," + std::to_string(column) + ")";
+			};
+
+			for (unsigned int row = 0; row < 3; row++)
+			{
+				for (unsigned int column = 0; column < 3; column++)
+				{
+					real_t diff = std::abs(m1(row, column) - m2(row, column));
+
+					if (diff > abs_error)
+						error_elements_append(row, column);
+				}
+			}
+
+			if (error_elements.empty())
+				return testing::AssertionSuccess();
+
+			return testing::AssertionFailure() << "The matrix:\n"
+			                                   << m1_expr << "\nand matrix:\n"
+			                                   << m2_expr << "\ndiffer more than " << abs_error_expr
+			                                   << " in the following elements:\n" + error_elements;
+		}
+	};
+
+	TEST_F(Matrix3x3Test, OperatorIndexing)
 	{
 		Matrix3x3 m({1, 2, 3}, {4, 5, 6}, {7, 8, 9});
 		EXPECT_NEAR(1, m(0, 0), 1e-100);
@@ -49,19 +93,59 @@ namespace Rayni
 		EXPECT_NEAR(9, mc(2, 2), 1e-100);
 	}
 
-	TEST(Matrix3x3Test, Trace)
+	TEST_F(Matrix3x3Test, SwapRows)
+	{
+		Matrix3x3 m({0, 1, 2}, {3, 4, 5}, {6, 7, 8});
+		m.swap_rows(0, 2);
+
+		EXPECT_PRED_FORMAT3(matrix_near, Matrix3x3({6, 7, 8}, {3, 4, 5}, {0, 1, 2}), m, 1e-100);
+	}
+
+	TEST_F(Matrix3x3Test, SwapColumns)
+	{
+		Matrix3x3 m({0, 1, 2}, {3, 4, 5}, {6, 7, 8});
+		m.swap_columns(0, 2);
+
+		EXPECT_PRED_FORMAT3(matrix_near, Matrix3x3({2, 1, 0}, {5, 4, 3}, {8, 7, 6}), m, 1e-100);
+	}
+
+	TEST_F(Matrix3x3Test, Inverse)
+	{
+		EXPECT_PRED_FORMAT3(matrix_near,
+		                    Matrix3x3({0.2647059, -0.1470588, 0.0588235},
+		                              {-0.1470588, -0.0294118, 0.4117647},
+		                              {0.0588235, 0.4117647, -0.7647059}),
+		                    Matrix3x3({5, 3, 2}, {3, 7, 4}, {2, 4, 1}).inverse(),
+		                    1e-7);
+	}
+
+	TEST_F(Matrix3x3Test, InPlaceInverse)
+	{
+		Matrix3x3 m({5, 3, 2}, {3, 7, 4}, {2, 4, 1});
+
+		m.in_place_inverse();
+
+		EXPECT_PRED_FORMAT3(matrix_near,
+		                    Matrix3x3({0.2647059, -0.1470588, 0.0588235},
+		                              {-0.1470588, -0.0294118, 0.4117647},
+		                              {0.0588235, 0.4117647, -0.7647059}),
+		                    m,
+		                    1e-7);
+	}
+
+	TEST_F(Matrix3x3Test, Trace)
 	{
 		EXPECT_NEAR(14, Matrix3x3({2, 100, 100}, {100, 4, 100}, {100, 100, 8}).trace(), 1e-100);
 	}
 
-	TEST(Matrix3x3Test, MaxDiagonalPosition)
+	TEST_F(Matrix3x3Test, MaxDiagonalPosition)
 	{
 		EXPECT_EQ(0, Matrix3x3({3, 0, 0}, {0, 1, 0}, {0, 0, 2}).max_diagonal_position());
 		EXPECT_EQ(1, Matrix3x3({2, 0, 0}, {0, 3, 0}, {0, 0, 1}).max_diagonal_position());
 		EXPECT_EQ(2, Matrix3x3({1, 0, 0}, {0, 2, 0}, {0, 0, 3}).max_diagonal_position());
 	}
 
-	TEST(Matrix3x3Test, MaxAbsoluteRowSumNorm)
+	TEST_F(Matrix3x3Test, MaxAbsoluteRowSumNorm)
 	{
 		EXPECT_NEAR(60, Matrix3x3({10, 20, 30}, {1, 2, 3}, {4, 5, 6}).max_absolute_row_sum_norm(), 1e-100);
 		EXPECT_NEAR(60, Matrix3x3({-10, -20, -30}, {1, 2, 3}, {4, 5, 6}).max_absolute_row_sum_norm(), 1e-100);
@@ -73,7 +157,7 @@ namespace Rayni
 		EXPECT_NEAR(60, Matrix3x3({1, 2, 3}, {4, 5, 6}, {-10, -20, -30}).max_absolute_row_sum_norm(), 1e-100);
 	}
 
-	TEST(Matrix3x3Test, Rotation)
+	TEST_F(Matrix3x3Test, Rotation)
 	{
 		Quaternion q = Matrix3x3({0.133337, -0.666669, 0.733333},
 		                         {0.933331, 0.333342, 0.133338},

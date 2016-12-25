@@ -126,6 +126,15 @@ namespace Rayni
 		EXPECT_NEAR(1, v.z(), 1e-100);
 	}
 
+	TEST(Vector3Test, OperatorMultiplicationAssignment)
+	{
+		Vector3 v(1, 2, 3);
+		v *= real_t(2);
+		EXPECT_NEAR(2, v.x(), 1e-100);
+		EXPECT_NEAR(4, v.y(), 1e-100);
+		EXPECT_NEAR(6, v.z(), 1e-100);
+	}
+
 	TEST(Vector3Test, Normalize)
 	{
 		EXPECT_NEAR(1, Vector3(2, 0, 0).normalize().x(), 1e-100);

@@ -156,6 +156,15 @@ namespace Rayni
 			return *this;
 		}
 
+		Vector3 &operator*=(real_t s)
+		{
+			x() *= s;
+			y() *= s;
+			z() *= s;
+
+			return *this;
+		}
+
 		Vector3 normalize() const
 		{
 			real_t len_inv = 1 / std::sqrt(dot(*this));

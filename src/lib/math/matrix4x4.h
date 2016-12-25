@@ -26,6 +26,7 @@
 
 #include "lib/math/math.h"
 #include "lib/math/matrix3x3.h"
+#include "lib/math/matrix_inverse.h"
 #include "lib/math/quaternion.h"
 #include "lib/math/vector3.h"
 #include "lib/math/vector4.h"
@@ -205,13 +206,14 @@ namespace Rayni
 			return result;
 		}
 
-		void in_place_inverse();
-
 		Matrix4x4 inverse() const
 		{
-			Matrix4x4 m(*this);
-			m.in_place_inverse();
-			return m;
+			return MatrixInverse<Matrix4x4>::find(*this);
+		}
+
+		void in_place_inverse()
+		{
+			MatrixInverse<Matrix4x4>::find_in_place(*this);
 		}
 
 		Matrix4x4 transpose() const
@@ -220,6 +222,13 @@ namespace Rayni
 			                 {rows[0][1], rows[1][1], rows[2][1], rows[3][1]},
 			                 {rows[0][2], rows[1][2], rows[2][2], rows[3][2]},
 			                 {rows[0][3], rows[1][3], rows[2][3], rows[3][3]});
+		}
+
+		Vector4 &row(unsigned int row_index)
+		{
+			assert(row_index < SIZE);
+
+			return rows[row_index];
 		}
 
 		const Vector4 &row(unsigned int row_index) const
@@ -300,8 +309,6 @@ namespace Rayni
 		}
 
 	private:
-		struct PivotPosition;
-
 		Vector4 rows[SIZE];
 	};
 

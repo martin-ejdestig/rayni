@@ -219,6 +219,21 @@ namespace Rayni
 		                    1e-7);
 	}
 
+	TEST_F(Matrix4x4Test, InPlaceInverse)
+	{
+		Matrix4x4 m({5, 8, 2, 1}, {3, 7, 4, 2}, {2, 4, 1, 3}, {6, 1, 1, 8});
+
+		m.in_place_inverse();
+
+		EXPECT_PRED_FORMAT3(matrix_near,
+		                    Matrix4x4({0.2272727, -0.0454545, -0.4090909, 0.1363636},
+		                              {0.0454545, -0.0757576, 0.3181818, -0.1060606},
+		                              {-0.1727273, 0.4212121, -0.4090909, 0.0696970},
+		                              {-0.1545455, -0.0090909, 0.3181818, 0.0272727}),
+		                    m,
+		                    1e-7);
+	}
+
 	TEST_F(Matrix4x4Test, Transpose)
 	{
 		EXPECT_PRED_FORMAT3(matrix_near,

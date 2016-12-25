@@ -58,6 +58,7 @@ lib_sources = [
     'math/matrix3x3.h',
     'math/matrix4x4.cpp',
     'math/matrix4x4.h',
+    'math/matrix_inverse.h',
     'math/quaternion.h',
     'math/ray.h',
     'math/transform.cpp',

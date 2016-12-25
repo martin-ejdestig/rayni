@@ -294,31 +294,4 @@ namespace Rayni
 		EXPECT_NEAR(10, m(2, 1), 1e-100);
 		EXPECT_NEAR(11, m(2, 2), 1e-100);
 	}
-
-	TEST_F(Matrix4x4Test, PolarDecomposition)
-	{
-		Matrix4x4 m({0.936293, -0.579258, 0.596007, 0},
-		            {0.312992, 1.88941, -0.29353, 0},
-		            {-0.159345, 0.307584, 2.92551, 0},
-		            {0, 0, 0, 1});
-
-		EXPECT_PRED_FORMAT3(matrix_near,
-		                    Matrix4x4({0.936293, -0.289629, 0.198669, 0},
-		                              {0.312992, 0.944703, -0.0978434, 0},
-		                              {-0.159345, 0.153792, 0.97517, 0},
-		                              {0, 0, 0, 1}),
-		                    m.polar_decomposition().rotation,
-		                    1e-4);
-
-		EXPECT_PRED_FORMAT3(matrix_near,
-		                    Matrix4x4({1, 0, 0, 0}, {0, 2, 0, 0}, {0, 0, 3, 0}, {0, 0, 0, 1}),
-		                    m.polar_decomposition().scale,
-		                    1e-4);
-	}
-
-	TEST_F(Matrix4x4Test, PreservesOrientationOfBasis)
-	{
-		EXPECT_TRUE(Matrix4x4::scale(2).preserves_orientation_of_basis());
-		EXPECT_FALSE(Matrix4x4::scale(-2).preserves_orientation_of_basis());
-	}
 }

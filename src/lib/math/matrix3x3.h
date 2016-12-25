@@ -26,6 +26,7 @@
 
 #include "lib/math/math.h"
 #include "lib/math/matrix_inverse.h"
+#include "lib/math/polar_decomposition.h"
 #include "lib/math/quaternion.h"
 #include "lib/math/vector3.h"
 
@@ -44,6 +45,16 @@ namespace Rayni
 		{
 		}
 
+		static Matrix3x3 scale(real_t x, real_t y, real_t z)
+		{
+			return Matrix3x3({x, 0, 0}, {0, y, 0}, {0, 0, z});
+		}
+
+		static Matrix3x3 scale(real_t s)
+		{
+			return scale(s, s, s);
+		}
+
 		real_t &operator()(unsigned int row_index, unsigned int column_index)
 		{
 			assert(row_index < SIZE && column_index < SIZE);
@@ -54,6 +65,39 @@ namespace Rayni
 		{
 			assert(row_index < SIZE && column_index < SIZE);
 			return rows[row_index][column_index];
+		}
+
+		Matrix3x3 operator+(const Matrix3x3 &right) const
+		{
+			return Matrix3x3(rows[0] + right.rows[0], rows[1] + right.rows[1], rows[2] + right.rows[2]);
+		}
+
+		Matrix3x3 operator-(const Matrix3x3 &right) const
+		{
+			return Matrix3x3(rows[0] - right.rows[0], rows[1] - right.rows[1], rows[2] - right.rows[2]);
+		}
+
+		Matrix3x3 operator*(const Matrix3x3 &right) const
+		{
+			Matrix3x3 result;
+
+			for (unsigned int i = 0; i < SIZE; i++)
+				for (unsigned int j = 0; j < SIZE; j++)
+					result.rows[i][j] = rows[i][0] * right.rows[0][j] +
+					                    rows[i][1] * right.rows[1][j] +
+					                    rows[i][2] * right.rows[2][j];
+
+			return result;
+		}
+
+		Matrix3x3 operator*(real_t s) const
+		{
+			return Matrix3x3(rows[0] * s, rows[1] * s, rows[2] * s);
+		}
+
+		friend Matrix3x3 operator*(real_t s, const Matrix3x3 &m)
+		{
+			return Matrix3x3(s * m.rows[0], s * m.rows[1], s * m.rows[2]);
 		}
 
 		Vector3 &row(unsigned int row_index)
@@ -86,6 +130,13 @@ namespace Rayni
 		void in_place_inverse()
 		{
 			MatrixInverse<Matrix3x3>::find_in_place(*this);
+		}
+
+		Matrix3x3 transpose() const
+		{
+			return Matrix3x3({rows[0][0], rows[1][0], rows[2][0]},
+			                 {rows[0][1], rows[1][1], rows[2][1]},
+			                 {rows[0][2], rows[1][2], rows[2][2]});
 		}
 
 		real_t trace() const
@@ -147,6 +198,17 @@ namespace Rayni
 			}
 
 			return {xyz[0], xyz[1], xyz[2], w};
+		}
+
+		PolarDecomposition<Matrix3x3> polar_decomposition() const
+		{
+			return PolarDecomposition<Matrix3x3>::calculate(*this);
+		}
+
+		bool preserves_orientation_of_basis() const
+		{
+			real_t determinant = rows[0].dot(rows[1].cross(rows[2]));
+			return determinant > 0;
 		}
 
 	private:

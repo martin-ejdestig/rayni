@@ -22,6 +22,7 @@
 
 #include "lib/math/lerp.h"
 #include "lib/math/math.h"
+#include "lib/math/matrix3x3.h"
 #include "lib/math/matrix4x4.h"
 #include "lib/math/quaternion.h"
 #include "lib/math/vector3.h"
@@ -37,8 +38,7 @@ namespace Rayni
 
 		Matrix4x4 compose() const
 		{
-			return Matrix4x4::translate(translation) * Matrix4x4::rotate(rotation) *
-			       Matrix4x4::from_axes(scale_x, scale_y, scale_z);
+			return Matrix4x4::translate(translation) * Matrix4x4::rotate(rotation) * Matrix4x4(scale);
 		}
 
 		DecomposedMatrix4x4 interpolate(real_t t, const DecomposedMatrix4x4 &to) const
@@ -46,9 +46,7 @@ namespace Rayni
 			DecomposedMatrix4x4 d;
 
 			d.rotation = slerp(t, rotation, to.rotation);
-			d.scale_x = lerp(t, scale_x, to.scale_x);
-			d.scale_y = lerp(t, scale_y, to.scale_y);
-			d.scale_z = lerp(t, scale_z, to.scale_z);
+			d.scale = lerp(t, scale, to.scale);
 			d.translation = lerp(t, translation, to.translation);
 
 			return d;
@@ -56,9 +54,7 @@ namespace Rayni
 
 	private:
 		Quaternion rotation;
-		Vector3 scale_x;
-		Vector3 scale_y;
-		Vector3 scale_z;
+		Matrix3x3 scale;
 		Vector3 translation;
 	};
 }

@@ -36,8 +36,6 @@ namespace Rayni
 	class Matrix4x4 // NOLINT Remove when https://llvm.org/bugs/show_bug.cgi?id=30965 is fixed.
 	{
 	public:
-		struct PolarDecomposition;
-
 		static constexpr unsigned int SIZE = Vector4::SIZE;
 
 		Matrix4x4()
@@ -46,6 +44,14 @@ namespace Rayni
 
 		Matrix4x4(const Vector4 &row0, const Vector4 &row1, const Vector4 &row2, const Vector4 &row3)
 		        : rows{row0, row1, row2, row3}
+		{
+		}
+
+		explicit Matrix4x4(const Matrix3x3 &m)
+		        : Matrix4x4({m(0, 0), m(0, 1), m(0, 2), 0},
+		                    {m(1, 0), m(1, 1), m(1, 2), 0},
+		                    {m(2, 0), m(2, 1), m(2, 2), 0},
+		                    {0, 0, 0, 1})
 		{
 		}
 
@@ -300,22 +306,8 @@ namespace Rayni
 			                 {rows[2].x(), rows[2].y(), rows[2].z()});
 		}
 
-		PolarDecomposition polar_decomposition() const;
-
-		bool preserves_orientation_of_basis() const
-		{
-			real_t determinant = x_axis().cross(y_axis()).dot(z_axis());
-			return determinant > 0;
-		}
-
 	private:
 		Vector4 rows[SIZE];
-	};
-
-	struct Matrix4x4::PolarDecomposition
-	{
-		Matrix4x4 rotation;
-		Matrix4x4 scale;
 	};
 }
 

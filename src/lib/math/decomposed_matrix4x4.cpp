@@ -23,14 +23,10 @@ namespace Rayni
 {
 	DecomposedMatrix4x4::DecomposedMatrix4x4(const Matrix4x4 &matrix)
 	{
-		auto pd = matrix.polar_decomposition();
+		auto pd = matrix.upper3x3().polar_decomposition();
 
 		rotation = pd.rotation.rotation();
-
-		scale_x = pd.scale.x_axis();
-		scale_y = pd.scale.y_axis();
-		scale_z = pd.scale.z_axis();
-
+		scale = pd.scale;
 		translation = matrix.translation();
 	}
 }

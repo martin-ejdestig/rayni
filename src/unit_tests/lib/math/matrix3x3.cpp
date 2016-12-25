@@ -93,6 +93,44 @@ namespace Rayni
 		EXPECT_NEAR(9, mc(2, 2), 1e-100);
 	}
 
+	TEST_F(Matrix3x3Test, OperatorAddition)
+	{
+		Matrix3x3 m = Matrix3x3({1, 2, 3}, {4, 5, 6}, {7, 8, 9}) +
+		              Matrix3x3({101, 102, 103}, {104, 105, 106}, {107, 108, 109});
+
+		EXPECT_PRED_FORMAT3(matrix_near,
+		                    Matrix3x3({102, 104, 106}, {108, 110, 112}, {114, 116, 118}),
+		                    m,
+		                    1e-100);
+	}
+
+	TEST_F(Matrix3x3Test, OperatorSubtraction)
+	{
+		Matrix3x3 m = Matrix3x3({101, 102, 103}, {104, 105, 106}, {107, 108, 109}) -
+		              Matrix3x3({9, 8, 7}, {6, 5, 4}, {3, 2, 1});
+
+		EXPECT_PRED_FORMAT3(matrix_near, Matrix3x3({92, 94, 96}, {98, 100, 102}, {104, 106, 108}), m, 1e-100);
+	}
+
+	TEST_F(Matrix3x3Test, OperatorMultiplication)
+	{
+		Matrix3x3 m =
+		        Matrix3x3({2, 16, 9}, {7, 8, 13}, {3, 15, 1}) * Matrix3x3({10, 3, 4}, {13, 8, 5}, {9, 10, 2});
+
+		EXPECT_PRED_FORMAT3(matrix_near, Matrix3x3({309, 224, 106}, {291, 215, 94}, {234, 139, 89}), m, 1e-100);
+	}
+
+	TEST_F(Matrix3x3Test, OperatorMultiplicationScalar)
+	{
+		Matrix3x3 m;
+
+		m = Matrix3x3({1, 2, 3}, {4, 5, 6}, {7, 8, 9}) * 2;
+		EXPECT_PRED_FORMAT3(matrix_near, Matrix3x3({2, 4, 6}, {8, 10, 12}, {14, 16, 18}), m, 1e-100);
+
+		m = 2 * Matrix3x3({1, 2, 3}, {4, 5, 6}, {7, 8, 9});
+		EXPECT_PRED_FORMAT3(matrix_near, Matrix3x3({2, 4, 6}, {8, 10, 12}, {14, 16, 18}), m, 1e-100);
+	}
+
 	TEST_F(Matrix3x3Test, SwapRows)
 	{
 		Matrix3x3 m({0, 1, 2}, {3, 4, 5}, {6, 7, 8});
@@ -133,6 +171,14 @@ namespace Rayni
 		                    1e-7);
 	}
 
+	TEST_F(Matrix3x3Test, Transpose)
+	{
+		EXPECT_PRED_FORMAT3(matrix_near,
+		                    Matrix3x3({0, 3, 6}, {1, 4, 7}, {2, 5, 8}),
+		                    Matrix3x3({0, 1, 2}, {3, 4, 5}, {6, 7, 8}).transpose(),
+		                    1e-100);
+	}
+
 	TEST_F(Matrix3x3Test, Trace)
 	{
 		EXPECT_NEAR(14, Matrix3x3({2, 100, 100}, {100, 4, 100}, {100, 100, 8}).trace(), 1e-100);
@@ -168,5 +214,31 @@ namespace Rayni
 		EXPECT_NEAR(0.36515, q.y(), 1e-5);
 		EXPECT_NEAR(0.54772, q.z(), 1e-5);
 		EXPECT_NEAR(0.73030, q.w(), 1e-5);
+	}
+
+	TEST_F(Matrix3x3Test, PolarDecomposition)
+	{
+		PolarDecomposition<Matrix3x3> polar_decomposition = Matrix3x3({0.936293, -0.579258, 0.596007},
+		                                                              {0.312992, 1.88941, -0.29353},
+		                                                              {-0.159345, 0.307584, 2.92551})
+		                                                            .polar_decomposition();
+
+		EXPECT_PRED_FORMAT3(matrix_near,
+		                    Matrix3x3({0.936293, -0.289629, 0.198669},
+		                              {0.312992, 0.944703, -0.0978434},
+		                              {-0.159345, 0.153792, 0.97517}),
+		                    polar_decomposition.rotation,
+		                    1e-4);
+
+		EXPECT_PRED_FORMAT3(matrix_near,
+		                    Matrix3x3({1, 0, 0}, {0, 2, 0}, {0, 0, 3}),
+		                    polar_decomposition.scale,
+		                    1e-4);
+	}
+
+	TEST_F(Matrix3x3Test, PreservesOrientationOfBasis)
+	{
+		EXPECT_TRUE(Matrix3x3::scale(2).preserves_orientation_of_basis());
+		EXPECT_FALSE(Matrix3x3::scale(-2).preserves_orientation_of_basis());
 	}
 }

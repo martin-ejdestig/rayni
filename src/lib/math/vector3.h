@@ -36,6 +36,8 @@ namespace Rayni
 	class Vector3 // NOLINT Remove when https://llvm.org/bugs/show_bug.cgi?id=30965 is fixed.
 	{
 	public:
+		static constexpr unsigned int SIZE = 3;
+
 		Vector3()
 		{
 		}
@@ -101,13 +103,13 @@ namespace Rayni
 
 		real_t operator[](unsigned int i) const
 		{
-			assert(i < 3);
+			assert(i < SIZE);
 			return xyz[i];
 		}
 
 		real_t &operator[](unsigned int i)
 		{
-			assert(i < 3);
+			assert(i < SIZE);
 			return xyz[i];
 		}
 
@@ -198,7 +200,7 @@ namespace Rayni
 		}
 
 	private:
-		real_t xyz[3] = {0, 0, 0};
+		real_t xyz[SIZE] = {0, 0, 0};
 	};
 }
 

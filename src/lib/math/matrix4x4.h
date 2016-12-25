@@ -37,6 +37,8 @@ namespace Rayni
 	public:
 		struct PolarDecomposition;
 
+		static constexpr unsigned int SIZE = Vector4::SIZE;
+
 		Matrix4x4()
 		{
 		}
@@ -159,13 +161,13 @@ namespace Rayni
 
 		real_t &operator()(unsigned int row_index, unsigned int column_index)
 		{
-			assert(row_index < 4 && column_index < 4);
+			assert(row_index < SIZE && column_index < SIZE);
 			return rows[row_index][column_index];
 		}
 
 		real_t operator()(unsigned int row_index, unsigned int column_index) const
 		{
-			assert(row_index < 4 && column_index < 4);
+			assert(row_index < SIZE && column_index < SIZE);
 			return rows[row_index][column_index];
 		}
 
@@ -194,8 +196,8 @@ namespace Rayni
 		{
 			Matrix4x4 result;
 
-			for (unsigned int i = 0; i < 4; i++)
-				for (unsigned int j = 0; j < 4; j++)
+			for (unsigned int i = 0; i < SIZE; i++)
+				for (unsigned int j = 0; j < SIZE; j++)
 					result.rows[i][j] =
 					        rows[i][0] * right.rows[0][j] + rows[i][1] * right.rows[1][j] +
 					        rows[i][2] * right.rows[2][j] + rows[i][3] * right.rows[3][j];
@@ -222,36 +224,36 @@ namespace Rayni
 
 		const Vector4 &row(unsigned int row_index) const
 		{
-			assert(row_index < 4);
+			assert(row_index < SIZE);
 
 			return rows[row_index];
 		}
 
 		void set_row(unsigned int row_index, const Vector4 &row)
 		{
-			assert(row_index < 4);
+			assert(row_index < SIZE);
 
 			rows[row_index] = row;
 		}
 
 		void set_column(unsigned int column_index, const Vector4 &column)
 		{
-			assert(column_index < 4);
+			assert(column_index < SIZE);
 
-			for (unsigned int i = 0; i < 4; i++)
+			for (unsigned int i = 0; i < SIZE; i++)
 				rows[i][column_index] = column[i];
 		}
 
 		void swap_rows(unsigned int row1_index, unsigned int row2_index)
 		{
-			assert(row1_index < 4 && row2_index < 4 && row1_index != row2_index);
+			assert(row1_index < SIZE && row2_index < SIZE && row1_index != row2_index);
 
 			std::swap(rows[row1_index], rows[row2_index]);
 		}
 
 		void swap_columns(unsigned int column1_index, unsigned int column2_index)
 		{
-			assert(column1_index < 4 && column2_index < 4 && column1_index != column2_index);
+			assert(column1_index < SIZE && column2_index < SIZE && column1_index != column2_index);
 
 			for (auto &row : rows)
 				std::swap(row[column1_index], row[column2_index]);
@@ -300,7 +302,7 @@ namespace Rayni
 	private:
 		struct PivotPosition;
 
-		Vector4 rows[4];
+		Vector4 rows[SIZE];
 	};
 
 	struct Matrix4x4::PolarDecomposition

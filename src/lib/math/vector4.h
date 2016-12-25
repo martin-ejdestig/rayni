@@ -29,6 +29,8 @@ namespace Rayni
 	class Vector4 // NOLINT Remove when https://llvm.org/bugs/show_bug.cgi?id=30965 is fixed.
 	{
 	public:
+		static constexpr unsigned int SIZE = 4;
+
 		Vector4()
 		{
 		}
@@ -79,13 +81,13 @@ namespace Rayni
 
 		real_t operator[](unsigned int i) const
 		{
-			assert(i < 4);
+			assert(i < SIZE);
 			return xyzw[i];
 		}
 
 		real_t &operator[](unsigned int i)
 		{
-			assert(i < 4);
+			assert(i < SIZE);
 			return xyzw[i];
 		}
 
@@ -130,7 +132,7 @@ namespace Rayni
 		}
 
 	private:
-		real_t xyzw[4] = {0, 0, 0, 0};
+		real_t xyzw[SIZE] = {0, 0, 0, 0};
 	};
 }
 

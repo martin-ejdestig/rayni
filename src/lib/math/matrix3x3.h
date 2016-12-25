@@ -33,6 +33,8 @@ namespace Rayni
 	class Matrix3x3 // NOLINT Remove when https://llvm.org/bugs/show_bug.cgi?id=30965 is fixed.
 	{
 	public:
+		static constexpr unsigned int SIZE = Vector3::SIZE;
+
 		Matrix3x3()
 		{
 		}
@@ -43,13 +45,13 @@ namespace Rayni
 
 		real_t &operator()(unsigned int row_index, unsigned int column_index)
 		{
-			assert(row_index < 3 && column_index < 3);
+			assert(row_index < SIZE && column_index < SIZE);
 			return rows[row_index][column_index];
 		}
 
 		real_t operator()(unsigned int row_index, unsigned int column_index) const
 		{
-			assert(row_index < 3 && column_index < 3);
+			assert(row_index < SIZE && column_index < SIZE);
 			return rows[row_index][column_index];
 		}
 
@@ -115,7 +117,7 @@ namespace Rayni
 		}
 
 	private:
-		Vector3 rows[3];
+		Vector3 rows[SIZE];
 	};
 }
 

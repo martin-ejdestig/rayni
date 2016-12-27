@@ -26,7 +26,6 @@
 
 #include "lib/math/math.h"
 #include "lib/math/matrix_inverse.h"
-#include "lib/math/polar_decomposition.h"
 #include "lib/math/quaternion.h"
 #include "lib/math/vector3.h"
 
@@ -193,11 +192,6 @@ namespace Rayni
 			}
 
 			return {xyz[0], xyz[1], xyz[2], w};
-		}
-
-		PolarDecomposition<Matrix3x3> polar_decomposition() const
-		{
-			return PolarDecomposition<Matrix3x3>(*this);
 		}
 
 		bool preserves_orientation_of_basis() const

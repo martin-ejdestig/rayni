@@ -24,6 +24,7 @@
 #include "lib/math/math.h"
 #include "lib/math/matrix3x3.h"
 #include "lib/math/matrix4x4.h"
+#include "lib/math/polar_decomposition.h"
 #include "lib/math/quaternion.h"
 #include "lib/math/vector3.h"
 
@@ -36,7 +37,7 @@ namespace Rayni
 
 		explicit DecomposedMatrix4x4(const Matrix4x4 &matrix)
 		{
-			auto pd = matrix.upper3x3().polar_decomposition();
+			PolarDecomposition<Matrix3x3> pd(matrix.upper3x3());
 
 			rotation = pd.rotation.rotation();
 			scale = pd.scale;

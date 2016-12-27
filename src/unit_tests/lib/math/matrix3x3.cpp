@@ -202,26 +202,6 @@ namespace Rayni
 		EXPECT_NEAR(0.73030, q.w(), 1e-5);
 	}
 
-	TEST_F(Matrix3x3Test, PolarDecomposition)
-	{
-		PolarDecomposition<Matrix3x3> polar_decomposition = Matrix3x3({0.936293, -0.579258, 0.596007},
-		                                                              {0.312992, 1.88941, -0.29353},
-		                                                              {-0.159345, 0.307584, 2.92551})
-		                                                            .polar_decomposition();
-
-		EXPECT_PRED_FORMAT3(matrix_near,
-		                    Matrix3x3({0.936293, -0.289629, 0.198669},
-		                              {0.312992, 0.944703, -0.0978434},
-		                              {-0.159345, 0.153792, 0.97517}),
-		                    polar_decomposition.rotation,
-		                    1e-4);
-
-		EXPECT_PRED_FORMAT3(matrix_near,
-		                    Matrix3x3({1, 0, 0}, {0, 2, 0}, {0, 0, 3}),
-		                    polar_decomposition.scale,
-		                    1e-4);
-	}
-
 	TEST_F(Matrix3x3Test, PreservesOrientationOfBasis)
 	{
 		EXPECT_TRUE(Matrix3x3::scale(2).preserves_orientation_of_basis());

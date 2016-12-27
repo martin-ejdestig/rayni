@@ -197,7 +197,7 @@ namespace Rayni
 
 		PolarDecomposition<Matrix3x3> polar_decomposition() const
 		{
-			return PolarDecomposition<Matrix3x3>::calculate(*this);
+			return PolarDecomposition<Matrix3x3>(*this);
 		}
 
 		bool preserves_orientation_of_basis() const

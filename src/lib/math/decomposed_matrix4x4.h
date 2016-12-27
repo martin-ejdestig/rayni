@@ -34,7 +34,14 @@ namespace Rayni
 	public:
 		DecomposedMatrix4x4() = default;
 
-		explicit DecomposedMatrix4x4(const Matrix4x4 &matrix);
+		explicit DecomposedMatrix4x4(const Matrix4x4 &matrix)
+		{
+			auto pd = matrix.upper3x3().polar_decomposition();
+
+			rotation = pd.rotation.rotation();
+			scale = pd.scale;
+			translation = matrix.translation();
+		}
 
 		Matrix4x4 compose() const
 		{

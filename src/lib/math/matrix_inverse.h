@@ -28,7 +28,6 @@
 
 namespace Rayni
 {
-	template <typename Matrix>
 	class MatrixInverse
 	{
 	public:
@@ -40,6 +39,7 @@ namespace Rayni
 		 * Uses Gauss-Jordan elimination with partial (row) pivoting to increase numerical
 		 * stability.
 		 */
+		template <typename Matrix>
 		static void find_in_place(Matrix &m)
 		{
 			std::array<PivotPosition, Matrix::SIZE> pivot_positions;
@@ -73,6 +73,7 @@ namespace Rayni
 					m.swap_columns(pivot_positions[i - 1].row, pivot_positions[i - 1].column);
 		}
 
+		template <typename Matrix>
 		static Matrix find(const Matrix &m)
 		{
 			Matrix ret(m);
@@ -87,6 +88,7 @@ namespace Rayni
 			unsigned int column = 0;
 		};
 
+		template <typename Matrix>
 		static PivotPosition find_pivot_position(const Matrix &m,
 		                                         std::array<unsigned int, Matrix::SIZE> &pivot_used)
 		{

@@ -127,11 +127,6 @@ namespace Rayni
 			return MatrixInverse<Matrix3x3>::find(*this);
 		}
 
-		void in_place_inverse()
-		{
-			MatrixInverse<Matrix3x3>::find_in_place(*this);
-		}
-
 		Matrix3x3 transpose() const
 		{
 			return Matrix3x3({rows[0][0], rows[1][0], rows[2][0]},

@@ -178,27 +178,6 @@ namespace Rayni
 			return rows[row_index][column_index];
 		}
 
-		Matrix4x4 operator+(const Matrix4x4 &right) const
-		{
-			return Matrix4x4(rows[0] + right.rows[0],
-			                 rows[1] + right.rows[1],
-			                 rows[2] + right.rows[2],
-			                 rows[3] + right.rows[3]);
-		}
-
-		Matrix4x4 operator-(const Matrix4x4 &right) const
-		{
-			return Matrix4x4(rows[0] - right.rows[0],
-			                 rows[1] - right.rows[1],
-			                 rows[2] - right.rows[2],
-			                 rows[3] - right.rows[3]);
-		}
-
-		Matrix4x4 operator*(real_t s) const
-		{
-			return Matrix4x4(rows[0] * s, rows[1] * s, rows[2] * s, rows[3] * s);
-		}
-
 		Matrix4x4 operator*(const Matrix4x4 &right) const
 		{
 			Matrix4x4 result;
@@ -215,11 +194,6 @@ namespace Rayni
 		Matrix4x4 inverse() const
 		{
 			return MatrixInverse<Matrix4x4>::find(*this);
-		}
-
-		void in_place_inverse()
-		{
-			MatrixInverse<Matrix4x4>::find_in_place(*this);
 		}
 
 		Matrix4x4 transpose() const
@@ -242,21 +216,6 @@ namespace Rayni
 			assert(row_index < SIZE);
 
 			return rows[row_index];
-		}
-
-		void set_row(unsigned int row_index, const Vector4 &row)
-		{
-			assert(row_index < SIZE);
-
-			rows[row_index] = row;
-		}
-
-		void set_column(unsigned int column_index, const Vector4 &column)
-		{
-			assert(column_index < SIZE);
-
-			for (unsigned int i = 0; i < SIZE; i++)
-				rows[i][column_index] = column[i];
 		}
 
 		void swap_rows(unsigned int row1_index, unsigned int row2_index)

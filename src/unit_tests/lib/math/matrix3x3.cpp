@@ -157,20 +157,6 @@ namespace Rayni
 		                    1e-7);
 	}
 
-	TEST_F(Matrix3x3Test, InPlaceInverse)
-	{
-		Matrix3x3 m({5, 3, 2}, {3, 7, 4}, {2, 4, 1});
-
-		m.in_place_inverse();
-
-		EXPECT_PRED_FORMAT3(matrix_near,
-		                    Matrix3x3({0.2647059, -0.1470588, 0.0588235},
-		                              {-0.1470588, -0.0294118, 0.4117647},
-		                              {0.0588235, 0.4117647, -0.7647059}),
-		                    m,
-		                    1e-7);
-	}
-
 	TEST_F(Matrix3x3Test, Transpose)
 	{
 		EXPECT_PRED_FORMAT3(matrix_near,

@@ -23,7 +23,6 @@
 #include <cassert>
 #include <cstddef>
 #include <cstdint>
-#include <string>
 #include <vector>
 
 #include "lib/color.h"

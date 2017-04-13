@@ -1,7 +1,7 @@
 /**
  * This file is part of Rayni.
  *
- * Copyright (C) 2015-2016 Martin Ejdestig <marejde@gmail.com>
+ * Copyright (C) 2015-2017 Martin Ejdestig <marejde@gmail.com>
  *
  * Rayni is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -19,31 +19,10 @@
 
 #include "lib/file_formats/image/exr_reader.h"
 
-// TODO: Disable clang-format for block until it can indent preprocessor directives.
-//       See https://llvm.org/bugs/show_bug.cgi?id=17362 .
-// clang-format off
-#if defined __clang__
-# pragma clang diagnostic push
-# pragma clang diagnostic ignored "-Wdeprecated-register"
-# pragma clang diagnostic ignored "-Wold-style-cast"
-# pragma clang diagnostic ignored "-Wsign-conversion"
-#elif defined __GNUC__
-# pragma GCC diagnostic push
-# pragma GCC diagnostic ignored "-Wsuggest-override"
-# pragma GCC diagnostic ignored "-Wzero-as-null-pointer-constant"
-# pragma GCC diagnostic ignored "-Wold-style-cast"
-# pragma GCC diagnostic ignored "-Wsign-conversion"
-#endif
 #include <IexBaseExc.h>
 #include <ImathBox.h>
 #include <ImfRgba.h>
 #include <ImfRgbaFile.h>
-#if defined __clang__
-# pragma clang diagnostic pop
-#elif defined __GNUC__
-# pragma GCC diagnostic pop
-#endif
-// clang-format on
 
 #include <cstddef>
 #include <string>

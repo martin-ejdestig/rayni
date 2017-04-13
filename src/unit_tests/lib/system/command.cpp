@@ -1,7 +1,7 @@
 /**
  * This file is part of Rayni.
  *
- * Copyright (C) 2013-2016 Martin Ejdestig <marejde@gmail.com>
+ * Copyright (C) 2013-2017 Martin Ejdestig <marejde@gmail.com>
  *
  * Rayni is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -26,7 +26,7 @@ namespace Rayni
 	TEST(CommandTest, Stdout)
 	{
 		auto result = Command({"echo", "123"}).run();
-		ASSERT_TRUE(static_cast<bool>(result));
+		ASSERT_TRUE(result);
 		EXPECT_EQ("123\n", result->stdout);
 		EXPECT_EQ("", result->stderr);
 		EXPECT_EQ(0, result->exit_code);
@@ -35,7 +35,7 @@ namespace Rayni
 	TEST(CommandTest, Stderr)
 	{
 		auto result = Command({"sh", "-c", "echo 123 >&2"}).run();
-		ASSERT_TRUE(static_cast<bool>(result));
+		ASSERT_TRUE(result);
 		EXPECT_EQ("", result->stdout);
 		EXPECT_EQ("123\n", result->stderr);
 		EXPECT_EQ(0, result->exit_code);
@@ -44,7 +44,7 @@ namespace Rayni
 	TEST(CommandTest, ExitCodeOtherThan0)
 	{
 		auto result = Command({"sh", "-c", "exit 12"}).run();
-		ASSERT_TRUE(static_cast<bool>(result));
+		ASSERT_TRUE(result);
 		EXPECT_EQ("", result->stdout);
 		EXPECT_EQ("", result->stderr);
 		EXPECT_EQ(12, result->exit_code);

@@ -65,7 +65,7 @@ readability-*,\
 -readability-implicit-bool-cast,\
 "
 
-HeaderFilterRegex: '^src/'
+HeaderFilterRegex: '.*'
 
 CheckOptions:
   - key:   misc-assert-side-effect.CheckFunctionCalls

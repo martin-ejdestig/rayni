@@ -34,6 +34,7 @@ lib_unit_tests_sources = [
     'string/base85.cpp',
     'string/string.cpp',
     'system/command.cpp',
+    'system/linux/pipe.cpp',
     'system/scoped_temp_dir.cpp',
     'system/temp_dir.cpp',
     'time/duration_formatter.cpp',

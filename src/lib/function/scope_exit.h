@@ -52,7 +52,7 @@ namespace Rayni
 	template <typename F>
 	ScopeExit<F> scope_exit(F &&f)
 	{
-		return ScopeExit<F>(std::move(f));
+		return ScopeExit<F>(std::forward<F>(f));
 	}
 }
 

@@ -126,8 +126,8 @@ namespace Rayni
 
 	TEST_F(ImageTest, Size)
 	{
-		const unsigned int WIDTH = 4;
-		const unsigned int HEIGHT = 2;
+		constexpr unsigned int WIDTH = 4;
+		constexpr unsigned int HEIGHT = 2;
 		Image image(WIDTH, HEIGHT);
 		Image empty_image;
 
@@ -144,8 +144,8 @@ namespace Rayni
 
 	TEST_F(ImageTest, Area)
 	{
-		const unsigned int WIDTH = 4;
-		const unsigned int HEIGHT = 2;
+		constexpr unsigned int WIDTH = 4;
+		constexpr unsigned int HEIGHT = 2;
 		Image::Area area = Image(WIDTH, HEIGHT).whole_area();
 
 		EXPECT_EQ(0, area.x);

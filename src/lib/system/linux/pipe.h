@@ -107,6 +107,17 @@ namespace Rayni
 			return bytes_read;
 		}
 
+		ssize_t read_append_to_string(std::string &str)
+		{
+			std::array<char, 1024> buffer;
+			ssize_t bytes_read = read(buffer);
+
+			if (bytes_read > 0)
+				str.append(buffer.data(), static_cast<std::string::size_type>(bytes_read));
+
+			return bytes_read;
+		}
+
 	private:
 		static void safe_close(int &fd)
 		{

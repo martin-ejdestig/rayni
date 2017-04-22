@@ -75,17 +75,12 @@ namespace
 			if ((poll_fd.revents & PIPE_READ_EVENTS) == 0)
 				return true;
 
-			std::array<char, 1024> buffer;
-			ssize_t bytes_read = pipe.read(buffer);
+			ssize_t bytes_read = pipe.read_append_to_string(dest_str);
 
-			if (bytes_read > 0)
-				dest_str.append(buffer.data(), static_cast<std::string::size_type>(bytes_read));
-			else if (bytes_read == 0)
+			if (bytes_read == 0)
 				poll_fd.fd = -1;
-			else
-				return false;
 
-			return true;
+			return bytes_read >= 0;
 		};
 
 		std::array<pollfd, 2> poll_fds;

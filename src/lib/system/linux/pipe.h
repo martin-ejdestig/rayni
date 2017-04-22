@@ -25,6 +25,7 @@
 
 #include <array>
 #include <cerrno>
+#include <climits>
 #include <cstdlib>
 #include <system_error>
 #include <utility>
@@ -110,7 +111,7 @@ namespace Rayni
 
 		std::size_t read_append_to_string(std::string &str)
 		{
-			std::array<char, 1024> buffer;
+			std::array<char, PIPE_BUF> buffer;
 			std::size_t bytes_read = read(buffer);
 
 			if (bytes_read > 0)

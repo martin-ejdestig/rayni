@@ -189,6 +189,51 @@ namespace
 
 		return true;
 	}
+
+	class ChildProcess
+	{
+	public:
+		explicit ChildProcess(pid_t pid) : child_pid(pid)
+		{
+		}
+
+		ChildProcess(const ChildProcess &other) = delete;
+		ChildProcess(ChildProcess &&other) = delete;
+
+		~ChildProcess()
+		{
+			if (child_pid != -1)
+				wait();
+		}
+
+		ChildProcess &operator=(const ChildProcess &other) = delete;
+		ChildProcess &operator=(ChildProcess &&other) = delete;
+
+		bool wait()
+		{
+			pid_t pid = std::exchange(child_pid, -1);
+
+			while (waitpid(pid, &status, 0) == -1)
+				if (errno != EINTR)
+					return false;
+
+			return WIFEXITED(status) && WEXITSTATUS(status) != CHILD_SETUP_FAILURE_EXIT_CODE;
+		}
+
+		pid_t pid()
+		{
+			return child_pid;
+		}
+
+		int exit_code() const
+		{
+			return WEXITSTATUS(status);
+		}
+
+	private:
+		pid_t child_pid = -1;
+		int status = 0;
+	};
 }
 
 namespace Rayni
@@ -197,11 +242,11 @@ namespace Rayni
 	{
 		Pipe stdout_pipe, stderr_pipe;
 
-		pid_t pid = fork();
-		if (pid == -1)
+		ChildProcess child_process(fork());
+		if (child_process.pid() == -1)
 			return std::experimental::nullopt;
 
-		if (pid == 0)
+		if (child_process.pid() == 0)
 			child_exec(args, stdout_pipe, stderr_pipe);
 
 		stdout_pipe.close_write_fd();
@@ -213,17 +258,12 @@ namespace Rayni
 		stdout_pipe.close_read_fd();
 		stderr_pipe.close_read_fd();
 
-		int status;
-		while (waitpid(pid, &status, 0) == -1)
-			if (errno != EINTR)
-				return std::experimental::nullopt;
-
-		if (!WIFEXITED(status))
+		if (!child_process.wait())
 			return std::experimental::nullopt;
 
-		result.exit_code = WEXITSTATUS(status);
+		result.exit_code = child_process.exit_code();
 
-		if (result.exit_code == CHILD_SETUP_FAILURE_EXIT_CODE || !read_success)
+		if (!read_success)
 			return std::experimental::nullopt;
 
 		return result;

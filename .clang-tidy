@@ -34,7 +34,7 @@
 # - modernize-raw-string-literal is disabled because it is too agressive. See
 #   https://llvm.org/bugs/show_bug.cgi?id=30964
 #
-# - modernize-use-default is disabled because of a bug with unions. See
+# - modernize-use-equals-default is disabled because of a bug with unions. See
 #   https://llvm.org/bugs/show_bug.cgi?id=27926 .
 #
 # - readability-implicit-bool-cast is disabled since it currently is too
@@ -59,7 +59,7 @@ misc-*,\
 modernize-*,\
 -modernize-pass-by-value,\
 -modernize-raw-string-literal,\
--modernize-use-default,\
+-modernize-use-equals-default,\
 performance-*,\
 readability-*,\
 -readability-implicit-bool-cast,\

@@ -46,7 +46,7 @@ namespace Rayni
 
 		Pipe p2(std::move(p1));
 
-		EXPECT_EQ(-1, p1.read_fd());
+		EXPECT_EQ(-1, p1.read_fd()); // NOLINT: misc-use-after-move (want to test state after move...)
 		EXPECT_EQ(-1, p1.write_fd());
 
 		EXPECT_EQ(read_fd, p2.read_fd());
@@ -63,7 +63,7 @@ namespace Rayni
 		Pipe p2;
 		p2 = std::move(p1);
 
-		EXPECT_EQ(-1, p1.read_fd());
+		EXPECT_EQ(-1, p1.read_fd()); // NOLINT: misc-use-after-move (want to test state after move...)
 		EXPECT_EQ(-1, p1.write_fd());
 
 		EXPECT_EQ(read_fd, p2.read_fd());

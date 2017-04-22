@@ -21,120 +21,35 @@
 
 #include <fcntl.h>
 #include <poll.h>
+#include <sys/types.h>
 #include <sys/wait.h>
 #include <unistd.h>
 
 #include <array>
 #include <cerrno>
 #include <cstdlib>
-#include <system_error>
 #include <utility>
+
+#include "lib/system/linux/pipe.h"
 
 namespace
 {
 	constexpr int CHILD_SETUP_FAILURE_EXIT_CODE = 127;
 
-	class Pipe
+	bool duplicate_fd(int fd, int other_fd)
 	{
-	public:
-		Pipe()
-		{
-			// Note: No O_NONBLOCK. Child should block if parent does not keep up with reading.
-			if (pipe2(fds.data(), O_CLOEXEC) != 0)
-				throw std::system_error(errno, std::system_category(), "pipe2() failed");
-		}
-
-		Pipe(const Pipe &other) = delete;
-
-		Pipe(Pipe &&other) noexcept : fds(std::exchange(other.fds, {-1, -1}))
-		{
-		}
-
-		~Pipe()
-		{
-			close_fds();
-		}
-
-		Pipe &operator=(const Pipe &other) = delete;
-
-		Pipe &operator=(Pipe &&other) noexcept
-		{
-			close_fds();
-			fds = std::exchange(other.fds, {-1, -1});
-			return *this;
-		}
-
-		void close_fds()
-		{
-			close_read_fd();
-			close_write_fd();
-		}
-
-		void close_read_fd()
-		{
-			safe_close(fds[0]);
-		}
-
-		void close_write_fd()
-		{
-			safe_close(fds[1]);
-		}
-
-		int read_fd() const
-		{
-			return fds[0];
-		}
-
-		int write_fd() const
-		{
-			return fds[1];
-		}
-
-		bool duplicate_write_fd_to(int other_fd) const
-		{
-			while (dup2(write_fd(), other_fd) == -1)
-				if (errno != EINTR)
-					return false;
-			return true;
-		}
-
-		template <typename Buffer>
-		ssize_t read(Buffer &buffer) const
-		{
-			ssize_t bytes_read;
-
-			while (true)
-			{
-				bytes_read = ::read(read_fd(), buffer.data(), buffer.size());
-
-				if (bytes_read >= 0)
-					break;
-				if (errno != EINTR)
-					break;
-			}
-
-			return bytes_read;
-		}
-
-	private:
-		static void safe_close(int &fd)
-		{
-			if (fd != -1)
-			{
-				close(fd);
-				fd = -1;
-			}
-		}
-
-		std::array<int, 2> fds = {-1, -1};
-	};
+		while (dup2(fd, other_fd) == -1)
+			if (errno != EINTR)
+				return false;
+		return true;
+	}
 
 	[[noreturn]] void child_exec(const std::vector<std::string> &args,
-	                             Pipe &stdout_pipe,
-	                             Pipe &stderr_pipe) noexcept
+	                             Rayni::Pipe &stdout_pipe,
+	                             Rayni::Pipe &stderr_pipe) noexcept
 	{
-		if (!stdout_pipe.duplicate_write_fd_to(STDOUT_FILENO) ||
-		    !stderr_pipe.duplicate_write_fd_to(STDERR_FILENO))
+		if (!duplicate_fd(stdout_pipe.write_fd(), STDOUT_FILENO) ||
+		    !duplicate_fd(stderr_pipe.write_fd(), STDERR_FILENO))
 			std::_Exit(CHILD_SETUP_FAILURE_EXIT_CODE);
 
 		stdout_pipe.close_fds();
@@ -149,11 +64,14 @@ namespace
 		std::_Exit(CHILD_SETUP_FAILURE_EXIT_CODE);
 	}
 
-	bool read_pipes(Pipe &stdout_pipe, Pipe &stderr_pipe, std::string &stdout_str, std::string &stderr_str)
+	bool read_pipes(Rayni::Pipe &stdout_pipe,
+	                Rayni::Pipe &stderr_pipe,
+	                std::string &stdout_str,
+	                std::string &stderr_str)
 	{
 		static constexpr short int PIPE_READ_EVENTS = POLLIN | POLLHUP;
 
-		auto read_pipe_if_event_occurred = [](pollfd &poll_fd, Pipe &pipe, std::string &dest_str) {
+		auto read_pipe_if_event_occurred = [](pollfd &poll_fd, Rayni::Pipe &pipe, std::string &dest_str) {
 			if ((poll_fd.revents & PIPE_READ_EVENTS) == 0)
 				return true;
 
@@ -240,7 +158,8 @@ namespace Rayni
 {
 	std::experimental::optional<Command::Result> Command::run() const
 	{
-		Pipe stdout_pipe, stderr_pipe;
+		Pipe stdout_pipe(O_CLOEXEC);
+		Pipe stderr_pipe(O_CLOEXEC);
 
 		ChildProcess child_process(fork());
 		if (child_process.pid() == -1)

@@ -64,6 +64,7 @@ lib_sources = [
     'string/string.h',
     'system/command.cpp',
     'system/command.h',
+    'system/linux/pipe.h',
     'system/scoped_temp_dir.cpp',
     'system/scoped_temp_dir.h',
     'system/temp_dir.cpp',

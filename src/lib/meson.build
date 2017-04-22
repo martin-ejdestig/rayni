@@ -5,12 +5,6 @@ lib_dependencies = [
     dependency('OpenEXR', version : '>=2.2.0')
 ]
 
-if target_machine.system() != 'windows'
-    system = 'posix'
-else
-    system = 'windows'
-endif
-
 lib_sources = [
     'color.cpp',
     'color.h',
@@ -68,11 +62,11 @@ lib_sources = [
     'string/base85.h',
     'string/string.cpp',
     'string/string.h',
-    'system/command_' + system + '.cpp',
+    'system/command.cpp',
     'system/command.h',
     'system/scoped_temp_dir.cpp',
     'system/scoped_temp_dir.h',
-    'system/temp_dir_' + system + '.cpp',
+    'system/temp_dir.cpp',
     'system/temp_dir.h',
     'time/duration_formatter.cpp',
     'time/duration_formatter.h',

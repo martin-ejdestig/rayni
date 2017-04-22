@@ -443,6 +443,9 @@ namespace Rayni
 
 		Map::const_iterator map_iterator(const std::string &key) const;
 
+		std::string key_in_parent() const;
+		std::size_t index_in_parent() const;
+
 		std::string prepend_path_if_has_parent(const std::string &str) const;
 
 		void require_type(Type required_type) const;

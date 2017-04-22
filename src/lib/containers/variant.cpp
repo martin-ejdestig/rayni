@@ -270,26 +270,34 @@ namespace Rayni
 		if (!parent)
 			return "";
 
-		std::string parent_path = parent->path();
+		const std::string parent_path = parent->path();
 
 		if (parent->is_map())
-		{
-			for (auto &key_value : parent->value.map)
-			{
-				if (&key_value.second == this)
-				{
-					const std::string &key = key_value.first;
-					return parent_path + "['" + key + "']";
-				}
-			}
-		}
-		else if (parent->is_vector())
-		{
-			auto index = this - &parent->value.vector[0];
-			return parent_path + "[" + std::to_string(index) + "]";
-		}
+			return parent_path + "['" + key_in_parent() + "']";
+
+		if (parent->is_vector())
+			return parent_path + "[" + std::to_string(index_in_parent()) + "]";
 
 		return parent_path;
+	}
+
+	std::string Variant::key_in_parent() const
+	{
+		assert(parent && parent->is_map());
+
+		for (auto &key_value : parent->value.map)
+			if (&key_value.second == this)
+				return key_value.first;
+
+		assert(false);
+		return "";
+	}
+
+	std::size_t Variant::index_in_parent() const
+	{
+		assert(parent && parent->is_vector());
+
+		return static_cast<std::size_t>(this - &parent->value.vector[0]);
 	}
 
 	std::string Variant::prepend_path_if_has_parent(const std::string &str) const

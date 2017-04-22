@@ -46,10 +46,7 @@ namespace Rayni
 		}
 		else if (v.is_vector())
 		{
-			real_t r = v.get<real_t>(0);
-			real_t g = v.get<real_t>(1);
-			real_t b = v.get<real_t>(2);
-			return Color(r, g, b).clamp();
+			return Color(v.get<real_t>(0), v.get<real_t>(1), v.get<real_t>(2)).clamp();
 		}
 
 		throw Variant::Exception(v, "color must be a string or vector");

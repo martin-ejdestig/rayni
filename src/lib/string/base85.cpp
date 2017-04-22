@@ -69,7 +69,7 @@ namespace Rayni
 
 			for (unsigned int i = 0; i < 5; i++)
 			{
-				std::uint8_t c = static_cast<std::uint8_t>(pos + i < str.length() ? str[pos + i] : '~');
+				auto c = static_cast<std::uint8_t>(pos + i < str.length() ? str[pos + i] : '~');
 				std::uint8_t decoded_byte = decoding_table[c];
 
 				if (decoded_byte == 0)

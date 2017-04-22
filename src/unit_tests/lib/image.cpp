@@ -51,8 +51,8 @@ namespace Rayni
 			static constexpr real_t COMPONENT_MAX_DIFF = 0.001;
 
 			if (x >= image.width() || y >= image.height())
-				return testing::AssertionFailure() << image_expr << " does not contain (" << x << ", "
-				                                   << y << ") (too small)";
+				return testing::AssertionFailure()
+				       << image_expr << " does not contain (" << x << ", " << y << ") (too small)";
 
 			Color diff = color - image.read_pixel(x, y);
 

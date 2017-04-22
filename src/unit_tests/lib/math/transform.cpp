@@ -53,9 +53,9 @@ namespace Rayni
 		                                               const Transform &t2,
 		                                               real_t abs_error)
 		{
-			return transform_near(t1, t2, abs_error) << t1_expr << " has elements that differ more than "
-			                                         << abs_error_expr << " from elements of " << t2_expr
-			                                         << ".";
+			return transform_near(t1, t2, abs_error)
+			       << t1_expr << " has elements that differ more than " << abs_error_expr
+			       << " from elements of " << t2_expr << ".";
 		}
 
 		static testing::AssertionResult verify_inverse(const char *expr,

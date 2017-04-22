@@ -119,6 +119,24 @@ namespace Rayni
 			return bytes_read;
 		}
 
+		template <typename Buffer>
+		std::size_t write(Buffer &buffer) const
+		{
+			ssize_t bytes_written;
+
+			while (true)
+			{
+				bytes_written = ::write(write_fd(), buffer.data(), buffer.size());
+
+				if (bytes_written >= 0)
+					break;
+				if (errno != EINTR)
+					throw std::system_error(errno, std::system_category(), "pipe write() error");
+			}
+
+			return static_cast<std::size_t>(bytes_written);
+		}
+
 	private:
 		static void safe_close(int &fd)
 		{

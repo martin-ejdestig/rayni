@@ -25,6 +25,7 @@
 
 #include <array>
 #include <cerrno>
+#include <cstdlib>
 #include <system_error>
 #include <utility>
 
@@ -90,7 +91,7 @@ namespace Rayni
 		}
 
 		template <typename Buffer>
-		ssize_t read(Buffer &buffer) const
+		std::size_t read(Buffer &buffer) const
 		{
 			ssize_t bytes_read;
 
@@ -101,19 +102,19 @@ namespace Rayni
 				if (bytes_read >= 0)
 					break;
 				if (errno != EINTR)
-					break;
+					throw std::system_error(errno, std::system_category(), "pipe read() error");
 			}
 
-			return bytes_read;
+			return static_cast<std::size_t>(bytes_read);
 		}
 
-		ssize_t read_append_to_string(std::string &str)
+		std::size_t read_append_to_string(std::string &str)
 		{
 			std::array<char, 1024> buffer;
-			ssize_t bytes_read = read(buffer);
+			std::size_t bytes_read = read(buffer);
 
 			if (bytes_read > 0)
-				str.append(buffer.data(), static_cast<std::string::size_type>(bytes_read));
+				str.append(buffer.data(), bytes_read);
 
 			return bytes_read;
 		}

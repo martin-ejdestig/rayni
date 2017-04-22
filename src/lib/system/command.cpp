@@ -71,18 +71,6 @@ namespace
 	{
 		static constexpr short int PIPE_READ_EVENTS = POLLIN | POLLHUP;
 
-		auto read_pipe_if_event_occurred = [](pollfd &poll_fd, Rayni::Pipe &pipe, std::string &dest_str) {
-			if ((poll_fd.revents & PIPE_READ_EVENTS) == 0)
-				return true;
-
-			ssize_t bytes_read = pipe.read_append_to_string(dest_str);
-
-			if (bytes_read == 0)
-				poll_fd.fd = -1;
-
-			return bytes_read >= 0;
-		};
-
 		std::array<pollfd, 2> poll_fds;
 		poll_fds[0].fd = stdout_pipe.read_fd();
 		poll_fds[0].events = PIPE_READ_EVENTS;
@@ -95,9 +83,20 @@ namespace
 				if (errno != EINTR)
 					return false;
 
-			if (!read_pipe_if_event_occurred(poll_fds[0], stdout_pipe, stdout_str) ||
-			    !read_pipe_if_event_occurred(poll_fds[1], stderr_pipe, stderr_str))
+			try
+			{
+				if ((poll_fds[0].revents & PIPE_READ_EVENTS) != 0)
+					if (stdout_pipe.read_append_to_string(stdout_str) == 0)
+						poll_fds[0].fd = -1;
+
+				if ((poll_fds[1].revents & PIPE_READ_EVENTS) != 0)
+					if (stderr_pipe.read_append_to_string(stderr_str) == 0)
+						poll_fds[1].fd = -1;
+			}
+			catch (const std::exception &)
+			{
 				return false;
+			}
 		}
 
 		return true;

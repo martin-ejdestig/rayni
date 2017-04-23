@@ -468,9 +468,15 @@ namespace Rayni
 			{
 			}
 
+			Value(Value &other) = delete;
+			Value(Value &&other) = delete;
+
 			~Value()
 			{
 			}
+
+			Value &operator=(const Value &other) = delete;
+			Value &operator=(Value &&other) = delete;
 
 			Map map;
 			Vector vector;

@@ -39,11 +39,17 @@ namespace Rayni
 			stopwatch.start();
 		}
 
+		ScopedStopwatch(const ScopedStopwatch &other) = delete;
+		ScopedStopwatch(ScopedStopwatch &&other) = delete;
+
 		~ScopedStopwatch()
 		{
 			stopwatch.stop();
 			print_result();
 		}
+
+		ScopedStopwatch &operator=(const ScopedStopwatch &other) = delete;
+		ScopedStopwatch &operator=(ScopedStopwatch &&other) = delete;
 
 	private:
 		void print_result() const;

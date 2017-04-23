@@ -28,7 +28,13 @@ namespace Rayni
 	{
 	public:
 		ScopedTempDir();
+		ScopedTempDir(const ScopedTempDir &other) = delete;
+		ScopedTempDir(ScopedTempDir &&other) = default;
+
 		~ScopedTempDir();
+
+		ScopedTempDir &operator=(const ScopedTempDir &other) = delete;
+		ScopedTempDir &operator=(ScopedTempDir &&other) = default;
 
 		const std::experimental::filesystem::path &path() const
 		{
@@ -36,7 +42,7 @@ namespace Rayni
 		}
 
 	private:
-		const std::experimental::filesystem::path path_;
+		std::experimental::filesystem::path path_;
 	};
 }
 

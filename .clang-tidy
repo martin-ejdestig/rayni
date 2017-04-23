@@ -23,6 +23,10 @@
 # - cppcoreguidelines-pro-type-vararg is disabled because it reports false
 #   positives in googletest. See https://llvm.org/bugs/show_bug.cgi?id=31194 .
 #
+# - cppcoreguidelines-special-member-functions is temporarily disabled until
+#   Clang 5.0 is released. Do not want to specify all special members in an
+#   abstract base class with a sole virtual dtor. 5.0 adds an option for this.
+#
 # - misc-noexcept-move-constructor is disabled because of a bug with = default.
 #   See https://llvm.org/bugs/show_bug.cgi?id=24712 .
 #
@@ -56,6 +60,7 @@ cppcoreguidelines-*,\
 -cppcoreguidelines-pro-type-member-init,\
 -cppcoreguidelines-pro-type-union-access,\
 -cppcoreguidelines-pro-type-vararg,\
+-cppcoreguidelines-special-member-functions,\
 google-build-namespaces,\
 google-build-using-namespace,\
 google-default-arguments,\

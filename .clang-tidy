@@ -87,6 +87,8 @@ CheckOptions:
     value: '1'
   - key:   modernize-loop-convert.NamingStyle
     value: lower_case
+  - key:   modernize-use-default-member-init.UseAssignment
+    value: 1
   - key:   readability-braces-around-statements.ShortStatementLines
     value: '8'
   - key:   readability-function-size.LineThreshold

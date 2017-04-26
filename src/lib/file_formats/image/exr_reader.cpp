@@ -19,6 +19,8 @@
 
 #include "lib/file_formats/image/exr_reader.h"
 
+// TODO: Should be possible to remove diagnostic pragmas when https://github.com/mesonbuild/meson/issues/963 is fixed
+//       which will make it so -isystem is used for include paths of external dependencies.
 // TODO: Disable clang-format for block until it can indent preprocessor directives.
 //       See https://llvm.org/bugs/show_bug.cgi?id=17362 .
 // clang-format off

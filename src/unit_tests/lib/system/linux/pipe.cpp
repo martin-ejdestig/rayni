@@ -97,9 +97,7 @@ namespace Rayni
 
 		std::array<char, 2> read_buffer;
 		ASSERT_EQ(2, pipe.read(read_buffer));
-
-		EXPECT_EQ(write_buffer.at(0), read_buffer.at(0));
-		EXPECT_EQ(write_buffer.at(1), read_buffer.at(1));
+		EXPECT_EQ(write_buffer, read_buffer);
 
 		pipe.close_fds();
 

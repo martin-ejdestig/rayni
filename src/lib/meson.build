@@ -43,6 +43,7 @@ lib_sources = [
     'math/animated_transform.cpp',
     'math/animated_transform.h',
     'math/big_endian_reader.h',
+    'math/bitmask.h',
     'math/decomposed_matrix4x4.h',
     'math/enum.h',
     'math/hash.h',

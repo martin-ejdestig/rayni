@@ -108,20 +108,15 @@ namespace Rayni
 	TEST(PipeTest, ReadAppendToString)
 	{
 		Pipe pipe;
-		const std::string write_str1("abc");
-		const std::string write_str2("123");
-		const std::string write_str3("d\0e", 3);
 		std::string str;
 
-		pipe.write(write_str1);
-
-		pipe.read_append_to_string(str);
+		pipe.write(std::string("abc"));
+		EXPECT_EQ(3, pipe.read_append_to_string(str));
 		EXPECT_EQ("abc", str);
 
-		pipe.write(write_str2);
-		pipe.write(write_str3);
-
-		pipe.read_append_to_string(str);
+		pipe.write(std::string("123"));
+		pipe.write(std::string("d\0e", 3));
+		EXPECT_EQ(6, pipe.read_append_to_string(str));
 		EXPECT_EQ(9, str.length());
 		EXPECT_EQ(std::string("abc123d\0e", 9), str);
 	}

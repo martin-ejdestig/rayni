@@ -121,7 +121,7 @@ namespace Rayni
 		}
 
 		template <typename Buffer>
-		std::size_t write(Buffer &buffer) const
+		std::size_t write(const Buffer &buffer) const
 		{
 			ssize_t bytes_written;
 

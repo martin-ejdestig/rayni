@@ -27,7 +27,7 @@
 
 namespace Rayni
 {
-	template <typename E, typename U = typename std::underlying_type<E>::type>
+	template <typename E, typename U = std::underlying_type_t<E>>
 	static U enum_to_value(E enum_value)
 	{
 		return static_cast<U>(enum_value);
@@ -35,7 +35,7 @@ namespace Rayni
 
 	template <typename EnumValues,
 	          typename E = typename EnumValues::value_type,
-	          typename U = typename std::underlying_type<E>::type>
+	          typename U = std::underlying_type_t<E>>
 	static std::experimental::optional<E> enum_from_value(const EnumValues &enum_values, U value)
 	{
 		auto iterator = std::find_if(enum_values.begin(), enum_values.end(), [&](const E &enum_value) {
@@ -48,7 +48,7 @@ namespace Rayni
 		return *iterator;
 	}
 
-	template <typename E, typename U = typename std::underlying_type<E>::type>
+	template <typename E, typename U = std::underlying_type_t<E>>
 	static std::experimental::optional<E> enum_from_value(std::initializer_list<E> enum_values, U value)
 	{
 		// NOTE: Explicit template types in call to avoid endless recursion.

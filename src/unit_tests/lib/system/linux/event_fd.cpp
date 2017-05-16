@@ -18,7 +18,10 @@
  */
 
 #include <gtest/gtest.h>
+#include <poll.h>
 
+#include <array>
+#include <cerrno>
 #include <system_error>
 
 #include "lib/system/linux/event_fd.h"
@@ -94,5 +97,36 @@ namespace Rayni
 		event_fd.write(EventFD::MAX_VALUE - 1);
 		event_fd.write(1);
 		EXPECT_EQ(MAX, event_fd.read());
+	}
+
+	TEST(EventFDTest, Poll)
+	{
+		EventFD event_fd;
+
+		std::array<pollfd, 1> poll_fds;
+		poll_fds[0].fd = event_fd.fd();
+		poll_fds[0].events = POLLIN | POLLOUT;
+
+		auto poll_and_check = [&](auto expected_events) {
+			while (poll(poll_fds.data(), poll_fds.size(), -1) == -1)
+				if (errno != EINTR)
+					throw std::system_error(errno, std::system_category(), "poll() failed");
+
+			return (poll_fds[0].revents & expected_events) == expected_events;
+		};
+
+		EXPECT_TRUE(poll_and_check(POLLOUT));
+
+		event_fd.write(1);
+		EXPECT_TRUE(poll_and_check(POLLIN | POLLOUT));
+
+		event_fd.read();
+		EXPECT_TRUE(poll_and_check(POLLOUT));
+
+		event_fd.write(EventFD::MAX_VALUE);
+		EXPECT_TRUE(poll_and_check(POLLIN));
+
+		event_fd.read();
+		EXPECT_TRUE(poll_and_check(POLLOUT));
 	}
 }

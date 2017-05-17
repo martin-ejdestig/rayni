@@ -91,6 +91,11 @@ namespace Rayni
 			return value_;
 		}
 
+		constexpr bool is_set(Bitmask b) const
+		{
+			return (*this & b).value() == b.value();
+		}
+
 	private:
 		Value value_ = 0;
 	};

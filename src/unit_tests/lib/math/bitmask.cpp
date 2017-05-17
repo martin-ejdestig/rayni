@@ -28,7 +28,8 @@ namespace
 	enum class Foo : std::uint8_t
 	{
 		BAR = 1,
-		BAZ = 2
+		BAZ = 2,
+		QUX = 4
 	};
 
 	using FooMask = Rayni::Bitmask<Foo>;
@@ -186,4 +187,28 @@ TEST(Bitmask, NotEqual)
 	EXPECT_TRUE(Foo::BAR != FooMask(Foo::BAZ));
 	EXPECT_TRUE(FooMask(Foo::BAR) != Foo::BAZ);
 	EXPECT_TRUE(FooMask(Foo::BAR) != FooMask(Foo::BAZ));
+}
+
+TEST(Bitmask, IsSet)
+{
+	const FooMask mask_1bit(Foo::BAR);
+	const FooMask mask_2bits(Foo::BAR | Foo::BAZ);
+
+	EXPECT_TRUE(mask_1bit.is_set(Foo::BAR));
+	EXPECT_FALSE(mask_1bit.is_set(Foo::BAZ));
+
+	EXPECT_FALSE(mask_1bit.is_set(Foo::BAR | Foo::BAZ));
+
+	EXPECT_TRUE(mask_2bits.is_set(Foo::BAR));
+	EXPECT_TRUE(mask_2bits.is_set(Foo::BAZ));
+	EXPECT_FALSE(mask_2bits.is_set(Foo::QUX));
+
+	EXPECT_TRUE(mask_2bits.is_set(Foo::BAR | Foo::BAZ));
+	EXPECT_FALSE(mask_2bits.is_set(Foo::BAR | Foo::QUX));
+	EXPECT_FALSE(mask_2bits.is_set(Foo::BAZ | Foo::QUX));
+
+	EXPECT_FALSE(mask_2bits.is_set(Foo::BAR | Foo::BAZ | Foo::QUX));
+
+	EXPECT_TRUE(mask_1bit.is_set(FooMask()));
+	EXPECT_TRUE(mask_2bits.is_set(FooMask()));
 }

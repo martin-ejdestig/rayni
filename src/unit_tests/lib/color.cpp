@@ -48,7 +48,7 @@ namespace Rayni
 		}
 	}
 
-	TEST(ColorTest, Variant)
+	TEST(Color, Variant)
 	{
 		EXPECT_PRED_FORMAT2(color_near, Color::black(), Variant("black").to<Color>());
 		EXPECT_PRED_FORMAT2(color_near, Color::white(), Variant("white").to<Color>());
@@ -66,7 +66,7 @@ namespace Rayni
 		EXPECT_THROW(Variant("").to<Color>(), Variant::Exception);
 	}
 
-	TEST(ColorTest, Clamp)
+	TEST(Color, Clamp)
 	{
 		EXPECT_PRED_FORMAT2(color_near, Color::black(), Color(-0.1, -0.2, -0.3).clamp());
 		EXPECT_PRED_FORMAT2(color_near, Color(0.3, 0.5, 0.7), Color(0.3, 0.5, 0.7).clamp());

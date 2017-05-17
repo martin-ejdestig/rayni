@@ -30,7 +30,7 @@
 
 namespace Rayni
 {
-	TEST(WriteToFileTest, Write)
+	TEST(WriteToFile, Write)
 	{
 		ScopedTempDir temp_dir;
 		const std::string path = temp_dir.path() / "foo";

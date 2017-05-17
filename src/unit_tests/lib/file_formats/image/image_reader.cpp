@@ -108,7 +108,7 @@ namespace Rayni
 		}
 	}
 
-	TEST(ImageReaderTest, ReadFile)
+	TEST(ImageReader, ReadFile)
 	{
 		ScopedTempDir temp_dir;
 

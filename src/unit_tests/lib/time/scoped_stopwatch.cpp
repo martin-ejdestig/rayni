@@ -26,7 +26,7 @@
 
 namespace Rayni
 {
-	TEST(ScopedStopwatchTest, Output)
+	TEST(ScopedStopwatch, Output)
 	{
 		std::ostringstream stream;
 		{

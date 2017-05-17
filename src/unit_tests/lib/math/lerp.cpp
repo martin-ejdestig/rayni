@@ -66,7 +66,7 @@ namespace Rayni
 		};
 	}
 
-	TEST(LerpTest, Lerp)
+	TEST(Lerp, Lerp)
 	{
 		EXPECT_EQ(5, lerp(-0.5, 10, 20));
 		EXPECT_EQ(10, lerp(0.0, 10, 20));
@@ -75,7 +75,7 @@ namespace Rayni
 		EXPECT_EQ(25, lerp(1.5, 10, 20));
 	}
 
-	TEST(LerpTest, Blerp)
+	TEST(Lerp, Blerp)
 	{
 		EXPECT_EQ(-5, blerp(-0.5, -0.5, 10, 20, 30, 40));
 		EXPECT_EQ(0, blerp(0.0, -0.5, 10, 20, 30, 40));
@@ -108,7 +108,7 @@ namespace Rayni
 		EXPECT_EQ(55, blerp(1.5, 1.5, 10, 20, 30, 40));
 	}
 
-	TEST(LerpTest, Slerp)
+	TEST(Lerp, Slerp)
 	{
 		static constexpr int CIRCLE_STEPS = 8;
 		static constexpr int STEPS = 64;

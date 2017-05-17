@@ -23,7 +23,7 @@
 
 namespace Rayni
 {
-	TEST(Vector4Test, OperatorSubscript)
+	TEST(Vector4, OperatorSubscript)
 	{
 		Vector4 v(1, 2, 3, 4);
 		EXPECT_NEAR(v.x(), v[0], 1e-100);
@@ -38,7 +38,7 @@ namespace Rayni
 		EXPECT_NEAR(vc.w(), v[3], 1e-100);
 	}
 
-	TEST(Vector4Test, OperatorMultiplicationScalar)
+	TEST(Vector4, OperatorMultiplicationScalar)
 	{
 		Vector4 v = Vector4(1, 2, 3, 4) * real_t(2);
 		EXPECT_NEAR(2, v.x(), 1e-100);
@@ -47,7 +47,7 @@ namespace Rayni
 		EXPECT_NEAR(8, v.w(), 1e-100);
 	}
 
-	TEST(Vector4Test, OperatorAdditionAssignment)
+	TEST(Vector4, OperatorAdditionAssignment)
 	{
 		Vector4 v(1, 2, 3, 4);
 		v += Vector4(5, 6, 7, 8);
@@ -57,7 +57,7 @@ namespace Rayni
 		EXPECT_NEAR(12, v.w(), 1e-100);
 	}
 
-	TEST(Vector4Test, OperatorMultiplicationAssignment)
+	TEST(Vector4, OperatorMultiplicationAssignment)
 	{
 		Vector4 v(1, 2, 3, 4);
 		v *= real_t(2);
@@ -67,7 +67,7 @@ namespace Rayni
 		EXPECT_NEAR(8, v.w(), 1e-100);
 	}
 
-	TEST(Vector4Test, Dot)
+	TEST(Vector4, Dot)
 	{
 		EXPECT_NEAR(7000, Vector4(10, 20, 30, 40).dot(Vector4(50, 60, 70, 80)), 1e-100);
 		EXPECT_NEAR(0, Vector4(0, 0, 0, 0).dot(Vector4(50, 60, 70, 80)), 1e-100);

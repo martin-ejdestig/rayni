@@ -23,7 +23,7 @@
 
 namespace Rayni
 {
-	TEST(ScopeExitTest, IsCalled)
+	TEST(ScopeExit, IsCalled)
 	{
 		bool called = false;
 		{

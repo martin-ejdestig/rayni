@@ -26,7 +26,7 @@
 
 namespace Rayni
 {
-	TEST(ScopedTempDirTest, RemovedWhenDestroyed)
+	TEST(ScopedTempDir, RemovedWhenDestroyed)
 	{
 		auto output_to_file = [](auto path, auto content) {
 			std::ofstream stream(path);

@@ -25,7 +25,7 @@
 
 namespace Rayni
 {
-	TEST(StopwatchTest, IsStarted)
+	TEST(Stopwatch, IsStarted)
 	{
 		Stopwatch stopwatch;
 
@@ -36,7 +36,7 @@ namespace Rayni
 		EXPECT_FALSE(stopwatch.is_started());
 	}
 
-	TEST(StopwatchTest, GetDuration)
+	TEST(Stopwatch, GetDuration)
 	{
 		Stopwatch stopwatch;
 

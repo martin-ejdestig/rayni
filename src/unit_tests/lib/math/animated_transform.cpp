@@ -59,7 +59,7 @@ namespace Rayni
 		}
 	}
 
-	TEST(AnimatedTransformTest, Variant)
+	TEST(AnimatedTransform, Variant)
 	{
 		auto double_scale_variant = [](real_t start_time, real_t end_time) {
 			return Variant::map("start_time",
@@ -81,7 +81,7 @@ namespace Rayni
 		EXPECT_THROW(AnimatedTransform(double_scale_variant(2, 0)), Variant::Exception);
 	}
 
-	TEST(AnimatedTransformTest, Interpolate)
+	TEST(AnimatedTransform, Interpolate)
 	{
 		static constexpr unsigned int START_TIME = 0;
 		static constexpr unsigned int ANIM_START_TIME = START_TIME + 1;
@@ -132,7 +132,7 @@ namespace Rayni
 			                    1e-6);
 	}
 
-	TEST(AnimatedTransformTest, MotionBounds)
+	TEST(AnimatedTransform, MotionBounds)
 	{
 		AABB aabb = AnimatedTransform(0, Transform::identity(), 1, Transform::scale(2))
 		                    .motion_bounds(AABB({-1, -2, -3}, {4, 5, 6}));

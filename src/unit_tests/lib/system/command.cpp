@@ -23,7 +23,7 @@
 
 namespace Rayni
 {
-	TEST(CommandTest, Stdout)
+	TEST(Command, Stdout)
 	{
 		auto result = Command({"echo", "123"}).run();
 		ASSERT_TRUE(result);
@@ -32,7 +32,7 @@ namespace Rayni
 		EXPECT_EQ(0, result->exit_code);
 	}
 
-	TEST(CommandTest, Stderr)
+	TEST(Command, Stderr)
 	{
 		auto result = Command({"sh", "-c", "echo 123 >&2"}).run();
 		ASSERT_TRUE(result);
@@ -41,7 +41,7 @@ namespace Rayni
 		EXPECT_EQ(0, result->exit_code);
 	}
 
-	TEST(CommandTest, ExitCodeOtherThan0)
+	TEST(Command, ExitCodeOtherThan0)
 	{
 		auto result = Command({"sh", "-c", "exit 12"}).run();
 		ASSERT_TRUE(result);
@@ -50,7 +50,7 @@ namespace Rayni
 		EXPECT_EQ(12, result->exit_code);
 	}
 
-	TEST(CommandTest, DoesNotExist)
+	TEST(Command, DoesNotExist)
 	{
 		EXPECT_FALSE(Command({"does_not_exist"}).run());
 	}

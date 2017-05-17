@@ -78,7 +78,7 @@ namespace Rayni
 		}
 	}
 
-	TEST(EXRReaderTest, ReadFile)
+	TEST(EXRReader, ReadFile)
 	{
 		static constexpr unsigned int VALID_WIDTH = 2;
 		static constexpr unsigned int VALID_HEIGHT = 2;

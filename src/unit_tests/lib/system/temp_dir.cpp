@@ -25,7 +25,7 @@
 
 namespace Rayni
 {
-	TEST(TempDirTest, CreateUnique)
+	TEST(TempDir, CreateUnique)
 	{
 		std::experimental::filesystem::path path = temp_dir_create_unique();
 

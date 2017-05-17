@@ -23,7 +23,7 @@
 
 namespace Rayni
 {
-	TEST(StringTest, Center)
+	TEST(String, Center)
 	{
 		EXPECT_EQ("", string_center(0, ""));
 		EXPECT_EQ("a", string_center(0, "a"));
@@ -56,7 +56,7 @@ namespace Rayni
 		EXPECT_EQ(" abc ", string_center(5, "abc"));
 	}
 
-	TEST(StringTest, RightAlign)
+	TEST(String, RightAlign)
 	{
 		EXPECT_EQ("", string_right_align(0, ""));
 		EXPECT_EQ("a", string_right_align(0, "a"));
@@ -84,12 +84,12 @@ namespace Rayni
 		EXPECT_EQ(" abc", string_right_align(4, "abc"));
 	}
 
-	TEST(StringTest, ToLower)
+	TEST(String, ToLower)
 	{
 		EXPECT_EQ("abc_def123ghi#jkl", string_to_lower("abc_DEF123ghi#JKL"));
 	}
 
-	TEST(StringTest, ToFloat)
+	TEST(String, ToFloat)
 	{
 		EXPECT_FLOAT_EQ(1.0f, string_to_float("1").value());
 		EXPECT_FLOAT_EQ(1.0f, string_to_float("1.0").value());
@@ -120,7 +120,7 @@ namespace Rayni
 		EXPECT_FLOAT_EQ(1.0f, string_to_number<float>("1.0").value());
 	}
 
-	TEST(StringTest, ToDouble)
+	TEST(String, ToDouble)
 	{
 		EXPECT_DOUBLE_EQ(1.0, string_to_double("1").value());
 		EXPECT_DOUBLE_EQ(1.0, string_to_double("1.0").value());

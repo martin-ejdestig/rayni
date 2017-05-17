@@ -106,7 +106,7 @@ namespace Rayni
 		}
 	}
 
-	TEST(ImageTest, Variant)
+	TEST(Image, Variant)
 	{
 		ScopedTempDir temp_dir;
 		const std::string path = temp_dir.path() / "image.tga";
@@ -123,7 +123,7 @@ namespace Rayni
 		EXPECT_THROW(Variant::map().to<Image>(), Variant::Exception);
 	}
 
-	TEST(ImageTest, Size)
+	TEST(Image, Size)
 	{
 		constexpr unsigned int WIDTH = 4;
 		constexpr unsigned int HEIGHT = 2;
@@ -141,7 +141,7 @@ namespace Rayni
 		EXPECT_EQ(0, empty_image.stride());
 	}
 
-	TEST(ImageTest, Area)
+	TEST(Image, Area)
 	{
 		constexpr unsigned int WIDTH = 4;
 		constexpr unsigned int HEIGHT = 2;
@@ -153,7 +153,7 @@ namespace Rayni
 		EXPECT_EQ(HEIGHT, area.height);
 	}
 
-	TEST(ImageTest, BlackByDefault)
+	TEST(Image, BlackByDefault)
 	{
 		Image image(2, 2);
 
@@ -162,14 +162,14 @@ namespace Rayni
 				EXPECT_PRED_FORMAT4(expect_color_at, image, x, y, Color::black());
 	}
 
-	TEST(ImageTest, Pixels)
+	TEST(Image, Pixels)
 	{
 		Image image(2, 2);
 		write_pixels(image, pixels_2x2());
 		EXPECT_PRED_FORMAT2(expect_pixels, image, pixels_2x2());
 	}
 
-	TEST(ImageTest, MoveConstructor)
+	TEST(Image, MoveConstructor)
 	{
 		Image image1(2, 2);
 		write_pixels(image1, pixels_2x2());
@@ -179,7 +179,7 @@ namespace Rayni
 		EXPECT_TRUE(image1.is_empty()); // NOLINT: misc-use-after-move (want to test state after move...)
 	}
 
-	TEST(ImageTest, MoveAssignment)
+	TEST(Image, MoveAssignment)
 	{
 		Image image1(2, 2);
 		write_pixels(image1, pixels_2x2());

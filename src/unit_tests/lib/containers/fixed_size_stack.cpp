@@ -32,7 +32,7 @@ namespace Rayni
 		};
 	}
 
-	TEST(FixedSizeStackTest, IsEmpty)
+	TEST(FixedSizeStack, IsEmpty)
 	{
 		FixedSizeStack<Element, 2> stack;
 
@@ -47,7 +47,7 @@ namespace Rayni
 		EXPECT_TRUE(stack.is_empty());
 	}
 
-	TEST(FixedSizeStackTest, Top)
+	TEST(FixedSizeStack, Top)
 	{
 		FixedSizeStack<Element, 2> stack;
 

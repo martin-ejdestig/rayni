@@ -29,7 +29,7 @@
 
 namespace Rayni
 {
-	TEST(BigEndianReaderTest, Read8)
+	TEST(BigEndianReader, Read8)
 	{
 		const std::vector<std::uint8_t> data = {0x12, 0x34, 0xfe, 0xfe, 0x80, 0x80};
 		BigEndianReader<std::uint8_t> reader(data);
@@ -56,7 +56,7 @@ namespace Rayni
 		EXPECT_THROW(reader.read_int8(), std::out_of_range);
 	}
 
-	TEST(BigEndianReaderTest, Read16)
+	TEST(BigEndianReader, Read16)
 	{
 		const std::vector<std::uint8_t> data =
 		        {0x12, 0x34, 0x56, 0x78, 0xfe, 0xdc, 0xfe, 0xdc, 0x80, 0x00, 0x80, 0x00};
@@ -84,7 +84,7 @@ namespace Rayni
 		EXPECT_THROW(reader.read_int16(), std::out_of_range);
 	}
 
-	TEST(BigEndianReaderTest, Read32)
+	TEST(BigEndianReader, Read32)
 	{
 		const std::vector<std::uint8_t> data = {0x12, 0x34, 0x56, 0x78, 0x12, 0x34, 0x56, 0x78,
 		                                        0xfe, 0xdc, 0xba, 0x98, 0xfe, 0xdc, 0xba, 0x98,
@@ -113,7 +113,7 @@ namespace Rayni
 		EXPECT_THROW(reader.read_int32(), std::out_of_range);
 	}
 
-	TEST(BigEndianReaderTest, ReadFixedPoint)
+	TEST(BigEndianReader, ReadFixedPoint)
 	{
 		const std::vector<std::uint8_t> data = {0x00, 0x01, 0x00, 0x00, 0x00, 0x01, 0x80, 0x00, 0xff, 0xff,
 		                                        0x00, 0x00, 0xff, 0xfe, 0x80, 0x00, 0xff, 0xff, 0x00, 0x00};
@@ -127,7 +127,7 @@ namespace Rayni
 		EXPECT_NEAR(65535.0, reader.read_fixed_point<std::uint32_t>(0x10000), 1e-100);
 	}
 
-	TEST(BigEndianReaderTest, ReadArray)
+	TEST(BigEndianReader, ReadArray)
 	{
 		const std::vector<std::uint8_t> data = {0x12, 0x34, 0x56, 0x78, 0x9a, 0xbc};
 		BigEndianReader<std::uint8_t> reader(data);
@@ -138,7 +138,7 @@ namespace Rayni
 		EXPECT_EQ(0x9abc, array[2]);
 	}
 
-	TEST(BigEndianReaderTest, ReadFixedPointArray)
+	TEST(BigEndianReader, ReadFixedPointArray)
 	{
 		const std::vector<std::uint8_t> data = {0x7f, 0xff, 0x80, 0x00, 0x40, 0x00};
 		BigEndianReader<std::uint8_t> reader(data);
@@ -149,7 +149,7 @@ namespace Rayni
 		EXPECT_NEAR(0.5, array[2], 1e-100);
 	}
 
-	TEST(BigEndianReaderTest, ReadVectorArrayConstructor)
+	TEST(BigEndianReader, ReadVectorArrayConstructor)
 	{
 		struct Foo
 		{
@@ -181,7 +181,7 @@ namespace Rayni
 		EXPECT_EQ(0x77, foos2[1].y);
 	}
 
-	TEST(BigEndianReaderTest, ReadFixedPointVectorArrayConstructor)
+	TEST(BigEndianReader, ReadFixedPointVectorArrayConstructor)
 	{
 		struct Foo
 		{

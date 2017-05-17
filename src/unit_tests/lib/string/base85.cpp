@@ -26,7 +26,7 @@
 
 namespace Rayni
 {
-	TEST(Base85Test, Decode)
+	TEST(Base85, Decode)
 	{
 		using Data = std::vector<std::uint8_t>;
 
@@ -55,7 +55,7 @@ namespace Rayni
 		EXPECT_EQ(Data({0xff, 0xff, 0xff, 0xff}), base85_decode("|NsC0").value());
 	}
 
-	TEST(Base85Test, DecodeInvalidChar)
+	TEST(Base85, DecodeInvalidChar)
 	{
 		EXPECT_FALSE(base85_decode(" 0000"));
 		EXPECT_FALSE(base85_decode("0 000"));
@@ -64,7 +64,7 @@ namespace Rayni
 		EXPECT_FALSE(base85_decode("0000 "));
 	}
 
-	TEST(Base85Test, DecodeOverflow)
+	TEST(Base85, DecodeOverflow)
 	{
 		EXPECT_FALSE(base85_decode("|NsC1"));
 		EXPECT_FALSE(base85_decode("|NsD0"));

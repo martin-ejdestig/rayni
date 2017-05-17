@@ -26,7 +26,7 @@
 
 namespace Rayni
 {
-	TEST(DecomposedMatrix4x4Test, Interpolate)
+	TEST(DecomposedMatrix4x4, Interpolate)
 	{
 		Matrix4x4 start({2, 0, 0, 2},
 		                {0, std::cos(real_t(1)) * 2, -std::sin(real_t(1)) * 2, 3},

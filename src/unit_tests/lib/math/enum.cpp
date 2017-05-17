@@ -25,7 +25,7 @@
 
 namespace Rayni
 {
-	TEST(EnumTest, ToAndFromValue)
+	TEST(Enum, ToAndFromValue)
 	{
 		enum class Foo
 		{

@@ -23,7 +23,7 @@
 
 namespace Rayni
 {
-	TEST(MathTest, Frac)
+	TEST(Math, Frac)
 	{
 		EXPECT_NEAR(0.1, frac(-1.9), 1e-7);
 		EXPECT_NEAR(0.1, frac(-0.9), 1e-7);
@@ -31,7 +31,7 @@ namespace Rayni
 		EXPECT_NEAR(0.1, frac(1.1), 1e-7);
 	}
 
-	TEST(MathTest, Ifloor)
+	TEST(Math, Ifloor)
 	{
 		EXPECT_EQ(-2, ifloor(-1.1));
 		EXPECT_EQ(-1, ifloor(-0.9));
@@ -43,7 +43,7 @@ namespace Rayni
 		EXPECT_EQ(2, ifloor(2.1));
 	}
 
-	TEST(MathTest, RadiansFromDegrees)
+	TEST(Math, RadiansFromDegrees)
 	{
 		for (int i = -8; i <= 8; i++)
 			EXPECT_NEAR(2 * PI * i / 8, radians_from_degrees(360 * i / 8), 1e-6) << "i: " << i;

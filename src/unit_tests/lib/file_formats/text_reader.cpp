@@ -38,7 +38,7 @@ namespace
 
 namespace Rayni
 {
-	TEST(TextReaderTest, PositionNotSet)
+	TEST(TextReader, PositionNotSet)
 	{
 		TextReader::Position position;
 		EXPECT_EQ(0u, position.line());
@@ -46,7 +46,7 @@ namespace Rayni
 		EXPECT_EQ(0u, position.line_index());
 	}
 
-	TEST(TextReaderTest, PositionNextLineAndColumn)
+	TEST(TextReader, PositionNextLineAndColumn)
 	{
 		TextReader::Position position;
 
@@ -76,7 +76,7 @@ namespace Rayni
 		EXPECT_EQ(10u, position.line_index());
 	}
 
-	TEST(TextReaderTest, PositionToString)
+	TEST(TextReader, PositionToString)
 	{
 		TextReader::Position position;
 		EXPECT_EQ("", position.to_string());
@@ -103,7 +103,7 @@ namespace Rayni
 		EXPECT_EQ("prefix:1:1", position.to_string());
 	}
 
-	TEST(TextReaderTest, OpenFile)
+	TEST(TextReader, OpenFile)
 	{
 		ScopedTempDir temp_dir;
 		const std::string exists1_path = temp_dir.path() / "exists1.txt";
@@ -125,7 +125,7 @@ namespace Rayni
 		EXPECT_THROW(TextReader().open_file(does_not_exist_path), TextReader::Exception);
 	}
 
-	TEST(TextReaderTest, SetString)
+	TEST(TextReader, SetString)
 	{
 		TextReader reader;
 		EXPECT_EQ("", reader.position().to_string());
@@ -140,7 +140,7 @@ namespace Rayni
 		EXPECT_EQ("1:1", reader.position().to_string());
 	}
 
-	TEST(TextReaderTest, Close)
+	TEST(TextReader, Close)
 	{
 		TextReader reader;
 		reader.set_string("test", "prefix");
@@ -148,7 +148,7 @@ namespace Rayni
 		EXPECT_EQ("", reader.position().to_string());
 	}
 
-	TEST(TextReaderTest, NextAndNextGet)
+	TEST(TextReader, NextAndNextGet)
 	{
 		TextReader reader;
 		reader.set_string("abc\ndef");
@@ -165,7 +165,7 @@ namespace Rayni
 		EXPECT_THROW(reader.next(), TextReader::EOFException);
 	}
 
-	TEST(TextReaderTest, At)
+	TEST(TextReader, At)
 	{
 		TextReader reader;
 
@@ -215,7 +215,7 @@ namespace Rayni
 		EXPECT_TRUE(reader.at_eof());
 	}
 
-	TEST(TextReaderTest, Skip)
+	TEST(TextReader, Skip)
 	{
 		TextReader reader;
 		reader.set_string("abcdef \t\r\n  gh  i  \njklmno p\nq");
@@ -244,7 +244,7 @@ namespace Rayni
 		EXPECT_TRUE(reader.skip_char('q'));
 	}
 
-	TEST(TextReaderTest, Parser)
+	TEST(TextReader, Parser)
 	{
 		class BoolReader : public TextReader::Parser<bool>
 		{

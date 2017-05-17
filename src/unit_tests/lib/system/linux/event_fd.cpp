@@ -28,14 +28,14 @@
 
 namespace Rayni
 {
-	TEST(EventFDTest, FD)
+	TEST(EventFD, FD)
 	{
 		EventFD event_fd;
 
 		EXPECT_NE(-1, event_fd.fd());
 	}
 
-	TEST(EventFDTest, MoveConstructor)
+	TEST(EventFD, MoveConstructor)
 	{
 		EventFD event_fd1;
 		int fd = event_fd1.fd();
@@ -46,7 +46,7 @@ namespace Rayni
 		EXPECT_EQ(fd, event_fd2.fd());
 	}
 
-	TEST(EventFDTest, MoveAssignment)
+	TEST(EventFD, MoveAssignment)
 	{
 		EventFD event_fd1;
 		int fd = event_fd1.fd();
@@ -58,7 +58,7 @@ namespace Rayni
 		EXPECT_EQ(fd, event_fd2.fd());
 	}
 
-	TEST(EventFDTest, ReadWrite)
+	TEST(EventFD, ReadWrite)
 	{
 		EventFD event_fd;
 
@@ -74,7 +74,7 @@ namespace Rayni
 		EXPECT_EQ(0xfeec8888d9502743, event_fd.read());
 	}
 
-	TEST(EventFDTest, ReadWriteAfterMoveThrows)
+	TEST(EventFD, ReadWriteAfterMoveThrows)
 	{
 		EventFD event_fd1;
 		EventFD event_fd2(std::move(event_fd1));
@@ -83,7 +83,7 @@ namespace Rayni
 		EXPECT_THROW(event_fd1.read(), std::system_error);
 	}
 
-	TEST(EventFDTest, MaxValue)
+	TEST(EventFD, MaxValue)
 	{
 		// TODO: EXPECT_EQ => odr-use. C++17 will add inline variables and (constexpr variables will be
 		//       implicitly inlined). Should be possible to remove MAX and use EventFD::MAX_VALUE directly then.
@@ -99,7 +99,7 @@ namespace Rayni
 		EXPECT_EQ(MAX, event_fd.read());
 	}
 
-	TEST(EventFDTest, Poll)
+	TEST(EventFD, Poll)
 	{
 		EventFD event_fd;
 

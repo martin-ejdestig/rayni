@@ -51,7 +51,7 @@ namespace Rayni
 		};
 	}
 
-	TEST(ListenerListTest, AddRemoveNotify)
+	TEST(ListenerList, AddRemoveNotify)
 	{
 		ListenerList<Listener> listeners;
 		BazListener listener1;
@@ -86,7 +86,7 @@ namespace Rayni
 		EXPECT_EQ("foofoobar12ab", listener2.data);
 	}
 
-	TEST(ListenerListTest, ListDestroyedBeforeListeners)
+	TEST(ListenerList, ListDestroyedBeforeListeners)
 	{
 		BazListener listener1;
 		BazListener listener2;
@@ -101,7 +101,7 @@ namespace Rayni
 		EXPECT_EQ("foo", listener2.data);
 	}
 
-	TEST(ListenerListTest, ListenersDestroyedBeforeList)
+	TEST(ListenerList, ListenersDestroyedBeforeList)
 	{
 		ListenerList<Listener> listeners;
 		BazListener listener1;

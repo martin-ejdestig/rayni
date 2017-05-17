@@ -54,7 +54,7 @@ namespace Rayni
 		}
 	}
 
-	TEST(TGAReaderTest, ReadFile)
+	TEST(TGAReader, ReadFile)
 	{
 		static constexpr unsigned int VALID_WIDTH = 2;
 		static constexpr unsigned int VALID_HEIGHT = 2;
@@ -96,39 +96,39 @@ namespace Rayni
 #if 0
 	// TODO: Test more. Add a TGAReader::read_data(const std::vector<std::uint8_t> &data) that
 	//       calls TGAReader::read_stream() with a stream that reads from vector.
-	TEST(TGAReaderTest, HeaderShort)
+	TEST(TGAReader, HeaderShort)
 	{
 	}
 
-	TEST(TGAReaderTest, HeaderInvalidColorMap)
+	TEST(TGAReader, HeaderInvalidColorMap)
 	{
 	}
 
-	TEST(TGAReaderTest, HeaderInvalidImageType)
+	TEST(TGAReader, HeaderInvalidImageType)
 	{
 	}
 
-	TEST(TGAReaderTest, HeaderMissingColorMap)
+	TEST(TGAReader, HeaderMissingColorMap)
 	{
 	}
 
-	TEST(TGAReaderTest, HeaderColorMapPresentWhenItShouldNotBe)
+	TEST(TGAReader, HeaderColorMapPresentWhenItShouldNotBe)
 	{
 	}
 
-	TEST(TGAReaderTest, HeaderInvalidDimension)
+	TEST(TGAReader, HeaderInvalidDimension)
 	{
 	}
 
-	TEST(TGAReaderTest, HeaderInvalidPixelSize)
+	TEST(TGAReader, HeaderInvalidPixelSize)
 	{
 	}
 
-	TEST(TGAReaderTest, ImageData)
+	TEST(TGAReader, ImageData)
 	{
 	}
 
-	TEST(TGAReaderTest, ImageDataRLE)
+	TEST(TGAReader, ImageDataRLE)
 	{
 	}
 #endif

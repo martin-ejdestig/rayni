@@ -61,7 +61,7 @@ namespace Rayni
 		}
 	}
 
-	TEST(ImageFormatTest, Magic)
+	TEST(ImageFormat, Magic)
 	{
 		ScopedTempDir temp_dir;
 
@@ -71,7 +71,7 @@ namespace Rayni
 		EXPECT_EQ(ImageFormat::Type::WEBP, create_and_determine_type(temp_dir, "wepb_magic.bin", webp_magic()));
 	}
 
-	TEST(ImageFormatTest, ShortMagic)
+	TEST(ImageFormat, ShortMagic)
 	{
 		ScopedTempDir temp_dir;
 
@@ -92,7 +92,7 @@ namespace Rayni
 		EXPECT_EQ(ImageFormat::Type::UNDETERMINED, create_and_determine_type(temp_dir, "empty_magic.bin", {}));
 	}
 
-	TEST(ImageFormatTest, CorruptMagic)
+	TEST(ImageFormat, CorruptMagic)
 	{
 		ScopedTempDir temp_dir;
 
@@ -114,7 +114,7 @@ namespace Rayni
 		          create_and_determine_type(temp_dir, "wepb_corrupt_magic.bin", corrupt(webp_magic())));
 	}
 
-	TEST(ImageFormatTest, ExtensionOnly)
+	TEST(ImageFormat, ExtensionOnly)
 	{
 		ScopedTempDir temp_dir;
 
@@ -141,7 +141,7 @@ namespace Rayni
 		          create_and_determine_type(temp_dir, "extension_only_mixed_case.PnG", {}));
 	}
 
-	TEST(ImageFormatTest, WrongExtension)
+	TEST(ImageFormat, WrongExtension)
 	{
 		ScopedTempDir temp_dir;
 

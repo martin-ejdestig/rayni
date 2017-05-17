@@ -24,18 +24,18 @@
 
 namespace Rayni
 {
-	TEST(JSONReaderTest, Null)
+	TEST(JSONReader, Null)
 	{
 		EXPECT_TRUE(JSONReader().read_string("null").is_none());
 	}
 
-	TEST(JSONReaderTest, Bool)
+	TEST(JSONReader, Bool)
 	{
 		EXPECT_EQ(true, JSONReader().read_string("true").as_bool());
 		EXPECT_EQ(false, JSONReader().read_string("false").as_bool());
 	}
 
-	TEST(JSONReaderTest, Number)
+	TEST(JSONReader, Number)
 	{
 		EXPECT_THROW(JSONReader().read_string("-"), JSONReader::Exception);
 
@@ -88,7 +88,7 @@ namespace Rayni
 		EXPECT_THROW(JSONReader().read_string("-123e2,0"), JSONReader::Exception);
 	}
 
-	TEST(JSONReaderTest, String)
+	TEST(JSONReader, String)
 	{
 		EXPECT_EQ("", JSONReader().read_string("\"\"").as_string());
 		EXPECT_EQ("a", JSONReader().read_string("\"a\"").as_string());
@@ -101,7 +101,7 @@ namespace Rayni
 		EXPECT_THROW(JSONReader().read_string("\"\\a\""), JSONReader::Exception);
 	}
 
-	TEST(JSONReaderTest, Array)
+	TEST(JSONReader, Array)
 	{
 		EXPECT_EQ(0, JSONReader().read_string("[]").as_vector().size());
 
@@ -127,7 +127,7 @@ namespace Rayni
 		EXPECT_THROW(JSONReader().read_string("[1,\"]\""), JSONReader::Exception);
 	}
 
-	TEST(JSONReaderTest, Object)
+	TEST(JSONReader, Object)
 	{
 		EXPECT_EQ(0, JSONReader().read_string("{}").as_map().size());
 
@@ -157,7 +157,7 @@ namespace Rayni
 		EXPECT_THROW(JSONReader().read_string("{12: \"key type not string\"}"), JSONReader::Exception);
 	}
 
-	TEST(JSONReaderTest, Nested)
+	TEST(JSONReader, Nested)
 	{
 		Variant root = JSONReader().read_string("{\"a\": [[1], [2, 3], {\"aa\": 4, \"ab\": {\"abc\": 5 }}]}");
 
@@ -168,7 +168,7 @@ namespace Rayni
 		EXPECT_NEAR(5, root.get("a").get(2).get("ab").get("abc").as_double(), 1e-100);
 	}
 
-	TEST(JSONReaderTest, LeadingAndTrailingSpaceIgnored)
+	TEST(JSONReader, LeadingAndTrailingSpaceIgnored)
 	{
 		EXPECT_TRUE(JSONReader().read_string("true\n").as_bool());
 		EXPECT_TRUE(JSONReader().read_string("\ntrue").as_bool());
@@ -177,7 +177,7 @@ namespace Rayni
 		EXPECT_TRUE(JSONReader().read_string(" \n   \r\n \t true \n  \r\n \t ").as_bool());
 	}
 
-	TEST(JSONReaderTest, TrailingGarbage)
+	TEST(JSONReader, TrailingGarbage)
 	{
 		EXPECT_THROW(JSONReader().read_string("true true"), JSONReader::Exception);
 		EXPECT_THROW(JSONReader().read_string("true \ntrue"), JSONReader::Exception);

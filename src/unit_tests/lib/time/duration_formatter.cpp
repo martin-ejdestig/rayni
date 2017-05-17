@@ -25,7 +25,7 @@
 
 namespace Rayni
 {
-	TEST(DurationFormatterTest, Format)
+	TEST(DurationFormatter, Format)
 	{
 		// TODO: Remove NOLINT when https://llvm.org/bugs/show_bug.cgi?id=25594 is fixed.
 		using namespace std::chrono_literals; // NOLINT

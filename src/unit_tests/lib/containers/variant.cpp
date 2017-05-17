@@ -28,7 +28,7 @@
 
 namespace Rayni
 {
-	TEST(VariantTest, Is)
+	TEST(Variant, Is)
 	{
 		EXPECT_TRUE(Variant().is_none());
 
@@ -51,7 +51,7 @@ namespace Rayni
 		EXPECT_TRUE(Variant("").is<std::string>());
 	}
 
-	TEST(VariantTest, Move)
+	TEST(Variant, Move)
 	{
 		Variant v1(true);
 		EXPECT_TRUE(v1.is_bool());
@@ -65,7 +65,7 @@ namespace Rayni
 		EXPECT_TRUE(v3.is_bool());
 	}
 
-	TEST(VariantTest, As)
+	TEST(Variant, As)
 	{
 		EXPECT_EQ(0, Variant::map().as_map().size());
 		EXPECT_EQ(0, Variant::vector().as_vector().size());
@@ -95,7 +95,7 @@ namespace Rayni
 		EXPECT_THROW(Variant().as_string(), Variant::Exception);
 	}
 
-	TEST(VariantTest, To)
+	TEST(Variant, To)
 	{
 		EXPECT_EQ(1, Variant(1).to_int());
 		EXPECT_EQ(1, Variant(1u).to_int());
@@ -139,7 +139,7 @@ namespace Rayni
 		EXPECT_EQ("123", Variant(123).to<std::string>());
 	}
 
-	TEST(VariantTest, ToConstructor)
+	TEST(Variant, ToConstructor)
 	{
 		struct Foo
 		{
@@ -153,7 +153,7 @@ namespace Rayni
 		EXPECT_EQ(123, Variant(123).to<Foo>().bar);
 	}
 
-	TEST(VariantTest, ToFromVariant)
+	TEST(Variant, ToFromVariant)
 	{
 		struct Foo
 		{
@@ -172,7 +172,7 @@ namespace Rayni
 		EXPECT_EQ(123, Variant(123).to<Foo>().bar);
 	}
 
-	TEST(VariantTest, ToFromVariantAbstract)
+	TEST(Variant, ToFromVariantAbstract)
 	{
 		struct Foo
 		{
@@ -214,7 +214,7 @@ namespace Rayni
 		EXPECT_EQ(456, Variant("baz").to<Foo>()->value());
 	}
 
-	TEST(VariantTest, ToGetFromVariant)
+	TEST(Variant, ToGetFromVariant)
 	{
 		struct Foo
 		{
@@ -245,7 +245,7 @@ namespace Rayni
 		EXPECT_EQ(123, Variant(123).to<const Foo *>()->bar);
 	}
 
-	TEST(VariantTest, Has)
+	TEST(Variant, Has)
 	{
 		Variant variant = Variant::map("key1", 123, "key2", "abc");
 
@@ -263,7 +263,7 @@ namespace Rayni
 		EXPECT_THROW(Variant("").has("key"), Variant::Exception);
 	}
 
-	TEST(VariantTest, GetFromMap)
+	TEST(Variant, GetFromMap)
 	{
 		Variant variant = Variant::map("key1", 123, "key2", "abc");
 
@@ -280,7 +280,7 @@ namespace Rayni
 		EXPECT_THROW(variant.get("key3"), Variant::Exception);
 	}
 
-	TEST(VariantTest, GetFromVector)
+	TEST(Variant, GetFromVector)
 	{
 		Variant variant = Variant::vector(123, "abc");
 
@@ -293,7 +293,7 @@ namespace Rayni
 		EXPECT_THROW(variant.get(2), Variant::Exception);
 	}
 
-	TEST(VariantTest, Path)
+	TEST(Variant, Path)
 	{
 		Variant variant;
 

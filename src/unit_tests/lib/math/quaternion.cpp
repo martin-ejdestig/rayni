@@ -24,7 +24,7 @@
 
 namespace Rayni
 {
-	TEST(QuaternionTest, Variant)
+	TEST(Quaternion, Variant)
 	{
 		Quaternion q = Variant::vector(1, 2, 3, 4).to<Quaternion>();
 		EXPECT_NEAR(1, q.x(), 1e-100);
@@ -41,7 +41,7 @@ namespace Rayni
 		EXPECT_THROW(Variant(0).to<Quaternion>(), Variant::Exception);
 	}
 
-	TEST(QuaternionTest, OperatorAddition)
+	TEST(Quaternion, OperatorAddition)
 	{
 		Quaternion q = Quaternion(1, 2, 3, 4) + Quaternion(5, 6, 7, 8);
 		EXPECT_NEAR(6, q.x(), 1e-100);
@@ -50,7 +50,7 @@ namespace Rayni
 		EXPECT_NEAR(12, q.w(), 1e-100);
 	}
 
-	TEST(QuaternionTest, OperatorSubtraction)
+	TEST(Quaternion, OperatorSubtraction)
 	{
 		Quaternion q = Quaternion(8, 7, 6, 5) - Quaternion(1, 2, 3, 4);
 		EXPECT_NEAR(7, q.x(), 1e-100);
@@ -59,7 +59,7 @@ namespace Rayni
 		EXPECT_NEAR(1, q.w(), 1e-100);
 	}
 
-	TEST(QuaternionTest, OperatorMultiplicationScalar)
+	TEST(Quaternion, OperatorMultiplicationScalar)
 	{
 		Quaternion q;
 
@@ -76,7 +76,7 @@ namespace Rayni
 		EXPECT_NEAR(2, q.w(), 1e-100);
 	}
 
-	TEST(QuaternionTest, Normalize)
+	TEST(Quaternion, Normalize)
 	{
 		EXPECT_NEAR(1, Quaternion(2, 0, 0, 0).normalize().x(), 1e-100);
 		EXPECT_NEAR(1, Quaternion(0, 2, 0, 0).normalize().y(), 1e-100);
@@ -94,7 +94,7 @@ namespace Rayni
 		EXPECT_NEAR(-0.5, q.w(), 1e-100);
 	}
 
-	TEST(QuaternionTest, Dot)
+	TEST(Quaternion, Dot)
 	{
 		EXPECT_NEAR(7000, Quaternion(10, 20, 30, 40).dot(Quaternion(50, 60, 70, 80)), 1e-100);
 		EXPECT_NEAR(0, Quaternion(0, 0, 0, 0).dot(Quaternion(50, 60, 70, 80)), 1e-100);

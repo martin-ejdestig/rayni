@@ -28,7 +28,7 @@
 
 namespace Rayni
 {
-	TEST(PipeTest, FDs)
+	TEST(Pipe, FDs)
 	{
 		Pipe pipe;
 
@@ -37,7 +37,7 @@ namespace Rayni
 		EXPECT_NE(pipe.read_fd(), pipe.write_fd());
 	}
 
-	TEST(PipeTest, MoveConstructor)
+	TEST(Pipe, MoveConstructor)
 	{
 		Pipe p1;
 
@@ -53,7 +53,7 @@ namespace Rayni
 		EXPECT_EQ(write_fd, p2.write_fd());
 	}
 
-	TEST(PipeTest, MoveAssignment)
+	TEST(Pipe, MoveAssignment)
 	{
 		Pipe p1;
 
@@ -70,7 +70,7 @@ namespace Rayni
 		EXPECT_EQ(write_fd, p2.write_fd());
 	}
 
-	TEST(PipeTest, Close)
+	TEST(Pipe, Close)
 	{
 		Pipe p1;
 		p1.close_read_fd();
@@ -88,7 +88,7 @@ namespace Rayni
 		EXPECT_EQ(-1, p3.write_fd());
 	}
 
-	TEST(PipeTest, ReadWrite)
+	TEST(Pipe, ReadWrite)
 	{
 		Pipe pipe;
 
@@ -105,7 +105,7 @@ namespace Rayni
 		EXPECT_THROW(pipe.read(read_buffer), std::system_error);
 	}
 
-	TEST(PipeTest, ReadAppendToString)
+	TEST(Pipe, ReadAppendToString)
 	{
 		Pipe pipe;
 		std::string str;

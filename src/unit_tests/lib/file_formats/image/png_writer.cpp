@@ -27,7 +27,7 @@
 
 namespace Rayni
 {
-	TEST(PNGWriterTest, WriteFile)
+	TEST(PNGWriter, WriteFile)
 	{
 		static constexpr unsigned int WIDTH = 2;
 		static constexpr unsigned int HEIGHT = 2;

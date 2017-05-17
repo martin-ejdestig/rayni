@@ -67,19 +67,19 @@ namespace Rayni
 		}
 	}
 
-	TEST(TransformTest, VariantString)
+	TEST(Transform, VariantString)
 	{
 		EXPECT_PRED_FORMAT3(transform_near, Variant("identity").to<Transform>(), Transform::identity(), 1e-100);
 
 		EXPECT_THROW(Variant("foo").to<Transform>(), Variant::Exception);
 	}
 
-	TEST(TransformTest, VariantMapSizeLargerThanOneNotAllowed)
+	TEST(Transform, VariantMapSizeLargerThanOneNotAllowed)
 	{
 		EXPECT_THROW(Variant::map("rotate_x", 1, "rotate_y", 2).to<Transform>(), Variant::Exception);
 	}
 
-	TEST(TransformTest, VariantMapTranslate)
+	TEST(Transform, VariantMapTranslate)
 	{
 		EXPECT_PRED_FORMAT3(transform_near,
 		                    Variant::map("translate", Variant::vector(1, 2, 3)).to<Transform>(),
@@ -90,7 +90,7 @@ namespace Rayni
 		EXPECT_THROW(Variant::map("translate", 1).to<Transform>(), Variant::Exception);
 	}
 
-	TEST(TransformTest, VariantMapScale)
+	TEST(Transform, VariantMapScale)
 	{
 		EXPECT_PRED_FORMAT3(transform_near,
 		                    Variant::map("scale", Variant::vector(1, 2, 3)).to<Transform>(),
@@ -106,7 +106,7 @@ namespace Rayni
 		EXPECT_THROW(Variant::map("scale", "foo").to<Transform>(), Variant::Exception);
 	}
 
-	TEST(TransformTest, VariantMapRotate)
+	TEST(Transform, VariantMapRotate)
 	{
 		EXPECT_PRED_FORMAT3(transform_near,
 		                    Variant::map("rotate_x", 30).to<Transform>(),
@@ -137,7 +137,7 @@ namespace Rayni
 		EXPECT_THROW(Variant::map("rotate", 3).to<Transform>(), Variant::Exception);
 	}
 
-	TEST(TransformTest, VariantMapLookAt)
+	TEST(Transform, VariantMapLookAt)
 	{
 		EXPECT_PRED_FORMAT3(transform_near,
 		                    Variant::map("look_at",
@@ -152,12 +152,12 @@ namespace Rayni
 		                    1e-6);
 	}
 
-	TEST(TransformTest, VariantUnknownType)
+	TEST(Transform, VariantUnknownType)
 	{
 		EXPECT_THROW(Variant::map("unknown_type", 0).to<Transform>(), Variant::Exception);
 	}
 
-	TEST(TransformTest, VariantVector)
+	TEST(Transform, VariantVector)
 	{
 		EXPECT_PRED_FORMAT3(transform_near,
 		                    Variant::vector(Variant::map("scale", 2),
@@ -170,7 +170,7 @@ namespace Rayni
 		EXPECT_THROW(Variant::vector<std::string>({"identity"}).to<Transform>(), Variant::Exception);
 	}
 
-	TEST(TransformTest, Inverse)
+	TEST(Transform, Inverse)
 	{
 		EXPECT_PRED_FORMAT2(verify_inverse, Transform::identity(), 1e-100);
 
@@ -195,7 +195,7 @@ namespace Rayni
 		                    1e-5);
 	}
 
-	TEST(TransformTest, TransformPoint)
+	TEST(Transform, TransformPoint)
 	{
 		Transform t = Transform::combine(Transform::rotate_z(PI), Transform::translate(10, 20, 30));
 
@@ -214,7 +214,7 @@ namespace Rayni
 		EXPECT_NEAR(39, ps[1].z(), 1e-5);
 	}
 
-	TEST(TransformTest, TransformDirection)
+	TEST(Transform, TransformDirection)
 	{
 		Transform t = Transform::combine(Transform::rotate_z(PI), Transform::translate(10, 20, 30));
 
@@ -224,7 +224,7 @@ namespace Rayni
 		EXPECT_NEAR(3, p.z(), 1e-6);
 	}
 
-	TEST(TransformTest, TransformNormal)
+	TEST(Transform, TransformNormal)
 	{
 		Transform t = Transform::combine(Transform::rotate_z(PI), Transform::translate(10, 20, 30));
 
@@ -243,7 +243,7 @@ namespace Rayni
 		EXPECT_NEAR(0.646162271, ns[1].z(), 1e-7);
 	}
 
-	TEST(TransformTest, TransformAABB)
+	TEST(Transform, TransformAABB)
 	{
 		Transform t = Transform::combine(Transform::rotate_z(PI), Transform::translate(10, 20, 30));
 
@@ -256,7 +256,7 @@ namespace Rayni
 		EXPECT_NEAR(36, aabb.maximum().z(), 1e-5);
 	}
 
-	TEST(TransformTest, TransformRay)
+	TEST(Transform, TransformRay)
 	{
 		Transform t = Transform::combine(Transform::rotate_z(PI), Transform::translate(10, 20, 30));
 

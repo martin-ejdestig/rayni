@@ -24,7 +24,7 @@
 
 namespace Rayni
 {
-	TEST(AABBTest, Merge)
+	TEST(AABB, Merge)
 	{
 		AABB aabb;
 
@@ -40,7 +40,7 @@ namespace Rayni
 		EXPECT_NEAR(3, aabb.maximum().z(), 1e-100);
 	}
 
-	TEST(AABBTest, MergePoints)
+	TEST(AABB, MergePoints)
 	{
 		AABB aabb;
 
@@ -54,7 +54,7 @@ namespace Rayni
 		EXPECT_NEAR(3, aabb.maximum().z(), 1e-100);
 	}
 
-	TEST(AABBTest, IntersectsHit)
+	TEST(AABB, IntersectsHit)
 	{
 		AABB aabb({-1, -1, -1}, {1, 1, 1});
 
@@ -74,7 +74,7 @@ namespace Rayni
 		}
 	}
 
-	TEST(AABBTest, IntersectsInside)
+	TEST(AABB, IntersectsInside)
 	{
 		AABB aabb({-1, -1, -1}, {1, 1, 1});
 
@@ -94,7 +94,7 @@ namespace Rayni
 		}
 	}
 
-	TEST(AABBTest, IntersectsMiss)
+	TEST(AABB, IntersectsMiss)
 	{
 		AABB aabb({-1, -1, -1}, {1, 1, 1});
 
@@ -126,7 +126,7 @@ namespace Rayni
 		}
 	}
 
-	TEST(AABBTest, Intersection)
+	TEST(AABB, Intersection)
 	{
 		AABB intersection =
 		        AABB({-10, -100, -1000}, {5, 50, 500}).intersection(AABB({-5, -50, -500}, {10, 100, 1000}));
@@ -139,12 +139,12 @@ namespace Rayni
 		EXPECT_NEAR(500, intersection.maximum().z(), 1e-100);
 	}
 
-	TEST(AABBTest, SurfaceArea)
+	TEST(AABB, SurfaceArea)
 	{
 		EXPECT_NEAR(286, AABB({-1, -2, -3}, {4, 5, 6}).surface_area(), 1e-100);
 	}
 
-	TEST(AABBTest, SplitX)
+	TEST(AABB, SplitX)
 	{
 		auto split_x = AABB({10, 100, 1000}, {20, 200, 2000}).split(0, 15);
 
@@ -162,7 +162,7 @@ namespace Rayni
 		EXPECT_NEAR(2000, split_x.right.maximum().z(), 1e-100);
 	}
 
-	TEST(AABBTest, SplitY)
+	TEST(AABB, SplitY)
 	{
 		auto split_y = AABB({10, 100, 1000}, {20, 200, 2000}).split(1, 150);
 
@@ -180,7 +180,7 @@ namespace Rayni
 		EXPECT_NEAR(2000, split_y.right.maximum().z(), 1e-100);
 	}
 
-	TEST(AABBTest, SplitZ)
+	TEST(AABB, SplitZ)
 	{
 		auto split_z = AABB({10, 100, 1000}, {20, 200, 2000}).split(2, 1500);
 
@@ -198,7 +198,7 @@ namespace Rayni
 		EXPECT_NEAR(2000, split_z.right.maximum().z(), 1e-100);
 	}
 
-	TEST(AABBTest, IsPlanar)
+	TEST(AABB, IsPlanar)
 	{
 		EXPECT_FALSE(AABB({1, 1, 1}, {2, 2, 2}).is_planar(0));
 		EXPECT_FALSE(AABB({1, 1, 1}, {2, 2, 2}).is_planar(1));

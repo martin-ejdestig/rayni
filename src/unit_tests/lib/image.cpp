@@ -30,23 +30,22 @@
 
 namespace Rayni
 {
-	class ImageTest : public testing::Test
+	namespace
 	{
-	protected:
 		struct Pixel
 		{
 			unsigned int x, y;
 			Color color;
 		};
 
-		static testing::AssertionResult expect_color_at(const char *image_expr,
-		                                                const char * /*x_expr*/,
-		                                                const char * /*y_expr*/,
-		                                                const char *color_expr,
-		                                                const Image &image,
-		                                                unsigned int x,
-		                                                unsigned int y,
-		                                                const Color &color)
+		testing::AssertionResult expect_color_at(const char *image_expr,
+		                                         const char * /*x_expr*/,
+		                                         const char * /*y_expr*/,
+		                                         const char *color_expr,
+		                                         const Image &image,
+		                                         unsigned int x,
+		                                         unsigned int y,
+		                                         const Color &color)
 		{
 			static constexpr real_t COMPONENT_MAX_DIFF = 0.001;
 
@@ -68,7 +67,7 @@ namespace Rayni
 			return testing::AssertionSuccess();
 		}
 
-		static const std::vector<Pixel> &pixels_2x2()
+		const std::vector<Pixel> &pixels_2x2()
 		{
 			static const std::vector<Pixel> pixels = {{0, 0, Color::black()},
 			                                          {0, 1, Color::red()},
@@ -77,16 +76,16 @@ namespace Rayni
 			return pixels;
 		}
 
-		static void write_pixels(Image &image, const std::vector<Pixel> &pixels)
+		void write_pixels(Image &image, const std::vector<Pixel> &pixels)
 		{
 			for (auto &pixel : pixels)
 				image.write_pixel(pixel.x, pixel.y, pixel.color);
 		}
 
-		static testing::AssertionResult expect_pixels(const char *image_expr,
-		                                              const char *pixels_expr,
-		                                              const Image &image,
-		                                              const std::vector<Pixel> &pixels)
+		testing::AssertionResult expect_pixels(const char *image_expr,
+		                                       const char *pixels_expr,
+		                                       const Image &image,
+		                                       const std::vector<Pixel> &pixels)
 		{
 			for (std::vector<Pixel>::size_type i = 0; i < pixels.size(); i++)
 			{
@@ -105,9 +104,9 @@ namespace Rayni
 
 			return testing::AssertionSuccess();
 		}
-	};
+	}
 
-	TEST_F(ImageTest, Variant)
+	TEST(ImageTest, Variant)
 	{
 		ScopedTempDir temp_dir;
 		const std::string path = temp_dir.path() / "image.tga";
@@ -124,7 +123,7 @@ namespace Rayni
 		EXPECT_THROW(Variant::map().to<Image>(), Variant::Exception);
 	}
 
-	TEST_F(ImageTest, Size)
+	TEST(ImageTest, Size)
 	{
 		constexpr unsigned int WIDTH = 4;
 		constexpr unsigned int HEIGHT = 2;
@@ -142,7 +141,7 @@ namespace Rayni
 		EXPECT_EQ(0, empty_image.stride());
 	}
 
-	TEST_F(ImageTest, Area)
+	TEST(ImageTest, Area)
 	{
 		constexpr unsigned int WIDTH = 4;
 		constexpr unsigned int HEIGHT = 2;
@@ -154,7 +153,7 @@ namespace Rayni
 		EXPECT_EQ(HEIGHT, area.height);
 	}
 
-	TEST_F(ImageTest, BlackByDefault)
+	TEST(ImageTest, BlackByDefault)
 	{
 		Image image(2, 2);
 
@@ -163,14 +162,14 @@ namespace Rayni
 				EXPECT_PRED_FORMAT4(expect_color_at, image, x, y, Color::black());
 	}
 
-	TEST_F(ImageTest, Pixels)
+	TEST(ImageTest, Pixels)
 	{
 		Image image(2, 2);
 		write_pixels(image, pixels_2x2());
 		EXPECT_PRED_FORMAT2(expect_pixels, image, pixels_2x2());
 	}
 
-	TEST_F(ImageTest, MoveConstructor)
+	TEST(ImageTest, MoveConstructor)
 	{
 		Image image1(2, 2);
 		write_pixels(image1, pixels_2x2());
@@ -180,7 +179,7 @@ namespace Rayni
 		EXPECT_TRUE(image1.is_empty()); // NOLINT: misc-use-after-move (want to test state after move...)
 	}
 
-	TEST_F(ImageTest, MoveAssignment)
+	TEST(ImageTest, MoveAssignment)
 	{
 		Image image1(2, 2);
 		write_pixels(image1, pixels_2x2());

@@ -30,10 +30,9 @@
 
 namespace Rayni
 {
-	class WebPReaderTest : public testing::Test
+	namespace
 	{
-	protected:
-		static std::vector<std::uint8_t> webp_data()
+		std::vector<std::uint8_t> webp_data()
 		{
 			return {0x52, 0x49, 0x46, 0x46, 0x2a, 0x00, 0x00, 0x00, 0x57, 0x45, 0x42, 0x50, 0x56,
 			        0x50, 0x38, 0x4c, 0x1e, 0x00, 0x00, 0x00, 0x2f, 0x01, 0x40, 0x00, 0x00, 0x1f,
@@ -41,22 +40,22 @@ namespace Rayni
 			        0xda, 0xfc, 0x07, 0x5f, 0x24, 0x60, 0x17, 0x22, 0xfa, 0x1f, 0x01};
 		}
 
-		static std::vector<std::uint8_t> corrupt_webp_data()
+		std::vector<std::uint8_t> corrupt_webp_data()
 		{
 			auto data = webp_data();
 			data.at(data.size() - 6) ^= 0x01;
 			return data;
 		}
 
-		static std::vector<std::uint8_t> short_webp_data()
+		std::vector<std::uint8_t> short_webp_data()
 		{
 			auto data = webp_data();
 			data.pop_back();
 			return data;
 		}
-	};
+	}
 
-	TEST_F(WebPReaderTest, ReadFile)
+	TEST(WebPReaderTest, ReadFile)
 	{
 		static constexpr unsigned int VALID_WIDTH = 2;
 		static constexpr unsigned int VALID_HEIGHT = 2;

@@ -30,10 +30,9 @@
 
 namespace Rayni
 {
-	class PNGReaderTest : public testing::Test
+	namespace
 	{
-	protected:
-		static std::vector<std::uint8_t> png_data()
+		std::vector<std::uint8_t> png_data()
 		{
 			return {0x89, 0x50, 0x4e, 0x47, 0x0d, 0x0a, 0x1a, 0x0a, 0x00, 0x00, 0x00, 0x0d, 0x49, 0x48,
 			        0x44, 0x52, 0x00, 0x00, 0x00, 0x02, 0x00, 0x00, 0x00, 0x02, 0x08, 0x02, 0x00, 0x00,
@@ -48,22 +47,22 @@ namespace Rayni
 			        0x00, 0x00, 0x00, 0x00, 0x49, 0x45, 0x4e, 0x44, 0xae, 0x42, 0x60, 0x82};
 		}
 
-		static std::vector<std::uint8_t> corrupt_png_data()
+		std::vector<std::uint8_t> corrupt_png_data()
 		{
 			auto data = png_data();
 			data.at(data.size() - 17) ^= 0x01;
 			return data;
 		}
 
-		static std::vector<std::uint8_t> short_png_data()
+		std::vector<std::uint8_t> short_png_data()
 		{
 			auto data = png_data();
 			data.resize(data.size() - 13);
 			return data;
 		}
-	};
+	}
 
-	TEST_F(PNGReaderTest, ReadFile)
+	TEST(PNGReaderTest, ReadFile)
 	{
 		static constexpr unsigned int VALID_WIDTH = 2;
 		static constexpr unsigned int VALID_HEIGHT = 2;

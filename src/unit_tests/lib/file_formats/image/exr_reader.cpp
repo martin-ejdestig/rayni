@@ -30,10 +30,9 @@
 
 namespace Rayni
 {
-	class EXRReaderTest : public testing::Test
+	namespace
 	{
-	protected:
-		static std::vector<std::uint8_t> exr_data()
+		std::vector<std::uint8_t> exr_data()
 		{
 			return {0x76, 0x2f, 0x31, 0x01, 0x02, 0x00, 0x00, 0x00, 0x63, 0x68, 0x61, 0x6e, 0x6e, 0x65,
 			        0x6c, 0x73, 0x00, 0x63, 0x68, 0x6c, 0x69, 0x73, 0x74, 0x00, 0x37, 0x00, 0x00, 0x00,
@@ -64,22 +63,22 @@ namespace Rayni
 			        0x00, 0x00, 0x00, 0x00, 0x00};
 		}
 
-		static std::vector<std::uint8_t> corrupt_exr_data()
+		std::vector<std::uint8_t> corrupt_exr_data()
 		{
 			auto data = exr_data();
 			data.at(data.size() - 20) ^= 0x01;
 			return data;
 		}
 
-		static std::vector<std::uint8_t> short_exr_data()
+		std::vector<std::uint8_t> short_exr_data()
 		{
 			auto data = exr_data();
 			data.pop_back();
 			return data;
 		}
-	};
+	}
 
-	TEST_F(EXRReaderTest, ReadFile)
+	TEST(EXRReaderTest, ReadFile)
 	{
 		static constexpr unsigned int VALID_WIDTH = 2;
 		static constexpr unsigned int VALID_HEIGHT = 2;

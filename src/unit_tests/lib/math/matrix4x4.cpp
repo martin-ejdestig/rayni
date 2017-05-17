@@ -27,15 +27,14 @@
 
 namespace Rayni
 {
-	class Matrix4x4Test : public testing::Test
+	namespace
 	{
-	protected:
-		static testing::AssertionResult matrix_near(const char *m1_expr,
-		                                            const char *m2_expr,
-		                                            const char *abs_error_expr,
-		                                            const Matrix4x4 &m1,
-		                                            const Matrix4x4 &m2,
-		                                            real_t abs_error)
+		testing::AssertionResult matrix_near(const char *m1_expr,
+		                                     const char *m2_expr,
+		                                     const char *abs_error_expr,
+		                                     const Matrix4x4 &m1,
+		                                     const Matrix4x4 &m2,
+		                                     real_t abs_error)
 		{
 			std::string error_elements;
 
@@ -65,9 +64,9 @@ namespace Rayni
 			                                   << m2_expr << "\ndiffer more than " << abs_error_expr
 			                                   << " in the following elements:\n" + error_elements;
 		}
-	};
+	}
 
-	TEST_F(Matrix4x4Test, OperatorIndexing)
+	TEST(Matrix4x4Test, OperatorIndexing)
 	{
 		Matrix4x4 m({1, 2, 3, 4}, {5, 6, 7, 8}, {9, 10, 11, 12}, {13, 14, 15, 16});
 		EXPECT_NEAR(1, m(0, 0), 1e-100);
@@ -106,7 +105,7 @@ namespace Rayni
 		EXPECT_NEAR(16, mc(3, 3), 1e-100);
 	}
 
-	TEST_F(Matrix4x4Test, OperatorMultiplication)
+	TEST(Matrix4x4Test, OperatorMultiplication)
 	{
 		Matrix4x4 m = Matrix4x4({2, 16, 9, 11}, {7, 8, 13, 14}, {3, 15, 1, 13}, {13, 1, 14, 12}) *
 		              Matrix4x4({10, 3, 4, 6}, {13, 8, 5, 11}, {9, 10, 2, 16}, {1, 3, 2, 7});
@@ -120,7 +119,7 @@ namespace Rayni
 		                    1e-100);
 	}
 
-	TEST_F(Matrix4x4Test, SwapRows)
+	TEST(Matrix4x4Test, SwapRows)
 	{
 		Matrix4x4 m({0, 1, 2, 3}, {4, 5, 6, 7}, {8, 9, 10, 11}, {12, 13, 14, 15});
 		m.swap_rows(0, 3);
@@ -131,7 +130,7 @@ namespace Rayni
 		                    1e-100);
 	}
 
-	TEST_F(Matrix4x4Test, SwapColumns)
+	TEST(Matrix4x4Test, SwapColumns)
 	{
 		Matrix4x4 m({0, 1, 2, 3}, {4, 5, 6, 7}, {8, 9, 10, 11}, {12, 13, 14, 15});
 		m.swap_columns(0, 3);
@@ -142,7 +141,7 @@ namespace Rayni
 		                    1e-100);
 	}
 
-	TEST_F(Matrix4x4Test, Inverse)
+	TEST(Matrix4x4Test, Inverse)
 	{
 		EXPECT_PRED_FORMAT3(matrix_near,
 		                    Matrix4x4({0.2272727, -0.0454545, -0.4090909, 0.1363636},
@@ -153,7 +152,7 @@ namespace Rayni
 		                    1e-7);
 	}
 
-	TEST_F(Matrix4x4Test, Transpose)
+	TEST(Matrix4x4Test, Transpose)
 	{
 		EXPECT_PRED_FORMAT3(matrix_near,
 		                    Matrix4x4({0, 4, 8, 12}, {1, 5, 9, 13}, {2, 6, 10, 14}, {3, 7, 11, 15}),
@@ -161,7 +160,7 @@ namespace Rayni
 		                    1e-100);
 	}
 
-	TEST_F(Matrix4x4Test, GetAxes)
+	TEST(Matrix4x4Test, GetAxes)
 	{
 		auto m = Matrix4x4::from_axes({1, 2, 3}, {4, 5, 6}, {7, 8, 9});
 
@@ -178,7 +177,7 @@ namespace Rayni
 		EXPECT_NEAR(9, m.z_axis().z(), 1e-100);
 	}
 
-	TEST_F(Matrix4x4Test, GetTranslation)
+	TEST(Matrix4x4Test, GetTranslation)
 	{
 		auto m = Matrix4x4::translate({2, 4, 8});
 
@@ -187,7 +186,7 @@ namespace Rayni
 		EXPECT_NEAR(8, m.translation().z(), 1e-100);
 	}
 
-	TEST_F(Matrix4x4Test, GetRotation)
+	TEST(Matrix4x4Test, GetRotation)
 	{
 		auto q = Matrix4x4::rotate({0.18257, 0.36515, 0.54772, 0.73030}).rotation();
 
@@ -197,7 +196,7 @@ namespace Rayni
 		EXPECT_NEAR(0.73030, q.w(), 1e-5);
 	}
 
-	TEST_F(Matrix4x4Test, Upper3x3)
+	TEST(Matrix4x4Test, Upper3x3)
 	{
 		Matrix3x3 m = Matrix4x4({1, 2, 3, 4}, {5, 6, 7, 8}, {9, 10, 11, 12}, {13, 14, 15, 16}).upper3x3();
 

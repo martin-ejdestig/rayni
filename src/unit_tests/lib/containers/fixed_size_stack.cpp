@@ -23,17 +23,16 @@
 
 namespace Rayni
 {
-	class FixedSizeStackTest : public testing::Test
+	namespace
 	{
-	protected:
 		struct Element
 		{
 			int value1 = 0;
 			int value2 = 0;
 		};
-	};
+	}
 
-	TEST_F(FixedSizeStackTest, IsEmpty)
+	TEST(FixedSizeStackTest, IsEmpty)
 	{
 		FixedSizeStack<Element, 2> stack;
 
@@ -48,7 +47,7 @@ namespace Rayni
 		EXPECT_TRUE(stack.is_empty());
 	}
 
-	TEST_F(FixedSizeStackTest, Top)
+	TEST(FixedSizeStackTest, Top)
 	{
 		FixedSizeStack<Element, 2> stack;
 

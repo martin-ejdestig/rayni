@@ -28,15 +28,14 @@
 
 namespace Rayni
 {
-	class Matrix3x3Test : public testing::Test
+	namespace
 	{
-	protected:
-		static testing::AssertionResult matrix_near(const char *m1_expr,
-		                                            const char *m2_expr,
-		                                            const char *abs_error_expr,
-		                                            const Matrix3x3 &m1,
-		                                            const Matrix3x3 &m2,
-		                                            real_t abs_error)
+		testing::AssertionResult matrix_near(const char *m1_expr,
+		                                     const char *m2_expr,
+		                                     const char *abs_error_expr,
+		                                     const Matrix3x3 &m1,
+		                                     const Matrix3x3 &m2,
+		                                     real_t abs_error)
 		{
 			std::string error_elements;
 
@@ -66,9 +65,9 @@ namespace Rayni
 			                                   << m2_expr << "\ndiffer more than " << abs_error_expr
 			                                   << " in the following elements:\n" + error_elements;
 		}
-	};
+	}
 
-	TEST_F(Matrix3x3Test, OperatorIndexing)
+	TEST(Matrix3x3Test, OperatorIndexing)
 	{
 		Matrix3x3 m({1, 2, 3}, {4, 5, 6}, {7, 8, 9});
 		EXPECT_NEAR(1, m(0, 0), 1e-100);
@@ -93,7 +92,7 @@ namespace Rayni
 		EXPECT_NEAR(9, mc(2, 2), 1e-100);
 	}
 
-	TEST_F(Matrix3x3Test, OperatorAddition)
+	TEST(Matrix3x3Test, OperatorAddition)
 	{
 		Matrix3x3 m = Matrix3x3({1, 2, 3}, {4, 5, 6}, {7, 8, 9}) +
 		              Matrix3x3({101, 102, 103}, {104, 105, 106}, {107, 108, 109});
@@ -104,7 +103,7 @@ namespace Rayni
 		                    1e-100);
 	}
 
-	TEST_F(Matrix3x3Test, OperatorSubtraction)
+	TEST(Matrix3x3Test, OperatorSubtraction)
 	{
 		Matrix3x3 m = Matrix3x3({101, 102, 103}, {104, 105, 106}, {107, 108, 109}) -
 		              Matrix3x3({9, 8, 7}, {6, 5, 4}, {3, 2, 1});
@@ -112,7 +111,7 @@ namespace Rayni
 		EXPECT_PRED_FORMAT3(matrix_near, Matrix3x3({92, 94, 96}, {98, 100, 102}, {104, 106, 108}), m, 1e-100);
 	}
 
-	TEST_F(Matrix3x3Test, OperatorMultiplication)
+	TEST(Matrix3x3Test, OperatorMultiplication)
 	{
 		Matrix3x3 m =
 		        Matrix3x3({2, 16, 9}, {7, 8, 13}, {3, 15, 1}) * Matrix3x3({10, 3, 4}, {13, 8, 5}, {9, 10, 2});
@@ -120,7 +119,7 @@ namespace Rayni
 		EXPECT_PRED_FORMAT3(matrix_near, Matrix3x3({309, 224, 106}, {291, 215, 94}, {234, 139, 89}), m, 1e-100);
 	}
 
-	TEST_F(Matrix3x3Test, OperatorMultiplicationScalar)
+	TEST(Matrix3x3Test, OperatorMultiplicationScalar)
 	{
 		Matrix3x3 m;
 
@@ -131,7 +130,7 @@ namespace Rayni
 		EXPECT_PRED_FORMAT3(matrix_near, Matrix3x3({2, 4, 6}, {8, 10, 12}, {14, 16, 18}), m, 1e-100);
 	}
 
-	TEST_F(Matrix3x3Test, SwapRows)
+	TEST(Matrix3x3Test, SwapRows)
 	{
 		Matrix3x3 m({0, 1, 2}, {3, 4, 5}, {6, 7, 8});
 		m.swap_rows(0, 2);
@@ -139,7 +138,7 @@ namespace Rayni
 		EXPECT_PRED_FORMAT3(matrix_near, Matrix3x3({6, 7, 8}, {3, 4, 5}, {0, 1, 2}), m, 1e-100);
 	}
 
-	TEST_F(Matrix3x3Test, SwapColumns)
+	TEST(Matrix3x3Test, SwapColumns)
 	{
 		Matrix3x3 m({0, 1, 2}, {3, 4, 5}, {6, 7, 8});
 		m.swap_columns(0, 2);
@@ -147,7 +146,7 @@ namespace Rayni
 		EXPECT_PRED_FORMAT3(matrix_near, Matrix3x3({2, 1, 0}, {5, 4, 3}, {8, 7, 6}), m, 1e-100);
 	}
 
-	TEST_F(Matrix3x3Test, Inverse)
+	TEST(Matrix3x3Test, Inverse)
 	{
 		EXPECT_PRED_FORMAT3(matrix_near,
 		                    Matrix3x3({0.2647059, -0.1470588, 0.0588235},
@@ -157,7 +156,7 @@ namespace Rayni
 		                    1e-7);
 	}
 
-	TEST_F(Matrix3x3Test, Transpose)
+	TEST(Matrix3x3Test, Transpose)
 	{
 		EXPECT_PRED_FORMAT3(matrix_near,
 		                    Matrix3x3({0, 3, 6}, {1, 4, 7}, {2, 5, 8}),
@@ -165,19 +164,19 @@ namespace Rayni
 		                    1e-100);
 	}
 
-	TEST_F(Matrix3x3Test, Trace)
+	TEST(Matrix3x3Test, Trace)
 	{
 		EXPECT_NEAR(14, Matrix3x3({2, 100, 100}, {100, 4, 100}, {100, 100, 8}).trace(), 1e-100);
 	}
 
-	TEST_F(Matrix3x3Test, MaxDiagonalPosition)
+	TEST(Matrix3x3Test, MaxDiagonalPosition)
 	{
 		EXPECT_EQ(0, Matrix3x3({3, 0, 0}, {0, 1, 0}, {0, 0, 2}).max_diagonal_position());
 		EXPECT_EQ(1, Matrix3x3({2, 0, 0}, {0, 3, 0}, {0, 0, 1}).max_diagonal_position());
 		EXPECT_EQ(2, Matrix3x3({1, 0, 0}, {0, 2, 0}, {0, 0, 3}).max_diagonal_position());
 	}
 
-	TEST_F(Matrix3x3Test, MaxAbsoluteRowSumNorm)
+	TEST(Matrix3x3Test, MaxAbsoluteRowSumNorm)
 	{
 		EXPECT_NEAR(60, Matrix3x3({10, 20, 30}, {1, 2, 3}, {4, 5, 6}).max_absolute_row_sum_norm(), 1e-100);
 		EXPECT_NEAR(60, Matrix3x3({-10, -20, -30}, {1, 2, 3}, {4, 5, 6}).max_absolute_row_sum_norm(), 1e-100);
@@ -189,7 +188,7 @@ namespace Rayni
 		EXPECT_NEAR(60, Matrix3x3({1, 2, 3}, {4, 5, 6}, {-10, -20, -30}).max_absolute_row_sum_norm(), 1e-100);
 	}
 
-	TEST_F(Matrix3x3Test, Rotation)
+	TEST(Matrix3x3Test, Rotation)
 	{
 		Quaternion q = Matrix3x3({0.133337, -0.666669, 0.733333},
 		                         {0.933331, 0.333342, 0.133338},
@@ -202,7 +201,7 @@ namespace Rayni
 		EXPECT_NEAR(0.73030, q.w(), 1e-5);
 	}
 
-	TEST_F(Matrix3x3Test, PreservesOrientationOfBasis)
+	TEST(Matrix3x3Test, PreservesOrientationOfBasis)
 	{
 		EXPECT_TRUE(Matrix3x3::scale(2).preserves_orientation_of_basis());
 		EXPECT_FALSE(Matrix3x3::scale(-2).preserves_orientation_of_basis());

@@ -26,10 +26,9 @@
 
 namespace Rayni
 {
-	class AnimatedTransformTest : public testing::Test
+	namespace
 	{
-	protected:
-		static testing::AssertionResult animated_transform_interpolate_near(
+		testing::AssertionResult animated_transform_interpolate_near(
 		        const char *animated_transform_expr,
 		        const char *transform_expr,
 		        const char * /*time_expr*/,
@@ -58,9 +57,9 @@ namespace Rayni
 
 			return testing::AssertionSuccess();
 		}
-	};
+	}
 
-	TEST_F(AnimatedTransformTest, Variant)
+	TEST(AnimatedTransformTest, Variant)
 	{
 		auto double_scale_variant = [](real_t start_time, real_t end_time) {
 			return Variant::map("start_time",
@@ -82,7 +81,7 @@ namespace Rayni
 		EXPECT_THROW(AnimatedTransform(double_scale_variant(2, 0)), Variant::Exception);
 	}
 
-	TEST_F(AnimatedTransformTest, Interpolate)
+	TEST(AnimatedTransformTest, Interpolate)
 	{
 		static constexpr unsigned int START_TIME = 0;
 		static constexpr unsigned int ANIM_START_TIME = START_TIME + 1;
@@ -133,7 +132,7 @@ namespace Rayni
 			                    1e-6);
 	}
 
-	TEST_F(AnimatedTransformTest, MotionBounds)
+	TEST(AnimatedTransformTest, MotionBounds)
 	{
 		AABB aabb = AnimatedTransform(0, Transform::identity(), 1, Transform::scale(2))
 		                    .motion_bounds(AABB({-1, -2, -3}, {4, 5, 6}));

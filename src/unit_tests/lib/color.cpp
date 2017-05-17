@@ -26,13 +26,12 @@
 
 namespace Rayni
 {
-	class ColorTest : public testing::Test
+	namespace
 	{
-	protected:
-		static testing::AssertionResult color_near(const char *c1_expr,
-		                                           const char *c2_expr,
-		                                           const Color &c1,
-		                                           const Color &c2)
+		testing::AssertionResult color_near(const char *c1_expr,
+		                                    const char *c2_expr,
+		                                    const Color &c1,
+		                                    const Color &c2)
 		{
 			static constexpr real_t COMPONENT_MAX_DIFF = 0.001;
 			Color diff = c1 - c2;
@@ -47,9 +46,9 @@ namespace Rayni
 
 			return testing::AssertionSuccess();
 		}
-	};
+	}
 
-	TEST_F(ColorTest, Variant)
+	TEST(ColorTest, Variant)
 	{
 		EXPECT_PRED_FORMAT2(color_near, Color::black(), Variant("black").to<Color>());
 		EXPECT_PRED_FORMAT2(color_near, Color::white(), Variant("white").to<Color>());
@@ -67,7 +66,7 @@ namespace Rayni
 		EXPECT_THROW(Variant("").to<Color>(), Variant::Exception);
 	}
 
-	TEST_F(ColorTest, Clamp)
+	TEST(ColorTest, Clamp)
 	{
 		EXPECT_PRED_FORMAT2(color_near, Color::black(), Color(-0.1, -0.2, -0.3).clamp());
 		EXPECT_PRED_FORMAT2(color_near, Color(0.3, 0.5, 0.7), Color(0.3, 0.5, 0.7).clamp());

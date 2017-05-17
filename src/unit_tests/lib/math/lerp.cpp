@@ -26,9 +26,8 @@
 
 namespace Rayni
 {
-	class LerpTest : public testing::Test
+	namespace
 	{
-	protected:
 		struct Point
 		{
 			Point operator+(const Point &p) const
@@ -65,9 +64,9 @@ namespace Rayni
 			real_t x = 0;
 			real_t y = 0;
 		};
-	};
+	}
 
-	TEST_F(LerpTest, Lerp)
+	TEST(LerpTest, Lerp)
 	{
 		EXPECT_EQ(5, lerp(-0.5, 10, 20));
 		EXPECT_EQ(10, lerp(0.0, 10, 20));
@@ -76,7 +75,7 @@ namespace Rayni
 		EXPECT_EQ(25, lerp(1.5, 10, 20));
 	}
 
-	TEST_F(LerpTest, Blerp)
+	TEST(LerpTest, Blerp)
 	{
 		EXPECT_EQ(-5, blerp(-0.5, -0.5, 10, 20, 30, 40));
 		EXPECT_EQ(0, blerp(0.0, -0.5, 10, 20, 30, 40));
@@ -109,7 +108,7 @@ namespace Rayni
 		EXPECT_EQ(55, blerp(1.5, 1.5, 10, 20, 30, 40));
 	}
 
-	TEST_F(LerpTest, Slerp)
+	TEST(LerpTest, Slerp)
 	{
 		static constexpr int CIRCLE_STEPS = 8;
 		static constexpr int STEPS = 64;

@@ -30,32 +30,31 @@
 
 namespace Rayni
 {
-	class TGAReaderTest : public testing::Test
+	namespace
 	{
-	protected:
-		static std::vector<std::uint8_t> tga_data()
+		std::vector<std::uint8_t> tga_data()
 		{
 			return {0x00, 0x00, 0x02, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
 			        0x00, 0x00, 0x02, 0x00, 0x02, 0x00, 0x18, 0x00, 0x00, 0xff,
 			        0x00, 0xff, 0x00, 0x00, 0x00, 0x00, 0xff, 0x00, 0xff, 0xff};
 		}
 
-		static std::vector<std::uint8_t> corrupt_tga_data()
+		std::vector<std::uint8_t> corrupt_tga_data()
 		{
 			auto data = tga_data();
 			data.at(16) ^= 0x01;
 			return data;
 		}
 
-		static std::vector<std::uint8_t> short_tga_data()
+		std::vector<std::uint8_t> short_tga_data()
 		{
 			auto data = tga_data();
 			data.pop_back();
 			return data;
 		}
-	};
+	}
 
-	TEST_F(TGAReaderTest, ReadFile)
+	TEST(TGAReaderTest, ReadFile)
 	{
 		static constexpr unsigned int VALID_WIDTH = 2;
 		static constexpr unsigned int VALID_HEIGHT = 2;
@@ -97,39 +96,39 @@ namespace Rayni
 #if 0
 	// TODO: Test more. Add a TGAReader::read_data(const std::vector<std::uint8_t> &data) that
 	//       calls TGAReader::read_stream() with a stream that reads from vector.
-	TEST_F(TGAReaderTest, HeaderShort)
+	TEST(TGAReaderTest, HeaderShort)
 	{
 	}
 
-	TEST_F(TGAReaderTest, HeaderInvalidColorMap)
+	TEST(TGAReaderTest, HeaderInvalidColorMap)
 	{
 	}
 
-	TEST_F(TGAReaderTest, HeaderInvalidImageType)
+	TEST(TGAReaderTest, HeaderInvalidImageType)
 	{
 	}
 
-	TEST_F(TGAReaderTest, HeaderMissingColorMap)
+	TEST(TGAReaderTest, HeaderMissingColorMap)
 	{
 	}
 
-	TEST_F(TGAReaderTest, HeaderColorMapPresentWhenItShouldNotBe)
+	TEST(TGAReaderTest, HeaderColorMapPresentWhenItShouldNotBe)
 	{
 	}
 
-	TEST_F(TGAReaderTest, HeaderInvalidDimension)
+	TEST(TGAReaderTest, HeaderInvalidDimension)
 	{
 	}
 
-	TEST_F(TGAReaderTest, HeaderInvalidPixelSize)
+	TEST(TGAReaderTest, HeaderInvalidPixelSize)
 	{
 	}
 
-	TEST_F(TGAReaderTest, ImageData)
+	TEST(TGAReaderTest, ImageData)
 	{
 	}
 
-	TEST_F(TGAReaderTest, ImageDataRLE)
+	TEST(TGAReaderTest, ImageDataRLE)
 	{
 	}
 #endif

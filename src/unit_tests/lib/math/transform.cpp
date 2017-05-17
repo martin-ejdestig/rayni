@@ -31,12 +31,9 @@
 
 namespace Rayni
 {
-	class TransformTest : public testing::Test
+	namespace
 	{
-	protected:
-		static testing::AssertionResult transform_near(const Transform &t1,
-		                                               const Transform &t2,
-		                                               real_t abs_error)
+		testing::AssertionResult transform_near(const Transform &t1, const Transform &t2, real_t abs_error)
 		{
 			for (unsigned int i = 0; i < 4; i++)
 				for (unsigned int j = 0; j < 4; j++)
@@ -46,43 +43,43 @@ namespace Rayni
 			return testing::AssertionSuccess();
 		}
 
-		static testing::AssertionResult transform_near(const char *t1_expr,
-		                                               const char *t2_expr,
-		                                               const char *abs_error_expr,
-		                                               const Transform &t1,
-		                                               const Transform &t2,
-		                                               real_t abs_error)
+		testing::AssertionResult transform_near(const char *t1_expr,
+		                                        const char *t2_expr,
+		                                        const char *abs_error_expr,
+		                                        const Transform &t1,
+		                                        const Transform &t2,
+		                                        real_t abs_error)
 		{
 			return transform_near(t1, t2, abs_error)
 			       << t1_expr << " has elements that differ more than " << abs_error_expr
 			       << " from elements of " << t2_expr << ".";
 		}
 
-		static testing::AssertionResult verify_inverse(const char *expr,
-		                                               const char *abs_error_expr,
-		                                               const Transform &t,
-		                                               real_t abs_error)
+		testing::AssertionResult verify_inverse(const char *expr,
+		                                        const char *abs_error_expr,
+		                                        const Transform &t,
+		                                        real_t abs_error)
 		{
 			return transform_near(t.inverse(), Transform(t.matrix().inverse(), t.matrix()), abs_error)
 			       << "Inverse of " << expr << ", calculated directly from input values if possible, has "
 			       << "elements that differ more than " << abs_error_expr << " from elements of inverse "
 			       << "calculated from transformation matrix.";
 		}
-	};
+	}
 
-	TEST_F(TransformTest, VariantString)
+	TEST(TransformTest, VariantString)
 	{
 		EXPECT_PRED_FORMAT3(transform_near, Variant("identity").to<Transform>(), Transform::identity(), 1e-100);
 
 		EXPECT_THROW(Variant("foo").to<Transform>(), Variant::Exception);
 	}
 
-	TEST_F(TransformTest, VariantMapSizeLargerThanOneNotAllowed)
+	TEST(TransformTest, VariantMapSizeLargerThanOneNotAllowed)
 	{
 		EXPECT_THROW(Variant::map("rotate_x", 1, "rotate_y", 2).to<Transform>(), Variant::Exception);
 	}
 
-	TEST_F(TransformTest, VariantMapTranslate)
+	TEST(TransformTest, VariantMapTranslate)
 	{
 		EXPECT_PRED_FORMAT3(transform_near,
 		                    Variant::map("translate", Variant::vector(1, 2, 3)).to<Transform>(),
@@ -93,7 +90,7 @@ namespace Rayni
 		EXPECT_THROW(Variant::map("translate", 1).to<Transform>(), Variant::Exception);
 	}
 
-	TEST_F(TransformTest, VariantMapScale)
+	TEST(TransformTest, VariantMapScale)
 	{
 		EXPECT_PRED_FORMAT3(transform_near,
 		                    Variant::map("scale", Variant::vector(1, 2, 3)).to<Transform>(),
@@ -109,7 +106,7 @@ namespace Rayni
 		EXPECT_THROW(Variant::map("scale", "foo").to<Transform>(), Variant::Exception);
 	}
 
-	TEST_F(TransformTest, VariantMapRotate)
+	TEST(TransformTest, VariantMapRotate)
 	{
 		EXPECT_PRED_FORMAT3(transform_near,
 		                    Variant::map("rotate_x", 30).to<Transform>(),
@@ -140,7 +137,7 @@ namespace Rayni
 		EXPECT_THROW(Variant::map("rotate", 3).to<Transform>(), Variant::Exception);
 	}
 
-	TEST_F(TransformTest, VariantMapLookAt)
+	TEST(TransformTest, VariantMapLookAt)
 	{
 		EXPECT_PRED_FORMAT3(transform_near,
 		                    Variant::map("look_at",
@@ -155,12 +152,12 @@ namespace Rayni
 		                    1e-6);
 	}
 
-	TEST_F(TransformTest, VariantUnknownType)
+	TEST(TransformTest, VariantUnknownType)
 	{
 		EXPECT_THROW(Variant::map("unknown_type", 0).to<Transform>(), Variant::Exception);
 	}
 
-	TEST_F(TransformTest, VariantVector)
+	TEST(TransformTest, VariantVector)
 	{
 		EXPECT_PRED_FORMAT3(transform_near,
 		                    Variant::vector(Variant::map("scale", 2),
@@ -173,7 +170,7 @@ namespace Rayni
 		EXPECT_THROW(Variant::vector<std::string>({"identity"}).to<Transform>(), Variant::Exception);
 	}
 
-	TEST_F(TransformTest, Inverse)
+	TEST(TransformTest, Inverse)
 	{
 		EXPECT_PRED_FORMAT2(verify_inverse, Transform::identity(), 1e-100);
 
@@ -198,7 +195,7 @@ namespace Rayni
 		                    1e-5);
 	}
 
-	TEST_F(TransformTest, TransformPoint)
+	TEST(TransformTest, TransformPoint)
 	{
 		Transform t = Transform::combine(Transform::rotate_z(PI), Transform::translate(10, 20, 30));
 
@@ -217,7 +214,7 @@ namespace Rayni
 		EXPECT_NEAR(39, ps[1].z(), 1e-5);
 	}
 
-	TEST_F(TransformTest, TransformDirection)
+	TEST(TransformTest, TransformDirection)
 	{
 		Transform t = Transform::combine(Transform::rotate_z(PI), Transform::translate(10, 20, 30));
 
@@ -227,7 +224,7 @@ namespace Rayni
 		EXPECT_NEAR(3, p.z(), 1e-6);
 	}
 
-	TEST_F(TransformTest, TransformNormal)
+	TEST(TransformTest, TransformNormal)
 	{
 		Transform t = Transform::combine(Transform::rotate_z(PI), Transform::translate(10, 20, 30));
 
@@ -246,7 +243,7 @@ namespace Rayni
 		EXPECT_NEAR(0.646162271, ns[1].z(), 1e-7);
 	}
 
-	TEST_F(TransformTest, TransformAABB)
+	TEST(TransformTest, TransformAABB)
 	{
 		Transform t = Transform::combine(Transform::rotate_z(PI), Transform::translate(10, 20, 30));
 
@@ -259,7 +256,7 @@ namespace Rayni
 		EXPECT_NEAR(36, aabb.maximum().z(), 1e-5);
 	}
 
-	TEST_F(TransformTest, TransformRay)
+	TEST(TransformTest, TransformRay)
 	{
 		Transform t = Transform::combine(Transform::rotate_z(PI), Transform::translate(10, 20, 30));
 

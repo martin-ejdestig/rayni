@@ -30,10 +30,9 @@
 
 namespace Rayni
 {
-	class JPEGReaderTest : public testing::Test
+	namespace
 	{
-	protected:
-		static std::vector<std::uint8_t> jpeg_data()
+		std::vector<std::uint8_t> jpeg_data()
 		{
 			return {0xff, 0xd8, 0xff, 0xe0, 0x00, 0x10, 0x4a, 0x46, 0x49, 0x46, 0x00, 0x01, 0x01, 0x02,
 			        0x00, 0x1c, 0x00, 0x1c, 0x00, 0x00, 0xff, 0xdb, 0x00, 0x43, 0x00, 0x01, 0x01, 0x01,
@@ -72,22 +71,22 @@ namespace Rayni
 			        0x67, 0x28, 0xac, 0xf9, 0x73, 0xe5, 0xc9, 0x93, 0xeb, 0xff, 0xd9};
 		}
 
-		static std::vector<std::uint8_t> corrupt_jpeg_data()
+		std::vector<std::uint8_t> corrupt_jpeg_data()
 		{
 			auto data = jpeg_data();
 			data.at(20) ^= 0x01;
 			return data;
 		}
 
-		static std::vector<std::uint8_t> short_jpeg_data()
+		std::vector<std::uint8_t> short_jpeg_data()
 		{
 			auto data = jpeg_data();
 			data.resize(data.size() - 198);
 			return data;
 		}
-	};
+	}
 
-	TEST_F(JPEGReaderTest, ReadFile)
+	TEST(JPEGReaderTest, ReadFile)
 	{
 		static constexpr unsigned int VALID_WIDTH = 2;
 		static constexpr unsigned int VALID_HEIGHT = 2;

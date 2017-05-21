@@ -93,7 +93,7 @@ namespace Rayni
 
 		constexpr bool is_set(Bitmask b) const
 		{
-			return (*this & b).value() == b.value();
+			return (*this & b) == b;
 		}
 
 	private:

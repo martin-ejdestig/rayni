@@ -23,192 +23,195 @@
 
 #include "lib/math/bitmask.h"
 
-namespace
+namespace Rayni
 {
-	enum class Foo : std::uint8_t
+	namespace
 	{
-		BAR = 1,
-		BAZ = 2,
-		QUX = 4
-	};
+		enum class Foo : std::uint8_t
+		{
+			BAR = 1,
+			BAZ = 2,
+			QUX = 4
+		};
 
-	using FooMask = Rayni::Bitmask<Foo>;
-	RAYNI_BITMASK_GLOBAL_OPERATORS(FooMask)
-}
-
-TEST(Bitmask, ZeroByDefault)
-{
-	EXPECT_EQ(0u, FooMask().value());
-}
-
-TEST(Bitmask, And)
-{
-	EXPECT_EQ(1u, (Foo::BAR & Foo::BAR).value());
-	EXPECT_EQ(1u, (Foo::BAR & FooMask(Foo::BAR)).value());
-	EXPECT_EQ(1u, (FooMask(Foo::BAR) & Foo::BAR).value());
-	EXPECT_EQ(1u, (FooMask(Foo::BAR) & FooMask(Foo::BAR)).value());
-
-	EXPECT_EQ(0u, (Foo::BAR & Foo::BAZ).value());
-	EXPECT_EQ(0u, (Foo::BAR & FooMask(Foo::BAZ)).value());
-	EXPECT_EQ(0u, (FooMask(Foo::BAR) & Foo::BAZ).value());
-	EXPECT_EQ(0u, (FooMask(Foo::BAR) & FooMask(Foo::BAZ)).value());
-}
-
-TEST(Bitmask, AndAssign)
-{
-	{
-		FooMask m = Foo::BAR;
-		m &= Foo::BAR;
-		EXPECT_EQ(1u, m.value());
+		using FooMask = Bitmask<Foo>;
+		RAYNI_BITMASK_GLOBAL_OPERATORS(FooMask)
 	}
 
+	TEST(Bitmask, ZeroByDefault)
 	{
-		FooMask m = Foo::BAR;
-		m &= FooMask(Foo::BAR);
-		EXPECT_EQ(1u, m.value());
+		EXPECT_EQ(0u, FooMask().value());
 	}
 
+	TEST(Bitmask, And)
 	{
-		FooMask m = Foo::BAR;
-		m &= Foo::BAZ;
-		EXPECT_EQ(0u, m.value());
+		EXPECT_EQ(1u, (Foo::BAR & Foo::BAR).value());
+		EXPECT_EQ(1u, (Foo::BAR & FooMask(Foo::BAR)).value());
+		EXPECT_EQ(1u, (FooMask(Foo::BAR) & Foo::BAR).value());
+		EXPECT_EQ(1u, (FooMask(Foo::BAR) & FooMask(Foo::BAR)).value());
+
+		EXPECT_EQ(0u, (Foo::BAR & Foo::BAZ).value());
+		EXPECT_EQ(0u, (Foo::BAR & FooMask(Foo::BAZ)).value());
+		EXPECT_EQ(0u, (FooMask(Foo::BAR) & Foo::BAZ).value());
+		EXPECT_EQ(0u, (FooMask(Foo::BAR) & FooMask(Foo::BAZ)).value());
 	}
 
+	TEST(Bitmask, AndAssign)
 	{
-		FooMask m = Foo::BAR;
-		m &= FooMask(Foo::BAZ);
-		EXPECT_EQ(0u, m.value());
-	}
-}
+		{
+			FooMask m = Foo::BAR;
+			m &= Foo::BAR;
+			EXPECT_EQ(1u, m.value());
+		}
 
-TEST(Bitmask, Or)
-{
-	EXPECT_EQ(1u, (Foo::BAR | Foo::BAR).value());
-	EXPECT_EQ(1u, (Foo::BAR | FooMask(Foo::BAR)).value());
-	EXPECT_EQ(1u, (FooMask(Foo::BAR) | Foo::BAR).value());
-	EXPECT_EQ(1u, (FooMask(Foo::BAR) | FooMask(Foo::BAR)).value());
+		{
+			FooMask m = Foo::BAR;
+			m &= FooMask(Foo::BAR);
+			EXPECT_EQ(1u, m.value());
+		}
 
-	EXPECT_EQ(3u, (Foo::BAR | Foo::BAZ).value());
-	EXPECT_EQ(3u, (Foo::BAR | FooMask(Foo::BAZ)).value());
-	EXPECT_EQ(3u, (FooMask(Foo::BAR) | Foo::BAZ).value());
-	EXPECT_EQ(3u, (FooMask(Foo::BAR) | FooMask(Foo::BAZ)).value());
-}
+		{
+			FooMask m = Foo::BAR;
+			m &= Foo::BAZ;
+			EXPECT_EQ(0u, m.value());
+		}
 
-TEST(Bitmask, OrAssign)
-{
-	{
-		FooMask m(Foo::BAR);
-		m |= Foo::BAR;
-		EXPECT_EQ(1u, m.value());
-	}
-
-	{
-		FooMask m(Foo::BAR);
-		m |= FooMask(Foo::BAR);
-		EXPECT_EQ(1u, m.value());
+		{
+			FooMask m = Foo::BAR;
+			m &= FooMask(Foo::BAZ);
+			EXPECT_EQ(0u, m.value());
+		}
 	}
 
+	TEST(Bitmask, Or)
 	{
-		FooMask m(Foo::BAR);
-		m |= Foo::BAZ;
-		EXPECT_EQ(3u, m.value());
+		EXPECT_EQ(1u, (Foo::BAR | Foo::BAR).value());
+		EXPECT_EQ(1u, (Foo::BAR | FooMask(Foo::BAR)).value());
+		EXPECT_EQ(1u, (FooMask(Foo::BAR) | Foo::BAR).value());
+		EXPECT_EQ(1u, (FooMask(Foo::BAR) | FooMask(Foo::BAR)).value());
+
+		EXPECT_EQ(3u, (Foo::BAR | Foo::BAZ).value());
+		EXPECT_EQ(3u, (Foo::BAR | FooMask(Foo::BAZ)).value());
+		EXPECT_EQ(3u, (FooMask(Foo::BAR) | Foo::BAZ).value());
+		EXPECT_EQ(3u, (FooMask(Foo::BAR) | FooMask(Foo::BAZ)).value());
 	}
 
+	TEST(Bitmask, OrAssign)
 	{
-		FooMask m(Foo::BAR);
-		m |= FooMask(Foo::BAZ);
-		EXPECT_EQ(3u, m.value());
-	}
-}
+		{
+			FooMask m(Foo::BAR);
+			m |= Foo::BAR;
+			EXPECT_EQ(1u, m.value());
+		}
 
-TEST(Bitmask, Xor)
-{
-	EXPECT_EQ(0u, (Foo::BAR ^ Foo::BAR).value());
-	EXPECT_EQ(0u, (Foo::BAR ^ FooMask(Foo::BAR)).value());
-	EXPECT_EQ(0u, (FooMask(Foo::BAR) ^ Foo::BAR).value());
-	EXPECT_EQ(0u, (FooMask(Foo::BAR) ^ FooMask(Foo::BAR)).value());
+		{
+			FooMask m(Foo::BAR);
+			m |= FooMask(Foo::BAR);
+			EXPECT_EQ(1u, m.value());
+		}
 
-	EXPECT_EQ(3u, (Foo::BAR ^ Foo::BAZ).value());
-	EXPECT_EQ(3u, (Foo::BAR ^ FooMask(Foo::BAZ)).value());
-	EXPECT_EQ(3u, (FooMask(Foo::BAR) ^ Foo::BAZ).value());
-	EXPECT_EQ(3u, (FooMask(Foo::BAR) ^ FooMask(Foo::BAZ)).value());
-}
+		{
+			FooMask m(Foo::BAR);
+			m |= Foo::BAZ;
+			EXPECT_EQ(3u, m.value());
+		}
 
-TEST(Bitmask, XorAssign)
-{
-	{
-		FooMask m(Foo::BAR);
-		m ^= Foo::BAR;
-		EXPECT_EQ(0u, m.value());
-	}
-
-	{
-		FooMask m(Foo::BAR);
-		m ^= FooMask(Foo::BAR);
-		EXPECT_EQ(0u, m.value());
+		{
+			FooMask m(Foo::BAR);
+			m |= FooMask(Foo::BAZ);
+			EXPECT_EQ(3u, m.value());
+		}
 	}
 
+	TEST(Bitmask, Xor)
 	{
-		FooMask m(Foo::BAR);
-		m ^= Foo::BAZ;
-		EXPECT_EQ(3u, m.value());
+		EXPECT_EQ(0u, (Foo::BAR ^ Foo::BAR).value());
+		EXPECT_EQ(0u, (Foo::BAR ^ FooMask(Foo::BAR)).value());
+		EXPECT_EQ(0u, (FooMask(Foo::BAR) ^ Foo::BAR).value());
+		EXPECT_EQ(0u, (FooMask(Foo::BAR) ^ FooMask(Foo::BAR)).value());
+
+		EXPECT_EQ(3u, (Foo::BAR ^ Foo::BAZ).value());
+		EXPECT_EQ(3u, (Foo::BAR ^ FooMask(Foo::BAZ)).value());
+		EXPECT_EQ(3u, (FooMask(Foo::BAR) ^ Foo::BAZ).value());
+		EXPECT_EQ(3u, (FooMask(Foo::BAR) ^ FooMask(Foo::BAZ)).value());
 	}
 
+	TEST(Bitmask, XorAssign)
 	{
-		FooMask m(Foo::BAR);
-		m ^= FooMask(Foo::BAZ);
-		EXPECT_EQ(3u, m.value());
+		{
+			FooMask m(Foo::BAR);
+			m ^= Foo::BAR;
+			EXPECT_EQ(0u, m.value());
+		}
+
+		{
+			FooMask m(Foo::BAR);
+			m ^= FooMask(Foo::BAR);
+			EXPECT_EQ(0u, m.value());
+		}
+
+		{
+			FooMask m(Foo::BAR);
+			m ^= Foo::BAZ;
+			EXPECT_EQ(3u, m.value());
+		}
+
+		{
+			FooMask m(Foo::BAR);
+			m ^= FooMask(Foo::BAZ);
+			EXPECT_EQ(3u, m.value());
+		}
 	}
-}
 
-TEST(Bitmask, Not)
-{
-	EXPECT_EQ(0b11111110u, (~Foo::BAR).value());
-	EXPECT_EQ(0b11111110u, (~FooMask(Foo::BAR)).value());
-}
+	TEST(Bitmask, Not)
+	{
+		EXPECT_EQ(0b11111110u, (~Foo::BAR).value());
+		EXPECT_EQ(0b11111110u, (~FooMask(Foo::BAR)).value());
+	}
 
-TEST(Bitmask, Equal)
-{
-	EXPECT_TRUE(Foo::BAR == FooMask(Foo::BAR));
-	EXPECT_TRUE(FooMask(Foo::BAR) == Foo::BAR);
-	EXPECT_TRUE(FooMask(Foo::BAR) == FooMask(Foo::BAR));
+	TEST(Bitmask, Equal)
+	{
+		EXPECT_TRUE(Foo::BAR == FooMask(Foo::BAR));
+		EXPECT_TRUE(FooMask(Foo::BAR) == Foo::BAR);
+		EXPECT_TRUE(FooMask(Foo::BAR) == FooMask(Foo::BAR));
 
-	EXPECT_FALSE(Foo::BAR == FooMask(Foo::BAZ));
-	EXPECT_FALSE(FooMask(Foo::BAR) == Foo::BAZ);
-	EXPECT_FALSE(FooMask(Foo::BAR) == FooMask(Foo::BAZ));
-}
+		EXPECT_FALSE(Foo::BAR == FooMask(Foo::BAZ));
+		EXPECT_FALSE(FooMask(Foo::BAR) == Foo::BAZ);
+		EXPECT_FALSE(FooMask(Foo::BAR) == FooMask(Foo::BAZ));
+	}
 
-TEST(Bitmask, NotEqual)
-{
-	EXPECT_FALSE(Foo::BAR != FooMask(Foo::BAR));
-	EXPECT_FALSE(FooMask(Foo::BAR) != Foo::BAR);
-	EXPECT_FALSE(FooMask(Foo::BAR) != FooMask(Foo::BAR));
+	TEST(Bitmask, NotEqual)
+	{
+		EXPECT_FALSE(Foo::BAR != FooMask(Foo::BAR));
+		EXPECT_FALSE(FooMask(Foo::BAR) != Foo::BAR);
+		EXPECT_FALSE(FooMask(Foo::BAR) != FooMask(Foo::BAR));
 
-	EXPECT_TRUE(Foo::BAR != FooMask(Foo::BAZ));
-	EXPECT_TRUE(FooMask(Foo::BAR) != Foo::BAZ);
-	EXPECT_TRUE(FooMask(Foo::BAR) != FooMask(Foo::BAZ));
-}
+		EXPECT_TRUE(Foo::BAR != FooMask(Foo::BAZ));
+		EXPECT_TRUE(FooMask(Foo::BAR) != Foo::BAZ);
+		EXPECT_TRUE(FooMask(Foo::BAR) != FooMask(Foo::BAZ));
+	}
 
-TEST(Bitmask, IsSet)
-{
-	const FooMask mask_1bit(Foo::BAR);
-	const FooMask mask_2bits(Foo::BAR | Foo::BAZ);
+	TEST(Bitmask, IsSet)
+	{
+		const FooMask mask_1bit(Foo::BAR);
+		const FooMask mask_2bits(Foo::BAR | Foo::BAZ);
 
-	EXPECT_TRUE(mask_1bit.is_set(Foo::BAR));
-	EXPECT_FALSE(mask_1bit.is_set(Foo::BAZ));
+		EXPECT_TRUE(mask_1bit.is_set(Foo::BAR));
+		EXPECT_FALSE(mask_1bit.is_set(Foo::BAZ));
 
-	EXPECT_FALSE(mask_1bit.is_set(Foo::BAR | Foo::BAZ));
+		EXPECT_FALSE(mask_1bit.is_set(Foo::BAR | Foo::BAZ));
 
-	EXPECT_TRUE(mask_2bits.is_set(Foo::BAR));
-	EXPECT_TRUE(mask_2bits.is_set(Foo::BAZ));
-	EXPECT_FALSE(mask_2bits.is_set(Foo::QUX));
+		EXPECT_TRUE(mask_2bits.is_set(Foo::BAR));
+		EXPECT_TRUE(mask_2bits.is_set(Foo::BAZ));
+		EXPECT_FALSE(mask_2bits.is_set(Foo::QUX));
 
-	EXPECT_TRUE(mask_2bits.is_set(Foo::BAR | Foo::BAZ));
-	EXPECT_FALSE(mask_2bits.is_set(Foo::BAR | Foo::QUX));
-	EXPECT_FALSE(mask_2bits.is_set(Foo::BAZ | Foo::QUX));
+		EXPECT_TRUE(mask_2bits.is_set(Foo::BAR | Foo::BAZ));
+		EXPECT_FALSE(mask_2bits.is_set(Foo::BAR | Foo::QUX));
+		EXPECT_FALSE(mask_2bits.is_set(Foo::BAZ | Foo::QUX));
 
-	EXPECT_FALSE(mask_2bits.is_set(Foo::BAR | Foo::BAZ | Foo::QUX));
+		EXPECT_FALSE(mask_2bits.is_set(Foo::BAR | Foo::BAZ | Foo::QUX));
 
-	EXPECT_TRUE(mask_1bit.is_set(FooMask()));
-	EXPECT_TRUE(mask_2bits.is_set(FooMask()));
+		EXPECT_TRUE(mask_1bit.is_set(FooMask()));
+		EXPECT_TRUE(mask_2bits.is_set(FooMask()));
+	}
 }

@@ -35,6 +35,7 @@ lib_unit_tests_sources = [
     'string/base85.cpp',
     'string/string.cpp',
     'system/command.cpp',
+    'system/linux/epoll.cpp',
     'system/linux/event_fd.cpp',
     'system/linux/pipe.cpp',
     'system/scoped_temp_dir.cpp',

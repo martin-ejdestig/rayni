@@ -68,6 +68,7 @@ lib_sources = [
     'system/linux/epoll.h',
     'system/linux/event_fd.h',
     'system/linux/pipe.h',
+    'system/linux/timer_fd.h',
     'system/scoped_temp_dir.cpp',
     'system/scoped_temp_dir.h',
     'system/temp_dir.cpp',

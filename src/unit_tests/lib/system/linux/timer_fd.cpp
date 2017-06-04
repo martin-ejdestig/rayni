@@ -70,20 +70,20 @@ namespace Rayni
 		EXPECT_GT(10s, value.initial_expiration);
 		EXPECT_EQ(0ns, value.interval);
 
-		timer_fd.set(5s, 1s);
+		timer_fd.set(5s, 1s + 123ms);
 		value = timer_fd.get();
 		EXPECT_GT(5s, value.initial_expiration);
-		EXPECT_EQ(1s, value.interval);
+		EXPECT_EQ(1s + 123ms, value.interval);
 
 		timer_fd.set(TimerFD::clock::now() + 10s);
 		value = timer_fd.get();
 		EXPECT_GT(10s, value.initial_expiration);
 		EXPECT_EQ(0ns, value.interval);
 
-		timer_fd.set(TimerFD::clock::now() + 5s, 1s);
+		timer_fd.set(TimerFD::clock::now() + 5s, 1s + 987ms);
 		value = timer_fd.get();
 		EXPECT_GT(5s, value.initial_expiration);
-		EXPECT_EQ(1s, value.interval);
+		EXPECT_EQ(1s + 987ms, value.interval);
 	}
 
 	TEST(TimerFD, Disarm)

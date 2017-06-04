@@ -21,6 +21,7 @@
 
 #include <array>
 #include <system_error>
+#include <thread>
 
 #include "lib/system/linux/epoll.h"
 #include "lib/system/linux/timer_fd.h"
@@ -118,6 +119,15 @@ namespace Rayni
 		EXPECT_EQ(1, epoll.wait(events, 1ms));
 		EXPECT_EQ(1, timer_fd.read());
 		EXPECT_EQ(0, epoll.wait(events, 0ms));
+	}
+
+	TEST(TimerFD, ReadInterval)
+	{
+		TimerFD timer_fd;
+
+		timer_fd.set(1ns, 1ns);
+		std::this_thread::sleep_for(2ns);
+		EXPECT_LE(2, timer_fd.read());
 	}
 
 	TEST(TimerFD, UseAfterMoveThrows)

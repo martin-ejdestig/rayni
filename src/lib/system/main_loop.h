@@ -40,8 +40,7 @@ namespace Rayni
 {
 	// Simple main loop implementation with "run in" and timer functionality.
 	//
-	// Not optimized and currently no way to prioritize "events". Methods are thread safe unless
-	// otherwise mentioned.
+	// Not optimized and currently no way to prioritize "events".
 	//
 	// Most applications just need to create a MainLoop, start timers and other threads etc. and
 	// then invoke loop().
@@ -58,7 +57,7 @@ namespace Rayni
 	// (commonly used as exit code of program returned from main()).
 	//
 	// run_in() can be used to invoke a function in the main loop context. May be called from
-	// any thread and are invoked in FIFO order.
+	// any thread and functions are invoked in FIFO order.
 	//
 	// Timers are created by creating a Timer instance and then starting the timer with
 	// Timer::start() or Timer::start_repeat() that takes a MainLoop as argument. This can be

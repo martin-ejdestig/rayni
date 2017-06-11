@@ -42,7 +42,7 @@ namespace Rayni
 		enum class Flag : std::uint32_t;
 
 		using EventCount = unsigned int;
-		using Mask = Bitmask<Flag>;
+		using Flags = Bitmask<Flag>;
 
 		class Event : private epoll_event
 		{
@@ -55,9 +55,9 @@ namespace Rayni
 				data.u64 = 0;
 			}
 
-			bool is_set(Mask mask) const
+			bool is_set(Flags flags) const
 			{
-				return Mask(events).is_set(mask);
+				return Flags(events).is_set(flags);
 			}
 
 			int fd() const
@@ -102,37 +102,37 @@ namespace Rayni
 			return epoll_fd;
 		}
 
-		void add(int fd, Mask mask)
+		void add(int fd, Flags flags)
 		{
 			Event event;
-			event.events = mask.value();
+			event.events = flags.value();
 			event.data.fd = fd;
 
 			ctl(EPOLL_CTL_ADD, fd, &event);
 		}
 
-		void add(int fd, Mask mask, void *ptr)
+		void add(int fd, Flags flags, void *ptr)
 		{
 			Event event;
-			event.events = mask.value();
+			event.events = flags.value();
 			event.data.ptr = ptr;
 
 			ctl(EPOLL_CTL_ADD, fd, &event);
 		}
 
-		void modify(int fd, Mask mask)
+		void modify(int fd, Flags flags)
 		{
 			Event event;
-			event.events = mask.value();
+			event.events = flags.value();
 			event.data.fd = fd;
 
 			ctl(EPOLL_CTL_MOD, fd, &event);
 		}
 
-		void modify(int fd, Mask mask, void *ptr)
+		void modify(int fd, Flags flags, void *ptr)
 		{
 			Event event;
-			event.events = mask.value();
+			event.events = flags.value();
 			event.data.ptr = ptr;
 
 			ctl(EPOLL_CTL_MOD, fd, &event);
@@ -219,7 +219,7 @@ namespace Rayni
 		ET = EPOLLET // TODO: Provide EDGE_TRIGGERED alias? ET (and EPOLLET) are bad names.
 	};
 
-	RAYNI_BITMASK_GLOBAL_OPERATORS(Epoll::Mask)
+	RAYNI_BITMASK_GLOBAL_OPERATORS(Epoll::Flags)
 }
 
 #endif // RAYNI_LIB_SYSTEM_LINUX_EPOLL_H

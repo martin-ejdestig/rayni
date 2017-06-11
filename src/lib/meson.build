@@ -69,6 +69,8 @@ lib_sources = [
     'system/linux/event_fd.h',
     'system/linux/pipe.h',
     'system/linux/timer_fd.h',
+    'system/main_loop.cpp',
+    'system/main_loop.h',
     'system/scoped_temp_dir.cpp',
     'system/scoped_temp_dir.h',
     'system/temp_dir.cpp',

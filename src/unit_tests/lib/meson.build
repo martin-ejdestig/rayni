@@ -39,6 +39,7 @@ lib_unit_tests_sources = [
     'system/linux/event_fd.cpp',
     'system/linux/pipe.cpp',
     'system/linux/timer_fd.cpp',
+    'system/main_loop.cpp',
     'system/scoped_temp_dir.cpp',
     'system/temp_dir.cpp',
     'time/duration_formatter.cpp',

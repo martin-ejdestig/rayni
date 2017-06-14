@@ -222,7 +222,7 @@ namespace Rayni
 
 		Timer &operator=(const Timer &other) = delete;
 
-		Timer &operator=(Timer &&other)
+		Timer &operator=(Timer &&other) noexcept
 		{
 			remove();
 

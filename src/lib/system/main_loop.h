@@ -26,7 +26,6 @@
 #include <cstdlib>
 #include <experimental/optional>
 #include <functional>
-#include <map>
 #include <memory>
 #include <mutex>
 #include <utility>
@@ -125,66 +124,11 @@ namespace Rayni
 			std::vector<std::function<void()>> functions;
 		};
 
-		class TimerData
-		{
-		public:
-			using Id = std::size_t;
-
-			static constexpr Id ID_EMPTY = 0;
-
-			Id set(const Timer *timer,
-			       Id id,
-			       clock::time_point expiration,
-			       std::chrono::nanoseconds interval,
-			       std::function<void()> &&callback); // TODO: [[nodiscard]] when C++17
-			void remove(Id id);
-
-			std::experimental::optional<clock::time_point> earliest_expiration();
-
-			void dispatch();
-
-		private:
-			class Data
-			{
-			public:
-				bool active() const
-				{
-					return expiration > CLOCK_EPOCH;
-				}
-
-				bool expired(clock::time_point now) const
-				{
-					return active() && expiration <= now;
-				}
-
-				void dispatch()
-				{
-					if (interval.count() > 0)
-						expiration += interval;
-					else
-						expiration = CLOCK_EPOCH;
-
-					callback();
-				}
-
-				clock::time_point expiration;
-				std::chrono::nanoseconds interval{0};
-				std::function<void()> callback;
-			};
-
-			friend MainLoop;
-
-			Id generate_id(const Timer *timer) const;
-
-			EventFD changed_event_fd;
-
-			// Note: Recursive since timers can be added/removed while dispatching.
-			std::recursive_mutex mutex;
-			// Note: Not unordered_map. Invalidates iterators if timers are added/removed while dispatching.
-			std::map<Id, Data> map;
-		};
+		class TimerData;
+		using TimerId = std::size_t;
 
 		static constexpr clock::time_point CLOCK_EPOCH = clock::time_point();
+		static constexpr TimerId TIMER_ID_EMPTY = 0;
 
 		void set_timer_fd_from_timer_data() const;
 
@@ -200,7 +144,7 @@ namespace Rayni
 		RunInFunctions run_in_functions;
 
 		TimerFD timer_fd;
-		std::shared_ptr<TimerData> timer_data = std::make_shared<TimerData>();
+		std::shared_ptr<TimerData> timer_data;
 	};
 
 	class MainLoop::Timer
@@ -216,7 +160,7 @@ namespace Rayni
 		Timer(const Timer &other) = delete;
 
 		Timer(Timer &&other) noexcept
-		        : timer_data(std::move(other.timer_data)), id(std::exchange(other.id, TimerData::ID_EMPTY))
+		        : timer_data(std::move(other.timer_data)), id(std::exchange(other.id, TIMER_ID_EMPTY))
 		{
 		}
 
@@ -227,7 +171,7 @@ namespace Rayni
 			remove();
 
 			timer_data = std::move(other.timer_data);
-			id = std::exchange(other.id, TimerData::ID_EMPTY);
+			id = std::exchange(other.id, TIMER_ID_EMPTY);
 
 			return *this;
 		}
@@ -281,7 +225,7 @@ namespace Rayni
 		void remove();
 
 		std::weak_ptr<TimerData> timer_data;
-		TimerData::Id id = TimerData::ID_EMPTY;
+		TimerId id = TIMER_ID_EMPTY;
 	};
 }
 

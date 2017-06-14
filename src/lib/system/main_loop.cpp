@@ -18,13 +18,65 @@
  */
 
 #include <algorithm>
+#include <map>
 
 #include "lib/math/hash.h"
 #include "lib/system/main_loop.h"
 
 namespace Rayni
 {
-	MainLoop::MainLoop()
+	// Data for all timers. Can be accessed from multiple threads.
+	//
+	// A recursive mutex is used since timers can be added/removed while dispatching. Also note
+	// that a map is used instead of an unordered_map since can ivalidate iterators if timers
+	// are added/removed while dispatching.
+	//
+	// Stored in a std::shared_pointer in MainLoop. Timers reference the data with a weak
+	// pointer to allow for it to be destroyed together with the MainLoop even if there are
+	// started Timer instances that have not been destroyed. Timers can not be dispatched when
+	// MainLoop no longer exists.
+	class MainLoop::TimerData
+	{
+	public:
+		TimerId set(const Timer *timer,
+		            TimerId id,
+		            clock::time_point expiration,
+		            std::chrono::nanoseconds interval,
+		            std::function<void()> &&callback); // TODO: [[nodiscard]] when C++17
+		void remove(TimerId id);
+
+		std::experimental::optional<clock::time_point> earliest_expiration();
+
+		void dispatch();
+
+		EventFD changed_event_fd;
+
+	private:
+		class Data
+		{
+		public:
+			bool active() const
+			{
+				return expiration > CLOCK_EPOCH;
+			}
+
+			bool expired(clock::time_point now) const
+			{
+				return active() && expiration <= now;
+			}
+
+			clock::time_point expiration;
+			std::chrono::nanoseconds interval{0};
+			std::function<void()> callback;
+		};
+
+		TimerId generate_id(const Timer *timer) const;
+
+		std::recursive_mutex mutex;
+		std::map<TimerId, Data> map;
+	};
+
+	MainLoop::MainLoop() : timer_data(std::make_shared<TimerData>())
 	{
 		epoll.add(exit_event_fd.fd(), Epoll::Flag::IN);
 		epoll.add(run_in_event_fd.fd(), Epoll::Flag::IN);
@@ -131,15 +183,15 @@ namespace Rayni
 			function();
 	}
 
-	MainLoop::TimerData::Id MainLoop::TimerData::set(const Timer *timer,
-	                                                 Id id,
-	                                                 clock::time_point expiration,
-	                                                 std::chrono::nanoseconds interval,
-	                                                 std::function<void()> &&callback)
+	MainLoop::TimerId MainLoop::TimerData::set(const Timer *timer,
+	                                           TimerId id,
+	                                           clock::time_point expiration,
+	                                           std::chrono::nanoseconds interval,
+	                                           std::function<void()> &&callback)
 	{
 		std::unique_lock<std::recursive_mutex> lock(mutex);
 
-		if (id == ID_EMPTY)
+		if (id == TIMER_ID_EMPTY)
 			id = generate_id(timer);
 
 		map[id] = Data{expiration, interval, std::move(callback)};
@@ -149,17 +201,17 @@ namespace Rayni
 		return id;
 	}
 
-	MainLoop::TimerData::Id MainLoop::TimerData::generate_id(const Timer *timer) const
+	MainLoop::TimerId MainLoop::TimerData::generate_id(const Timer *timer) const
 	{
-		Id id = hash_combine_for(timer, map.size());
+		TimerId id = hash_combine_for(timer, map.size());
 
-		while (id == ID_EMPTY || map.find(id) != map.cend())
+		while (id == TIMER_ID_EMPTY || map.find(id) != map.cend())
 			id = hash_combine_for(timer, id);
 
 		return id;
 	}
 
-	void MainLoop::TimerData::remove(Id id)
+	void MainLoop::TimerData::remove(TimerId id)
 	{
 		std::unique_lock<std::recursive_mutex> lock(mutex);
 
@@ -205,11 +257,17 @@ namespace Rayni
 			{
 				Data &data = key_value.second;
 
-				if (data.expired(now))
-				{
-					data.dispatch();
-					dispatch_needed |= data.expired(now);
-				}
+				if (!data.expired(now))
+					continue;
+
+				if (data.interval.count() > 0)
+					data.expiration += data.interval;
+				else
+					data.expiration = CLOCK_EPOCH;
+
+				data.callback();
+
+				dispatch_needed |= data.expired(now);
 			}
 		}
 	}
@@ -256,6 +314,6 @@ namespace Rayni
 		data->remove(id);
 
 		timer_data.reset();
-		id = TimerData::ID_EMPTY;
+		id = TIMER_ID_EMPTY;
 	}
 }

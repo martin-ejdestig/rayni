@@ -35,6 +35,7 @@
 # pragma GCC diagnostic ignored "-Wzero-as-null-pointer-constant"
 # pragma GCC diagnostic ignored "-Wold-style-cast"
 # pragma GCC diagnostic ignored "-Wsign-conversion"
+# pragma GCC diagnostic ignored "-Wdeprecated"
 #endif
 #include <IexBaseExc.h>
 #include <ImathBox.h>

@@ -70,6 +70,10 @@ namespace Rayni
 	// TODO: Add priority queue for timers?
 	// TODO: When porting to other OS, keep public interface. (Especially the fd()/poll part. Do
 	//       not want to implement interfaces etc. to integrate with toolkits.)
+	// TODO: When porting to other OS, consider adding a src/lib/system/poll.h::Poll class.
+	//       Should map more or less directly to Epoll on Linux (maybe even do
+	//       "using Poll = Epoll;"... maybe not... but small inline functions that just
+	//       delegates should be enough).
 	class MainLoop
 	{
 	public:

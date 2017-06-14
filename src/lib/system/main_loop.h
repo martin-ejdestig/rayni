@@ -206,9 +206,7 @@ namespace Rayni
 	class MainLoop::Timer
 	{
 	public:
-		Timer()
-		{
-		}
+		Timer() = default;
 
 		~Timer()
 		{

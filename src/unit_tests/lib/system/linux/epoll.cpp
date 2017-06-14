@@ -292,4 +292,40 @@ namespace Rayni
 
 		EXPECT_THROW(epoll.wait(events, std::chrono::milliseconds(0)), std::system_error);
 	}
+
+	TEST(Epoll, FlagsSetToZeroDisablesPollingOfFD)
+	{
+		Epoll epoll;
+		std::array<Epoll::Event, 1> events;
+		EventFD event_fd;
+
+		epoll.add(event_fd.fd(), Epoll::Flags());
+
+		EXPECT_EQ(0, epoll.wait(events, std::chrono::milliseconds(0)));
+
+		event_fd.write(1);
+
+		EXPECT_EQ(0, epoll.wait(events, std::chrono::milliseconds(0)));
+
+		epoll.modify(event_fd.fd(), Epoll::Flag::IN);
+
+		EXPECT_EQ(1, epoll.wait(events));
+		EXPECT_EQ(event_fd.fd(), events[0].fd());
+		EXPECT_TRUE(events[0].is_set(Epoll::Flag::IN));
+
+		epoll.modify(event_fd.fd(), Epoll::Flags());
+
+		EXPECT_EQ(0, epoll.wait(events, std::chrono::milliseconds(0)));
+
+		epoll.remove(event_fd.fd());
+		epoll.add(event_fd.fd(), Epoll::Flag::IN);
+
+		EXPECT_EQ(1, epoll.wait(events));
+		EXPECT_EQ(event_fd.fd(), events[0].fd());
+		EXPECT_TRUE(events[0].is_set(Epoll::Flag::IN));
+
+		epoll.modify(event_fd.fd(), Epoll::Flags());
+
+		EXPECT_EQ(0, epoll.wait(events, std::chrono::milliseconds(0)));
+	}
 }

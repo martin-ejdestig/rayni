@@ -21,6 +21,7 @@
 
 #include <array>
 #include <system_error>
+#include <thread>
 
 #include "lib/system/linux/epoll.h"
 #include "lib/system/linux/event_fd.h"
@@ -332,5 +333,25 @@ namespace Rayni
 		epoll.modify(event_fd.fd(), Epoll::Flags());
 
 		EXPECT_EQ(0, epoll.wait(events, std::chrono::milliseconds(0)));
+	}
+
+	TEST(Epoll, ModifyInOtherThread)
+	{
+		Epoll epoll;
+		std::array<Epoll::Event, 1> events;
+		EventFD event_fd;
+
+		std::thread thread([&] {
+			std::this_thread::sleep_for(std::chrono::microseconds(100));
+			epoll.add(event_fd.fd(), Epoll::Flag::IN);
+			event_fd.write(1);
+		});
+
+		Epoll::EventCount event_count = epoll.wait(events);
+		EXPECT_EQ(1, event_count);
+		EXPECT_EQ(event_fd.fd(), events[0].fd());
+		EXPECT_TRUE(events[0].is_set(Epoll::Flag::IN));
+
+		thread.join();
 	}
 }

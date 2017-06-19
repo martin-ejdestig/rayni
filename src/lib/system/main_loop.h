@@ -37,43 +37,48 @@
 
 namespace Rayni
 {
-	// Simple main loop implementation with "run in" and timer functionality.
+	// Simple main loop implementation with dispatch in and timer functionality.
 	//
-	// Not optimized and currently no way to prioritize "events".
+	// Not optimized and currently no way to prioritize events.
 	//
 	// Most applications just need to create a MainLoop, start timers and other threads etc. and
 	// then invoke loop().
 	//
-	// If integration with another main loop (e.g. in a UI toolkit) is needed fd() can be used
-	// to get a file descriptor that should be polled for in/read events (with e.g. poll()).
-	// When the file descriptor signals that there is something to be read, wait() should be
-	// called (timeout may be 0ms). If wait() returns true there is something to dispatch and
-	// dispatch() should be called. If there is no need to poll a file descriptor this part may
-	// be left out and the app can just do "if (main_loop.wait(0ms)) main_loop.dispatch();" in
-	// a simple loop that also drives the rest of the toolkit.
+	// Integration with other main loops (in e.g. a UI toolkit) can be done with fd(), wait()
+	// and dispatch(). fd() returns a file descriptor that can be polled for in/read events
+	// (with e.g. poll()). wait() should be called when there is something to read. wait()
+	// returns true if there is something to dispatch in which case dispatch() should be called.
+	// Polling is optional. It is possible to check if there is something to dispatch by calling
+	// wait() with a timeout of 0ms.
 	//
-	// A main loop is exited with exit() that takes an optional exit code returned by loop()
-	// (commonly used as exit code of program returned from main()).
+	// A main loop is exited with exit(). An optional exit code may be passed as an argument.
+	// The exit code is returned by loop(). Default value of exit code is EXIT_SUCCESS. Makes it
+	// possible to do: int main(...) { MainLoop main_loop; ...; return main_loop.loop(); }
 	//
-	// run_in() can be used to invoke a function in the main loop context. May be called from
-	// any thread and functions are invoked in FIFO order.
+	// run_in() is used to invoke a function in the main loop's thread. run_in() can be called
+	// from any thread. Functions are invoked in FIFO order.
 	//
-	// Timers are created by creating a Timer instance and then starting the timer with
-	// Timer::start() or Timer::start_repeat() that takes a MainLoop as argument. This can be
-	// done from any thread. The callback passed when starting a timer is invoked in the thread
-	// the main loop is running in when the timer expires. Timer objects themselves need to be
-	// protected by e.g. a mutex if used from different threads. Timer objects may outlive the
-	// MainLoop they are running in, their callback is just never invoked if the MainLoop has
-	// been destroyed.
+	// Timers are created by creating a timer instance and then starting it with Timer::start()
+	// or Timer::start_repeat(). This can be done from any thread and the timeout callback is
+	// invoked in the thread the main loop is running in. Timer objects themselves are not
+	// thread safe and need to be protected by e.g. a mutex if used (started/stopped/moved) from
+	// different threads. Timer objects may outlive the MainLoop they are running in, their
+	// callback is just never invoked if the MainLoop has been destroyed.
 	//
-	// TODO: Make Timer itself thread safe?
-	// TODO: Add priority queue for timers?
+	// TODO: Make Timer itself thread safe? Not a common enough use case and probably other data
+	//       needs to be protected together with timer for use cases that exist?
+	// TODO: Add priority queue for timers? Timers that have expired earlier then others should
+	//       have their callback invoked first. Right now they are dispatched in order determined
+	//       by container that holds timer data.
 	// TODO: When porting to other OS, keep public interface. (Especially the fd()/poll part. Do
 	//       not want to implement interfaces etc. to integrate with toolkits.)
-	// TODO: When porting to other OS, consider adding a src/lib/system/poll.h::Poll class.
+	// TODO: When porting to other OS, consider adding a src/lib/system/poll.h:Poll class.
 	//       Should map more or less directly to Epoll on Linux (maybe even do
 	//       "using Poll = Epoll;"... maybe not... but small inline functions that just
 	//       delegates should be enough).
+	// TODO: When porting to other OS, consider adding a src/lib/system/wakeup.h:Wakeup class.
+	//       Thin inline wrapper around EventFD and read/write. Integrate with Poll? See GWakeup
+	//       in GLib for inspiration (also has implementation for other OS:es).
 	class MainLoop
 	{
 	public:

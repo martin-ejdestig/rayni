@@ -214,4 +214,10 @@ namespace Rayni
 		EXPECT_TRUE(mask_1bit.is_set(FooMask()));
 		EXPECT_TRUE(mask_2bits.is_set(FooMask()));
 	}
+
+	TEST(Bitmask, Empty)
+	{
+		EXPECT_TRUE(FooMask().empty());
+		EXPECT_FALSE(FooMask(Foo::BAR).empty());
+	}
 }

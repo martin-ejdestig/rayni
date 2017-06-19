@@ -96,6 +96,11 @@ namespace Rayni
 			return (*this & b) == b;
 		}
 
+		constexpr bool empty() const
+		{
+			return *this == Bitmask();
+		}
+
 	private:
 		Value value_ = 0;
 	};

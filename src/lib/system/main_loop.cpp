@@ -42,12 +42,80 @@ namespace Rayni
 		            TimerId id,
 		            clock::time_point expiration,
 		            std::chrono::nanoseconds interval,
-		            std::function<void()> &&callback); // TODO: [[nodiscard]] when C++17
-		void remove(TimerId id);
+		            std::function<void()> &&callback) // TODO: [[nodiscard]] when C++17
+		{
+			std::unique_lock<std::recursive_mutex> lock(mutex);
 
-		std::experimental::optional<clock::time_point> earliest_expiration();
+			if (id == TIMER_ID_EMPTY)
+				id = generate_id(timer);
 
-		void dispatch();
+			map[id] = Data{expiration, interval, std::move(callback)};
+
+			changed_event_fd.write(1);
+
+			return id;
+		}
+
+		void remove(TimerId id)
+		{
+			std::unique_lock<std::recursive_mutex> lock(mutex);
+
+			auto i = map.find(id);
+			if (i == map.cend())
+				return;
+
+			map.erase(i);
+
+			changed_event_fd.write(1);
+		}
+
+		std::experimental::optional<clock::time_point> earliest_expiration()
+		{
+			std::unique_lock<std::recursive_mutex> lock(mutex);
+			clock::time_point expiration = clock::time_point::max();
+
+			for (const auto &key_value : map)
+			{
+				const Data &data = key_value.second;
+
+				if (data.active())
+					expiration = std::min(expiration, data.expiration);
+			}
+
+			if (expiration == clock::time_point::max())
+				return std::experimental::nullopt;
+
+			return expiration;
+		}
+
+		void dispatch()
+		{
+			std::unique_lock<std::recursive_mutex> lock(mutex);
+			clock::time_point now = clock::now();
+			bool dispatch_needed = true; // Repeat timers may expire again and callback can restart timer.
+
+			while (dispatch_needed)
+			{
+				dispatch_needed = false;
+
+				for (auto &key_value : map)
+				{
+					Data &data = key_value.second;
+
+					if (!data.expired(now))
+						continue;
+
+					if (data.interval.count() > 0)
+						data.expiration += data.interval;
+					else
+						data.expiration = CLOCK_EPOCH;
+
+					data.callback();
+
+					dispatch_needed |= data.expired(now);
+				}
+			}
+		}
 
 		EventFD changed_event_fd;
 
@@ -70,7 +138,15 @@ namespace Rayni
 			std::function<void()> callback;
 		};
 
-		TimerId generate_id(const Timer *timer) const;
+		TimerId generate_id(const Timer *timer) const
+		{
+			TimerId id = hash_combine_for(timer, map.size());
+
+			while (id == TIMER_ID_EMPTY || map.find(id) != map.cend())
+				id = hash_combine_for(timer, id);
+
+			return id;
+		}
 
 		std::recursive_mutex mutex;
 		std::map<TimerId, Data> map;
@@ -181,95 +257,6 @@ namespace Rayni
 
 		for (auto &function : functions_to_dispatch)
 			function();
-	}
-
-	MainLoop::TimerId MainLoop::TimerData::set(const Timer *timer,
-	                                           TimerId id,
-	                                           clock::time_point expiration,
-	                                           std::chrono::nanoseconds interval,
-	                                           std::function<void()> &&callback)
-	{
-		std::unique_lock<std::recursive_mutex> lock(mutex);
-
-		if (id == TIMER_ID_EMPTY)
-			id = generate_id(timer);
-
-		map[id] = Data{expiration, interval, std::move(callback)};
-
-		changed_event_fd.write(1);
-
-		return id;
-	}
-
-	MainLoop::TimerId MainLoop::TimerData::generate_id(const Timer *timer) const
-	{
-		TimerId id = hash_combine_for(timer, map.size());
-
-		while (id == TIMER_ID_EMPTY || map.find(id) != map.cend())
-			id = hash_combine_for(timer, id);
-
-		return id;
-	}
-
-	void MainLoop::TimerData::remove(TimerId id)
-	{
-		std::unique_lock<std::recursive_mutex> lock(mutex);
-
-		auto i = map.find(id);
-		if (i == map.cend())
-			return;
-
-		map.erase(i);
-
-		changed_event_fd.write(1);
-	}
-
-	std::experimental::optional<MainLoop::clock::time_point> MainLoop::TimerData::earliest_expiration()
-	{
-		std::unique_lock<std::recursive_mutex> lock(mutex);
-		clock::time_point expiration = clock::time_point::max();
-
-		for (const auto &key_value : map)
-		{
-			const Data &data = key_value.second;
-
-			if (data.active())
-				expiration = std::min(expiration, data.expiration);
-		}
-
-		if (expiration == clock::time_point::max())
-			return std::experimental::nullopt;
-
-		return expiration;
-	}
-
-	void MainLoop::TimerData::dispatch()
-	{
-		std::unique_lock<std::recursive_mutex> lock(mutex);
-		clock::time_point now = clock::now();
-		bool dispatch_needed = true; // Repeat timers may expire again and callback can also restart timer.
-
-		while (dispatch_needed)
-		{
-			dispatch_needed = false;
-
-			for (auto &key_value : map)
-			{
-				Data &data = key_value.second;
-
-				if (!data.expired(now))
-					continue;
-
-				if (data.interval.count() > 0)
-					data.expiration += data.interval;
-				else
-					data.expiration = CLOCK_EPOCH;
-
-				data.callback();
-
-				dispatch_needed |= data.expired(now);
-			}
-		}
 	}
 
 	void MainLoop::Timer::set(MainLoop &main_loop,

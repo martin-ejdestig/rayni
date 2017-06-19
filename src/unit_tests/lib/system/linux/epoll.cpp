@@ -280,9 +280,14 @@ namespace Rayni
 		EXPECT_EQ(epoll2.fd(), events[0].fd());
 		EXPECT_TRUE(events[0].is_set(Epoll::Flag::IN));
 
+		EXPECT_EQ(1, epoll2.wait(events));
+		EXPECT_EQ(event_fd.fd(), events[0].fd());
+		EXPECT_TRUE(events[0].is_set(Epoll::Flag::IN));
+
 		event_fd.read();
 
 		EXPECT_EQ(0, epoll1.wait(events, std::chrono::milliseconds(0)));
+		EXPECT_EQ(0, epoll2.wait(events, std::chrono::milliseconds(0)));
 	}
 
 	TEST(Epoll, WaitZeroEvents)

@@ -102,17 +102,11 @@ namespace Rayni
 				{
 					Data &data = key_value.second;
 
-					if (!data.expired(now))
-						continue;
-
-					if (data.interval.count() > 0)
-						data.expiration += data.interval;
-					else
-						data.expiration = CLOCK_EPOCH;
-
-					data.callback();
-
-					dispatch_needed |= data.expired(now);
+					if (data.expired(now))
+					{
+						data.dispatch();
+						dispatch_needed |= data.expired(now);
+					}
 				}
 			}
 		}
@@ -131,6 +125,16 @@ namespace Rayni
 			bool expired(clock::time_point now) const
 			{
 				return active() && expiration <= now;
+			}
+
+			void dispatch()
+			{
+				if (interval.count() > 0)
+					expiration += interval;
+				else
+					expiration = CLOCK_EPOCH;
+
+				callback();
 			}
 
 			clock::time_point expiration;

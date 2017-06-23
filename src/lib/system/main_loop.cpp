@@ -28,7 +28,7 @@ namespace Rayni
 	// Data for all timers. Can be accessed from multiple threads.
 	//
 	// A recursive mutex is used since timers can be added/removed while dispatching. Also note
-	// that a map is used instead of an unordered_map since can ivalidate iterators if timers
+	// that a map is used instead of an unordered_map since it can ivalidate iterators if timers
 	// are added/removed while dispatching.
 	//
 	// Stored in a std::shared_pointer in MainLoop. Timers reference the data with a weak

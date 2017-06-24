@@ -263,37 +263,31 @@ namespace Rayni
 			function();
 	}
 
-	void MainLoop::Timer::set(MainLoop &main_loop,
-	                          clock::time_point expiration,
-	                          std::chrono::nanoseconds interval,
-	                          std::function<void()> &&callback)
+	void MainLoop::Timer::start(MainLoop &main_loop,
+	                            clock::time_point expiration,
+	                            std::chrono::nanoseconds interval,
+	                            std::function<void()> &&callback)
 	{
-		set_timer_data(main_loop.timer_data);
-		set(expiration, interval, std::move(callback));
+		auto data = timer_data.lock();
+		if (data != main_loop.timer_data)
+		{
+			if (data)
+				remove();
+
+			timer_data = main_loop.timer_data;
+			data = main_loop.timer_data;
+		}
+
+		id = data->set(this, id, expiration, interval, std::move(callback));
 	}
 
-	void MainLoop::Timer::set(clock::time_point expiration,
-	                          std::chrono::nanoseconds interval,
-	                          std::function<void()> &&callback)
+	void MainLoop::Timer::stop()
 	{
 		auto data = timer_data.lock();
 		if (!data)
 			return;
 
-		id = data->set(this, id, expiration, interval, std::move(callback));
-	}
-
-	void MainLoop::Timer::set_timer_data(const std::shared_ptr<TimerData> &new_timer_data)
-	{
-		auto data = timer_data.lock();
-
-		if (data == new_timer_data)
-			return;
-
-		if (data)
-			remove();
-
-		timer_data = new_timer_data;
+		id = data->set(this, id, CLOCK_EPOCH, std::chrono::nanoseconds(0), std::function<void()>());
 	}
 
 	void MainLoop::Timer::remove()

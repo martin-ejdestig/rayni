@@ -188,18 +188,18 @@ namespace Rayni
 		template <typename Duration>
 		void start(MainLoop &main_loop, Duration timeout, std::function<void()> &&callback)
 		{
-			set(main_loop, clock::now() + timeout, std::chrono::nanoseconds(0), std::move(callback));
+			start(main_loop, clock::now() + timeout, std::chrono::nanoseconds(0), std::move(callback));
 		}
 
 		void start(MainLoop &main_loop, clock::time_point expiration, std::function<void()> &&callback)
 		{
-			set(main_loop, expiration, std::chrono::nanoseconds(0), std::move(callback));
+			start(main_loop, expiration, std::chrono::nanoseconds(0), std::move(callback));
 		}
 
 		template <typename Duration>
 		void start_repeat(MainLoop &main_loop, Duration interval, std::function<void()> &&callback)
 		{
-			set(main_loop, clock::now() + interval, interval, std::move(callback));
+			start(main_loop, clock::now() + interval, interval, std::move(callback));
 		}
 
 		template <typename Duration>
@@ -208,22 +208,19 @@ namespace Rayni
 		                  Duration interval,
 		                  std::function<void()> &&callback)
 		{
-			set(main_loop,
-			    first_expiration,
-			    std::chrono::duration_cast<std::chrono::nanoseconds>(interval),
-			    std::move(callback));
+			start(main_loop,
+			      first_expiration,
+			      std::chrono::duration_cast<std::chrono::nanoseconds>(interval),
+			      std::move(callback));
 		}
 
-		void stop()
-		{
-			set(clock::time_point(), std::chrono::nanoseconds(0), std::function<void()>());
-		}
+		void stop();
 
 	private:
-		void set(MainLoop &main_loop,
-		         clock::time_point expiration,
-		         std::chrono::nanoseconds interval,
-		         std::function<void()> &&callback);
+		void start(MainLoop &main_loop,
+		           clock::time_point expiration,
+		           std::chrono::nanoseconds interval,
+		           std::function<void()> &&callback);
 
 		void set(clock::time_point expiration,
 		         std::chrono::nanoseconds interval,

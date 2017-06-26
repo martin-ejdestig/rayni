@@ -282,6 +282,25 @@ namespace Rayni
 		EXPECT_FALSE(called);
 	}
 
+	TEST(MainLoop, TimerStopAlreadyStoppedOrNeverStarted)
+	{
+		MainLoop main_loop;
+		MainLoop::Timer timer1, timer2, timer3;
+		bool called = false;
+
+		timer1.start(main_loop, 1ns, [&] { called = true; });
+		timer1.stop();
+		EXPECT_NO_THROW(timer1.stop());
+
+		EXPECT_NO_THROW(timer2.stop());
+
+		timer3.start(main_loop, 2ns, [&] { main_loop.exit(); });
+
+		main_loop.loop();
+
+		EXPECT_FALSE(called);
+	}
+
 	TEST(MainLoop, TimerCallbackNotCalledWhenDestroyed)
 	{
 		MainLoop main_loop;

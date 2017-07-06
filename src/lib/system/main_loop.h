@@ -24,7 +24,6 @@
 #include <chrono>
 #include <cstddef>
 #include <cstdlib>
-#include <experimental/optional>
 #include <functional>
 #include <memory>
 #include <mutex>

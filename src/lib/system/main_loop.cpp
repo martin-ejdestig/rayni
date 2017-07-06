@@ -18,6 +18,7 @@
  */
 
 #include <algorithm>
+#include <experimental/optional>
 #include <map>
 #include <unordered_map>
 

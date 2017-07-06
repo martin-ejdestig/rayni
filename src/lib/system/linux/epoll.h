@@ -55,9 +55,14 @@ namespace Rayni
 				data.u64 = 0;
 			}
 
-			bool is_set(Flags flags) const
+			bool is_set(Flags flags_to_check) const
 			{
-				return Flags(events).is_set(flags);
+				return flags().is_set(flags_to_check);
+			}
+
+			Flags flags() const
+			{
+				return Flags(events);
 			}
 
 			int fd() const

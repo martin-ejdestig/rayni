@@ -37,7 +37,7 @@
 
 namespace Rayni
 {
-	// Simple main loop implementation with dispatch in and timer functionality.
+	// Simple main loop implementation with dispatch in, fd monitoring and timer functionality.
 	//
 	// Not optimized and currently no way to prioritize events.
 	//
@@ -58,15 +58,23 @@ namespace Rayni
 	// run_in() is used to invoke a function in the main loop's thread. run_in() can be called
 	// from any thread. Functions are invoked in FIFO order.
 	//
-	// Timers are created by creating a timer instance and then starting it with Timer::start()
-	// or Timer::start_repeat(). This can be done from any thread and the timeout callback is
-	// invoked in the thread the main loop is running in. Timer objects themselves are not
-	// thread safe and need to be protected by e.g. a mutex if used (started/stopped/moved) from
-	// different threads. Timer objects may outlive the MainLoop they are running in, their
-	// callback is just never invoked if the MainLoop has been destroyed.
+	// File descriptors can be monitored by creating a FDMonitor instance and passing the file
+	// descriptor to monitor to FDMonitor::start().
 	//
-	// TODO: Make Timer itself thread safe? Not a common enough use case and probably other data
-	//       needs to be protected together with timer for use cases that exist?
+	// Timers are created by creating a timer instance and then starting it with Timer::start()
+	// or Timer::start_repeat().
+	//
+	// Both FDMonitor and Timer instances can be created and started from any thread. Their
+	// callbacks are invoked in the thread the main loop is running in. The objects themselves
+	// are not thread safe and need to be protected by e.g. a mutex if used
+	// (started/stopped/moved) from different threads. FDMonitor:s and Timer:s may outlive the
+	// MainLoop they are running in. Their callback is just never invoked if the MainLoop has
+	// been destroyed.
+	//
+	// TODO: Make FDMonitor and Timer objects thread safe? (Note: already OK to use them in
+	//       other threads than the MainLoop thread, see above.) Not a common enough use case
+	//       and other user data probably needs to be protected together with monitor/timer so
+	//       might as well protect monitor/timer objects in same manner as well?
 	// TODO: Add priority queue for timers? Timers that have expired earlier then others should
 	//       have their callback invoked first. Right now they are dispatched in order determined
 	//       by container that holds timer data.
@@ -75,16 +83,21 @@ namespace Rayni
 	// TODO: When porting to other OS, consider adding a src/lib/system/poll.h:Poll class.
 	//       Should map more or less directly to Epoll on Linux (maybe even do
 	//       "using Poll = Epoll;"... maybe not... but small inline functions that just
-	//       delegates should be enough).
+	//       delegates should be enough). Can move FDFlag and FDFlags to Poll::Flag/Flags.
+	//       Currently type alias for Epoll::Flag/Flags, should probably map.
 	// TODO: When porting to other OS, consider adding a src/lib/system/wakeup.h:Wakeup class.
 	//       Thin inline wrapper around EventFD and read/write. Integrate with Poll? See GWakeup
 	//       in GLib for inspiration (also has implementation for other OS:es).
 	class MainLoop
 	{
 	public:
+		class FDMonitor;
 		class Timer;
 
 		using clock = std::chrono::steady_clock;
+
+		using FDFlag = Epoll::Flag;
+		using FDFlags = Epoll::Flags;
 
 		MainLoop();
 
@@ -133,7 +146,9 @@ namespace Rayni
 			std::vector<std::function<void()>> functions;
 		};
 
+		class FDData;
 		class TimerData;
+
 		using TimerId = std::size_t;
 
 		static constexpr clock::time_point CLOCK_EPOCH = clock::time_point();
@@ -142,7 +157,7 @@ namespace Rayni
 		void set_timer_fd_from_timer_data() const;
 
 		Epoll epoll;
-		std::array<Epoll::Event, 4> events;
+		std::array<Epoll::Event, 5> events;
 		Epoll::EventCount events_occurred = 0;
 
 		std::atomic<int> exit_code_{EXIT_SUCCESS};
@@ -154,6 +169,46 @@ namespace Rayni
 
 		TimerFD timer_fd;
 		std::shared_ptr<TimerData> timer_data;
+
+		std::shared_ptr<FDData> fd_data;
+	};
+
+	class MainLoop::FDMonitor
+	{
+	public:
+		FDMonitor() = default;
+
+		~FDMonitor()
+		{
+			stop();
+		}
+
+		FDMonitor(const FDMonitor &other) = delete;
+
+		FDMonitor(FDMonitor &&other) noexcept
+		        : fd_data(std::move(other.fd_data)), fd(std::exchange(other.fd, -1))
+		{
+		}
+
+		FDMonitor &operator=(const FDMonitor &other) = delete;
+
+		FDMonitor &operator=(FDMonitor &&other) noexcept
+		{
+			stop();
+
+			fd_data = std::move(other.fd_data);
+			fd = std::exchange(other.fd, -1);
+
+			return *this;
+		}
+
+		void start(MainLoop &main_loop, int fd, FDFlags flags, std::function<void(FDFlags flags)> &&callback);
+
+		void stop();
+
+	private:
+		std::weak_ptr<FDData> fd_data;
+		int fd = -1;
 	};
 
 	class MainLoop::Timer

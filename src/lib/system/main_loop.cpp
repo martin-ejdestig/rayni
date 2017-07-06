@@ -19,12 +19,84 @@
 
 #include <algorithm>
 #include <map>
+#include <unordered_map>
 
 #include "lib/math/hash.h"
 #include "lib/system/main_loop.h"
 
 namespace Rayni
 {
+	// Data for monitoring file descriptors.
+	//
+	// A recursive mutex is used to allow for modification of data in a callback.
+	//
+	// Stored in a std::shared_pointer in MainLoop. FDMonitor:s reference the data with a weak
+	// pointer to allow for it to be destroyed together witht the MainLoop even if there are
+	// started FDMonitor instances that have not been destroyed. FDMonitors will be stopped when
+	// the MainLoop is destroyed.
+	//
+	// NOTE: Since dispatch() waits for more than 1 event another callback may remove/stop
+	// monitoring an fd already in events filled in by Epoll::wait(). Must therefore make sure
+	// fd is still in map when iterating over events and that callback has not been cleared
+	// before invoking it.
+	class MainLoop::FDData
+	{
+	public:
+		void add(int fd, FDFlags flags, std::function<void(FDFlags flags)> &&callback)
+		{
+			std::unique_lock<std::recursive_mutex> lock(mutex);
+
+			epoll.add(fd, flags);
+			map[fd] = Data{std::move(callback)};
+		}
+
+		void modify(int fd, FDFlags flags, std::function<void(FDFlags flags)> &&callback)
+		{
+			std::unique_lock<std::recursive_mutex> lock(mutex);
+
+			epoll.modify(fd, flags);
+			map[fd] = Data{std::move(callback)};
+		}
+
+		void remove(int fd)
+		{
+			std::unique_lock<std::recursive_mutex> lock(mutex);
+
+			auto i = map.find(fd);
+			if (i == map.cend())
+				return;
+
+			epoll.remove(fd);
+			map.erase(i);
+		}
+
+		void dispatch()
+		{
+			std::array<Epoll::Event, 4> events;
+			Epoll::EventCount num_events = epoll.wait(events);
+			std::unique_lock<std::recursive_mutex> lock(mutex);
+
+			for (Epoll::EventCount i = 0; i < num_events; i++)
+			{
+				auto it = map.find(events[i].fd());
+
+				if (it != map.cend() && it->second.callback)
+					it->second.callback(events[i].flags());
+			}
+		}
+
+		Epoll epoll;
+
+	private:
+		struct Data
+		{
+			std::function<void(FDFlags)> callback;
+		};
+
+		std::recursive_mutex mutex;
+		std::unordered_map<int, Data> map;
+	};
+
 	// Data for all timers. Can be accessed from multiple threads.
 	//
 	// A recursive mutex is used since timers can be added/removed while dispatching. Also note
@@ -156,12 +228,13 @@ namespace Rayni
 		std::map<TimerId, Data> map;
 	};
 
-	MainLoop::MainLoop() : timer_data(std::make_shared<TimerData>())
+	MainLoop::MainLoop() : timer_data(std::make_shared<TimerData>()), fd_data(std::make_shared<FDData>())
 	{
 		epoll.add(exit_event_fd.fd(), Epoll::Flag::IN);
 		epoll.add(run_in_event_fd.fd(), Epoll::Flag::IN);
 		epoll.add(timer_fd.fd(), Epoll::Flag::IN);
 		epoll.add(timer_data->changed_event_fd.fd(), Epoll::Flag::IN);
+		epoll.add(fd_data->epoll.fd(), Epoll::Flag::IN);
 	}
 
 	int MainLoop::loop()
@@ -225,6 +298,10 @@ namespace Rayni
 				timer_data->changed_event_fd.read();
 				set_timer_fd_from_timer_data();
 			}
+			else if (event.fd() == fd_data->epoll.fd())
+			{
+				fd_data->dispatch();
+			}
 		}
 	}
 
@@ -261,6 +338,51 @@ namespace Rayni
 
 		for (auto &function : functions_to_dispatch)
 			function();
+	}
+
+	void MainLoop::FDMonitor::start(MainLoop &main_loop,
+	                                int fd,
+	                                FDFlags flags,
+	                                std::function<void(FDFlags flags)> &&callback)
+	{
+		auto data = fd_data.lock();
+		if (data != main_loop.fd_data)
+		{
+			if (data)
+			{
+				data->remove(this->fd);
+				this->fd = -1;
+			}
+			fd_data = main_loop.fd_data;
+			data = main_loop.fd_data;
+		}
+
+		if (this->fd == fd)
+		{
+			data->modify(fd, flags, std::move(callback));
+			return;
+		}
+
+		if (this->fd != -1)
+		{
+			data->remove(this->fd);
+			this->fd = -1;
+		}
+
+		data->add(fd, flags, std::move(callback));
+		this->fd = fd;
+	}
+
+	void MainLoop::FDMonitor::stop()
+	{
+		auto data = fd_data.lock();
+		if (!data)
+			return;
+
+		data->remove(fd);
+
+		fd_data.reset();
+		fd = -1;
 	}
 
 	void MainLoop::Timer::start(MainLoop &main_loop,

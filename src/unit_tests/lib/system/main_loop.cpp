@@ -26,6 +26,7 @@
 #include <thread>
 
 #include "lib/system/linux/epoll.h"
+#include "lib/system/linux/event_fd.h"
 #include "lib/system/main_loop.h"
 
 // TODO: Remove NOLINT when https://llvm.org/bugs/show_bug.cgi?id=25594 is fixed.
@@ -166,6 +167,224 @@ namespace Rayni
 		EXPECT_EQ(events[0].fd(), main_loop.fd());
 		EXPECT_TRUE(events[0].is_set(Epoll::Flag::IN));
 		EXPECT_TRUE(main_loop.wait(0ms));
+	}
+
+	TEST(MainLoop, FDMonitorStart)
+	{
+		MainLoop main_loop;
+		EventFD event_fd1, event_fd2, event_fd3, event_fd4;
+		MainLoop::FDMonitor fd_monitor1, fd_monitor2, fd_monitor3, fd_monitor4;
+		MainLoop::FDFlags flags1, flags2, flags3, flags4;
+
+		auto exit_if_all_flags_set = [&] {
+			if (!flags1.empty() && !flags2.empty() && !flags3.empty() && !flags4.empty())
+				main_loop.exit();
+		};
+
+		fd_monitor1.start(main_loop, event_fd1.fd(), MainLoop::FDFlag::IN, [&](auto flags) {
+			flags1 = flags;
+			exit_if_all_flags_set();
+		});
+		fd_monitor2.start(main_loop, event_fd2.fd(), MainLoop::FDFlag::OUT, [&](auto flags) {
+			flags2 = flags;
+			exit_if_all_flags_set();
+		});
+		fd_monitor3.start(main_loop,
+		                  event_fd3.fd(),
+		                  MainLoop::FDFlag::IN | MainLoop::FDFlag::OUT,
+		                  [&](auto flags) {
+			                  flags3 = flags;
+			                  exit_if_all_flags_set();
+			          });
+		fd_monitor4.start(main_loop,
+		                  event_fd4.fd(),
+		                  MainLoop::FDFlag::IN | MainLoop::FDFlag::OUT,
+		                  [&](auto flags) {
+			                  flags4 = flags;
+			                  exit_if_all_flags_set();
+			          });
+
+		event_fd1.write(1);
+		event_fd4.write(1);
+
+		main_loop.loop();
+
+		EXPECT_EQ(MainLoop::FDFlag::IN, flags1);
+		EXPECT_EQ(MainLoop::FDFlag::OUT, flags2);
+		EXPECT_EQ(MainLoop::FDFlag::OUT, flags3);
+		EXPECT_EQ(MainLoop::FDFlag::IN | MainLoop::FDFlag::OUT, flags4);
+	}
+
+	TEST(MainLoop, FDMonitorStartAlreadyStartedSameFD)
+	{
+		MainLoop main_loop;
+		EventFD event_fd;
+		MainLoop::FDMonitor fd_monitor;
+		MainLoop::FDFlags flags1, flags2;
+
+		fd_monitor.start(main_loop, event_fd.fd(), MainLoop::FDFlag::IN, [&](auto flags) { flags1 = flags; });
+		fd_monitor.start(main_loop, event_fd.fd(), MainLoop::FDFlag::OUT, [&](auto flags) {
+			flags2 = flags;
+			main_loop.exit();
+		});
+
+		main_loop.loop();
+
+		EXPECT_TRUE(flags1.empty());
+		EXPECT_EQ(MainLoop::FDFlag::OUT, flags2);
+	}
+
+	TEST(MainLoop, FDMonitorStartAlreadyStartedOtherFD)
+	{
+		MainLoop main_loop;
+		EventFD event_fd1, event_fd2;
+		MainLoop::FDMonitor fd_monitor;
+		MainLoop::FDFlags flags1, flags2;
+
+		fd_monitor.start(main_loop, event_fd1.fd(), MainLoop::FDFlag::IN, [&](auto flags) { flags1 = flags; });
+		fd_monitor.start(main_loop, event_fd2.fd(), MainLoop::FDFlag::OUT, [&](auto flags) {
+			flags2 = flags;
+			main_loop.exit();
+		});
+
+		main_loop.loop();
+
+		EXPECT_TRUE(flags1.empty());
+		EXPECT_EQ(MainLoop::FDFlag::OUT, flags2);
+	}
+
+	TEST(MainLoop, FDMonitorStop)
+	{
+		MainLoop main_loop;
+		EventFD event_fd;
+		MainLoop::FDMonitor fd_monitor;
+		bool called = false;
+
+		fd_monitor.start(main_loop, event_fd.fd(), MainLoop::FDFlag::OUT, [&](auto) { called = true; });
+		fd_monitor.stop();
+
+		while (main_loop.wait(0s) && !called)
+			main_loop.dispatch();
+
+		EXPECT_FALSE(called);
+	}
+
+	TEST(MainLoop, FDMonitorStopAlreadyStoppedOrNeverStarted)
+	{
+		MainLoop main_loop;
+		EventFD event_fd;
+		MainLoop::FDMonitor fd_monitor1, fd_monitor2;
+		bool called = false;
+
+		fd_monitor1.start(main_loop, event_fd.fd(), MainLoop::FDFlag::IN, [&](auto) { called = true; });
+		fd_monitor1.stop();
+		EXPECT_NO_THROW(fd_monitor1.stop());
+
+		EXPECT_NO_THROW(fd_monitor2.stop());
+
+		while (main_loop.wait(0s) && !called)
+			main_loop.dispatch();
+
+		EXPECT_FALSE(called);
+	}
+
+	TEST(MainLoop, FDMonitorStopInCallback)
+	{
+		MainLoop main_loop;
+		EventFD event_fd;
+		MainLoop::FDMonitor fd_monitor;
+		int count = 0;
+
+		fd_monitor.start(main_loop, event_fd.fd(), MainLoop::FDFlag::OUT, [&](auto) {
+			count++;
+			if (count == 2)
+			{
+				fd_monitor.stop();
+				main_loop.run_in([&] { main_loop.exit(); });
+			}
+		});
+
+		main_loop.loop();
+
+		EXPECT_EQ(2, count);
+	}
+
+	TEST(MainLoop, FDMonitorCallbackNotCalledWhenDestroyed)
+	{
+		MainLoop main_loop;
+		EventFD event_fd;
+		auto fd_monitor = std::make_unique<MainLoop::FDMonitor>();
+		bool called = false;
+
+		fd_monitor->start(main_loop, event_fd.fd(), MainLoop::FDFlag::OUT, [&](auto) { called = true; });
+		fd_monitor.reset();
+
+		while (main_loop.wait(0s) && !called)
+			main_loop.dispatch();
+
+		EXPECT_FALSE(called);
+	}
+
+	TEST(MainLoop, FDMonitorMove)
+	{
+		MainLoop main_loop;
+		EventFD event_fd;
+		MainLoop::FDMonitor fd_monitor1, fd_monitor2, fd_monitor3;
+		int count = 0;
+
+		fd_monitor1.start(main_loop, event_fd.fd(), MainLoop::FDFlag::OUT, [&](auto) {
+			count++;
+			if (count == 1)
+			{
+				fd_monitor3 = std::move(fd_monitor2);
+			}
+			else if (count == 2)
+			{
+				fd_monitor3.stop();
+				main_loop.exit();
+			}
+		});
+
+		fd_monitor2 = std::move(fd_monitor1);
+
+		main_loop.loop();
+
+		EXPECT_EQ(2, count);
+	}
+
+	TEST(MainLoop, FDMonitorCallbackCalledInMainThread)
+	{
+		MainLoop main_loop;
+		EventFD event_fd;
+		MainLoop::FDMonitor fd_monitor;
+		std::thread::id thread_id;
+		auto func = [&](MainLoop::FDFlags) {
+			thread_id = std::this_thread::get_id();
+			main_loop.exit();
+		};
+		std::thread thread([&] { fd_monitor.start(main_loop, event_fd.fd(), MainLoop::FDFlag::OUT, func); });
+
+		main_loop.loop();
+
+		thread.join();
+
+		EXPECT_EQ(std::this_thread::get_id(), thread_id);
+	}
+
+	TEST(MainLoop, FDMonitorUsedAndDestroyedAfterMainLoop)
+	{
+		EventFD event_fd;
+		MainLoop::FDMonitor fd_monitor;
+
+		{
+			MainLoop main_loop;
+			fd_monitor.start(main_loop, event_fd.fd(), MainLoop::FDFlag::OUT, [&](auto) {
+				main_loop.exit();
+			});
+			main_loop.loop();
+		}
+
+		fd_monitor.stop();
 	}
 
 	TEST(MainLoop, Timer)

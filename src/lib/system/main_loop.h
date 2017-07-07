@@ -276,12 +276,6 @@ namespace Rayni
 		           std::chrono::nanoseconds interval,
 		           std::function<void()> &&callback);
 
-		void set(clock::time_point expiration,
-		         std::chrono::nanoseconds interval,
-		         std::function<void()> &&callback);
-
-		void set_timer_data(const std::shared_ptr<TimerData> &new_timer_data);
-
 		void remove();
 
 		std::weak_ptr<TimerData> timer_data;

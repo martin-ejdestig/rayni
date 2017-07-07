@@ -32,7 +32,7 @@ namespace Rayni
 	// A recursive mutex is used to allow for modification of data in a callback.
 	//
 	// Stored in a std::shared_pointer in MainLoop. FDMonitor:s reference the data with a weak
-	// pointer to allow for it to be destroyed together witht the MainLoop even if there are
+	// pointer to allow for it to be destroyed together with the MainLoop even if there are
 	// started FDMonitor instances that have not been destroyed. FDMonitors will be stopped when
 	// the MainLoop is destroyed.
 	//

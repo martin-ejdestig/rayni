@@ -22,6 +22,7 @@
 #include <array>
 #include <chrono>
 #include <cstddef>
+#include <exception>
 #include <memory>
 #include <thread>
 
@@ -251,6 +252,65 @@ namespace Rayni
 
 		EXPECT_TRUE(flags1.empty());
 		EXPECT_EQ(MainLoop::FDFlag::OUT, flags2);
+	}
+
+	TEST(MainLoop, FDMonitorStartFDAlreadyUsedByOtherMonitor)
+	{
+		MainLoop main_loop;
+		EventFD event_fd;
+		MainLoop::FDMonitor fd_monitor1, fd_monitor2;
+		MainLoop::FDFlags flags1, flags2;
+
+		fd_monitor1.start(main_loop, event_fd.fd(), MainLoop::FDFlag::OUT, [&](auto flags) {
+			flags1 = flags;
+			main_loop.exit();
+		});
+
+		EXPECT_THROW(fd_monitor2.start(main_loop,
+		                               event_fd.fd(),
+		                               MainLoop::FDFlag::OUT,
+		                               [&](auto flags) {
+			                               flags2 = flags;
+			                               main_loop.exit();
+			                       }),
+		             std::exception);
+
+		main_loop.loop();
+
+		EXPECT_FALSE(flags1.empty());
+		EXPECT_TRUE(flags2.empty());
+	}
+
+	TEST(MainLoop, FDMonitorStartInvalidFD)
+	{
+		MainLoop main_loop;
+		MainLoop::FDMonitor fd_monitor;
+
+		EXPECT_THROW(fd_monitor.start(main_loop, -1, MainLoop::FDFlag::OUT, [](auto) {}), std::exception);
+		EXPECT_THROW(fd_monitor.start(main_loop, -123, MainLoop::FDFlag::OUT, [](auto) {}), std::exception);
+		EXPECT_THROW(fd_monitor.start(main_loop, 2147483647, MainLoop::FDFlag::OUT, [](auto) {}),
+		             std::exception);
+	}
+
+	TEST(MainLoop, FDMonitorStartAgainWithOtherFlagsInOwnCallback)
+	{
+		MainLoop main_loop;
+		EventFD event_fd;
+		MainLoop::FDMonitor fd_monitor;
+		bool called = false;
+
+		fd_monitor.start(main_loop, event_fd.fd(), MainLoop::FDFlag::IN, [&](auto) {
+			fd_monitor.start(main_loop, event_fd.fd(), MainLoop::FDFlag::OUT, [&](auto) {
+				called = true;
+				main_loop.exit();
+			});
+		});
+
+		event_fd.write(1);
+
+		main_loop.loop();
+
+		EXPECT_TRUE(called);
 	}
 
 	TEST(MainLoop, FDMonitorStop)

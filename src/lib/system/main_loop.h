@@ -20,6 +20,7 @@
 #ifndef RAYNI_LIB_SYSTEM_MAIN_LOOP_H
 #define RAYNI_LIB_SYSTEM_MAIN_LOOP_H
 
+#include <array>
 #include <atomic>
 #include <chrono>
 #include <cstddef>

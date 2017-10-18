@@ -165,8 +165,8 @@ namespace Rayni
 	public:
 		using FileFormatException::FileFormatException;
 
-		Exception(const Position &position, const std::string &str)
-		        : FileFormatException(position.to_string(), str)
+		Exception(const Position &position, const std::string &str) :
+		        FileFormatException(position.to_string(), str)
 		{
 		}
 	};

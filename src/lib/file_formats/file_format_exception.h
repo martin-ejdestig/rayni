@@ -30,8 +30,8 @@ namespace Rayni
 	public:
 		using std::runtime_error::runtime_error;
 
-		FileFormatException(const std::string &prefix, const std::string &str)
-		        : std::runtime_error(prefix.empty() ? str : prefix + ": " + str)
+		FileFormatException(const std::string &prefix, const std::string &str) :
+		        std::runtime_error(prefix.empty() ? str : prefix + ": " + str)
 		{
 		}
 	};

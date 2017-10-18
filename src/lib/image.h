@@ -114,8 +114,11 @@ namespace Rayni
 	{
 		Area() = default;
 
-		Area(unsigned int x, unsigned int y, unsigned int width, unsigned int height)
-		        : x(x), y(y), width(width), height(height)
+		Area(unsigned int x, unsigned int y, unsigned int width, unsigned int height) :
+		        x(x),
+		        y(y),
+		        width(width),
+		        height(height)
 		{
 		}
 

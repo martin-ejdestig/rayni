@@ -37,8 +37,8 @@ namespace Rayni
 		class Exception : public std::runtime_error
 		{
 		public:
-			Exception(const Variant &variant, const std::string &str)
-			        : std::runtime_error(variant.prepend_path_if_has_parent(str))
+			Exception(const Variant &variant, const std::string &str) :
+			        std::runtime_error(variant.prepend_path_if_has_parent(str))
 			{
 			}
 		};

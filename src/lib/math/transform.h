@@ -35,8 +35,9 @@ namespace Rayni
 	class Transform
 	{
 	public:
-		Transform(const Matrix4x4 &matrix, const Matrix4x4 &inverse_matrix)
-		        : matrix_(matrix), inverse_matrix_(inverse_matrix)
+		Transform(const Matrix4x4 &matrix, const Matrix4x4 &inverse_matrix) :
+		        matrix_(matrix),
+		        inverse_matrix_(inverse_matrix)
 		{
 		}
 

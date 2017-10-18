@@ -38,8 +38,8 @@ namespace Rayni
 		{
 		}
 
-		explicit Quaternion(const Variant &v)
-		        : Quaternion(v.get<real_t>(0), v.get<real_t>(1), v.get<real_t>(2), v.get<real_t>(3))
+		explicit Quaternion(const Variant &v) :
+		        Quaternion(v.get<real_t>(0), v.get<real_t>(1), v.get<real_t>(2), v.get<real_t>(3))
 		{
 		}
 

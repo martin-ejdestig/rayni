@@ -185,8 +185,9 @@ namespace Rayni
 
 		FDMonitor(const FDMonitor &other) = delete;
 
-		FDMonitor(FDMonitor &&other) noexcept
-		        : fd_data(std::move(other.fd_data)), fd(std::exchange(other.fd, -1))
+		FDMonitor(FDMonitor &&other) noexcept :
+		        fd_data(std::move(other.fd_data)),
+		        fd(std::exchange(other.fd, -1))
 		{
 		}
 
@@ -223,8 +224,9 @@ namespace Rayni
 
 		Timer(const Timer &other) = delete;
 
-		Timer(Timer &&other) noexcept
-		        : timer_data(std::move(other.timer_data)), id(std::exchange(other.id, TIMER_ID_EMPTY))
+		Timer(Timer &&other) noexcept :
+		        timer_data(std::move(other.timer_data)),
+		        id(std::exchange(other.id, TIMER_ID_EMPTY))
 		{
 		}
 

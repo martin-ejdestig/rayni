@@ -30,19 +30,19 @@ namespace Rayni
 	AnimatedTransform::AnimatedTransform(real_t start_time,
 	                                     const Transform &start_transform,
 	                                     real_t end_time,
-	                                     const Transform &end_transform)
-	        : start_time(start_time),
-	          start(start_transform.matrix()),
-	          end_time(end_time),
-	          end(end_transform.matrix())
+	                                     const Transform &end_transform) :
+	        start_time(start_time),
+	        start(start_transform.matrix()),
+	        end_time(end_time),
+	        end(end_transform.matrix())
 	{
 	}
 
-	AnimatedTransform::AnimatedTransform(const Variant &v)
-	        : AnimatedTransform(v.get<real_t>("start_time"),
-	                            v.get<Transform>("start_transform"),
-	                            v.get<real_t>("end_time"),
-	                            v.get<Transform>("end_transform"))
+	AnimatedTransform::AnimatedTransform(const Variant &v) :
+	        AnimatedTransform(v.get<real_t>("start_time"),
+	                          v.get<Transform>("start_transform"),
+	                          v.get<real_t>("end_time"),
+	                          v.get<Transform>("end_transform"))
 	{
 		if (start_time >= end_time)
 			throw Variant::Exception(v, "start_time >= end_time");

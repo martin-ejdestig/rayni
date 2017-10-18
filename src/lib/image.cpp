@@ -34,15 +34,17 @@ namespace Rayni
 	{
 	}
 
-	Image::Image(Image &&other) noexcept
-	        : width_(std::exchange(other.width_, 0)),
-	          height_(std::exchange(other.height_, 0)),
-	          buffer_(std::move(other.buffer_))
+	Image::Image(Image &&other) noexcept :
+	        width_(std::exchange(other.width_, 0)),
+	        height_(std::exchange(other.height_, 0)),
+	        buffer_(std::move(other.buffer_))
 	{
 	}
 
-	Image::Image(unsigned int width, unsigned int height)
-	        : width_(width), height_(height), buffer_(stride() * height)
+	Image::Image(unsigned int width, unsigned int height) :
+	        width_(width),
+	        height_(height),
+	        buffer_(stride() * height)
 	{
 		for (std::size_t i = 0; i < buffer().size(); i += BYTES_PER_PIXEL)
 		{

@@ -345,8 +345,7 @@ namespace Rayni
 
 		template <typename T>
 		std::enable_if_t<!std::is_constructible<T, const Variant &>::value && std::is_class<T>::value &&
-		                         !std::is_abstract<T>::value &&
-		                         !std::is_same<T, std::string>::value,
+		                         !std::is_abstract<T>::value && !std::is_same<T, std::string>::value,
 		                 T>
 		to() const
 		{

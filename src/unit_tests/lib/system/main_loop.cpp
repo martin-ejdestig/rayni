@@ -196,14 +196,14 @@ namespace Rayni
 		                  [&](auto flags) {
 			                  flags3 = flags;
 			                  exit_if_all_flags_set();
-			          });
+		                  });
 		fd_monitor4.start(main_loop,
 		                  event_fd4.fd(),
 		                  MainLoop::FDFlag::IN | MainLoop::FDFlag::OUT,
 		                  [&](auto flags) {
 			                  flags4 = flags;
 			                  exit_if_all_flags_set();
-			          });
+		                  });
 
 		event_fd1.write(1);
 		event_fd4.write(1);
@@ -272,7 +272,7 @@ namespace Rayni
 		                               [&](auto flags) {
 			                               flags2 = flags;
 			                               main_loop.exit();
-			                       }),
+		                               }),
 		             std::exception);
 
 		main_loop.loop();

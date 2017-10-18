@@ -350,10 +350,8 @@ namespace Rayni
 		if (data != main_loop.fd_data)
 		{
 			if (data)
-			{
-				data->remove(this->fd);
-				this->fd = -1;
-			}
+				data->remove(std::exchange(this->fd, -1));
+
 			fd_data = main_loop.fd_data;
 			data = main_loop.fd_data;
 		}
@@ -365,10 +363,7 @@ namespace Rayni
 		}
 
 		if (this->fd != -1)
-		{
-			data->remove(this->fd);
-			this->fd = -1;
-		}
+			data->remove(std::exchange(this->fd, -1));
 
 		data->add(fd, flags, std::move(callback));
 		this->fd = fd;
@@ -380,10 +375,8 @@ namespace Rayni
 		if (!data)
 			return;
 
-		data->remove(fd);
-
 		fd_data.reset();
-		fd = -1;
+		data->remove(std::exchange(fd, -1));
 	}
 
 	void MainLoop::Timer::start(MainLoop &main_loop,
@@ -419,9 +412,7 @@ namespace Rayni
 		if (!data)
 			return;
 
-		data->remove(id);
-
 		timer_data.reset();
-		id = TIMER_ID_EMPTY;
+		data->remove(std::exchange(id, TIMER_ID_EMPTY));
 	}
 }

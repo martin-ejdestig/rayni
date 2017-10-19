@@ -218,17 +218,17 @@ namespace Rayni
 		if (header.image_type == ImageType::RGB)
 		{
 			if (header.image.pixel_size == 24)
-				return Color(real_t(pixel[2]) / 255, real_t(pixel[1]) / 255, real_t(pixel[0]) / 255);
+				return {real_t(pixel[2]) / 255, real_t(pixel[1]) / 255, real_t(pixel[0]) / 255};
 
 			if (header.image.pixel_size == 32)
-				return Color(real_t(pixel[2] * pixel[3]) / (255 * 255),
-				             real_t(pixel[1] * pixel[3]) / (255 * 255),
-				             real_t(pixel[0] * pixel[3]) / (255 * 255));
+				return {real_t(pixel[2] * pixel[3]) / (255 * 255),
+				        real_t(pixel[1] * pixel[3]) / (255 * 255),
+				        real_t(pixel[0] * pixel[3]) / (255 * 255)};
 		}
 		else if (header.image_type == ImageType::MONO)
 		{
 			if (header.image.pixel_size == 8)
-				return Color(real_t(pixel[0]) / 255, real_t(pixel[0]) / 255, real_t(pixel[0]) / 255);
+				return {real_t(pixel[0]) / 255, real_t(pixel[0]) / 255, real_t(pixel[0]) / 255};
 		}
 
 		throw Exception(error_prefix, "unsupported TGA image type");

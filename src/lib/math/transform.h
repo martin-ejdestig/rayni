@@ -45,12 +45,12 @@ namespace Rayni
 
 		static Transform identity()
 		{
-			return Transform(Matrix4x4::identity(), Matrix4x4::identity());
+			return {Matrix4x4::identity(), Matrix4x4::identity()};
 		}
 
 		static Transform translate(real_t x, real_t y, real_t z)
 		{
-			return Transform(Matrix4x4::translate(x, y, z), Matrix4x4::translate(-x, -y, -z));
+			return {Matrix4x4::translate(x, y, z), Matrix4x4::translate(-x, -y, -z)};
 		}
 
 		static Transform translate(const Vector3 &v)
@@ -60,7 +60,7 @@ namespace Rayni
 
 		static Transform scale(real_t x, real_t y, real_t z)
 		{
-			return Transform(Matrix4x4::scale(x, y, z), Matrix4x4::scale(1 / x, 1 / y, 1 / z));
+			return {Matrix4x4::scale(x, y, z), Matrix4x4::scale(1 / x, 1 / y, 1 / z)};
 		}
 
 		static Transform scale(const Vector3 &v)
@@ -76,47 +76,47 @@ namespace Rayni
 		static Transform rotate_x(real_t radians)
 		{
 			Matrix4x4 m = Matrix4x4::rotate_x(radians);
-			return Transform(m, m.transpose());
+			return {m, m.transpose()};
 		}
 
 		static Transform rotate_y(real_t radians)
 		{
 			Matrix4x4 m = Matrix4x4::rotate_y(radians);
-			return Transform(m, m.transpose());
+			return {m, m.transpose()};
 		}
 
 		static Transform rotate_z(real_t radians)
 		{
 			Matrix4x4 m = Matrix4x4::rotate_z(radians);
-			return Transform(m, m.transpose());
+			return {m, m.transpose()};
 		}
 
 		static Transform rotate(real_t radians, const Vector3 &axis)
 		{
 			Matrix4x4 m = Matrix4x4::rotate(radians, axis);
-			return Transform(m, m.transpose());
+			return {m, m.transpose()};
 		}
 
 		static Transform rotate(const Quaternion &q)
 		{
 			Matrix4x4 m = Matrix4x4::rotate(q);
-			return Transform(m, m.transpose());
+			return {m, m.transpose()};
 		}
 
 		static Transform look_at(const Vector3 &translation, const Vector3 &center, const Vector3 &up)
 		{
 			Matrix4x4 m = Matrix4x4::look_at(translation, center, up);
-			return Transform(m.inverse(), m);
+			return {m.inverse(), m};
 		}
 
 		static Transform combine(const Transform &t1, const Transform &t2)
 		{
-			return Transform(t1.matrix() * t2.matrix(), t2.inverse_matrix() * t1.inverse_matrix());
+			return {t1.matrix() * t2.matrix(), t2.inverse_matrix() * t1.inverse_matrix()};
 		}
 
 		Transform inverse() const
 		{
-			return Transform(inverse_matrix(), matrix());
+			return {inverse_matrix(), matrix()};
 		}
 
 		const Matrix4x4 &matrix() const
@@ -149,7 +149,7 @@ namespace Rayni
 			real_t x = matrix().row(0).dot(p);
 			real_t y = matrix().row(1).dot(p);
 			real_t z = matrix().row(2).dot(p);
-			return Vector3(x, y, z);
+			return {x, y, z};
 		}
 
 		std::vector<Vector3> &transform_points(std::vector<Vector3> &points) const
@@ -174,7 +174,7 @@ namespace Rayni
 			real_t x = matrix().row(0).dot(d);
 			real_t y = matrix().row(1).dot(d);
 			real_t z = matrix().row(2).dot(d);
-			return Vector3(x, y, z);
+			return {x, y, z};
 		}
 
 		/**
@@ -256,14 +256,14 @@ namespace Rayni
 			              matrix().translation();
 			Vector3 max = Vector3::max(x1, x2) + Vector3::max(y1, y2) + Vector3::max(z1, z2) +
 			              matrix().translation();
-			return AABB(min, max);
+			return {min, max};
 		}
 
 		Ray transform_ray(const Ray &r) const
 		{
 			Vector3 o = transform_point(r.origin);
 			Vector3 d = transform_direction(r.direction);
-			return Ray(o, d, r.time);
+			return {o, d, r.time};
 		}
 
 	private:

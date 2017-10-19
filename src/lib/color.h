@@ -42,32 +42,32 @@ namespace Rayni
 
 		static constexpr Color black()
 		{
-			return Color(0, 0, 0);
+			return {0, 0, 0};
 		}
 
 		static constexpr Color white()
 		{
-			return Color(1, 1, 1);
+			return {1, 1, 1};
 		}
 
 		static constexpr Color red()
 		{
-			return Color(1, 0, 0);
+			return {1, 0, 0};
 		}
 
 		static constexpr Color yellow()
 		{
-			return Color(1, 1, 0);
+			return {1, 1, 0};
 		}
 
 		static constexpr Color green()
 		{
-			return Color(0, 1, 0);
+			return {0, 1, 0};
 		}
 
 		static constexpr Color blue()
 		{
-			return Color(0, 0, 1);
+			return {0, 0, 1};
 		}
 
 		static Color from_variant(const Variant &v);
@@ -104,12 +104,12 @@ namespace Rayni
 
 		Color operator+(const Color &c) const
 		{
-			return Color(r() + c.r(), g() + c.g(), b() + c.b());
+			return {r() + c.r(), g() + c.g(), b() + c.b()};
 		}
 
 		Color operator-(const Color &c) const
 		{
-			return Color(r() - c.r(), g() - c.g(), b() - c.b());
+			return {r() - c.r(), g() - c.g(), b() - c.b()};
 		}
 
 		Color &operator+=(const Color &c)
@@ -123,7 +123,7 @@ namespace Rayni
 
 		Color operator*(const Color &c) const
 		{
-			return Color(r() * c.r(), g() * c.g(), b() * c.b());
+			return {r() * c.r(), g() * c.g(), b() * c.b()};
 		}
 
 		Color &operator*=(const Color &c)
@@ -137,12 +137,12 @@ namespace Rayni
 
 		Color operator*(real_t s) const
 		{
-			return Color(r() * s, g() * s, b() * s);
+			return {r() * s, g() * s, b() * s};
 		}
 
 		friend Color operator*(real_t s, const Color &c)
 		{
-			return Color(s * c.r(), s * c.g(), s * c.b());
+			return {s * c.r(), s * c.g(), s * c.b()};
 		}
 
 		Color &operator*=(real_t s)
@@ -156,9 +156,9 @@ namespace Rayni
 
 		Color clamp() const
 		{
-			return Color(std::min(std::max(r(), real_t(0)), real_t(1)),
-			             std::min(std::max(g(), real_t(0)), real_t(1)),
-			             std::min(std::max(b(), real_t(0)), real_t(1)));
+			return {std::min(std::max(r(), real_t(0)), real_t(1)),
+			        std::min(std::max(g(), real_t(0)), real_t(1)),
+			        std::min(std::max(b(), real_t(0)), real_t(1))};
 		}
 
 	private:

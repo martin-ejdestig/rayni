@@ -85,22 +85,22 @@ namespace Rayni
 
 		Quaternion operator+(const Quaternion &q) const
 		{
-			return Quaternion(x() + q.x(), y() + q.y(), z() + q.z(), w() + q.w());
+			return {x() + q.x(), y() + q.y(), z() + q.z(), w() + q.w()};
 		}
 
 		Quaternion operator-(const Quaternion &q) const
 		{
-			return Quaternion(x() - q.x(), y() - q.y(), z() - q.z(), w() - q.w());
+			return {x() - q.x(), y() - q.y(), z() - q.z(), w() - q.w()};
 		}
 
 		Quaternion operator*(real_t s) const
 		{
-			return Quaternion(x() * s, y() * s, z() * s, w() * s);
+			return {x() * s, y() * s, z() * s, w() * s};
 		}
 
 		friend Quaternion operator*(real_t s, const Quaternion &q)
 		{
-			return Quaternion(s * q.x(), s * q.y(), s * q.z(), s * q.w());
+			return {s * q.x(), s * q.y(), s * q.z(), s * q.w()};
 		}
 
 		Quaternion normalize() const

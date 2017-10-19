@@ -57,12 +57,12 @@ namespace Rayni
 
 		static Matrix4x4 identity()
 		{
-			return Matrix4x4({1, 0, 0, 0}, {0, 1, 0, 0}, {0, 0, 1, 0}, {0, 0, 0, 1});
+			return {{1, 0, 0, 0}, {0, 1, 0, 0}, {0, 0, 1, 0}, {0, 0, 0, 1}};
 		}
 
 		static Matrix4x4 translate(real_t x, real_t y, real_t z)
 		{
-			return Matrix4x4({1, 0, 0, x}, {0, 1, 0, y}, {0, 0, 1, z}, {0, 0, 0, 1});
+			return {{1, 0, 0, x}, {0, 1, 0, y}, {0, 0, 1, z}, {0, 0, 0, 1}};
 		}
 
 		static Matrix4x4 translate(const Vector3 &v)
@@ -72,7 +72,7 @@ namespace Rayni
 
 		static Matrix4x4 scale(real_t x, real_t y, real_t z)
 		{
-			return Matrix4x4({x, 0, 0, 0}, {0, y, 0, 0}, {0, 0, z, 0}, {0, 0, 0, 1});
+			return {{x, 0, 0, 0}, {0, y, 0, 0}, {0, 0, z, 0}, {0, 0, 0, 1}};
 		}
 
 		static Matrix4x4 scale(const Vector3 &v)
@@ -89,21 +89,21 @@ namespace Rayni
 		{
 			real_t sin = std::sin(radians);
 			real_t cos = std::cos(radians);
-			return Matrix4x4({1, 0, 0, 0}, {0, cos, -sin, 0}, {0, sin, cos, 0}, {0, 0, 0, 1});
+			return {{1, 0, 0, 0}, {0, cos, -sin, 0}, {0, sin, cos, 0}, {0, 0, 0, 1}};
 		}
 
 		static Matrix4x4 rotate_y(real_t radians)
 		{
 			real_t sin = std::sin(radians);
 			real_t cos = std::cos(radians);
-			return Matrix4x4({cos, 0, sin, 0}, {0, 1, 0, 0}, {-sin, 0, cos, 0}, {0, 0, 0, 1});
+			return {{cos, 0, sin, 0}, {0, 1, 0, 0}, {-sin, 0, cos, 0}, {0, 0, 0, 1}};
 		}
 
 		static Matrix4x4 rotate_z(real_t radians)
 		{
 			real_t sin = std::sin(radians);
 			real_t cos = std::cos(radians);
-			return Matrix4x4({cos, -sin, 0, 0}, {sin, cos, 0, 0}, {0, 0, 1, 0}, {0, 0, 0, 1});
+			return {{cos, -sin, 0, 0}, {sin, cos, 0, 0}, {0, 0, 1, 0}, {0, 0, 0, 1}};
 		}
 
 		static Matrix4x4 rotate(real_t radians, const Vector3 &axis)
@@ -113,19 +113,19 @@ namespace Rayni
 			real_t c = std::cos(radians);
 			real_t t = 1 - c;
 
-			return Matrix4x4({a.x() * a.x() * t + c,
-			                  a.x() * a.y() * t - a.z() * s,
-			                  a.x() * a.z() * t + a.y() * s,
-			                  0},
-			                 {a.x() * a.y() * t + a.z() * s,
-			                  a.y() * a.y() * t + c,
-			                  a.y() * a.z() * t - a.x() * s,
-			                  0},
-			                 {a.x() * a.z() * t - a.y() * s,
-			                  a.y() * a.z() * t + a.x() * s,
-			                  a.z() * a.z() * t + c,
-			                  0},
-			                 {0, 0, 0, 1});
+			return {{a.x() * a.x() * t + c,
+			         a.x() * a.y() * t - a.z() * s,
+			         a.x() * a.z() * t + a.y() * s,
+			         0},
+			        {a.x() * a.y() * t + a.z() * s,
+			         a.y() * a.y() * t + c,
+			         a.y() * a.z() * t - a.x() * s,
+			         0},
+			        {a.x() * a.z() * t - a.y() * s,
+			         a.y() * a.z() * t + a.x() * s,
+			         a.z() * a.z() * t + c,
+			         0},
+			        {0, 0, 0, 1}};
 		}
 
 		static Matrix4x4 rotate(const Quaternion &q)
@@ -140,10 +140,10 @@ namespace Rayni
 			real_t yw = q.y() * q.w();
 			real_t zw = q.z() * q.w();
 
-			return Matrix4x4({1 - 2 * (yy + zz), 2 * (xy - zw), 2 * (xz + yw), 0},
-			                 {2 * (xy + zw), 1 - 2 * (xx + zz), 2 * (yz - xw), 0},
-			                 {2 * (xz - yw), 2 * (yz + xw), 1 - 2 * (xx + yy), 0},
-			                 {0, 0, 0, 1});
+			return {{1 - 2 * (yy + zz), 2 * (xy - zw), 2 * (xz + yw), 0},
+			        {2 * (xy + zw), 1 - 2 * (xx + zz), 2 * (yz - xw), 0},
+			        {2 * (xz - yw), 2 * (yz + xw), 1 - 2 * (xx + yy), 0},
+			        {0, 0, 0, 1}};
 		}
 
 		static Matrix4x4 look_at(const Vector3 &translation, const Vector3 &center, const Vector3 &up)
@@ -152,18 +152,18 @@ namespace Rayni
 			Vector3 x_axis = up.normalize().cross(z_axis).normalize();
 			Vector3 y_axis = z_axis.cross(x_axis);
 
-			return Matrix4x4({x_axis.x(), y_axis.x(), z_axis.x(), translation.x()},
-			                 {x_axis.y(), y_axis.y(), z_axis.y(), translation.y()},
-			                 {x_axis.z(), y_axis.z(), z_axis.z(), translation.z()},
-			                 {0, 0, 0, 1});
+			return {{x_axis.x(), y_axis.x(), z_axis.x(), translation.x()},
+			        {x_axis.y(), y_axis.y(), z_axis.y(), translation.y()},
+			        {x_axis.z(), y_axis.z(), z_axis.z(), translation.z()},
+			        {0, 0, 0, 1}};
 		}
 
 		static Matrix4x4 from_axes(const Vector3 &x_axis, const Vector3 &y_axis, const Vector3 &z_axis)
 		{
-			return Matrix4x4({x_axis.x(), y_axis.x(), z_axis.x(), 0},
-			                 {x_axis.y(), y_axis.y(), z_axis.y(), 0},
-			                 {x_axis.z(), y_axis.z(), z_axis.z(), 0},
-			                 {0, 0, 0, 1});
+			return {{x_axis.x(), y_axis.x(), z_axis.x(), 0},
+			        {x_axis.y(), y_axis.y(), z_axis.y(), 0},
+			        {x_axis.z(), y_axis.z(), z_axis.z(), 0},
+			        {0, 0, 0, 1}};
 		}
 
 		real_t &operator()(unsigned int row_index, unsigned int column_index)
@@ -198,10 +198,10 @@ namespace Rayni
 
 		Matrix4x4 transpose() const
 		{
-			return Matrix4x4({rows[0][0], rows[1][0], rows[2][0], rows[3][0]},
-			                 {rows[0][1], rows[1][1], rows[2][1], rows[3][1]},
-			                 {rows[0][2], rows[1][2], rows[2][2], rows[3][2]},
-			                 {rows[0][3], rows[1][3], rows[2][3], rows[3][3]});
+			return {{rows[0][0], rows[1][0], rows[2][0], rows[3][0]},
+			        {rows[0][1], rows[1][1], rows[2][1], rows[3][1]},
+			        {rows[0][2], rows[1][2], rows[2][2], rows[3][2]},
+			        {rows[0][3], rows[1][3], rows[2][3], rows[3][3]}};
 		}
 
 		Vector4 &row(unsigned int row_index)
@@ -235,22 +235,22 @@ namespace Rayni
 
 		Vector3 x_axis() const
 		{
-			return Vector3(rows[0][0], rows[1][0], rows[2][0]);
+			return {rows[0][0], rows[1][0], rows[2][0]};
 		}
 
 		Vector3 y_axis() const
 		{
-			return Vector3(rows[0][1], rows[1][1], rows[2][1]);
+			return {rows[0][1], rows[1][1], rows[2][1]};
 		}
 
 		Vector3 z_axis() const
 		{
-			return Vector3(rows[0][2], rows[1][2], rows[2][2]);
+			return {rows[0][2], rows[1][2], rows[2][2]};
 		}
 
 		Vector3 translation() const
 		{
-			return Vector3(rows[0][3], rows[1][3], rows[2][3]);
+			return {rows[0][3], rows[1][3], rows[2][3]};
 		}
 
 		Quaternion rotation() const
@@ -260,9 +260,9 @@ namespace Rayni
 
 		Matrix3x3 upper3x3() const
 		{
-			return Matrix3x3({rows[0].x(), rows[0].y(), rows[0].z()},
-			                 {rows[1].x(), rows[1].y(), rows[1].z()},
-			                 {rows[2].x(), rows[2].y(), rows[2].z()});
+			return {{rows[0].x(), rows[0].y(), rows[0].z()},
+			        {rows[1].x(), rows[1].y(), rows[1].z()},
+			        {rows[2].x(), rows[2].y(), rows[2].z()}};
 		}
 
 	private:

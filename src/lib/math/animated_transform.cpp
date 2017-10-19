@@ -54,7 +54,7 @@ namespace Rayni
 		real_t dt = (ct - start_time) / (end_time - start_time);
 		Matrix4x4 m = start.interpolate(dt, end).compose();
 
-		return Transform(m, m.inverse());
+		return {m, m.inverse()};
 	}
 
 	AABB AnimatedTransform::motion_bounds(const AABB &aabb) const

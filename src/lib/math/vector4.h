@@ -93,7 +93,7 @@ namespace Rayni
 
 		Vector4 operator*(real_t s) const
 		{
-			return Vector4(x() * s, y() * s, z() * s, w() * s);
+			return {x() * s, y() * s, z() * s, w() * s};
 		}
 
 		Vector4 &operator+=(const Vector4 &v)

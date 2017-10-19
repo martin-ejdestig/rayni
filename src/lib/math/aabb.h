@@ -73,7 +73,7 @@ namespace Rayni
 
 		AABB intersection(const AABB &aabb) const
 		{
-			return AABB(Vector3::max(minimum(), aabb.minimum()), Vector3::min(maximum(), aabb.maximum()));
+			return {Vector3::max(minimum(), aabb.minimum()), Vector3::min(maximum(), aabb.maximum())};
 		}
 
 		real_t surface_area() const

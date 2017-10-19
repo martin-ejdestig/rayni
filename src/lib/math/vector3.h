@@ -56,19 +56,19 @@ namespace Rayni
 
 		static constexpr Vector3 infinity()
 		{
-			return Vector3(std::numeric_limits<real_t>::infinity(),
-			               std::numeric_limits<real_t>::infinity(),
-			               std::numeric_limits<real_t>::infinity());
+			return {std::numeric_limits<real_t>::infinity(),
+			        std::numeric_limits<real_t>::infinity(),
+			        std::numeric_limits<real_t>::infinity()};
 		}
 
 		static Vector3 min(const Vector3 &a, const Vector3 &b)
 		{
-			return Vector3(std::min(a.x(), b.x()), std::min(a.y(), b.y()), std::min(a.z(), b.z()));
+			return {std::min(a.x(), b.x()), std::min(a.y(), b.y()), std::min(a.z(), b.z())};
 		}
 
 		static Vector3 max(const Vector3 &a, const Vector3 &b)
 		{
-			return Vector3(std::max(a.x(), b.x()), std::max(a.y(), b.y()), std::max(a.z(), b.z()));
+			return {std::max(a.x(), b.x()), std::max(a.y(), b.y()), std::max(a.z(), b.z())};
 		}
 
 		real_t x() const
@@ -115,27 +115,27 @@ namespace Rayni
 
 		Vector3 operator+(const Vector3 &v) const
 		{
-			return Vector3(x() + v.x(), y() + v.y(), z() + v.z());
+			return {x() + v.x(), y() + v.y(), z() + v.z()};
 		}
 
 		Vector3 operator-(const Vector3 &v) const
 		{
-			return Vector3(x() - v.x(), y() - v.y(), z() - v.z());
+			return {x() - v.x(), y() - v.y(), z() - v.z()};
 		}
 
 		Vector3 operator-() const
 		{
-			return Vector3(-x(), -y(), -z());
+			return {-x(), -y(), -z()};
 		}
 
 		Vector3 operator*(real_t s) const
 		{
-			return Vector3(x() * s, y() * s, z() * s);
+			return {x() * s, y() * s, z() * s};
 		}
 
 		friend Vector3 operator*(real_t s, const Vector3 &v)
 		{
-			return Vector3(s * v.x(), s * v.y(), s * v.z());
+			return {s * v.x(), s * v.y(), s * v.z()};
 		}
 
 		Vector3 &operator+=(const Vector3 &v)
@@ -178,7 +178,7 @@ namespace Rayni
 
 		Vector3 cross(const Vector3 &v) const
 		{
-			return Vector3(y() * v.z() - z() * v.y(), z() * v.x() - x() * v.z(), x() * v.y() - y() * v.x());
+			return {y() * v.z() - z() * v.y(), z() * v.x() - x() * v.z(), x() * v.y() - y() * v.x()};
 		}
 
 		Vector3 reflect(const Vector3 &normal) const

@@ -46,7 +46,7 @@ namespace Rayni
 
 		static Matrix3x3 scale(real_t x, real_t y, real_t z)
 		{
-			return Matrix3x3({x, 0, 0}, {0, y, 0}, {0, 0, z});
+			return {{x, 0, 0}, {0, y, 0}, {0, 0, z}};
 		}
 
 		static Matrix3x3 scale(real_t s)
@@ -68,12 +68,12 @@ namespace Rayni
 
 		Matrix3x3 operator+(const Matrix3x3 &right) const
 		{
-			return Matrix3x3(rows[0] + right.rows[0], rows[1] + right.rows[1], rows[2] + right.rows[2]);
+			return {rows[0] + right.rows[0], rows[1] + right.rows[1], rows[2] + right.rows[2]};
 		}
 
 		Matrix3x3 operator-(const Matrix3x3 &right) const
 		{
-			return Matrix3x3(rows[0] - right.rows[0], rows[1] - right.rows[1], rows[2] - right.rows[2]);
+			return {rows[0] - right.rows[0], rows[1] - right.rows[1], rows[2] - right.rows[2]};
 		}
 
 		Matrix3x3 operator*(const Matrix3x3 &right) const
@@ -91,12 +91,12 @@ namespace Rayni
 
 		Matrix3x3 operator*(real_t s) const
 		{
-			return Matrix3x3(rows[0] * s, rows[1] * s, rows[2] * s);
+			return {rows[0] * s, rows[1] * s, rows[2] * s};
 		}
 
 		friend Matrix3x3 operator*(real_t s, const Matrix3x3 &m)
 		{
-			return Matrix3x3(s * m.rows[0], s * m.rows[1], s * m.rows[2]);
+			return {s * m.rows[0], s * m.rows[1], s * m.rows[2]};
 		}
 
 		Vector3 &row(unsigned int row_index)
@@ -128,9 +128,9 @@ namespace Rayni
 
 		Matrix3x3 transpose() const
 		{
-			return Matrix3x3({rows[0][0], rows[1][0], rows[2][0]},
-			                 {rows[0][1], rows[1][1], rows[2][1]},
-			                 {rows[0][2], rows[1][2], rows[2][2]});
+			return {{rows[0][0], rows[1][0], rows[2][0]},
+			        {rows[0][1], rows[1][1], rows[2][1]},
+			        {rows[0][2], rows[1][2], rows[2][2]}};
 		}
 
 		real_t trace() const

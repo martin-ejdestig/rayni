@@ -56,6 +56,7 @@ namespace
 		stderr_pipe.close_fds();
 
 		std::vector<const char *> argv;
+		argv.reserve(args.size() + 1);
 		for (const std::string &arg : args)
 			argv.push_back(arg.data());
 		argv.push_back(nullptr);

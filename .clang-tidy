@@ -55,6 +55,7 @@
 #   https://bugs.llvm.org//show_bug.cgi?id=32749 .
 
 Checks: "\
+bugprone-*,\
 cppcoreguidelines-*,\
 -cppcoreguidelines-pro-bounds-*,\
 -cppcoreguidelines-pro-type-member-init,\

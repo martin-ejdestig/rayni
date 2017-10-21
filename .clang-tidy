@@ -93,6 +93,8 @@ CheckOptions:
     value: '8'
   - key:   readability-function-size.LineThreshold
     value: '64'
+  - key:   readability-function-size.ParameterThreshold
+    value: '8'
   - key:   readability-identifier-naming.AbstractClassCase
     value: CamelCase
   - key:   readability-identifier-naming.ClassCase

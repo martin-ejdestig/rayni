@@ -60,7 +60,7 @@ namespace Rayni
 
 			std::size_t line_ = 0;
 			std::size_t line_index_ = 0;
-			std::string prefix;
+			std::string prefix_;
 		};
 
 		void open_file(const std::string &file_name);
@@ -83,19 +83,19 @@ namespace Rayni
 
 		char next_get()
 		{
-			char c = line[position_.line_index()];
+			char c = line_[position_.line_index()];
 			next();
 			return c;
 		}
 
 		bool at(char c) const
 		{
-			return line[position_.line_index()] == c;
+			return line_[position_.line_index()] == c;
 		}
 
 		bool at_digit() const
 		{
-			char c = line[position_.line_index()];
+			char c = line_[position_.line_index()];
 			return c >= '0' && c <= '9';
 		}
 
@@ -111,10 +111,10 @@ namespace Rayni
 
 		bool at_eof() const
 		{
-			if (line.empty())
+			if (line_.empty())
 				return true;
 
-			return line.size() - 1 == position_.line_index() && istream->eof();
+			return line_.size() - 1 == position_.line_index() && istream_->eof();
 		}
 
 		bool skip_char(char c)
@@ -155,8 +155,8 @@ namespace Rayni
 
 		void getline();
 
-		std::unique_ptr<std::istream> istream;
-		std::string line;
+		std::unique_ptr<std::istream> istream_;
+		std::string line_;
 		Position position_;
 	};
 
@@ -177,7 +177,7 @@ namespace Rayni
 		using Exception::Exception;
 	};
 
-	inline TextReader::Position::Position(const std::string &prefix) : prefix(prefix)
+	inline TextReader::Position::Position(const std::string &prefix) : prefix_(prefix)
 	{
 	}
 

@@ -45,43 +45,43 @@ namespace Rayni
 	public:
 		void add(int fd, FDFlags flags, std::function<void(FDFlags flags)> &&callback)
 		{
-			std::unique_lock<std::recursive_mutex> lock(mutex);
+			std::unique_lock<std::recursive_mutex> lock(mutex_);
 
 			epoll.add(fd, flags);
-			map[fd] = Data{std::move(callback)};
+			map_[fd] = Data{std::move(callback)};
 		}
 
 		void modify(int fd, FDFlags flags, std::function<void(FDFlags flags)> &&callback)
 		{
-			std::unique_lock<std::recursive_mutex> lock(mutex);
+			std::unique_lock<std::recursive_mutex> lock(mutex_);
 
 			epoll.modify(fd, flags);
-			map[fd] = Data{std::move(callback)};
+			map_[fd] = Data{std::move(callback)};
 		}
 
 		void remove(int fd)
 		{
-			std::unique_lock<std::recursive_mutex> lock(mutex);
+			std::unique_lock<std::recursive_mutex> lock(mutex_);
 
-			auto i = map.find(fd);
-			if (i == map.cend())
+			auto i = map_.find(fd);
+			if (i == map_.cend())
 				return;
 
 			epoll.remove(fd);
-			map.erase(i);
+			map_.erase(i);
 		}
 
 		void dispatch()
 		{
 			std::array<Epoll::Event, 4> events;
 			Epoll::EventCount num_events = epoll.wait(events);
-			std::unique_lock<std::recursive_mutex> lock(mutex);
+			std::unique_lock<std::recursive_mutex> lock(mutex_);
 
 			for (Epoll::EventCount i = 0; i < num_events; i++)
 			{
-				auto it = map.find(events[i].fd());
+				auto it = map_.find(events[i].fd());
 
-				if (it != map.cend() && it->second.callback)
+				if (it != map_.cend() && it->second.callback)
 					it->second.callback(events[i].flags());
 			}
 		}
@@ -94,8 +94,8 @@ namespace Rayni
 			std::function<void(FDFlags)> callback;
 		};
 
-		std::recursive_mutex mutex;
-		std::unordered_map<int, Data> map;
+		std::recursive_mutex mutex_;
+		std::unordered_map<int, Data> map_;
 	};
 
 	// Data for all timers. Can be accessed from multiple threads.
@@ -117,12 +117,12 @@ namespace Rayni
 		            std::chrono::nanoseconds interval,
 		            std::function<void()> &&callback) // TODO: [[nodiscard]] when C++17
 		{
-			std::unique_lock<std::recursive_mutex> lock(mutex);
+			std::unique_lock<std::recursive_mutex> lock(mutex_);
 
 			if (id == TIMER_ID_EMPTY)
 				id = generate_id(timer);
 
-			map[id] = Data{expiration, interval, std::move(callback)};
+			map_[id] = Data{expiration, interval, std::move(callback)};
 
 			changed_event_fd.write(1);
 
@@ -131,23 +131,23 @@ namespace Rayni
 
 		void remove(TimerId id)
 		{
-			std::unique_lock<std::recursive_mutex> lock(mutex);
+			std::unique_lock<std::recursive_mutex> lock(mutex_);
 
-			auto i = map.find(id);
-			if (i == map.cend())
+			auto i = map_.find(id);
+			if (i == map_.cend())
 				return;
 
-			map.erase(i);
+			map_.erase(i);
 
 			changed_event_fd.write(1);
 		}
 
 		std::experimental::optional<clock::time_point> earliest_expiration()
 		{
-			std::unique_lock<std::recursive_mutex> lock(mutex);
+			std::unique_lock<std::recursive_mutex> lock(mutex_);
 			clock::time_point expiration = clock::time_point::max();
 
-			for (const auto &key_value : map)
+			for (const auto &key_value : map_)
 			{
 				const Data &data = key_value.second;
 
@@ -163,7 +163,7 @@ namespace Rayni
 
 		void dispatch()
 		{
-			std::unique_lock<std::recursive_mutex> lock(mutex);
+			std::unique_lock<std::recursive_mutex> lock(mutex_);
 			clock::time_point now = clock::now();
 			bool dispatch_needed = true; // Repeat timers may expire again and callback can restart timer.
 
@@ -171,7 +171,7 @@ namespace Rayni
 			{
 				dispatch_needed = false;
 
-				for (auto &key_value : map)
+				for (auto &key_value : map_)
 				{
 					Data &data = key_value.second;
 
@@ -217,25 +217,25 @@ namespace Rayni
 
 		TimerId generate_id(const Timer *timer) const
 		{
-			TimerId id = hash_combine_for(timer, map.size());
+			TimerId id = hash_combine_for(timer, map_.size());
 
-			while (id == TIMER_ID_EMPTY || map.find(id) != map.cend())
+			while (id == TIMER_ID_EMPTY || map_.find(id) != map_.cend())
 				id = hash_combine_for(timer, id);
 
 			return id;
 		}
 
-		std::recursive_mutex mutex;
-		std::map<TimerId, Data> map;
+		std::recursive_mutex mutex_;
+		std::map<TimerId, Data> map_;
 	};
 
-	MainLoop::MainLoop() : timer_data(std::make_shared<TimerData>()), fd_data(std::make_shared<FDData>())
+	MainLoop::MainLoop() : timer_data_(std::make_shared<TimerData>()), fd_data_(std::make_shared<FDData>())
 	{
-		epoll.add(exit_event_fd.fd(), Epoll::Flag::IN);
-		epoll.add(run_in_event_fd.fd(), Epoll::Flag::IN);
-		epoll.add(timer_fd.fd(), Epoll::Flag::IN);
-		epoll.add(timer_data->changed_event_fd.fd(), Epoll::Flag::IN);
-		epoll.add(fd_data->epoll.fd(), Epoll::Flag::IN);
+		epoll_.add(exit_event_fd_.fd(), Epoll::Flag::IN);
+		epoll_.add(run_in_event_fd_.fd(), Epoll::Flag::IN);
+		epoll_.add(timer_fd_.fd(), Epoll::Flag::IN);
+		epoll_.add(timer_data_->changed_event_fd.fd(), Epoll::Flag::IN);
+		epoll_.add(fd_data_->epoll.fd(), Epoll::Flag::IN);
 	}
 
 	int MainLoop::loop()
@@ -255,7 +255,7 @@ namespace Rayni
 	{
 		exit_code_ = exit_code;
 		exited_ = true;
-		exit_event_fd.write(1);
+		exit_event_fd_.write(1);
 	}
 
 	bool MainLoop::wait(std::chrono::milliseconds timeout)
@@ -263,78 +263,78 @@ namespace Rayni
 		if (exited())
 			return false;
 
-		events_occurred = epoll.wait(events, timeout);
+		events_occurred_ = epoll_.wait(events_, timeout);
 
-		return events_occurred > 0;
+		return events_occurred_ > 0;
 	}
 
 	void MainLoop::dispatch()
 	{
-		auto events_left_to_process = std::exchange(events_occurred, 0);
+		auto events_left_to_process = std::exchange(events_occurred_, 0);
 
-		for (const auto &event : events)
+		for (const auto &event : events_)
 		{
 			if (events_left_to_process-- == 0)
 				break;
 
-			if (event.fd() == exit_event_fd.fd())
+			if (event.fd() == exit_event_fd_.fd())
 			{
-				exit_event_fd.read();
+				exit_event_fd_.read();
 				break;
 			}
 
-			if (event.fd() == run_in_event_fd.fd())
+			if (event.fd() == run_in_event_fd_.fd())
 			{
-				run_in_event_fd.read();
-				run_in_functions.dispatch();
+				run_in_event_fd_.read();
+				run_in_functions_.dispatch();
 			}
-			else if (event.fd() == timer_fd.fd())
+			else if (event.fd() == timer_fd_.fd())
 			{
-				timer_fd.read();
-				timer_data->dispatch();
+				timer_fd_.read();
+				timer_data_->dispatch();
 				set_timer_fd_from_timer_data();
 			}
-			else if (event.fd() == timer_data->changed_event_fd.fd())
+			else if (event.fd() == timer_data_->changed_event_fd.fd())
 			{
-				timer_data->changed_event_fd.read();
+				timer_data_->changed_event_fd.read();
 				set_timer_fd_from_timer_data();
 			}
-			else if (event.fd() == fd_data->epoll.fd())
+			else if (event.fd() == fd_data_->epoll.fd())
 			{
-				fd_data->dispatch();
+				fd_data_->dispatch();
 			}
 		}
 	}
 
 	void MainLoop::run_in(std::function<void()> &&function)
 	{
-		run_in_functions.add(std::move(function));
-		run_in_event_fd.write(1);
+		run_in_functions_.add(std::move(function));
+		run_in_event_fd_.write(1);
 	}
 
 	void MainLoop::set_timer_fd_from_timer_data() const
 	{
-		std::experimental::optional<clock::time_point> expiration = timer_data->earliest_expiration();
+		std::experimental::optional<clock::time_point> expiration = timer_data_->earliest_expiration();
 
 		if (expiration)
-			timer_fd.set(*expiration);
+			timer_fd_.set(*expiration);
 		else
-			timer_fd.disarm();
+			timer_fd_.disarm();
 	}
 
 	void MainLoop::RunInFunctions::add(std::function<void()> &&function)
 	{
-		std::unique_lock<std::mutex> lock(mutex);
+		std::unique_lock<std::mutex> lock(mutex_);
 
-		functions.emplace_back(std::move(function));
+		functions_.emplace_back(std::move(function));
 	}
 
 	void MainLoop::RunInFunctions::dispatch()
 	{
 		std::vector<std::function<void()>> functions_to_dispatch;
 		{
-			std::unique_lock<std::mutex> lock(mutex);
-			functions_to_dispatch = std::move(functions);
+			std::unique_lock<std::mutex> lock(mutex_);
+			functions_to_dispatch = std::move(functions_);
 		}
 
 		for (auto &function : functions_to_dispatch)
@@ -346,37 +346,37 @@ namespace Rayni
 	                                FDFlags flags,
 	                                std::function<void(FDFlags flags)> &&callback)
 	{
-		auto data = fd_data.lock();
-		if (data != main_loop.fd_data)
+		auto data = fd_data_.lock();
+		if (data != main_loop.fd_data_)
 		{
 			if (data)
-				data->remove(std::exchange(this->fd, -1));
+				data->remove(std::exchange(fd_, -1));
 
-			fd_data = main_loop.fd_data;
-			data = main_loop.fd_data;
+			fd_data_ = main_loop.fd_data_;
+			data = main_loop.fd_data_;
 		}
 
-		if (this->fd == fd)
+		if (fd_ == fd)
 		{
 			data->modify(fd, flags, std::move(callback));
 			return;
 		}
 
-		if (this->fd != -1)
-			data->remove(std::exchange(this->fd, -1));
+		if (fd_ != -1)
+			data->remove(std::exchange(fd_, -1));
 
 		data->add(fd, flags, std::move(callback));
-		this->fd = fd;
+		fd_ = fd;
 	}
 
 	void MainLoop::FDMonitor::stop()
 	{
-		auto data = fd_data.lock();
+		auto data = fd_data_.lock();
 		if (!data)
 			return;
 
-		fd_data.reset();
-		data->remove(std::exchange(fd, -1));
+		fd_data_.reset();
+		data->remove(std::exchange(fd_, -1));
 	}
 
 	void MainLoop::Timer::start(MainLoop &main_loop,
@@ -384,35 +384,35 @@ namespace Rayni
 	                            std::chrono::nanoseconds interval,
 	                            std::function<void()> &&callback)
 	{
-		auto data = timer_data.lock();
-		if (data != main_loop.timer_data)
+		auto data = timer_data_.lock();
+		if (data != main_loop.timer_data_)
 		{
 			if (data)
 				remove();
 
-			timer_data = main_loop.timer_data;
-			data = main_loop.timer_data;
+			timer_data_ = main_loop.timer_data_;
+			data = main_loop.timer_data_;
 		}
 
-		id = data->set(this, id, expiration, interval, std::move(callback));
+		id_ = data->set(this, id_, expiration, interval, std::move(callback));
 	}
 
 	void MainLoop::Timer::stop()
 	{
-		auto data = timer_data.lock();
+		auto data = timer_data_.lock();
 		if (!data)
 			return;
 
-		id = data->set(this, id, CLOCK_EPOCH, std::chrono::nanoseconds(0), std::function<void()>());
+		id_ = data->set(this, id_, CLOCK_EPOCH, std::chrono::nanoseconds(0), std::function<void()>());
 	}
 
 	void MainLoop::Timer::remove()
 	{
-		auto data = timer_data.lock();
+		auto data = timer_data_.lock();
 		if (!data)
 			return;
 
-		timer_data.reset();
-		data->remove(std::exchange(id, TIMER_ID_EMPTY));
+		timer_data_.reset();
+		data->remove(std::exchange(id_, TIMER_ID_EMPTY));
 	}
 }

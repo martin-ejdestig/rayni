@@ -36,15 +36,15 @@ namespace Rayni
 		// write()/add will block if value will exceed MAX_VALUE (and EFD_NONBLOCK is not set).
 		static constexpr std::uint64_t MAX_VALUE = 0xfffffffffffffffe;
 
-		EventFD() : event_fd(eventfd(0, EFD_CLOEXEC))
+		EventFD() : event_fd_(eventfd(0, EFD_CLOEXEC))
 		{
-			if (event_fd == -1)
+			if (event_fd_ == -1)
 				throw std::system_error(errno, std::system_category(), "eventfd() failed");
 		}
 
 		EventFD(const EventFD &other) = delete;
 
-		EventFD(EventFD &&other) noexcept : event_fd(std::exchange(other.event_fd, -1))
+		EventFD(EventFD &&other) noexcept : event_fd_(std::exchange(other.event_fd_, -1))
 		{
 		}
 
@@ -58,20 +58,20 @@ namespace Rayni
 		EventFD &operator=(EventFD &&other) noexcept
 		{
 			close();
-			event_fd = std::exchange(other.event_fd, -1);
+			event_fd_ = std::exchange(other.event_fd_, -1);
 			return *this;
 		}
 
 		int fd() const
 		{
-			return event_fd;
+			return event_fd_;
 		}
 
 		std::uint64_t read() const
 		{
 			std::uint64_t value = 0;
 
-			while (::read(event_fd, &value, sizeof value) != static_cast<ssize_t>(sizeof value))
+			while (::read(event_fd_, &value, sizeof value) != static_cast<ssize_t>(sizeof value))
 				if (errno != EINTR)
 					throw std::system_error(errno,
 					                        std::system_category(),
@@ -82,7 +82,7 @@ namespace Rayni
 
 		void write(std::uint64_t value) const
 		{
-			while (::write(event_fd, &value, sizeof value) != static_cast<ssize_t>(sizeof value))
+			while (::write(event_fd_, &value, sizeof value) != static_cast<ssize_t>(sizeof value))
 				if (errno != EINTR)
 					throw std::system_error(errno,
 					                        std::system_category(),
@@ -92,14 +92,14 @@ namespace Rayni
 	private:
 		void close()
 		{
-			if (event_fd == -1)
+			if (event_fd_ == -1)
 				return;
 
-			::close(event_fd);
-			event_fd = -1;
+			::close(event_fd_);
+			event_fd_ = -1;
 		}
 
-		int event_fd = -1;
+		int event_fd_ = -1;
 	};
 }
 

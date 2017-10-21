@@ -41,13 +41,13 @@ namespace Rayni
 
 		explicit Pipe(int flags)
 		{
-			if (pipe2(fds.data(), flags) != 0)
+			if (pipe2(fds_.data(), flags) != 0)
 				throw std::system_error(errno, std::system_category(), "pipe2() failed");
 		}
 
 		Pipe(const Pipe &other) = delete;
 
-		Pipe(Pipe &&other) noexcept : fds(std::exchange(other.fds, {-1, -1}))
+		Pipe(Pipe &&other) noexcept : fds_(std::exchange(other.fds_, {-1, -1}))
 		{
 		}
 
@@ -61,7 +61,7 @@ namespace Rayni
 		Pipe &operator=(Pipe &&other) noexcept
 		{
 			close_fds();
-			fds = std::exchange(other.fds, {-1, -1});
+			fds_ = std::exchange(other.fds_, {-1, -1});
 			return *this;
 		}
 
@@ -73,22 +73,22 @@ namespace Rayni
 
 		void close_read_fd()
 		{
-			safe_close(fds[0]);
+			safe_close(fds_[0]);
 		}
 
 		void close_write_fd()
 		{
-			safe_close(fds[1]);
+			safe_close(fds_[1]);
 		}
 
 		int read_fd() const
 		{
-			return fds[0];
+			return fds_[0];
 		}
 
 		int write_fd() const
 		{
-			return fds[1];
+			return fds_[1];
 		}
 
 		template <typename Buffer>
@@ -148,7 +148,7 @@ namespace Rayni
 			fd = -1;
 		}
 
-		std::array<int, 2> fds = {-1, -1};
+		std::array<int, 2> fds_ = {-1, -1};
 	};
 }
 

@@ -39,31 +39,31 @@ namespace Rayni
 		{
 			PolarDecomposition<Matrix3x3> pd(matrix.upper3x3());
 
-			rotation = pd.rotation.rotation();
-			scale = pd.scale;
-			translation = matrix.translation();
+			rotation_ = pd.rotation.rotation();
+			scale_ = pd.scale;
+			translation_ = matrix.translation();
 		}
 
 		Matrix4x4 compose() const
 		{
-			return Matrix4x4::translate(translation) * Matrix4x4::rotate(rotation) * Matrix4x4(scale);
+			return Matrix4x4::translate(translation_) * Matrix4x4::rotate(rotation_) * Matrix4x4(scale_);
 		}
 
 		DecomposedMatrix4x4 interpolate(real_t t, const DecomposedMatrix4x4 &to) const
 		{
 			DecomposedMatrix4x4 d;
 
-			d.rotation = slerp(t, rotation, to.rotation);
-			d.scale = lerp(t, scale, to.scale);
-			d.translation = lerp(t, translation, to.translation);
+			d.rotation_ = slerp(t, rotation_, to.rotation_);
+			d.scale_ = lerp(t, scale_, to.scale_);
+			d.translation_ = lerp(t, translation_, to.translation_);
 
 			return d;
 		}
 
 	private:
-		Quaternion rotation;
-		Matrix3x3 scale;
-		Vector3 translation;
+		Quaternion rotation_;
+		Matrix3x3 scale_;
+		Vector3 translation_;
 	};
 }
 

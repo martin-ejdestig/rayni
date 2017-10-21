@@ -131,7 +131,7 @@ namespace Rayni
 
 		int fd() const
 		{
-			return epoll.fd();
+			return epoll_.fd();
 		}
 
 	private:
@@ -142,8 +142,8 @@ namespace Rayni
 			void dispatch();
 
 		private:
-			std::mutex mutex;
-			std::vector<std::function<void()>> functions;
+			std::mutex mutex_;
+			std::vector<std::function<void()>> functions_;
 		};
 
 		class FDData;
@@ -156,21 +156,21 @@ namespace Rayni
 
 		void set_timer_fd_from_timer_data() const;
 
-		Epoll epoll;
-		std::array<Epoll::Event, 5> events;
-		Epoll::EventCount events_occurred = 0;
+		Epoll epoll_;
+		std::array<Epoll::Event, 5> events_;
+		Epoll::EventCount events_occurred_ = 0;
 
 		std::atomic<int> exit_code_{EXIT_SUCCESS};
 		std::atomic<bool> exited_{false};
-		EventFD exit_event_fd;
+		EventFD exit_event_fd_;
 
-		EventFD run_in_event_fd;
-		RunInFunctions run_in_functions;
+		EventFD run_in_event_fd_;
+		RunInFunctions run_in_functions_;
 
-		TimerFD timer_fd;
-		std::shared_ptr<TimerData> timer_data;
+		TimerFD timer_fd_;
+		std::shared_ptr<TimerData> timer_data_;
 
-		std::shared_ptr<FDData> fd_data;
+		std::shared_ptr<FDData> fd_data_;
 	};
 
 	class MainLoop::FDMonitor
@@ -186,8 +186,8 @@ namespace Rayni
 		FDMonitor(const FDMonitor &other) = delete;
 
 		FDMonitor(FDMonitor &&other) noexcept :
-		        fd_data(std::move(other.fd_data)),
-		        fd(std::exchange(other.fd, -1))
+		        fd_data_(std::move(other.fd_data_)),
+		        fd_(std::exchange(other.fd_, -1))
 		{
 		}
 
@@ -197,8 +197,8 @@ namespace Rayni
 		{
 			stop();
 
-			fd_data = std::move(other.fd_data);
-			fd = std::exchange(other.fd, -1);
+			fd_data_ = std::move(other.fd_data_);
+			fd_ = std::exchange(other.fd_, -1);
 
 			return *this;
 		}
@@ -208,8 +208,8 @@ namespace Rayni
 		void stop();
 
 	private:
-		std::weak_ptr<FDData> fd_data;
-		int fd = -1;
+		std::weak_ptr<FDData> fd_data_;
+		int fd_ = -1;
 	};
 
 	class MainLoop::Timer
@@ -225,8 +225,8 @@ namespace Rayni
 		Timer(const Timer &other) = delete;
 
 		Timer(Timer &&other) noexcept :
-		        timer_data(std::move(other.timer_data)),
-		        id(std::exchange(other.id, TIMER_ID_EMPTY))
+		        timer_data_(std::move(other.timer_data_)),
+		        id_(std::exchange(other.id_, TIMER_ID_EMPTY))
 		{
 		}
 
@@ -236,8 +236,8 @@ namespace Rayni
 		{
 			remove();
 
-			timer_data = std::move(other.timer_data);
-			id = std::exchange(other.id, TIMER_ID_EMPTY);
+			timer_data_ = std::move(other.timer_data_);
+			id_ = std::exchange(other.id_, TIMER_ID_EMPTY);
 
 			return *this;
 		}
@@ -281,8 +281,8 @@ namespace Rayni
 
 		void remove();
 
-		std::weak_ptr<TimerData> timer_data;
-		TimerId id = TIMER_ID_EMPTY;
+		std::weak_ptr<TimerData> timer_data_;
+		TimerId id_ = TIMER_ID_EMPTY;
 	};
 }
 

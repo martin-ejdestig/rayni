@@ -57,9 +57,9 @@ namespace Rayni
 			initialize_from(std::move(other));
 		}
 
-		explicit Variant(Map &&map) : type(Type::MAP)
+		explicit Variant(Map &&map) : type_(Type::MAP)
 		{
-			new (&value.map) Map(std::move(map));
+			new (&value_.map) Map(std::move(map));
 			reparent_children();
 		}
 
@@ -80,9 +80,9 @@ namespace Rayni
 			return Variant(std::move(map));
 		}
 
-		explicit Variant(Vector &&vector) : type(Type::VECTOR)
+		explicit Variant(Vector &&vector) : type_(Type::VECTOR)
 		{
-			new (&value.vector) Vector(std::move(vector));
+			new (&value_.vector) Vector(std::move(vector));
 			reparent_children();
 		}
 
@@ -101,43 +101,43 @@ namespace Rayni
 			return Variant(std::move(vector));
 		}
 
-		explicit Variant(bool boolean) : type(Type::BOOL)
+		explicit Variant(bool boolean) : type_(Type::BOOL)
 		{
-			value.boolean = boolean;
+			value_.boolean = boolean;
 		}
 
-		explicit Variant(int number) : type(Type::INT)
+		explicit Variant(int number) : type_(Type::INT)
 		{
-			value.number_int = number;
+			value_.number_int = number;
 		}
 
-		explicit Variant(unsigned int number) : type(Type::UNSIGNED_INT)
+		explicit Variant(unsigned int number) : type_(Type::UNSIGNED_INT)
 		{
-			value.number_unsigned_int = number;
+			value_.number_unsigned_int = number;
 		}
 
-		explicit Variant(float number) : type(Type::FLOAT)
+		explicit Variant(float number) : type_(Type::FLOAT)
 		{
-			value.number_float = number;
+			value_.number_float = number;
 		}
 
-		explicit Variant(double number) : type(Type::DOUBLE)
+		explicit Variant(double number) : type_(Type::DOUBLE)
 		{
-			value.number_double = number;
+			value_.number_double = number;
 		}
 
 		explicit Variant(const char *string) : Variant(std::string(string))
 		{
 		}
 
-		explicit Variant(std::string &&string) : type(Type::STRING)
+		explicit Variant(std::string &&string) : type_(Type::STRING)
 		{
-			new (&value.string) std::string(std::move(string));
+			new (&value_.string) std::string(std::move(string));
 		}
 
-		explicit Variant(const std::string &string) : type(Type::STRING)
+		explicit Variant(const std::string &string) : type_(Type::STRING)
 		{
-			new (&value.string) std::string(string);
+			new (&value_.string) std::string(string);
 		}
 
 		~Variant()
@@ -156,47 +156,47 @@ namespace Rayni
 
 		bool is_none() const
 		{
-			return type == Type::NONE;
+			return type_ == Type::NONE;
 		}
 
 		bool is_map() const
 		{
-			return type == Type::MAP;
+			return type_ == Type::MAP;
 		}
 
 		bool is_vector() const
 		{
-			return type == Type::VECTOR;
+			return type_ == Type::VECTOR;
 		}
 
 		bool is_bool() const
 		{
-			return type == Type::BOOL;
+			return type_ == Type::BOOL;
 		}
 
 		bool is_int() const
 		{
-			return type == Type::INT;
+			return type_ == Type::INT;
 		}
 
 		bool is_unsigned_int() const
 		{
-			return type == Type::UNSIGNED_INT;
+			return type_ == Type::UNSIGNED_INT;
 		}
 
 		bool is_float() const
 		{
-			return type == Type::FLOAT;
+			return type_ == Type::FLOAT;
 		}
 
 		bool is_double() const
 		{
-			return type == Type::DOUBLE;
+			return type_ == Type::DOUBLE;
 		}
 
 		bool is_string() const
 		{
-			return type == Type::STRING;
+			return type_ == Type::STRING;
 		}
 
 		template <typename T>
@@ -205,61 +205,61 @@ namespace Rayni
 		Map &as_map()
 		{
 			require_type(Type::MAP);
-			return value.map;
+			return value_.map;
 		}
 
 		const Map &as_map() const
 		{
 			require_type(Type::MAP);
-			return value.map;
+			return value_.map;
 		}
 
 		Vector &as_vector()
 		{
 			require_type(Type::VECTOR);
-			return value.vector;
+			return value_.vector;
 		}
 
 		const Vector &as_vector() const
 		{
 			require_type(Type::VECTOR);
-			return value.vector;
+			return value_.vector;
 		}
 
 		const bool &as_bool() const
 		{
 			require_type(Type::BOOL);
-			return value.boolean;
+			return value_.boolean;
 		}
 
 		const int &as_int() const
 		{
 			require_type(Type::INT);
-			return value.number_int;
+			return value_.number_int;
 		}
 
 		const unsigned int &as_unsigned_int() const
 		{
 			require_type(Type::UNSIGNED_INT);
-			return value.number_unsigned_int;
+			return value_.number_unsigned_int;
 		}
 
 		const float &as_float() const
 		{
 			require_type(Type::FLOAT);
-			return value.number_float;
+			return value_.number_float;
 		}
 
 		const double &as_double() const
 		{
 			require_type(Type::DOUBLE);
-			return value.number_double;
+			return value_.number_double;
 		}
 
 		const std::string &as_string() const
 		{
 			require_type(Type::STRING);
-			return value.string;
+			return value_.string;
 		}
 
 		template <typename T>
@@ -268,7 +268,7 @@ namespace Rayni
 		bool has(const std::string &key) const
 		{
 			auto i = map_iterator(key);
-			return i != value.map.cend();
+			return i != value_.map.cend();
 		}
 
 		const Variant &get(const std::string &key) const;
@@ -283,7 +283,7 @@ namespace Rayni
 		T get(const std::string &key, const T &default_value) const
 		{
 			auto i = map_iterator(key);
-			return i == value.map.cend() ? default_value : i->second.to<T>();
+			return i == value_.map.cend() ? default_value : i->second.to<T>();
 		}
 
 		const Variant &get(std::size_t index) const;
@@ -454,12 +454,12 @@ namespace Rayni
 
 		std::string type_to_string() const
 		{
-			return type_to_string(type);
+			return type_to_string(type_);
 		}
 		static std::string type_to_string(Type type);
 
-		const Variant *parent = nullptr;
-		Type type = Type::NONE;
+		const Variant *parent_ = nullptr;
+		Type type_ = Type::NONE;
 
 		union Value
 		{
@@ -488,7 +488,7 @@ namespace Rayni
 			double number_double;
 
 			std::string string;
-		} value;
+		} value_;
 	};
 
 	template <>

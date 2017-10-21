@@ -31,10 +31,10 @@ namespace Rayni
 	                                     const Transform &start_transform,
 	                                     real_t end_time,
 	                                     const Transform &end_transform) :
-	        start_time(start_time),
-	        start(start_transform.matrix()),
-	        end_time(end_time),
-	        end(end_transform.matrix())
+	        start_time_(start_time),
+	        start_(start_transform.matrix()),
+	        end_time_(end_time),
+	        end_(end_transform.matrix())
 	{
 	}
 
@@ -44,15 +44,15 @@ namespace Rayni
 	                          v.get<real_t>("end_time"),
 	                          v.get<Transform>("end_transform"))
 	{
-		if (start_time >= end_time)
+		if (start_time_ >= end_time_)
 			throw Variant::Exception(v, "start_time >= end_time");
 	}
 
 	Transform AnimatedTransform::interpolate(real_t time) const
 	{
-		real_t ct = std::min(std::max(time, start_time), end_time);
-		real_t dt = (ct - start_time) / (end_time - start_time);
-		Matrix4x4 m = start.interpolate(dt, end).compose();
+		real_t ct = std::min(std::max(time, start_time_), end_time_);
+		real_t dt = (ct - start_time_) / (end_time_ - start_time_);
+		Matrix4x4 m = start_.interpolate(dt, end_).compose();
 
 		return {m, m.inverse()};
 	}
@@ -65,7 +65,7 @@ namespace Rayni
 
 		for (unsigned int i = 0; i < STEPS; i++)
 		{
-			real_t time = lerp(real_t(i) / (STEPS - 1), start_time, end_time);
+			real_t time = lerp(real_t(i) / (STEPS - 1), start_time_, end_time_);
 			bounds.merge(interpolate(time).transform_aabb(aabb));
 		}
 

@@ -35,11 +35,11 @@ namespace Rayni
 		if (hh > 0 || mm > 0)
 			stream << std::setw(2) << std::setfill('0') << mm << ":";
 
-		bool seconds_has_dot = seconds_precision > 0;
-		int seconds_width = 2 + (seconds_has_dot ? 1 : 0) + seconds_precision;
+		bool seconds_has_dot = seconds_precision_ > 0;
+		int seconds_width = 2 + (seconds_has_dot ? 1 : 0) + seconds_precision_;
 
 		stream << std::setw(seconds_width) << std::setfill('0') << std::fixed
-		       << std::setprecision(seconds_precision) << (floor_seconds ? std::floor(ss) : ss);
+		       << std::setprecision(seconds_precision_) << (floor_seconds_ ? std::floor(ss) : ss);
 
 		return stream.str();
 	}

@@ -42,7 +42,7 @@ namespace Rayni
 		{
 		}
 
-		constexpr Vector3(real_t x, real_t y, real_t z) : xyz{x, y, z}
+		constexpr Vector3(real_t x, real_t y, real_t z) : xyz_{x, y, z}
 		{
 		}
 
@@ -104,13 +104,13 @@ namespace Rayni
 		real_t operator[](unsigned int i) const
 		{
 			assert(i < SIZE);
-			return xyz[i];
+			return xyz_[i];
 		}
 
 		real_t &operator[](unsigned int i)
 		{
 			assert(i < SIZE);
-			return xyz[i];
+			return xyz_[i];
 		}
 
 		Vector3 operator+(const Vector3 &v) const
@@ -209,7 +209,7 @@ namespace Rayni
 		}
 
 	private:
-		real_t xyz[SIZE] = {0, 0, 0};
+		real_t xyz_[SIZE] = {0, 0, 0};
 	};
 }
 

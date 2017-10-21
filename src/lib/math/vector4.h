@@ -35,7 +35,7 @@ namespace Rayni
 		{
 		}
 
-		constexpr Vector4(real_t x, real_t y, real_t z, real_t w) : xyzw{x, y, z, w}
+		constexpr Vector4(real_t x, real_t y, real_t z, real_t w) : xyzw_{x, y, z, w}
 		{
 		}
 
@@ -82,13 +82,13 @@ namespace Rayni
 		real_t operator[](unsigned int i) const
 		{
 			assert(i < SIZE);
-			return xyzw[i];
+			return xyzw_[i];
 		}
 
 		real_t &operator[](unsigned int i)
 		{
 			assert(i < SIZE);
-			return xyzw[i];
+			return xyzw_[i];
 		}
 
 		Vector4 operator*(real_t s) const
@@ -122,7 +122,7 @@ namespace Rayni
 		}
 
 	private:
-		real_t xyzw[SIZE] = {0, 0, 0, 0};
+		real_t xyzw_[SIZE] = {0, 0, 0, 0};
 	};
 }
 

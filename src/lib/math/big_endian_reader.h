@@ -39,13 +39,13 @@ namespace Rayni
 
 		static_assert(sizeof(Byte) == 1, "size of byte type must 1");
 
-		explicit BigEndianReader(const Container &data) : data(data)
+		explicit BigEndianReader(const Container &data) : data_(data)
 		{
 		}
 
 		Size bytes_left() const
 		{
-			return data.size() - position;
+			return data_.size() - position_;
 		}
 
 		std::int8_t read_int8()
@@ -55,8 +55,8 @@ namespace Rayni
 
 		std::uint8_t read_uint8()
 		{
-			auto b = static_cast<std::uint8_t>(data.at(position));
-			position++;
+			auto b = static_cast<std::uint8_t>(data_.at(position_));
+			position_++;
 			return b;
 		}
 
@@ -192,8 +192,8 @@ namespace Rayni
 		}
 
 	private:
-		const Container &data;
-		Size position = 0;
+		const Container &data_;
+		Size position_ = 0;
 	};
 }
 

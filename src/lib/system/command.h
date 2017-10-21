@@ -32,14 +32,14 @@ namespace Rayni
 	public:
 		struct Result;
 
-		explicit Command(std::vector<std::string> &&args) : args(std::move(args))
+		explicit Command(std::vector<std::string> &&args) : args_(std::move(args))
 		{
 		}
 
 		std::experimental::optional<Result> run() const;
 
 	private:
-		const std::vector<std::string> args;
+		const std::vector<std::string> args_;
 	};
 
 	struct Command::Result

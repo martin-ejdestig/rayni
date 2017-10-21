@@ -31,37 +31,37 @@ namespace Rayni
 	public:
 		bool is_empty() const
 		{
-			return size == 0;
+			return size_ == 0;
 		}
 
 		void push(const Type &&value)
 		{
-			assert(size < MAX_SIZE);
-			array[size] = std::move(value);
-			size++;
+			assert(size_ < MAX_SIZE);
+			array_[size_] = std::move(value);
+			size_++;
 		}
 
 		void pop()
 		{
 			assert(!is_empty());
-			size--;
+			size_--;
 		}
 
 		Type &top()
 		{
 			assert(!is_empty());
-			return array[size - 1];
+			return array_[size_ - 1];
 		}
 
 		const Type &top() const
 		{
 			assert(!is_empty());
-			return array[size - 1];
+			return array_[size_ - 1];
 		}
 
 	private:
-		unsigned int size = 0;
-		Type array[MAX_SIZE];
+		unsigned int size_ = 0;
+		Type array_[MAX_SIZE];
 	};
 }
 

@@ -47,15 +47,15 @@ namespace Rayni
 
 		bool is_started() const
 		{
-			return started;
+			return started_;
 		}
 
 		clock::duration duration() const;
 
 	private:
-		bool started = false;
-		clock::time_point time_start;
-		clock::time_point time_end;
+		bool started_ = false;
+		clock::time_point time_start_;
+		clock::time_point time_end_;
 	};
 }
 

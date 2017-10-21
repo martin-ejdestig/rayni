@@ -31,13 +31,13 @@ namespace Rayni
 	public:
 		DurationFormatter &set_seconds_precision(std::uint8_t seconds_precision)
 		{
-			this->seconds_precision = seconds_precision;
+			seconds_precision_ = seconds_precision;
 			return *this;
 		}
 
 		DurationFormatter &set_floor_seconds(bool floor_seconds)
 		{
-			this->floor_seconds = floor_seconds;
+			floor_seconds_ = floor_seconds;
 			return *this;
 		}
 
@@ -56,8 +56,8 @@ namespace Rayni
 	private:
 		std::string format(std::chrono::hours::rep hh, std::chrono::minutes::rep mm, float ss) const;
 
-		std::uint8_t seconds_precision = 0;
-		bool floor_seconds = false;
+		std::uint8_t seconds_precision_ = 0;
+		bool floor_seconds_ = false;
 	};
 }
 

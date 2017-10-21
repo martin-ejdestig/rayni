@@ -42,16 +42,16 @@ namespace Rayni
 
 			virtual ~ListenerBase()
 			{
-				if (list)
+				if (list_)
 					// TODO: Unsafe cast (but will work for most common use case).
-					list->remove(*static_cast<Listener *>(this));
+					list_->remove(*static_cast<Listener *>(this));
 			}
 
 			ListenerBase &operator=(const ListenerBase &other) = delete; // TODO: Make copyable... ?
 			ListenerBase &operator=(ListenerBase &&other) = delete; // TODO: Make noexcept moveable
 
 		private:
-			ListenerList<Listener> *list = nullptr;
+			ListenerList<Listener> *list_ = nullptr;
 		};
 
 		ListenerList()
@@ -65,8 +65,8 @@ namespace Rayni
 
 		~ListenerList()
 		{
-			for (auto listener : listeners)
-				listener->list = nullptr;
+			for (auto listener : listeners_)
+				listener->list_ = nullptr;
 		}
 
 		ListenerList &operator=(const ListenerList &other) = delete; // TODO: Make copyable... ?
@@ -74,32 +74,32 @@ namespace Rayni
 
 		void add(Listener &listener)
 		{
-			if (listener.list)
-				listener.list->remove(listener);
+			if (listener.list_)
+				listener.list_->remove(listener);
 
-			listeners.emplace_back(&listener);
-			listener.list = this;
+			listeners_.emplace_back(&listener);
+			listener.list_ = this;
 		}
 
 		void remove(Listener &listener)
 		{
-			auto iterator = std::find(listeners.cbegin(), listeners.cend(), &listener);
-			if (iterator != listeners.cend())
+			auto iterator = std::find(listeners_.cbegin(), listeners_.cend(), &listener);
+			if (iterator != listeners_.cend())
 			{
-				listeners.erase(iterator);
-				listener.list = nullptr;
+				listeners_.erase(iterator);
+				listener.list_ = nullptr;
 			}
 		}
 
 		template <typename Method, typename... Args>
 		void notify(Method method, const Args &... args)
 		{
-			for (auto listener : listeners)
+			for (auto listener : listeners_)
 				(listener->*method)(args...);
 		}
 
 	private:
-		std::vector<Listener *> listeners;
+		std::vector<Listener *> listeners_;
 	};
 }
 

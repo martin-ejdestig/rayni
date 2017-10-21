@@ -43,7 +43,7 @@ namespace Rayni
 		}
 
 		Matrix4x4(const Vector4 &row0, const Vector4 &row1, const Vector4 &row2, const Vector4 &row3) :
-		        rows{row0, row1, row2, row3}
+		        rows_{row0, row1, row2, row3}
 		{
 		}
 
@@ -169,13 +169,13 @@ namespace Rayni
 		real_t &operator()(unsigned int row_index, unsigned int column_index)
 		{
 			assert(row_index < SIZE && column_index < SIZE);
-			return rows[row_index][column_index];
+			return rows_[row_index][column_index];
 		}
 
 		real_t operator()(unsigned int row_index, unsigned int column_index) const
 		{
 			assert(row_index < SIZE && column_index < SIZE);
-			return rows[row_index][column_index];
+			return rows_[row_index][column_index];
 		}
 
 		Matrix4x4 operator*(const Matrix4x4 &right) const
@@ -184,9 +184,9 @@ namespace Rayni
 
 			for (unsigned int i = 0; i < SIZE; i++)
 				for (unsigned int j = 0; j < SIZE; j++)
-					result.rows[i][j] =
-					        rows[i][0] * right.rows[0][j] + rows[i][1] * right.rows[1][j] +
-					        rows[i][2] * right.rows[2][j] + rows[i][3] * right.rows[3][j];
+					result.rows_[i][j] =
+					        rows_[i][0] * right.rows_[0][j] + rows_[i][1] * right.rows_[1][j] +
+					        rows_[i][2] * right.rows_[2][j] + rows_[i][3] * right.rows_[3][j];
 
 			return result;
 		}
@@ -198,59 +198,59 @@ namespace Rayni
 
 		Matrix4x4 transpose() const
 		{
-			return {{rows[0][0], rows[1][0], rows[2][0], rows[3][0]},
-			        {rows[0][1], rows[1][1], rows[2][1], rows[3][1]},
-			        {rows[0][2], rows[1][2], rows[2][2], rows[3][2]},
-			        {rows[0][3], rows[1][3], rows[2][3], rows[3][3]}};
+			return {{rows_[0][0], rows_[1][0], rows_[2][0], rows_[3][0]},
+			        {rows_[0][1], rows_[1][1], rows_[2][1], rows_[3][1]},
+			        {rows_[0][2], rows_[1][2], rows_[2][2], rows_[3][2]},
+			        {rows_[0][3], rows_[1][3], rows_[2][3], rows_[3][3]}};
 		}
 
 		Vector4 &row(unsigned int row_index)
 		{
 			assert(row_index < SIZE);
 
-			return rows[row_index];
+			return rows_[row_index];
 		}
 
 		const Vector4 &row(unsigned int row_index) const
 		{
 			assert(row_index < SIZE);
 
-			return rows[row_index];
+			return rows_[row_index];
 		}
 
 		void swap_rows(unsigned int row1_index, unsigned int row2_index)
 		{
 			assert(row1_index < SIZE && row2_index < SIZE && row1_index != row2_index);
 
-			std::swap(rows[row1_index], rows[row2_index]);
+			std::swap(rows_[row1_index], rows_[row2_index]);
 		}
 
 		void swap_columns(unsigned int column1_index, unsigned int column2_index)
 		{
 			assert(column1_index < SIZE && column2_index < SIZE && column1_index != column2_index);
 
-			for (auto &row : rows)
+			for (auto &row : rows_)
 				std::swap(row[column1_index], row[column2_index]);
 		}
 
 		Vector3 x_axis() const
 		{
-			return {rows[0][0], rows[1][0], rows[2][0]};
+			return {rows_[0][0], rows_[1][0], rows_[2][0]};
 		}
 
 		Vector3 y_axis() const
 		{
-			return {rows[0][1], rows[1][1], rows[2][1]};
+			return {rows_[0][1], rows_[1][1], rows_[2][1]};
 		}
 
 		Vector3 z_axis() const
 		{
-			return {rows[0][2], rows[1][2], rows[2][2]};
+			return {rows_[0][2], rows_[1][2], rows_[2][2]};
 		}
 
 		Vector3 translation() const
 		{
-			return {rows[0][3], rows[1][3], rows[2][3]};
+			return {rows_[0][3], rows_[1][3], rows_[2][3]};
 		}
 
 		Quaternion rotation() const
@@ -260,13 +260,13 @@ namespace Rayni
 
 		Matrix3x3 upper3x3() const
 		{
-			return {{rows[0].x(), rows[0].y(), rows[0].z()},
-			        {rows[1].x(), rows[1].y(), rows[1].z()},
-			        {rows[2].x(), rows[2].y(), rows[2].z()}};
+			return {{rows_[0].x(), rows_[0].y(), rows_[0].z()},
+			        {rows_[1].x(), rows_[1].y(), rows_[1].z()},
+			        {rows_[2].x(), rows_[2].y(), rows_[2].z()}};
 		}
 
 	private:
-		Vector4 rows[SIZE];
+		Vector4 rows_[SIZE];
 	};
 }
 

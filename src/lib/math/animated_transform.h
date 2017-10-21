@@ -42,11 +42,11 @@ namespace Rayni
 		AABB motion_bounds(const AABB &aabb) const;
 
 	private:
-		real_t start_time = 0;
-		DecomposedMatrix4x4 start;
+		real_t start_time_ = 0;
+		DecomposedMatrix4x4 start_;
 
-		real_t end_time = 0;
-		DecomposedMatrix4x4 end;
+		real_t end_time_ = 0;
+		DecomposedMatrix4x4 end_;
 	};
 }
 

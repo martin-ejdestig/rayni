@@ -76,15 +76,15 @@ namespace Rayni
 			}
 		};
 
-		Epoll() : epoll_fd(epoll_create1(EPOLL_CLOEXEC))
+		Epoll() : epoll_fd_(epoll_create1(EPOLL_CLOEXEC))
 		{
-			if (epoll_fd == -1)
+			if (epoll_fd_ == -1)
 				throw std::system_error(errno, std::system_category(), "epoll_create1() failed");
 		}
 
 		Epoll(const Epoll &other) = delete;
 
-		Epoll(Epoll &&other) noexcept : epoll_fd(std::exchange(other.epoll_fd, -1))
+		Epoll(Epoll &&other) noexcept : epoll_fd_(std::exchange(other.epoll_fd_, -1))
 		{
 		}
 
@@ -98,13 +98,13 @@ namespace Rayni
 		Epoll &operator=(Epoll &&other) noexcept
 		{
 			close();
-			epoll_fd = std::exchange(other.epoll_fd, -1);
+			epoll_fd_ = std::exchange(other.epoll_fd_, -1);
 			return *this;
 		}
 
 		int fd() const
 		{
-			return epoll_fd;
+			return epoll_fd_;
 		}
 
 		void add(int fd, Flags flags)
@@ -165,7 +165,7 @@ namespace Rayni
 
 		void ctl(int op, int fd, Event *event) const
 		{
-			if (epoll_ctl(epoll_fd, op, fd, event) == -1)
+			if (epoll_ctl(epoll_fd_, op, fd, event) == -1)
 				throw std::system_error(errno, std::system_category(), "epoll_ctl() failed");
 		}
 
@@ -182,7 +182,7 @@ namespace Rayni
 
 			while (true) // Loops if EINTR. Will cause timeout "drift" but leave as is for now.
 			{
-				ret = epoll_wait(epoll_fd, events, max_events_int, timeout_int);
+				ret = epoll_wait(epoll_fd_, events, max_events_int, timeout_int);
 
 				if (ret >= 0)
 					break;
@@ -195,14 +195,14 @@ namespace Rayni
 
 		void close()
 		{
-			if (epoll_fd == -1)
+			if (epoll_fd_ == -1)
 				return;
 
-			::close(epoll_fd);
-			epoll_fd = -1;
+			::close(epoll_fd_);
+			epoll_fd_ = -1;
 		}
 
-		int epoll_fd = -1;
+		int epoll_fd_ = -1;
 	};
 
 	enum class Epoll::Flag : std::uint32_t

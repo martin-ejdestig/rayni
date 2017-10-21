@@ -34,9 +34,9 @@ namespace Rayni
 		{
 		}
 
-		ScopedStopwatch(const std::string &prefix, std::ostream &ostream) : prefix(prefix), ostream(ostream)
+		ScopedStopwatch(const std::string &prefix, std::ostream &ostream) : prefix_(prefix), ostream_(ostream)
 		{
-			stopwatch.start();
+			stopwatch_.start();
 		}
 
 		ScopedStopwatch(const ScopedStopwatch &other) = delete;
@@ -44,7 +44,7 @@ namespace Rayni
 
 		~ScopedStopwatch()
 		{
-			stopwatch.stop();
+			stopwatch_.stop();
 			print_result();
 		}
 
@@ -54,10 +54,10 @@ namespace Rayni
 	private:
 		void print_result() const;
 
-		const std::string prefix;
-		std::ostream &ostream;
+		const std::string prefix_;
+		std::ostream &ostream_;
 
-		Stopwatch stopwatch;
+		Stopwatch stopwatch_;
 	};
 }
 

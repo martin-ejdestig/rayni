@@ -43,25 +43,25 @@ namespace Rayni
 
 	void TextReader::reset(std::unique_ptr<std::istream> &&istream, const std::string &position_prefix)
 	{
-		this->istream = std::move(istream);
-		line = "";
+		istream_ = std::move(istream);
+		line_ = "";
 		position_ = Position(position_prefix);
 		getline();
 	}
 
 	void TextReader::close()
 	{
-		istream.reset();
-		line = "";
+		istream_.reset();
+		line_ = "";
 		position_ = Position();
 	}
 
 	bool TextReader::skip_string(const std::string &str)
 	{
-		if (str.length() > line.length() - position_.line_index())
+		if (str.length() > line_.length() - position_.line_index())
 			return false;
 
-		if (line.compare(position_.line_index(), str.length(), str) != 0)
+		if (line_.compare(position_.line_index(), str.length(), str) != 0)
 			return false;
 
 		position_.next_columns(str.length());
@@ -71,12 +71,12 @@ namespace Rayni
 
 	void TextReader::getline()
 	{
-		if (!istream)
+		if (!istream_)
 			throw Exception("no file or string stream to read from");
 
-		if (!std::getline(*istream, line))
+		if (!std::getline(*istream_, line_))
 		{
-			if (istream->eof())
+			if (istream_->eof())
 				throw EOFException(position_, "end of stream");
 			else
 				throw Exception(position_, "read error");
@@ -87,8 +87,8 @@ namespace Rayni
 		//       to be set if at last line and input ends with a '\n'. If this is not done
 		//       at_eof() will not work correctly as it is currently implemented. Remove use
 		//       of std::getline() to get rid of these quirks?
-		line += '\n';
-		istream->peek();
+		line_ += '\n';
+		istream_->peek();
 
 		position_.next_line();
 	}
@@ -96,12 +96,12 @@ namespace Rayni
 	std::string TextReader::Position::to_string() const
 	{
 		if (!is_set())
-			return prefix;
+			return prefix_;
 
 		std::string str;
 
-		if (!prefix.empty())
-			str += prefix + ":";
+		if (!prefix_.empty())
+			str += prefix_ + ":";
 
 		str += std::to_string(line()) + ":" + std::to_string(column());
 

@@ -79,8 +79,8 @@ namespace Rayni
 		ColorMapType byte_to_color_map_type(std::uint8_t byte) const;
 		ImageType byte_to_image_type(std::uint8_t byte) const;
 
-		std::string error_prefix;
-		std::istream *stream = nullptr;
+		std::string error_prefix_;
+		std::istream *stream_ = nullptr;
 
 		struct
 		{
@@ -105,7 +105,7 @@ namespace Rayni
 				std::uint8_t pixel_size = 0;
 				std::uint8_t descriptor = 0;
 			} image;
-		} header;
+		} header_;
 
 		struct
 		{
@@ -113,7 +113,7 @@ namespace Rayni
 			unsigned int bytes_left = 0;
 			unsigned int pixel_pos = 0;
 			std::uint8_t pixel[4] = {0, 0, 0, 0};
-		} rle_state;
+		} rle_state_;
 	};
 }
 

@@ -30,7 +30,7 @@ namespace Rayni
 	class ScopeExit
 	{
 	public:
-		explicit ScopeExit(F &&f) : function(std::move(f))
+		explicit ScopeExit(F &&f) : function_(std::move(f))
 		{
 		}
 
@@ -39,14 +39,14 @@ namespace Rayni
 
 		~ScopeExit()
 		{
-			function();
+			function_();
 		}
 
 		ScopeExit &operator=(ScopeExit &) = delete;
 		ScopeExit &operator=(ScopeExit &&) = default;
 
 	private:
-		F function;
+		F function_;
 	};
 
 	template <typename F>

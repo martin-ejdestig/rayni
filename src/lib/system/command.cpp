@@ -106,7 +106,7 @@ namespace
 	class ChildProcess
 	{
 	public:
-		explicit ChildProcess(pid_t pid) : child_pid(pid)
+		explicit ChildProcess(pid_t pid) : pid_(pid)
 		{
 		}
 
@@ -115,7 +115,7 @@ namespace
 
 		~ChildProcess()
 		{
-			if (child_pid != -1)
+			if (pid_ != -1)
 				wait();
 		}
 
@@ -124,28 +124,28 @@ namespace
 
 		bool wait()
 		{
-			pid_t pid = std::exchange(child_pid, -1);
+			pid_t pid = std::exchange(pid_, -1);
 
-			while (waitpid(pid, &status, 0) == -1)
+			while (waitpid(pid, &status_, 0) == -1)
 				if (errno != EINTR)
 					return false;
 
-			return WIFEXITED(status) && WEXITSTATUS(status) != CHILD_SETUP_FAILURE_EXIT_CODE;
+			return WIFEXITED(status_) && WEXITSTATUS(status_) != CHILD_SETUP_FAILURE_EXIT_CODE;
 		}
 
 		pid_t pid()
 		{
-			return child_pid;
+			return pid_;
 		}
 
 		int exit_code() const
 		{
-			return WEXITSTATUS(status);
+			return WEXITSTATUS(status_);
 		}
 
 	private:
-		pid_t child_pid = -1;
-		int status = 0;
+		pid_t pid_ = -1;
+		int status_ = 0;
 	};
 }
 
@@ -161,7 +161,7 @@ namespace Rayni
 			return std::experimental::nullopt;
 
 		if (child_process.pid() == 0)
-			child_exec(args, stdout_pipe, stderr_pipe);
+			child_exec(args_, stdout_pipe, stderr_pipe);
 
 		stdout_pipe.close_write_fd();
 		stderr_pipe.close_write_fd();

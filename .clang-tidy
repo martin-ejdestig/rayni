@@ -27,9 +27,6 @@
 #   Clang 5.0 is released. Do not want to specify all special members in an
 #   abstract base class with a sole virtual dtor. 5.0 adds an option for this.
 #
-# - misc-noexcept-move-constructor is disabled because of a bug with = default.
-#   See https://llvm.org/bugs/show_bug.cgi?id=24712 .
-#
 # - modernize-pass-by-value is disabled because it causes many "false" warnings
 #   and I have never really liked the recommendation in general. It is too
 #   broad. It also seems like the C++ community has swung around a bit on this
@@ -69,7 +66,6 @@ google-explicit-constructor,\
 google-global-names-in-headers,\
 google-readability-casting,\
 misc-*,\
--misc-noexcept-move-constructor,\
 modernize-*,\
 -modernize-pass-by-value,\
 -modernize-raw-string-literal,\

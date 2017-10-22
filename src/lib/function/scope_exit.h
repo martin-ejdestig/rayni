@@ -35,7 +35,7 @@ namespace Rayni
 		}
 
 		ScopeExit(ScopeExit &) = delete;
-		ScopeExit(ScopeExit &&) = default;
+		ScopeExit(ScopeExit &&) noexcept = default;
 
 		~ScopeExit()
 		{
@@ -43,7 +43,7 @@ namespace Rayni
 		}
 
 		ScopeExit &operator=(ScopeExit &) = delete;
-		ScopeExit &operator=(ScopeExit &&) = default;
+		ScopeExit &operator=(ScopeExit &&) noexcept = default;
 
 	private:
 		F function_;

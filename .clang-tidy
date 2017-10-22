@@ -41,11 +41,6 @@
 # - modernize-use-equals-delete is disabled because Google Test does not use
 #   = delete. Filed https://github.com/google/googletest/issues/1072 for at
 #   least adding NOLINT.
-#
-# - readability-implicit-bool-cast is disabled since it currently is too
-#   agressive. Even if AllowConditionalPointerCasts is enabled it only allows
-#   casts in if statements, not in e.g. while and for statements. See
-#   https://llvm.org/bugs/show_bug.cgi?id=27911 .
 
 Checks: "\
 bugprone-*,\
@@ -69,7 +64,6 @@ modernize-*,\
 -modernize-use-equals-delete,\
 performance-*,\
 readability-*,\
--readability-implicit-bool-cast,\
 "
 
 HeaderFilterRegex: '.*'
@@ -175,6 +169,8 @@ CheckOptions:
     value: lower_case
   - key:   readability-identifier-naming.VirtualMethodCase
     value: lower_case
+  - key:   readability-implicit-bool-cast.AllowConditionalIntegerCasts
+    value: '1'
   - key:   readability-implicit-bool-cast.AllowConditionalPointerCasts
     value: '1'
 ...

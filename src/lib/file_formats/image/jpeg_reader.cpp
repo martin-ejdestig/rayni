@@ -119,7 +119,7 @@ namespace Rayni
 
 		jpeg_create_decompress(&jpeg_decompress);
 		jpeg_stdio_src(&jpeg_decompress, &file);
-		jpeg_read_header(&jpeg_decompress, true);
+		jpeg_read_header(&jpeg_decompress, 1);
 
 		if (color_space_requires_manual_conversion(jpeg_decompress.jpeg_color_space))
 		{

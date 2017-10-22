@@ -23,9 +23,8 @@
 # - cppcoreguidelines-pro-type-vararg is disabled because it reports false
 #   positives in googletest. See https://llvm.org/bugs/show_bug.cgi?id=31194 .
 #
-# - cppcoreguidelines-special-member-functions is temporarily disabled until
-#   Clang 5.0 is released. Do not want to specify all special members in an
-#   abstract base class with a sole virtual dtor. 5.0 adds an option for this.
+# - cppcoreguidelines-special-member-functions is disabled because violations
+#   in googletest macros. E.g. each TEST(..) emits warning.
 #
 # - modernize-pass-by-value is disabled because it causes many "false" warnings
 #   and I have never really liked the recommendation in general. It is too
@@ -69,6 +68,8 @@ readability-*,\
 HeaderFilterRegex: '.*'
 
 CheckOptions:
+  - key:   cppcoreguidelines-special-member-functions.AllowSoleDefaultDtor
+    value: '1'
   - key:   misc-assert-side-effect.CheckFunctionCalls
     value: '1'
   - key:   modernize-loop-convert.NamingStyle

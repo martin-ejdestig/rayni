@@ -26,8 +26,7 @@
 #include "lib/system/linux/epoll.h"
 #include "lib/system/linux/timer_fd.h"
 
-// TODO: Remove NOLINT when https://llvm.org/bugs/show_bug.cgi?id=25594 is fixed.
-using namespace std::chrono_literals; // NOLINT
+using namespace std::chrono_literals;
 
 namespace Rayni
 {

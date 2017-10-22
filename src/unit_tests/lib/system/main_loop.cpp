@@ -30,8 +30,7 @@
 #include "lib/system/linux/event_fd.h"
 #include "lib/system/main_loop.h"
 
-// TODO: Remove NOLINT when https://llvm.org/bugs/show_bug.cgi?id=25594 is fixed.
-using namespace std::chrono_literals; // NOLINT
+using namespace std::chrono_literals;
 
 namespace Rayni
 {

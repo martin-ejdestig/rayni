@@ -51,39 +51,99 @@ namespace Rayni
 		};
 	}
 
-	TEST(ListenerList, AddRemoveNotify)
+	TEST(ListenerList, AddNotifyBasic)
 	{
 		ListenerList<Listener> listeners;
-		BazListener listener1;
-		BazListener listener2;
+		BazListener listener1, listener2;
+
+		listeners.add(listener1);
+
+		listeners.notify(&Listener::foo_happened);
+		EXPECT_EQ("foo", listener1.data);
+
+		listeners.add(listener2);
+
+		listeners.notify(&Listener::bar_occurred, 12, "ab");
+		EXPECT_EQ("foobar12ab", listener1.data);
+		EXPECT_EQ("bar12ab", listener2.data);
+
+		listeners.notify(&Listener::foo_happened);
+		EXPECT_EQ("foobar12abfoo", listener1.data);
+		EXPECT_EQ("bar12abfoo", listener2.data);
+	}
+
+	TEST(ListenerList, AddAlreadyAdded)
+	{
+		ListenerList<Listener> listeners;
+		BazListener listener;
+
+		listeners.add(listener);
+		listeners.add(listener);
+
+		listeners.notify(&Listener::foo_happened);
+		EXPECT_EQ("foo", listener.data);
+
+		listeners.add(listener);
+
+		listeners.notify(&Listener::bar_occurred, 12, "ab");
+		EXPECT_EQ("foobar12ab", listener.data);
+	}
+
+	TEST(ListenerList, AddAlreadyAddedOtherList)
+	{
+		ListenerList<Listener> listeners1, listeners2;
+		BazListener listener;
+
+		listeners1.add(listener);
+		listeners2.add(listener);
+
+		listeners1.notify(&Listener::foo_happened);
+		EXPECT_EQ("", listener.data);
+
+		listeners2.notify(&Listener::foo_happened);
+		EXPECT_EQ("foo", listener.data);
+	}
+
+	TEST(ListenerList, Remove)
+	{
+		ListenerList<Listener> listeners;
+		BazListener listener1, listener2, listener3;
 
 		listeners.add(listener1);
 		listeners.add(listener2);
+		listeners.add(listener3);
 		listeners.notify(&Listener::foo_happened);
 		EXPECT_EQ("foo", listener1.data);
 		EXPECT_EQ("foo", listener2.data);
+		EXPECT_EQ("foo", listener3.data);
+
+		listeners.remove(listener2);
+		listeners.notify(&Listener::foo_happened);
+		EXPECT_EQ("foofoo", listener1.data);
+		EXPECT_EQ("foo", listener2.data);
+		EXPECT_EQ("foofoo", listener3.data);
+
+		listeners.remove(listener3);
+		listeners.notify(&Listener::foo_happened);
+		EXPECT_EQ("foofoofoo", listener1.data);
+		EXPECT_EQ("foo", listener2.data);
+		EXPECT_EQ("foofoo", listener3.data);
 
 		listeners.remove(listener1);
 		listeners.notify(&Listener::foo_happened);
-		EXPECT_EQ("foo", listener1.data);
-		EXPECT_EQ("foofoo", listener2.data);
+		EXPECT_EQ("foofoofoo", listener1.data);
+		EXPECT_EQ("foo", listener2.data);
+		EXPECT_EQ("foofoo", listener3.data);
+	}
 
-		listeners.add(listener1);
-		listeners.add(listener2);
-		listeners.add(listener1);
-		listeners.add(listener2);
-		listeners.notify(&Listener::bar_occurred, 12, "ab");
-		EXPECT_EQ("foobar12ab", listener1.data);
-		EXPECT_EQ("foofoobar12ab", listener2.data);
+	TEST(ListenerList, RemoveNotAdded)
+	{
+		ListenerList<Listener> listeners;
+		BazListener listener;
 
-		listeners.remove(listener1);
-		listeners.remove(listener1);
-		listeners.remove(listener2);
-		listeners.remove(listener2);
+		listeners.remove(listener);
 		listeners.notify(&Listener::foo_happened);
-		listeners.notify(&Listener::bar_occurred, 34, "cd");
-		EXPECT_EQ("foobar12ab", listener1.data);
-		EXPECT_EQ("foofoobar12ab", listener2.data);
+		EXPECT_EQ("", listener.data);
 	}
 
 	TEST(ListenerList, ListDestroyedBeforeListeners)

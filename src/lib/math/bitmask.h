@@ -43,22 +43,22 @@ namespace Rayni
 
 		constexpr inline Bitmask operator&(Bitmask b) const
 		{
-			return Bitmask(value() & b.value());
+			return Bitmask(value_ & b.value_);
 		}
 
 		constexpr inline Bitmask operator|(Bitmask b) const
 		{
-			return Bitmask(value() | b.value());
+			return Bitmask(value_ | b.value_);
 		}
 
 		constexpr inline Bitmask operator^(Bitmask b) const
 		{
-			return Bitmask(value() ^ b.value());
+			return Bitmask(value_ ^ b.value_);
 		}
 
 		constexpr inline Bitmask operator~() const
 		{
-			return Bitmask(~value());
+			return Bitmask(~value_);
 		}
 
 		constexpr inline Bitmask &operator&=(Bitmask b)
@@ -78,12 +78,12 @@ namespace Rayni
 
 		constexpr inline bool operator==(Bitmask b) const
 		{
-			return value() == b.value();
+			return value_ == b.value_;
 		}
 
 		constexpr inline bool operator!=(Bitmask b) const
 		{
-			return value() != b.value();
+			return value_ != b.value_;
 		}
 
 		constexpr Value value() const
@@ -98,7 +98,7 @@ namespace Rayni
 
 		constexpr bool empty() const
 		{
-			return *this == Bitmask();
+			return value_ == 0;
 		}
 
 	private:

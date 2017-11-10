@@ -20,6 +20,7 @@
 #include <gtest/gtest.h>
 
 #include <string>
+#include <utility>
 
 #include "lib/containers/listener_list.h"
 
@@ -180,5 +181,110 @@ namespace Rayni
 		listeners.notify(&Listener::bar_occurred, 12, "ab");
 
 		EXPECT_EQ("foobar12ab", listener1.data);
+	}
+
+	TEST(ListenerList, MoveConstructor)
+	{
+		ListenerList<Listener> listeners1;
+		BazListener listener1, listener2;
+
+		listeners1.add(listener1);
+		listeners1.add(listener2);
+
+		ListenerList<Listener> listeners2(std::move(listeners1));
+
+		listeners1.notify(&Listener::foo_happened); // NOLINT: misc-use-after-move (tests move)
+
+		EXPECT_EQ("", listener1.data);
+		EXPECT_EQ("", listener2.data);
+
+		listeners2.notify(&Listener::foo_happened);
+
+		EXPECT_EQ("foo", listener1.data);
+		EXPECT_EQ("foo", listener2.data);
+	}
+
+	TEST(ListenerList, MoveAssignment)
+	{
+		ListenerList<Listener> listeners1, listeners2;
+		BazListener listener1, listener2;
+
+		listeners1.add(listener1);
+		listeners1.add(listener2);
+
+		listeners2 = std::move(listeners1);
+
+		listeners1.notify(&Listener::foo_happened); // NOLINT: misc-use-after-move (tests move)
+
+		EXPECT_EQ("", listener1.data);
+		EXPECT_EQ("", listener2.data);
+
+		listeners2.notify(&Listener::foo_happened);
+
+		EXPECT_EQ("foo", listener1.data);
+		EXPECT_EQ("foo", listener2.data);
+	}
+
+	TEST(ListenerList, ListenerMoveAssignment)
+	{
+		ListenerList<Listener> listeners;
+		BazListener listener1, listener2;
+
+		listeners.add(listener1);
+
+		listener2 = std::move(listener1);
+
+		listeners.notify(&Listener::foo_happened);
+
+		EXPECT_EQ("", listener1.data); // NOLINT: misc-use-after-move (tests move)
+		EXPECT_EQ("foo", listener2.data);
+	}
+
+	TEST(ListenerList, ListenerMoveAssignmentAlreadyAddedSameList)
+	{
+		ListenerList<Listener> listeners;
+		BazListener listener1, listener2;
+
+		listeners.add(listener1);
+		listeners.add(listener2);
+
+		listener2 = std::move(listener1);
+
+		listeners.notify(&Listener::foo_happened);
+
+		EXPECT_EQ("", listener1.data); // NOLINT: misc-use-after-move (tests move)
+		EXPECT_EQ("foo", listener2.data);
+	}
+
+	TEST(ListenerList, ListenerMoveAssignmentAlreadyAddedOtherList)
+	{
+		ListenerList<Listener> listeners1, listeners2;
+		BazListener listener1, listener2;
+
+		listeners1.add(listener1);
+		listeners2.add(listener2);
+
+		listener2 = std::move(listener1);
+
+		listeners1.notify(&Listener::foo_happened);
+		listeners2.notify(&Listener::bar_occurred, 12, "ab");
+
+		EXPECT_EQ("", listener1.data); // NOLINT: misc-use-after-move (tests move)
+		EXPECT_EQ("foo", listener2.data);
+	}
+
+	TEST(ListenerList, ListenerMoveAssignmentRemovedWhenOtherNotAdded)
+	{
+		ListenerList<Listener> listeners;
+		BazListener listener1, listener2;
+
+		listeners.add(listener2);
+
+		listener2 = std::move(listener1);
+
+		listeners.notify(&Listener::foo_happened);
+
+		EXPECT_EQ("", listener1.data); // NOLINT: misc-use-after-move (tests move)
+		EXPECT_EQ("", listener2.data);
 	}
 }

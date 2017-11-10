@@ -22,6 +22,7 @@
 
 #include <algorithm>
 #include <type_traits>
+#include <utility>
 #include <vector>
 
 namespace Rayni
@@ -49,7 +50,23 @@ namespace Rayni
 			}
 
 			ListenerBase &operator=(const ListenerBase &other) = delete; // TODO: Make copyable... ?
-			ListenerBase &operator=(ListenerBase &&other) = delete; // TODO: Make noexcept moveable
+
+			ListenerBase &operator=(ListenerBase &&other) noexcept
+			{
+				auto other_list = other.list_;
+
+				if (other_list)
+				{
+					other_list->remove(other.self_);
+					other_list->add(self_);
+				}
+				else if (list_)
+				{
+					list_->remove(self_);
+				}
+
+				return *this;
+			}
 
 		private:
 			Listener &self_; // Needed to avoid unsafe downcast. TODO: Alternatives?
@@ -62,8 +79,12 @@ namespace Rayni
 			              "Listener must inherit from ListenerBase");
 		}
 
-		ListenerList(const ListenerList &other) = delete; // TODO: Make copyable... ?
-		ListenerList(ListenerList &&other) = delete; // TODO: Make noexcept moveable
+		ListenerList(const ListenerList &other) = delete;
+
+		ListenerList(ListenerList &&other) noexcept : listeners_(std::move(other.listeners_))
+		{
+			update_listeners();
+		}
 
 		~ListenerList()
 		{
@@ -71,11 +92,20 @@ namespace Rayni
 				listener->list_ = nullptr;
 		}
 
-		ListenerList &operator=(const ListenerList &other) = delete; // TODO: Make copyable... ?
-		ListenerList &operator=(ListenerList &&other) = delete; // TODO: Make noexcept moveable
+		ListenerList &operator=(const ListenerList &other) = delete;
+
+		ListenerList &operator=(ListenerList &&other) noexcept
+		{
+			listeners_ = std::move(other.listeners_);
+			update_listeners();
+			return *this;
+		}
 
 		void add(Listener &listener)
 		{
+			if (listener.list_ == this)
+				return;
+
 			if (listener.list_)
 				listener.list_->remove(listener);
 
@@ -101,6 +131,12 @@ namespace Rayni
 		}
 
 	private:
+		void update_listeners()
+		{
+			for (auto listener : listeners_)
+				listener->list_ = this;
+		}
+
 		std::vector<Listener *> listeners_;
 	};
 }

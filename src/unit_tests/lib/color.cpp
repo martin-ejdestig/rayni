@@ -66,10 +66,68 @@ namespace Rayni
 		EXPECT_THROW(Variant("").to<Color>(), Variant::Exception);
 	}
 
+	TEST(Color, OperatorAddition)
+	{
+		Color c = Color(0.1, 0.2, 0.3) + Color(0.4, 0.5, 0.6);
+		EXPECT_PRED_FORMAT2(color_near, Color(0.5, 0.7, 0.9), c);
+	}
+
+	TEST(Color, OperatorSubtraction)
+	{
+		Color c = Color(0.6, 0.5, 0.4) - Color(0.1, 0.2, 0.3);
+		EXPECT_PRED_FORMAT2(color_near, Color(0.5, 0.3, 0.1), c);
+	}
+
+	TEST(Color, OperatorAdditionAssignment)
+	{
+		Color c(0.1, 0.2, 0.3);
+		c += Color(0.4, 0.5, 0.6);
+		EXPECT_PRED_FORMAT2(color_near, Color(0.5, 0.7, 0.9), c);
+	}
+
+	TEST(Color, OperatorMultiplication)
+	{
+		Color c = Color(0.4, 0.6, 0.8) * Color(0.5, 0.25, 0.75);
+		EXPECT_PRED_FORMAT2(color_near, Color(0.2, 0.15, 0.6), c);
+	}
+
+	TEST(Color, OperatorMultiplicationAssignment)
+	{
+		Color c(0.4, 0.6, 0.8);
+		c *= Color(0.5, 0.25, 0.75);
+		EXPECT_PRED_FORMAT2(color_near, Color(0.2, 0.15, 0.6), c);
+	}
+
+	TEST(Color, OperatorsMultiplicationScalar)
+	{
+		Color c = Color(0.1, 0.2, 0.3) * real_t(2);
+		EXPECT_PRED_FORMAT2(color_near, Color(0.2, 0.4, 0.6), c);
+	}
+
+	TEST(Color, OperatorMultiplicationScalarColor)
+	{
+		Color c = real_t(2) * Color(0.3, 0.1, 0.2);
+		EXPECT_PRED_FORMAT2(color_near, Color(0.6, 0.2, 0.4), c);
+	}
+
+	TEST(Color, OperatorMultiplicationScalarAssignment)
+	{
+		Color c(0.2, 0.3, 0.1);
+		c *= real_t(2);
+		EXPECT_PRED_FORMAT2(color_near, Color(0.4, 0.6, 0.2), c);
+	}
+
 	TEST(Color, Clamp)
 	{
 		EXPECT_PRED_FORMAT2(color_near, Color::black(), Color(-0.1, -0.2, -0.3).clamp());
 		EXPECT_PRED_FORMAT2(color_near, Color(0.3, 0.5, 0.7), Color(0.3, 0.5, 0.7).clamp());
 		EXPECT_PRED_FORMAT2(color_near, Color::white(), Color(1.1, 1.2, 1.3).clamp());
+	}
+
+	TEST(Color, OKToOverflowWhenAddingAndTakeAverageForSupersampling)
+	{
+		Color c = Color(1, 0.5, 0.3) + Color(1, 0.5, 0.3) + Color(1, 0.5, 0.3) + Color(1, 0.5, 0.3);
+		c *= 0.25;
+		EXPECT_PRED_FORMAT2(color_near, Color(1, 0.5, 0.3), c);
 	}
 }

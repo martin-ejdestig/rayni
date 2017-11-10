@@ -253,6 +253,32 @@ namespace Rayni
 		EXPECT_EQ(MainLoop::FDFlag::OUT, flags2);
 	}
 
+	TEST(MainLoop, FDMonitorStartAlreadyStartedOtherMainLoop)
+	{
+		MainLoop main_loop1, main_loop2;
+		EventFD event_fd;
+		MainLoop::FDMonitor fd_monitor;
+		bool called1 = false, called2 = false;
+
+		fd_monitor.start(main_loop1, event_fd.fd(), MainLoop::FDFlag::OUT, [&](auto) {
+			called1 = true;
+			main_loop1.exit();
+			main_loop2.exit();
+		});
+
+		fd_monitor.start(main_loop2, event_fd.fd(), MainLoop::FDFlag::OUT, [&](auto) {
+			called2 = true;
+			main_loop1.exit();
+			main_loop2.exit();
+		});
+
+		main_loop2.loop();
+		main_loop1.loop();
+
+		EXPECT_FALSE(called1);
+		EXPECT_TRUE(called2);
+	}
+
 	TEST(MainLoop, FDMonitorStartFDAlreadyUsedByOtherMonitor)
 	{
 		MainLoop main_loop;
@@ -540,6 +566,31 @@ namespace Rayni
 		});
 
 		main_loop.loop();
+
+		EXPECT_FALSE(called1);
+		EXPECT_TRUE(called2);
+	}
+
+	TEST(MainLoop, TimerStartAlreadyStartedOtherMainLoop)
+	{
+		MainLoop main_loop1, main_loop2;
+		MainLoop::Timer timer;
+		bool called1 = false, called2 = false;
+
+		timer.start(main_loop1, 1ns, [&] {
+			called1 = true;
+			main_loop1.exit();
+			main_loop2.exit();
+		});
+
+		timer.start(main_loop2, 1ns, [&] {
+			called2 = true;
+			main_loop1.exit();
+			main_loop2.exit();
+		});
+
+		main_loop2.loop();
+		main_loop1.loop();
 
 		EXPECT_FALSE(called1);
 		EXPECT_TRUE(called2);

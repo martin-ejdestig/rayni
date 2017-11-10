@@ -30,6 +30,10 @@ namespace Rayni
 		class Listener : public ListenerList<Listener>::ListenerBase
 		{
 		public:
+			Listener() : ListenerBase(*this)
+			{
+			}
+
 			virtual void foo_happened() = 0;
 			virtual void bar_occurred(int number, const std::string &string) = 0;
 		};

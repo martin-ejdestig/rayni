@@ -35,22 +35,24 @@ namespace Rayni
 			friend class ListenerList<Listener>;
 
 		protected:
-			ListenerBase() = default;
+			explicit ListenerBase(Listener &self) : self_(self)
+			{
+			}
 
-			ListenerBase(const ListenerBase &other) = delete; // TODO: Make copyable... ?
-			ListenerBase(ListenerBase &&other) = delete; // TODO: Make noexcept moveable
+			ListenerBase(const ListenerBase &other) = delete;
+			ListenerBase(ListenerBase &&other) = delete;
 
 			virtual ~ListenerBase()
 			{
 				if (list_)
-					// TODO: Unsafe cast (but will work for most common use case).
-					list_->remove(*static_cast<Listener *>(this));
+					list_->remove(self_);
 			}
 
 			ListenerBase &operator=(const ListenerBase &other) = delete; // TODO: Make copyable... ?
 			ListenerBase &operator=(ListenerBase &&other) = delete; // TODO: Make noexcept moveable
 
 		private:
+			Listener &self_; // Needed to avoid unsafe downcast. TODO: Alternatives?
 			ListenerList<Listener> *list_ = nullptr;
 		};
 

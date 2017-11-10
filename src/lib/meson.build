@@ -8,6 +8,11 @@ lib_dependencies = [
 lib_sources = [
     'color.cpp',
     'color.h',
+    'concurrency/barrier.h',
+    'concurrency/cancellable.h',
+    'concurrency/latch.h',
+    'concurrency/thread_pool.cpp',
+    'concurrency/thread_pool.h',
     'containers/fixed_size_stack.h',
     'containers/listener_list.h',
     'containers/variant.cpp',

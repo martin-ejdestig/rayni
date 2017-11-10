@@ -1,5 +1,9 @@
 lib_unit_tests_sources = [
     'color.cpp',
+    'concurrency/barrier.cpp',
+    'concurrency/cancellable.cpp',
+    'concurrency/latch.cpp',
+    'concurrency/thread_pool.cpp',
     'containers/fixed_size_stack.cpp',
     'containers/listener_list.cpp',
     'containers/variant.cpp',

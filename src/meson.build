@@ -9,7 +9,6 @@ config_header = configure_file(input : 'config.h.in',
 
 git_describe_version_header = vcs_tag(input : 'git_describe_version.h.in',
                                       output : 'git_describe_version.h',
-                                      fallback : meson.project_version(),
                                       command : ['git', 'describe', '--always', '--first-parent', '--dirty'])
 
 subdir('lib')

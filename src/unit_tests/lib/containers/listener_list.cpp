@@ -31,7 +31,7 @@ namespace Rayni
 		{
 		public:
 			virtual void foo_happened() = 0;
-			virtual void bar_occured(int number, const std::string &string) = 0;
+			virtual void bar_occurred(int number, const std::string &string) = 0;
 		};
 
 		class BazListener : public Listener
@@ -42,7 +42,7 @@ namespace Rayni
 				data += "foo";
 			}
 
-			void bar_occured(int number, const std::string &string) override
+			void bar_occurred(int number, const std::string &string) override
 			{
 				data += "bar" + std::to_string(number) + string;
 			}
@@ -72,7 +72,7 @@ namespace Rayni
 		listeners.add(listener2);
 		listeners.add(listener1);
 		listeners.add(listener2);
-		listeners.notify(&Listener::bar_occured, 12, "ab");
+		listeners.notify(&Listener::bar_occurred, 12, "ab");
 		EXPECT_EQ("foobar12ab", listener1.data);
 		EXPECT_EQ("foofoobar12ab", listener2.data);
 
@@ -81,7 +81,7 @@ namespace Rayni
 		listeners.remove(listener2);
 		listeners.remove(listener2);
 		listeners.notify(&Listener::foo_happened);
-		listeners.notify(&Listener::bar_occured, 34, "cd");
+		listeners.notify(&Listener::bar_occurred, 34, "cd");
 		EXPECT_EQ("foobar12ab", listener1.data);
 		EXPECT_EQ("foofoobar12ab", listener2.data);
 	}
@@ -113,7 +113,7 @@ namespace Rayni
 			listeners.add(listener3);
 			listeners.notify(&Listener::foo_happened);
 		}
-		listeners.notify(&Listener::bar_occured, 12, "ab");
+		listeners.notify(&Listener::bar_occurred, 12, "ab");
 
 		EXPECT_EQ("foobar12ab", listener1.data);
 	}

@@ -104,61 +104,61 @@ namespace Rayni
 
 		Color operator+(const Color &c) const
 		{
-			return {r() + c.r(), g() + c.g(), b() + c.b()};
+			return {r_ + c.r_, g_ + c.g_, b_ + c.b_};
 		}
 
 		Color operator-(const Color &c) const
 		{
-			return {r() - c.r(), g() - c.g(), b() - c.b()};
+			return {r_ - c.r_, g_ - c.g_, b_ - c.b_};
 		}
 
 		Color &operator+=(const Color &c)
 		{
-			r() += c.r();
-			g() += c.g();
-			b() += c.b();
+			r_ += c.r_;
+			g_ += c.g_;
+			b_ += c.b_;
 
 			return *this;
 		}
 
 		Color operator*(const Color &c) const
 		{
-			return {r() * c.r(), g() * c.g(), b() * c.b()};
+			return {r_ * c.r_, g_ * c.g_, b_ * c.b_};
 		}
 
 		Color &operator*=(const Color &c)
 		{
-			r() *= c.r();
-			g() *= c.g();
-			b() *= c.b();
+			r_ *= c.r_;
+			g_ *= c.g_;
+			b_ *= c.b_;
 
 			return *this;
 		}
 
 		Color operator*(real_t s) const
 		{
-			return {r() * s, g() * s, b() * s};
+			return {r_ * s, g_ * s, b_ * s};
 		}
 
 		friend Color operator*(real_t s, const Color &c)
 		{
-			return {s * c.r(), s * c.g(), s * c.b()};
+			return {s * c.r_, s * c.g_, s * c.b_};
 		}
 
 		Color &operator*=(real_t s)
 		{
-			r() *= s;
-			g() *= s;
-			b() *= s;
+			r_ *= s;
+			g_ *= s;
+			b_ *= s;
 
 			return *this;
 		}
 
 		Color clamp() const
 		{
-			return {std::min(std::max(r(), real_t(0)), real_t(1)),
-			        std::min(std::max(g(), real_t(0)), real_t(1)),
-			        std::min(std::max(b(), real_t(0)), real_t(1))};
+			return {std::min(std::max(r_, real_t(0)), real_t(1)),
+			        std::min(std::max(g_, real_t(0)), real_t(1)),
+			        std::min(std::max(b_, real_t(0)), real_t(1))};
 		}
 
 	private:

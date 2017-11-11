@@ -71,13 +71,17 @@ namespace Rayni
 
 	void ThreadPool::add_tasks(std::vector<std::function<void()>> &&tasks)
 	{
-		std::unique_lock<std::mutex> lock(mutex_);
+		{
+			std::unique_lock<std::mutex> lock(mutex_);
 
-		tasks_.insert(tasks_.end(),
-		              std::make_move_iterator(tasks.begin()),
-		              std::make_move_iterator(tasks.end()));
+			tasks_.insert(tasks_.end(),
+			              std::make_move_iterator(tasks.begin()),
+			              std::make_move_iterator(tasks.end()));
 
-		work_condition_.notify_all();
+			work_condition_.notify_all();
+		}
+
+		tasks.clear();
 	}
 
 	void ThreadPool::wait()

@@ -73,6 +73,7 @@ namespace Rayni
 		thread_pool.wait();
 
 		EXPECT_EQ(SUM, counter);
+		EXPECT_TRUE(tasks.empty()); // NOLINT: misc-use-after-move (tests move)
 	}
 
 	TEST(ThreadPool, CustomNumberOfThreads)

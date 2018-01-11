@@ -88,12 +88,12 @@ namespace Rayni
 	{
 		std::unique_lock<std::mutex> lock(mutex_);
 
-		waiting_++;
+		threads_waiting_++;
 
-		while (!tasks_.empty() || processing_task_ > 0)
+		while (!tasks_.empty() || threads_working_ > 0)
 			wait_condition_.wait(lock);
 
-		waiting_--;
+		threads_waiting_--;
 	}
 
 	void ThreadPool::work()
@@ -111,15 +111,15 @@ namespace Rayni
 			std::function<void()> task = std::move(tasks_.front());
 			tasks_.pop_front();
 
-			processing_task_++;
+			threads_working_++;
 			lock.unlock();
 
 			task();
 
 			lock.lock();
-			processing_task_--;
+			threads_working_--;
 
-			if (waiting_ > 0 && tasks_.empty() && processing_task_ == 0)
+			if (threads_waiting_ > 0 && tasks_.empty() && threads_working_ == 0)
 				wait_condition_.notify_all();
 		}
 	}

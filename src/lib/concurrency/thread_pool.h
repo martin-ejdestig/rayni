@@ -60,8 +60,8 @@ namespace Rayni
 
 		std::deque<std::function<void()>> tasks_;
 
-		unsigned int processing_task_ = 0;
-		unsigned int waiting_ = 0;
+		unsigned int threads_working_ = 0;
+		unsigned int threads_waiting_ = 0;
 		bool stop_ = false;
 	};
 }

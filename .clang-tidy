@@ -70,8 +70,6 @@ HeaderFilterRegex: '.*'
 CheckOptions:
   - key:   cppcoreguidelines-special-member-functions.AllowSoleDefaultDtor
     value: '1'
-  - key:   misc-assert-side-effect.CheckFunctionCalls
-    value: '1'
   - key:   modernize-loop-convert.NamingStyle
     value: lower_case
   - key:   modernize-use-default-member-init.UseAssignment

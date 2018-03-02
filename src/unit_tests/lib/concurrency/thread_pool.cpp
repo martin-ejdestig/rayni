@@ -19,9 +19,11 @@
 
 #include <gtest/gtest.h>
 
+#include <array>
 #include <atomic>
 #include <exception>
 #include <functional>
+#include <future>
 #include <utility>
 #include <vector>
 
@@ -106,6 +108,22 @@ namespace Rayni
 
 		EXPECT_EQ(NUM_THREADS, counter1);
 		EXPECT_EQ(NUM_THREADS * 2, counter2);
+	}
+
+	TEST(ThreadPool, Async)
+	{
+		ThreadPool thread_pool;
+		std::atomic<unsigned int> counter{0};
+		std::array<std::future<unsigned int>, SUM_TERM_COUNT> futures;
+
+		for (auto &future : futures)
+			future = thread_pool.async([&] { return counter.fetch_add(1); });
+
+		unsigned int sum = 0;
+		for (auto &future : futures)
+			sum += future.get();
+
+		EXPECT_EQ(SUM, sum);
 	}
 
 	TEST(ThreadPool, ThreadAvailable)

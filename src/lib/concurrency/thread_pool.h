@@ -23,8 +23,12 @@
 #include <condition_variable>
 #include <deque>
 #include <functional>
+#include <future>
+#include <memory>
 #include <mutex>
 #include <thread>
+#include <type_traits>
+#include <utility>
 #include <vector>
 
 namespace Rayni
@@ -48,6 +52,22 @@ namespace Rayni
 		void add_tasks(std::vector<std::function<void()>> &&tasks);
 
 		void wait();
+
+		// Like std::async() but always runs in a thread from pool.
+		template <typename Function>
+		auto async(Function &&function)
+		{
+			using Result = std::result_of_t<std::decay_t<Function>()>;
+			// Have to wrap std::promise in std::shared_ptr to make it possible to
+			// store it in a std::function (must be copyable).
+			auto promise = std::make_shared<std::promise<Result>>();
+
+			add_task([ promise, function = std::forward<Function>(function) ]() mutable {
+				promise->set_value(function());
+			});
+
+			return promise->get_future();
+		}
 
 		bool thread_available() const
 		{

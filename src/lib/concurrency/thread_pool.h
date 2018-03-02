@@ -49,12 +49,18 @@ namespace Rayni
 
 		void wait();
 
+		bool thread_available() const
+		{
+			std::unique_lock<std::mutex> lock(mutex_);
+			return threads_.size() - threads_working_ > 0;
+		}
+
 	private:
 		void work();
 
 		std::vector<std::thread> threads_;
 
-		std::mutex mutex_;
+		mutable std::mutex mutex_;
 		std::condition_variable work_condition_;
 		std::condition_variable wait_condition_;
 

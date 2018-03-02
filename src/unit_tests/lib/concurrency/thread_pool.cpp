@@ -107,4 +107,28 @@ namespace Rayni
 		EXPECT_EQ(NUM_THREADS, counter1);
 		EXPECT_EQ(NUM_THREADS * 2, counter2);
 	}
+
+	TEST(ThreadPool, ThreadAvailable)
+	{
+		constexpr unsigned int NUM_THREADS = 2;
+		ThreadPool thread_pool(NUM_THREADS);
+		Barrier barrier(NUM_THREADS + 1);
+		auto task = [&] {
+			barrier.arrive_and_wait(); // Wait for pre EXPECT_FALSE.
+			barrier.arrive_and_wait(); // Wait for post EXPECT_FALSE.
+		};
+
+		EXPECT_TRUE(thread_pool.thread_available());
+
+		thread_pool.add_task(task);
+		EXPECT_TRUE(thread_pool.thread_available());
+
+		thread_pool.add_task(task);
+		barrier.arrive_and_wait(); // Pre EXPECT_FALSE.
+		EXPECT_FALSE(thread_pool.thread_available());
+		barrier.arrive_and_wait(); // Post EXPECT_FALSE.
+
+		thread_pool.wait();
+		EXPECT_TRUE(thread_pool.thread_available());
+	}
 }

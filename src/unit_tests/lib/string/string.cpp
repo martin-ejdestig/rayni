@@ -19,6 +19,9 @@
 
 #include <gtest/gtest.h>
 
+#include <limits>
+#include <string>
+
 #include "lib/string/string.h"
 
 namespace Rayni
@@ -151,5 +154,39 @@ namespace Rayni
 		EXPECT_FALSE(string_to_double("-"));
 
 		EXPECT_DOUBLE_EQ(1.0, string_to_number<double>("1.0").value());
+	}
+
+	TEST(String, ToLong)
+	{
+		EXPECT_EQ(123, string_to_long("123").value());
+		EXPECT_EQ(123, string_to_long(" 123").value());
+		EXPECT_EQ(123, string_to_long("+123").value());
+		EXPECT_EQ(-123, string_to_long("-123").value());
+		EXPECT_EQ(123, string_to_long("0123").value());
+
+		EXPECT_EQ(0, string_to_long("0").value());
+		EXPECT_EQ(0, string_to_long("+0").value());
+		EXPECT_EQ(0, string_to_long("-0").value());
+
+		EXPECT_FALSE(string_to_long(""));
+		EXPECT_FALSE(string_to_long(" "));
+		EXPECT_FALSE(string_to_long("123 "));
+		EXPECT_FALSE(string_to_long("123a"));
+		EXPECT_FALSE(string_to_long("12.3"));
+		EXPECT_FALSE(string_to_long("1.23e4"));
+	}
+
+	TEST(String, ToLongOutOfRange)
+	{
+		const long max = std::numeric_limits<long>::max();
+		const long min = std::numeric_limits<long>::min();
+		const std::string max_str = std::to_string(max);
+		const std::string min_str = std::to_string(min);
+
+		EXPECT_EQ(max, string_to_long(max_str).value());
+		EXPECT_EQ(min, string_to_long(min_str).value());
+
+		EXPECT_FALSE(string_to_long(max_str + "0"));
+		EXPECT_FALSE(string_to_long(min_str + "0"));
 	}
 }

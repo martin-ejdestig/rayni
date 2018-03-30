@@ -32,6 +32,7 @@ namespace Rayni
 
 	std::experimental::optional<float> string_to_float(const std::string &str);
 	std::experimental::optional<double> string_to_double(const std::string &str);
+	std::experimental::optional<long> string_to_long(const std::string &str);
 
 	template <typename T>
 	std::experimental::optional<T> string_to_number(const std::string &str);

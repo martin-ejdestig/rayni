@@ -23,9 +23,6 @@
 #include <array>
 #include <cassert>
 #include <cstdint>
-#include <fstream>
-#include <ios>
-#include <string>
 
 #include "lib/color.h"
 #include "lib/image.h"
@@ -33,23 +30,11 @@
 
 namespace Rayni
 {
-	Image TGAReader::read_file(const std::string &file_name)
+	Image TGAReader::read()
 	{
-		std::ifstream file(file_name, std::ios::binary);
-		if (!file.is_open())
-			throw Exception(file_name, "failed to open TGA image");
-
-		return read_stream(file, file_name);
-	}
-
-	Image TGAReader::read_stream(std::istream &stream, const std::string &error_prefix)
-	{
-		stream_ = &stream;
-		error_prefix_ = error_prefix;
-
 		read_header();
 
-		skip(header_.id_field_length);
+		skip_bytes(header_.id_field_length);
 
 		if (header_.color_map_type == ColorMapType::PRESENT)
 			read_color_map();
@@ -60,7 +45,7 @@ namespace Rayni
 	void TGAReader::read_header()
 	{
 		std::array<std::uint8_t, 18> data;
-		read(data);
+		read_bytes(data);
 
 		header_.id_field_length = data[0];
 		header_.color_map_type = byte_to_color_map_type(data[1]);
@@ -82,26 +67,26 @@ namespace Rayni
 		{
 			if (header_.color_map.length == 0 || header_.color_map.entry_size == 0 ||
 			    header_.color_map_type == ColorMapType::ABSCENT)
-				throw Exception(error_prefix_, "missing color map in color mapped TGA image");
+				throw Exception(position(), "missing color map in color mapped TGA image");
 		}
 		else
 		{
 			if (header_.color_map.length != 0 || header_.color_map.entry_size != 0 ||
 			    header_.color_map_type == ColorMapType::PRESENT)
-				throw Exception(error_prefix_, "color map found in RGB/Mono TGA image");
+				throw Exception(position(), "color map found in RGB/Mono TGA image");
 		}
 
 		if (header_.image.width == 0 || header_.image.height == 0)
-			throw Exception(error_prefix_, "invalid image dimensions in TGA image");
+			throw Exception(position(), "invalid image dimensions in TGA image");
 
 		if (header_.image.pixel_size != 8 && header_.image.pixel_size != 15 && header_.image.pixel_size != 16 &&
 		    header_.image.pixel_size != 24 && header_.image.pixel_size != 32)
-			throw Exception(error_prefix_, "invalid pixel depth in TGA image");
+			throw Exception(position(), "invalid pixel depth in TGA image");
 	}
 
 	void TGAReader::read_color_map()
 	{
-		throw Exception(error_prefix_, "support for color mapped TGA images not implemented");
+		throw Exception(position(), "support for color mapped TGA images not implemented");
 	}
 
 	Image TGAReader::read_image_data()
@@ -114,26 +99,13 @@ namespace Rayni
 			if (header_.run_length_encoded)
 				read_run_length_encoded(row);
 			else
-				read(row);
+				read_bytes(row);
 
 			for (unsigned int x = 0; x < header_.image.width; x++)
 				image.write_pixel(x_to_image_x(x), y_to_image_y(y), pixel_to_color(row, x));
 		}
 
 		return image;
-	}
-
-	void TGAReader::read(void *dest, std::size_t size)
-	{
-		stream_->read(static_cast<std::istream::char_type *>(dest), static_cast<std::streamsize>(size));
-
-		if (!stream_->good())
-		{
-			if (stream_->eof())
-				throw Exception(error_prefix_, "unexpected eof when reading TGA image");
-			else
-				throw Exception(error_prefix_, "failed to read from TGA image");
-		}
 	}
 
 	void TGAReader::read_run_length_encoded(std::vector<std::uint8_t> &dest)
@@ -144,8 +116,7 @@ namespace Rayni
 		{
 			if (rle_state_.bytes_left == 0)
 			{
-				std::uint8_t repetition_count;
-				read(&repetition_count, 1);
+				std::uint8_t repetition_count = read_uint8();
 
 				rle_state_.raw = repetition_count < 0x80;
 
@@ -157,7 +128,7 @@ namespace Rayni
 				{
 					rle_state_.bytes_left = (repetition_count - 127u) * bytes_per_pixel();
 					rle_state_.pixel_pos = 0;
-					read(rle_state_.pixel, bytes_per_pixel());
+					read_bytes(rle_state_.pixel, bytes_per_pixel());
 				}
 			}
 
@@ -165,7 +136,7 @@ namespace Rayni
 			{
 				auto size =
 				        std::min(dest.size() - pos, static_cast<std::size_t>(rle_state_.bytes_left));
-				read(&dest[pos], size);
+				read_bytes(dest, pos, size);
 				rle_state_.bytes_left -= size;
 				pos += size;
 			}
@@ -180,17 +151,6 @@ namespace Rayni
 				}
 			}
 		}
-	}
-
-	void TGAReader::skip(std::size_t size)
-	{
-		if (size == 0)
-			return;
-
-		stream_->seekg(static_cast<std::istream::off_type>(size), std::ios::cur);
-
-		if (!stream_->good())
-			throw Exception(error_prefix_, "failed to seek in TGA image");
 	}
 
 	unsigned int TGAReader::bytes_per_pixel() const
@@ -232,7 +192,7 @@ namespace Rayni
 				return {real_t(pixel[0]) / 255, real_t(pixel[0]) / 255, real_t(pixel[0]) / 255};
 		}
 
-		throw Exception(error_prefix_, "unsupported TGA image type");
+		throw Exception(position(), "unsupported TGA image type");
 	}
 
 	TGAReader::ColorMapType TGAReader::byte_to_color_map_type(std::uint8_t byte) const
@@ -240,7 +200,7 @@ namespace Rayni
 		auto i = enum_from_value({ColorMapType::ABSCENT, ColorMapType::PRESENT}, byte);
 
 		if (!i)
-			throw Exception(error_prefix_, "unknown color map type field in TGA header");
+			throw Exception(position(), "unknown color map type field in TGA header");
 
 		return i.value();
 	}
@@ -250,7 +210,7 @@ namespace Rayni
 		auto i = enum_from_value({ImageType::NONE, ImageType::COLOR_MAPPED, ImageType::RGB, ImageType::MONO},
 		                         byte);
 		if (!i)
-			throw Exception(error_prefix_, "unknown image type field in TGA header");
+			throw Exception(position(), "unknown image type field in TGA header");
 
 		return i.value();
 	}

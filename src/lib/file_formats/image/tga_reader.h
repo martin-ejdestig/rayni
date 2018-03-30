@@ -20,24 +20,17 @@
 #ifndef RAYNI_LIB_FILE_FORMATS_IMAGE_TGA_READER_H
 #define RAYNI_LIB_FILE_FORMATS_IMAGE_TGA_READER_H
 
-#include <cstddef>
+#include <array>
 #include <cstdint>
-#include <istream>
-#include <string>
 #include <vector>
 
-#include "lib/file_formats/file_format_exception.h"
+#include "lib/file_formats/binary_type_reader.h"
 #include "lib/image.h"
 
 namespace Rayni
 {
-	class TGAReader
+	class TGAReader : public BinaryTypeReader<Image>
 	{
-	public:
-		using Exception = FileFormatException;
-
-		Image read_file(const std::string &file_name);
-
 	private:
 		enum class ColorMapType : std::uint8_t
 		{
@@ -53,23 +46,13 @@ namespace Rayni
 			MONO = 3
 		};
 
-		Image read_stream(std::istream &stream, const std::string &error_prefix);
+		Image read() override;
 
 		void read_header();
 		void read_color_map();
 		Image read_image_data();
 
-		void read(void *dest, std::size_t size);
-
-		template <typename T>
-		void read(T &dest)
-		{
-			read(dest.data(), dest.size());
-		}
-
 		void read_run_length_encoded(std::vector<std::uint8_t> &dest);
-
-		void skip(std::size_t size);
 
 		unsigned int bytes_per_pixel() const;
 		unsigned int x_to_image_x(unsigned int x) const;
@@ -78,9 +61,6 @@ namespace Rayni
 
 		ColorMapType byte_to_color_map_type(std::uint8_t byte) const;
 		ImageType byte_to_image_type(std::uint8_t byte) const;
-
-		std::string error_prefix_;
-		std::istream *stream_ = nullptr;
 
 		struct
 		{
@@ -112,7 +92,7 @@ namespace Rayni
 			bool raw = false;
 			unsigned int bytes_left = 0;
 			unsigned int pixel_pos = 0;
-			std::uint8_t pixel[4] = {0, 0, 0, 0};
+			std::array<std::uint8_t, 4> pixel = {0, 0, 0, 0};
 		} rle_state_;
 	};
 }

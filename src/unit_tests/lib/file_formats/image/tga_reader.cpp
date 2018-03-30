@@ -94,8 +94,7 @@ namespace Rayni
 	}
 
 #if 0
-	// TODO: Test more. Add a TGAReader::read_data(const std::vector<std::uint8_t> &data) that
-	//       calls TGAReader::read_stream() with a stream that reads from vector.
+	// TODO: Test more.
 	TEST(TGAReader, HeaderShort)
 	{
 	}

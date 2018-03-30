@@ -153,16 +153,25 @@ namespace Rayni
 		TextReader reader;
 		reader.set_string("abc\ndef");
 
+		EXPECT_EQ("1:1", reader.position().to_string());
 		EXPECT_EQ('a', reader.next_get());
+		EXPECT_EQ("1:2", reader.position().to_string());
 		EXPECT_EQ('b', reader.next_get());
+		EXPECT_EQ("1:3", reader.position().to_string());
 		EXPECT_EQ('c', reader.next_get());
+		EXPECT_EQ("1:4", reader.position().to_string());
 		EXPECT_EQ('\n', reader.next_get());
+		EXPECT_EQ("2:1", reader.position().to_string());
 
 		EXPECT_EQ('d', reader.next_get());
+		EXPECT_EQ("2:2", reader.position().to_string());
 		reader.next();
+		EXPECT_EQ("2:3", reader.position().to_string());
 		EXPECT_EQ('f', reader.next_get());
+		EXPECT_EQ("2:4", reader.position().to_string());
 
 		EXPECT_THROW(reader.next(), TextReader::EOFException);
+		EXPECT_EQ("2:4", reader.position().to_string());
 	}
 
 	TEST(TextReader, At)
@@ -220,28 +229,48 @@ namespace Rayni
 		TextReader reader;
 		reader.set_string("abcdef \t\r\n  gh  i  \njklmno p\nq");
 
+		EXPECT_EQ("1:1", reader.position().to_string());
 		EXPECT_TRUE(reader.skip_char('a'));
+		EXPECT_EQ("1:2", reader.position().to_string());
 		EXPECT_FALSE(reader.skip_char('a'));
+		EXPECT_EQ("1:2", reader.position().to_string());
 		EXPECT_TRUE(reader.skip_char('b'));
+		EXPECT_EQ("1:3", reader.position().to_string());
 
 		EXPECT_TRUE(reader.skip_string("cd"));
+		EXPECT_EQ("1:5", reader.position().to_string());
 		EXPECT_FALSE(reader.skip_string("ee"));
+		EXPECT_EQ("1:5", reader.position().to_string());
 		EXPECT_TRUE(reader.skip_string("ef"));
+		EXPECT_EQ("1:7", reader.position().to_string());
 
 		reader.skip_space();
+		EXPECT_EQ("2:3", reader.position().to_string());
 		EXPECT_TRUE(reader.skip_char('g'));
+		EXPECT_EQ("2:4", reader.position().to_string());
 		reader.skip_space();
+		EXPECT_EQ("2:4", reader.position().to_string());
+
 		EXPECT_TRUE(reader.skip_char('h'));
+		EXPECT_EQ("2:5", reader.position().to_string());
 
 		reader.skip_space_on_line();
+		EXPECT_EQ("2:7", reader.position().to_string());
 		EXPECT_TRUE(reader.skip_char('i'));
+		EXPECT_EQ("2:8", reader.position().to_string());
 		reader.skip_space_on_line();
+		EXPECT_EQ("2:10", reader.position().to_string());
 		EXPECT_TRUE(reader.skip_char('\n'));
+		EXPECT_EQ("3:1", reader.position().to_string());
 		EXPECT_TRUE(reader.skip_char('j'));
+		EXPECT_EQ("3:2", reader.position().to_string());
 
 		reader.skip_to_end_of_line();
+		EXPECT_EQ("3:9", reader.position().to_string());
 		EXPECT_TRUE(reader.skip_char('\n'));
+		EXPECT_EQ("4:1", reader.position().to_string());
 		EXPECT_TRUE(reader.skip_char('q'));
+		EXPECT_EQ("4:2", reader.position().to_string());
 	}
 
 	TEST(TextReader, Parser)

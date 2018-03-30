@@ -7,6 +7,8 @@ lib_unit_tests_sources = [
     'containers/fixed_size_stack.cpp',
     'containers/listener_list.cpp',
     'containers/variant.cpp',
+    'file_formats/binary_reader.cpp',
+    'file_formats/binary_type_reader.cpp',
     'file_formats/image/exr_reader.cpp',
     'file_formats/image/image_format.cpp',
     'file_formats/image/image_reader.cpp',

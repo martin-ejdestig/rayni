@@ -38,6 +38,7 @@ lib_sources = [
     'file_formats/json_reader.h',
     'file_formats/text_reader.cpp',
     'file_formats/text_reader.h',
+    'file_formats/text_type_reader.h',
     'file_formats/write_to_file.cpp',
     'file_formats/write_to_file.h',
     'function/scope_exit.h',

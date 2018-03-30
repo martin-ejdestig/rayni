@@ -17,6 +17,7 @@ lib_unit_tests_sources = [
     'file_formats/image/webp_reader.cpp',
     'file_formats/json_reader.cpp',
     'file_formats/text_reader.cpp',
+    'file_formats/text_type_reader.cpp',
     'file_formats/write_to_file.cpp',
     'function/scope_exit.cpp',
     'image.cpp',

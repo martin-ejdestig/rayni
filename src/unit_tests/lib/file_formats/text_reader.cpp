@@ -275,34 +275,4 @@ namespace Rayni
 		EXPECT_TRUE(reader.skip_char('q'));
 		EXPECT_EQ("4:2", reader.position().to_string());
 	}
-
-	TEST(TextReader, Parser)
-	{
-		class BoolReader : public TextReader::Parser<bool>
-		{
-		private:
-			bool parse() override
-			{
-				if (skip_string("true"))
-					return true;
-				if (skip_string("false"))
-					return false;
-
-				throw Exception(position(), "expected \"true\" or \"false\"");
-			}
-		};
-
-		BoolReader reader;
-
-		EXPECT_TRUE(reader.read_string("true"));
-		EXPECT_FALSE(reader.read_string("false"));
-
-		EXPECT_THROW(reader.read_string("abc"), BoolReader::Exception);
-		EXPECT_THROW(reader.read_string(""), BoolReader::Exception);
-
-		ScopedTempDir temp_dir;
-		const std::string path = temp_dir.path() / "test.txt";
-		text_to_file(path, "true");
-		EXPECT_TRUE(reader.read_file(path));
-	}
 }

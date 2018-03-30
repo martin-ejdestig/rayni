@@ -27,9 +27,9 @@
 
 namespace Rayni
 {
-	Variant JSONReader::parse()
+	Variant JSONReader::read()
 	{
-		Variant value = parse_value();
+		Variant value = read_value();
 
 		while (!at_eof())
 		{
@@ -42,18 +42,18 @@ namespace Rayni
 		return value;
 	}
 
-	Variant JSONReader::parse_value()
+	Variant JSONReader::read_value()
 	{
 		skip_space();
 
 		if (at('{'))
-			return parse_object();
+			return read_object();
 		if (at('['))
-			return parse_array();
+			return read_array();
 		if (at('"'))
-			return parse_string();
+			return read_string();
 		if (at_digit() || at('-'))
-			return parse_number();
+			return read_number();
 		if (skip_string("true"))
 			return Variant(true);
 		if (skip_string("false"))
@@ -64,7 +64,7 @@ namespace Rayni
 		throw Exception(position(), "invalid value");
 	}
 
-	Variant JSONReader::parse_object()
+	Variant JSONReader::read_object()
 	{
 		if (!skip_char('{'))
 			throw Exception(position(), "expected start of object");
@@ -75,7 +75,7 @@ namespace Rayni
 
 		while (!skip_char('}'))
 		{
-			Variant key = parse_string();
+			Variant key = read_string();
 
 			if (map.find(key.as_string()) != map.cend())
 				throw Exception(position(), "duplicate key");
@@ -84,7 +84,7 @@ namespace Rayni
 			if (!skip_char(':'))
 				throw Exception(position(), "expected :");
 
-			map.emplace(key.as_string(), parse_value());
+			map.emplace(key.as_string(), read_value());
 
 			skip_space();
 
@@ -103,7 +103,7 @@ namespace Rayni
 		return Variant(std::move(map));
 	}
 
-	Variant JSONReader::parse_array()
+	Variant JSONReader::read_array()
 	{
 		if (!skip_char('['))
 			throw Exception(position(), "expected start of array");
@@ -114,7 +114,7 @@ namespace Rayni
 
 		while (!skip_char(']'))
 		{
-			vector.emplace_back(parse_value());
+			vector.emplace_back(read_value());
 
 			skip_space();
 
@@ -133,7 +133,7 @@ namespace Rayni
 		return Variant(std::move(vector));
 	}
 
-	Variant JSONReader::parse_string()
+	Variant JSONReader::read_string()
 	{
 		if (!skip_char('"'))
 			throw Exception(position(), "expected start of string");
@@ -175,7 +175,7 @@ namespace Rayni
 		return Variant(std::move(string));
 	}
 
-	Variant JSONReader::parse_number()
+	Variant JSONReader::read_number()
 	{
 		if (!at_digit() && !at('-'))
 			throw Exception(position(), "expected digit or -");

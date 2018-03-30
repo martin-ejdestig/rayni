@@ -21,20 +21,23 @@
 #define RAYNI_LIB_FILE_FORMATS_JSON_READER_H
 
 #include "lib/containers/variant.h"
-#include "lib/file_formats/text_reader.h"
+#include "lib/file_formats/text_type_reader.h"
 
 namespace Rayni
 {
-	class JSONReader : public TextReader::Parser<Variant>
+	class JSONReader : public TextTypeReader<Variant>
 	{
-	private:
-		Variant parse() override;
+	public:
+		using TextTypeReader<Variant>::read_string;
 
-		Variant parse_value();
-		Variant parse_object();
-		Variant parse_array();
-		Variant parse_string();
-		Variant parse_number();
+	private:
+		Variant read() override;
+
+		Variant read_value();
+		Variant read_object();
+		Variant read_array();
+		Variant read_string();
+		Variant read_number();
 	};
 }
 

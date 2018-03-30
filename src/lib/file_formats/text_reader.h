@@ -26,7 +26,6 @@
 #include <string>
 
 #include "lib/file_formats/file_format_exception.h"
-#include "lib/function/scope_exit.h"
 
 namespace Rayni
 {
@@ -35,9 +34,6 @@ namespace Rayni
 	public:
 		class Exception;
 		class EOFException;
-
-		template <class T>
-		class Parser;
 
 		class Position
 		{
@@ -216,39 +212,6 @@ namespace Rayni
 	{
 		return line_index_;
 	}
-
-	// TextReader::Parser is a convenience class for creating a TextReader with methods that
-	// return a specific type as a result of parsing a file or a string.
-	template <typename T>
-	class TextReader::Parser : protected TextReader
-	{
-	public:
-		using Exception = TextReader::Exception;
-
-		virtual ~Parser() = default;
-
-		T read_file(const std::string &file_name)
-		{
-			auto closer = scope_exit([&] { close(); });
-			open_file(file_name);
-			return parse();
-		}
-
-		T read_string(const std::string &string)
-		{
-			return read_string(string, "");
-		}
-
-		T read_string(const std::string &string, const std::string &position_prefix)
-		{
-			auto closer = scope_exit([&] { close(); });
-			set_string(string, position_prefix);
-			return parse();
-		}
-
-	private:
-		virtual T parse() = 0;
-	};
 }
 
 #endif // RAYNI_LIB_FILE_FORMATS_TEXT_READER_H

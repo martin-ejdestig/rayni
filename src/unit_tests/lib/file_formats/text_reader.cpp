@@ -172,6 +172,9 @@ namespace Rayni
 
 		EXPECT_THROW(reader.next(), TextReader::EOFException);
 		EXPECT_EQ("2:4", reader.position().to_string());
+
+		EXPECT_THROW(reader.next_get(), TextReader::EOFException);
+		EXPECT_EQ("2:4", reader.position().to_string());
 	}
 
 	TEST(TextReader, At)

@@ -32,26 +32,26 @@ namespace Rayni
 {
 	Image ImageReader::read_file(const std::string &file_name)
 	{
-		ImageFormat::Type format_type = ImageFormat::determine_type_from_file(file_name);
+		ImageFormat format = image_format_from_file(file_name);
 
-		switch (format_type)
+		switch (format)
 		{
-		case ImageFormat::Type::EXR:
+		case ImageFormat::EXR:
 			return EXRReader().read_file(file_name);
 
-		case ImageFormat::Type::JPEG:
+		case ImageFormat::JPEG:
 			return JPEGReader().read_file(file_name);
 
-		case ImageFormat::Type::PNG:
+		case ImageFormat::PNG:
 			return PNGReader().read_file(file_name);
 
-		case ImageFormat::Type::TGA:
+		case ImageFormat::TGA:
 			return TGAReader().read_file(file_name);
 
-		case ImageFormat::Type::WEBP:
+		case ImageFormat::WEBP:
 			return WebPReader().read_file(file_name);
 
-		case ImageFormat::Type::UNDETERMINED:
+		case ImageFormat::UNDETERMINED:
 			break;
 		}
 

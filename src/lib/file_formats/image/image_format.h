@@ -24,26 +24,18 @@
 
 namespace Rayni
 {
-	class ImageFormat
+	enum class ImageFormat
 	{
-	public:
-		enum class Type
-		{
-			UNDETERMINED,
+		UNDETERMINED,
 
-			EXR,
-			JPEG,
-			PNG,
-			TGA,
-			WEBP
-		};
-
-		static Type determine_type_from_file(const std::string &file_name);
-
-	private:
-		static Type determine_type_from_magic(const std::string &file_name);
-		static Type determine_type_from_extension(const std::string &file_name);
+		EXR,
+		JPEG,
+		PNG,
+		TGA,
+		WEBP
 	};
+
+	ImageFormat image_format_from_file(const std::string &file_name);
 }
 
 #endif // RAYNI_LIB_FILE_FORMATS_IMAGE_IMAGE_FORMAT_H

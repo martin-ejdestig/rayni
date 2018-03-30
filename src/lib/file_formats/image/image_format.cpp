@@ -31,71 +31,74 @@
 
 namespace Rayni
 {
-	ImageFormat::Type ImageFormat::determine_type_from_file(const std::string &file_name)
+	namespace
 	{
-		Type type = determine_type_from_magic(file_name);
+		ImageFormat image_format_from_magic(const std::string &file_name)
+		{
+			std::ifstream stream(file_name, std::ios::binary);
+			if (!stream.is_open())
+				return ImageFormat::UNDETERMINED;
 
-		if (type == Type::UNDETERMINED)
-			type = determine_type_from_extension(file_name);
+			auto magic_matches = [&](std::istream::pos_type offset, const std::vector<std::uint8_t> magic) {
+				stream.seekg(offset);
+
+				for (auto &byte : magic)
+					if (stream.get() != byte)
+						return false;
+
+				return true;
+			};
+
+			if (magic_matches(0, {0x76, 0x2f, 0x31, 0x01}))
+				return ImageFormat::EXR;
+
+			if (magic_matches(0, {0xff, 0xd8, 0xff}))
+				return ImageFormat::JPEG;
+
+			if (magic_matches(0, {0x89, 'P', 'N', 'G'}))
+				return ImageFormat::PNG;
+
+			if (magic_matches(0, {'R', 'I', 'F', 'F'}) && magic_matches(8, {'W', 'E', 'B', 'P'}))
+				return ImageFormat::WEBP;
+
+			return ImageFormat::UNDETERMINED;
+		}
+
+		ImageFormat image_format_from_extension(const std::string &file_name)
+		{
+			const std::string extension =
+			        string_to_lower(std::experimental::filesystem::path(file_name).extension());
+
+			auto extension_is_any_of = [&](const std::vector<std::string> &strs) {
+				return std::find(strs.begin(), strs.end(), extension) != strs.end();
+			};
+
+			if (extension_is_any_of({".exr"}))
+				return ImageFormat::EXR;
+
+			if (extension_is_any_of({".jpg", ".jpeg", ".jpe"}))
+				return ImageFormat::JPEG;
+
+			if (extension_is_any_of({".png"}))
+				return ImageFormat::PNG;
+
+			if (extension_is_any_of({".icb", ".targa", ".tga", ".tpic", ".vda", ".vst"}))
+				return ImageFormat::TGA;
+
+			if (extension_is_any_of({".webp"}))
+				return ImageFormat::WEBP;
+
+			return ImageFormat::UNDETERMINED;
+		}
+	}
+
+	ImageFormat image_format_from_file(const std::string &file_name)
+	{
+		ImageFormat type = image_format_from_magic(file_name);
+
+		if (type == ImageFormat::UNDETERMINED)
+			type = image_format_from_extension(file_name);
 
 		return type;
-	}
-
-	ImageFormat::Type ImageFormat::determine_type_from_magic(const std::string &file_name)
-	{
-		std::ifstream stream(file_name, std::ios::binary);
-		if (!stream.is_open())
-			return Type::UNDETERMINED;
-
-		auto magic_matches = [&](std::istream::pos_type offset, const std::vector<std::uint8_t> magic) {
-			stream.seekg(offset);
-
-			for (auto &byte : magic)
-				if (stream.get() != byte)
-					return false;
-
-			return true;
-		};
-
-		if (magic_matches(0, {0x76, 0x2f, 0x31, 0x01}))
-			return Type::EXR;
-
-		if (magic_matches(0, {0xff, 0xd8, 0xff}))
-			return Type::JPEG;
-
-		if (magic_matches(0, {0x89, 'P', 'N', 'G'}))
-			return Type::PNG;
-
-		if (magic_matches(0, {'R', 'I', 'F', 'F'}) && magic_matches(8, {'W', 'E', 'B', 'P'}))
-			return Type::WEBP;
-
-		return Type::UNDETERMINED;
-	}
-
-	ImageFormat::Type ImageFormat::determine_type_from_extension(const std::string &file_name)
-	{
-		const std::string extension =
-		        string_to_lower(std::experimental::filesystem::path(file_name).extension());
-
-		auto extension_is_any_of = [&](const std::vector<std::string> &strs) {
-			return std::find(strs.begin(), strs.end(), extension) != strs.end();
-		};
-
-		if (extension_is_any_of({".exr"}))
-			return Type::EXR;
-
-		if (extension_is_any_of({".jpg", ".jpeg", ".jpe"}))
-			return Type::JPEG;
-
-		if (extension_is_any_of({".png"}))
-			return Type::PNG;
-
-		if (extension_is_any_of({".icb", ".targa", ".tga", ".tpic", ".vda", ".vst"}))
-			return Type::TGA;
-
-		if (extension_is_any_of({".webp"}))
-			return Type::WEBP;
-
-		return Type::UNDETERMINED;
 	}
 }

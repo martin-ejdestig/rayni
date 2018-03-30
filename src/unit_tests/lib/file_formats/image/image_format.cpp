@@ -31,13 +31,13 @@ namespace Rayni
 {
 	namespace
 	{
-		ImageFormat::Type create_and_determine_type(const ScopedTempDir &temp_dir,
-		                                            const std::string &file_name,
-		                                            const std::vector<std::uint8_t> &data)
+		ImageFormat create_and_determine(const ScopedTempDir &temp_dir,
+		                                 const std::string &file_name,
+		                                 const std::vector<std::uint8_t> &data)
 		{
 			std::experimental::filesystem::path path = temp_dir.path() / file_name;
 			write_to_file(path, data);
-			return ImageFormat::determine_type_from_file(path);
+			return image_format_from_file(path);
 		}
 
 		std::vector<std::uint8_t> exr_magic()
@@ -65,10 +65,10 @@ namespace Rayni
 	{
 		ScopedTempDir temp_dir;
 
-		EXPECT_EQ(ImageFormat::Type::EXR, create_and_determine_type(temp_dir, "exr_magic.bin", exr_magic()));
-		EXPECT_EQ(ImageFormat::Type::JPEG, create_and_determine_type(temp_dir, "jpeg_magic.bin", jpeg_magic()));
-		EXPECT_EQ(ImageFormat::Type::PNG, create_and_determine_type(temp_dir, "png_magic.bin", png_magic()));
-		EXPECT_EQ(ImageFormat::Type::WEBP, create_and_determine_type(temp_dir, "wepb_magic.bin", webp_magic()));
+		EXPECT_EQ(ImageFormat::EXR, create_and_determine(temp_dir, "exr_magic.bin", exr_magic()));
+		EXPECT_EQ(ImageFormat::JPEG, create_and_determine(temp_dir, "jpeg_magic.bin", jpeg_magic()));
+		EXPECT_EQ(ImageFormat::PNG, create_and_determine(temp_dir, "png_magic.bin", png_magic()));
+		EXPECT_EQ(ImageFormat::WEBP, create_and_determine(temp_dir, "wepb_magic.bin", webp_magic()));
 	}
 
 	TEST(ImageFormat, ShortMagic)
@@ -80,16 +80,16 @@ namespace Rayni
 			return magic;
 		};
 
-		EXPECT_EQ(ImageFormat::Type::UNDETERMINED,
-		          create_and_determine_type(temp_dir, "exr_short_magic.bin", shorten(exr_magic())));
-		EXPECT_EQ(ImageFormat::Type::UNDETERMINED,
-		          create_and_determine_type(temp_dir, "jpeg_short_magic.bin", shorten(jpeg_magic())));
-		EXPECT_EQ(ImageFormat::Type::UNDETERMINED,
-		          create_and_determine_type(temp_dir, "png_short_magic.bin", shorten(png_magic())));
-		EXPECT_EQ(ImageFormat::Type::UNDETERMINED,
-		          create_and_determine_type(temp_dir, "wepb_short_magic.bin", shorten(webp_magic())));
+		EXPECT_EQ(ImageFormat::UNDETERMINED,
+		          create_and_determine(temp_dir, "exr_short_magic.bin", shorten(exr_magic())));
+		EXPECT_EQ(ImageFormat::UNDETERMINED,
+		          create_and_determine(temp_dir, "jpeg_short_magic.bin", shorten(jpeg_magic())));
+		EXPECT_EQ(ImageFormat::UNDETERMINED,
+		          create_and_determine(temp_dir, "png_short_magic.bin", shorten(png_magic())));
+		EXPECT_EQ(ImageFormat::UNDETERMINED,
+		          create_and_determine(temp_dir, "wepb_short_magic.bin", shorten(webp_magic())));
 
-		EXPECT_EQ(ImageFormat::Type::UNDETERMINED, create_and_determine_type(temp_dir, "empty_magic.bin", {}));
+		EXPECT_EQ(ImageFormat::UNDETERMINED, create_and_determine(temp_dir, "empty_magic.bin", {}));
 	}
 
 	TEST(ImageFormat, CorruptMagic)
@@ -101,57 +101,51 @@ namespace Rayni
 			return magic;
 		};
 
-		EXPECT_EQ(ImageFormat::Type::UNDETERMINED,
-		          create_and_determine_type(temp_dir, "exr_corrupt_magic.bin", corrupt(exr_magic())));
+		EXPECT_EQ(ImageFormat::UNDETERMINED,
+		          create_and_determine(temp_dir, "exr_corrupt_magic.bin", corrupt(exr_magic())));
 
-		EXPECT_EQ(ImageFormat::Type::UNDETERMINED,
-		          create_and_determine_type(temp_dir, "jpeg_corrupt_magic.bin", corrupt(jpeg_magic())));
+		EXPECT_EQ(ImageFormat::UNDETERMINED,
+		          create_and_determine(temp_dir, "jpeg_corrupt_magic.bin", corrupt(jpeg_magic())));
 
-		EXPECT_EQ(ImageFormat::Type::UNDETERMINED,
-		          create_and_determine_type(temp_dir, "png_corrupt_magic.bin", corrupt(png_magic())));
+		EXPECT_EQ(ImageFormat::UNDETERMINED,
+		          create_and_determine(temp_dir, "png_corrupt_magic.bin", corrupt(png_magic())));
 
-		EXPECT_EQ(ImageFormat::Type::UNDETERMINED,
-		          create_and_determine_type(temp_dir, "wepb_corrupt_magic.bin", corrupt(webp_magic())));
+		EXPECT_EQ(ImageFormat::UNDETERMINED,
+		          create_and_determine(temp_dir, "wepb_corrupt_magic.bin", corrupt(webp_magic())));
 	}
 
 	TEST(ImageFormat, ExtensionOnly)
 	{
 		ScopedTempDir temp_dir;
 
-		EXPECT_EQ(ImageFormat::Type::EXR, create_and_determine_type(temp_dir, "extension_only.exr", {}));
+		EXPECT_EQ(ImageFormat::EXR, create_and_determine(temp_dir, "extension_only.exr", {}));
 
-		EXPECT_EQ(ImageFormat::Type::JPEG, create_and_determine_type(temp_dir, "extension_only.jpg", {}));
-		EXPECT_EQ(ImageFormat::Type::JPEG, create_and_determine_type(temp_dir, "extension_only.jpeg", {}));
-		EXPECT_EQ(ImageFormat::Type::JPEG, create_and_determine_type(temp_dir, "extension_only.jpe", {}));
+		EXPECT_EQ(ImageFormat::JPEG, create_and_determine(temp_dir, "extension_only.jpg", {}));
+		EXPECT_EQ(ImageFormat::JPEG, create_and_determine(temp_dir, "extension_only.jpeg", {}));
+		EXPECT_EQ(ImageFormat::JPEG, create_and_determine(temp_dir, "extension_only.jpe", {}));
 
-		EXPECT_EQ(ImageFormat::Type::PNG, create_and_determine_type(temp_dir, "extension_only.png", {}));
+		EXPECT_EQ(ImageFormat::PNG, create_and_determine(temp_dir, "extension_only.png", {}));
 
-		EXPECT_EQ(ImageFormat::Type::TGA, create_and_determine_type(temp_dir, "extension_only.icb", {}));
-		EXPECT_EQ(ImageFormat::Type::TGA, create_and_determine_type(temp_dir, "extension_only.targa", {}));
-		EXPECT_EQ(ImageFormat::Type::TGA, create_and_determine_type(temp_dir, "extension_only.tga", {}));
-		EXPECT_EQ(ImageFormat::Type::TGA, create_and_determine_type(temp_dir, "extension_pnly.tpic", {}));
-		EXPECT_EQ(ImageFormat::Type::TGA, create_and_determine_type(temp_dir, "extension_only.vda", {}));
-		EXPECT_EQ(ImageFormat::Type::TGA, create_and_determine_type(temp_dir, "extension_only.vst", {}));
+		EXPECT_EQ(ImageFormat::TGA, create_and_determine(temp_dir, "extension_only.icb", {}));
+		EXPECT_EQ(ImageFormat::TGA, create_and_determine(temp_dir, "extension_only.targa", {}));
+		EXPECT_EQ(ImageFormat::TGA, create_and_determine(temp_dir, "extension_only.tga", {}));
+		EXPECT_EQ(ImageFormat::TGA, create_and_determine(temp_dir, "extension_pnly.tpic", {}));
+		EXPECT_EQ(ImageFormat::TGA, create_and_determine(temp_dir, "extension_only.vda", {}));
+		EXPECT_EQ(ImageFormat::TGA, create_and_determine(temp_dir, "extension_only.vst", {}));
 
-		EXPECT_EQ(ImageFormat::Type::WEBP, create_and_determine_type(temp_dir, "extension_only.webp", {}));
+		EXPECT_EQ(ImageFormat::WEBP, create_and_determine(temp_dir, "extension_only.webp", {}));
 
-		EXPECT_EQ(ImageFormat::Type::JPEG,
-		          create_and_determine_type(temp_dir, "extension_only_mixed_case.jPeG", {}));
-		EXPECT_EQ(ImageFormat::Type::PNG,
-		          create_and_determine_type(temp_dir, "extension_only_mixed_case.PnG", {}));
+		EXPECT_EQ(ImageFormat::JPEG, create_and_determine(temp_dir, "extension_only_mixed_case.jPeG", {}));
+		EXPECT_EQ(ImageFormat::PNG, create_and_determine(temp_dir, "extension_only_mixed_case.PnG", {}));
 	}
 
 	TEST(ImageFormat, WrongExtension)
 	{
 		ScopedTempDir temp_dir;
 
-		EXPECT_EQ(ImageFormat::Type::EXR,
-		          create_and_determine_type(temp_dir, "exr_wrong_extension.tga", exr_magic()));
-		EXPECT_EQ(ImageFormat::Type::JPEG,
-		          create_and_determine_type(temp_dir, "jpeg_wrong_extension.tga", jpeg_magic()));
-		EXPECT_EQ(ImageFormat::Type::PNG,
-		          create_and_determine_type(temp_dir, "png_wrong_extension.tga", png_magic()));
-		EXPECT_EQ(ImageFormat::Type::WEBP,
-		          create_and_determine_type(temp_dir, "wepb_wrong_extension.tga", webp_magic()));
+		EXPECT_EQ(ImageFormat::EXR, create_and_determine(temp_dir, "exr_wrong_extension.tga", exr_magic()));
+		EXPECT_EQ(ImageFormat::JPEG, create_and_determine(temp_dir, "jpeg_wrong_extension.tga", jpeg_magic()));
+		EXPECT_EQ(ImageFormat::PNG, create_and_determine(temp_dir, "png_wrong_extension.tga", png_magic()));
+		EXPECT_EQ(ImageFormat::WEBP, create_and_determine(temp_dir, "wepb_wrong_extension.tga", webp_magic()));
 	}
 }

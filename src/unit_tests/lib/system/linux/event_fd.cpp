@@ -35,29 +35,6 @@ namespace Rayni
 		EXPECT_NE(-1, event_fd.fd());
 	}
 
-	TEST(EventFD, MoveConstructor)
-	{
-		EventFD event_fd1;
-		int fd = event_fd1.fd();
-
-		EventFD event_fd2(std::move(event_fd1));
-
-		EXPECT_EQ(-1, event_fd1.fd()); // NOLINT: misc-use-after-move (tests move)
-		EXPECT_EQ(fd, event_fd2.fd());
-	}
-
-	TEST(EventFD, MoveAssignment)
-	{
-		EventFD event_fd1;
-		int fd = event_fd1.fd();
-
-		EventFD event_fd2;
-		event_fd2 = std::move(event_fd1);
-
-		EXPECT_EQ(-1, event_fd1.fd()); // NOLINT: misc-use-after-move (tests move)
-		EXPECT_EQ(fd, event_fd2.fd());
-	}
-
 	TEST(EventFD, ReadWrite)
 	{
 		EventFD event_fd;

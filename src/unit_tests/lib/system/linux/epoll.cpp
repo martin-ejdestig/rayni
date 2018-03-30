@@ -35,29 +35,6 @@ namespace Rayni
 		EXPECT_NE(-1, epoll.fd());
 	}
 
-	TEST(Epoll, MoveConstructor)
-	{
-		Epoll epoll1;
-		int fd = epoll1.fd();
-
-		Epoll epoll2(std::move(epoll1));
-
-		EXPECT_EQ(-1, epoll1.fd()); // NOLINT: misc-use-after-move (tests move)
-		EXPECT_EQ(fd, epoll2.fd());
-	}
-
-	TEST(Epoll, MoveAssignment)
-	{
-		Epoll epoll1;
-		int fd = epoll1.fd();
-
-		Epoll epoll2;
-		epoll2 = std::move(epoll1);
-
-		EXPECT_EQ(-1, epoll1.fd()); // NOLINT: misc-use-after-move (tests move)
-		EXPECT_EQ(fd, epoll2.fd());
-	}
-
 	TEST(Epoll, AddAndWaitSingle)
 	{
 		Epoll epoll;

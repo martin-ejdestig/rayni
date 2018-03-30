@@ -37,39 +37,6 @@ namespace Rayni
 		EXPECT_NE(pipe.read_fd(), pipe.write_fd());
 	}
 
-	TEST(Pipe, MoveConstructor)
-	{
-		Pipe p1;
-
-		int read_fd = p1.read_fd();
-		int write_fd = p1.write_fd();
-
-		Pipe p2(std::move(p1));
-
-		EXPECT_EQ(-1, p1.read_fd()); // NOLINT: misc-use-after-move (want to test state after move...)
-		EXPECT_EQ(-1, p1.write_fd());
-
-		EXPECT_EQ(read_fd, p2.read_fd());
-		EXPECT_EQ(write_fd, p2.write_fd());
-	}
-
-	TEST(Pipe, MoveAssignment)
-	{
-		Pipe p1;
-
-		int read_fd = p1.read_fd();
-		int write_fd = p1.write_fd();
-
-		Pipe p2;
-		p2 = std::move(p1);
-
-		EXPECT_EQ(-1, p1.read_fd()); // NOLINT: misc-use-after-move (want to test state after move...)
-		EXPECT_EQ(-1, p1.write_fd());
-
-		EXPECT_EQ(read_fd, p2.read_fd());
-		EXPECT_EQ(write_fd, p2.write_fd());
-	}
-
 	TEST(Pipe, Close)
 	{
 		Pipe p1;

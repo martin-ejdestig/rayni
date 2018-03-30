@@ -80,6 +80,7 @@ lib_sources = [
     'system/scoped_temp_dir.h',
     'system/temp_dir.cpp',
     'system/temp_dir.h',
+    'system/unique_fd.h',
     'time/duration_formatter.cpp',
     'time/duration_formatter.h',
     'time/scoped_stopwatch.cpp',

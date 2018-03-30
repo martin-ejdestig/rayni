@@ -29,6 +29,8 @@
 #include <system_error>
 #include <utility>
 
+#include "lib/system/unique_fd.h"
+
 namespace Rayni
 {
 	// Only allows for CLOCK_MONOTONIC at the moment and assumes it is what std::chrono::steady_clock uses.
@@ -47,33 +49,13 @@ namespace Rayni
 
 		TimerFD() : timer_fd_(timerfd_create(CLOCK_ID, TFD_CLOEXEC))
 		{
-			if (timer_fd_ == -1)
+			if (timer_fd_.get() == -1)
 				throw std::system_error(errno, std::system_category(), "timerfd_create() failed");
-		}
-
-		TimerFD(const TimerFD &other) = delete;
-
-		TimerFD(TimerFD &&other) noexcept : timer_fd_(std::exchange(other.timer_fd_, -1))
-		{
-		}
-
-		~TimerFD()
-		{
-			close();
-		}
-
-		TimerFD &operator=(const TimerFD &other) = delete;
-
-		TimerFD &operator=(TimerFD &&other) noexcept
-		{
-			close();
-			timer_fd_ = std::exchange(other.timer_fd_, -1);
-			return *this;
 		}
 
 		int fd() const
 		{
-			return timer_fd_;
+			return timer_fd_.get();
 		}
 
 		void set(std::chrono::nanoseconds expiration) const
@@ -118,7 +100,7 @@ namespace Rayni
 		{
 			struct itimerspec timer_spec = {};
 
-			if (timerfd_gettime(timer_fd_, &timer_spec) == -1)
+			if (timerfd_gettime(timer_fd_.get(), &timer_spec) == -1)
 				throw std::system_error(errno, std::system_category(), "timerfd_gettime() failed");
 
 			return {time_spec_to_ns(timer_spec.it_value), time_spec_to_ns(timer_spec.it_interval)};
@@ -135,7 +117,7 @@ namespace Rayni
 		{
 			std::uint64_t value = 0;
 
-			while (::read(timer_fd_, &value, sizeof value) != static_cast<ssize_t>(sizeof value))
+			while (::read(timer_fd_.get(), &value, sizeof value) != static_cast<ssize_t>(sizeof value))
 				if (errno != EINTR)
 					throw std::system_error(errno,
 					                        std::system_category(),
@@ -147,17 +129,8 @@ namespace Rayni
 	private:
 		void settime(int flags, struct itimerspec &timer_spec) const
 		{
-			if (timerfd_settime(timer_fd_, flags, &timer_spec, nullptr) == -1)
+			if (timerfd_settime(timer_fd_.get(), flags, &timer_spec, nullptr) == -1)
 				throw std::system_error(errno, std::system_category(), "timerfd_settime() failed");
-		}
-
-		void close()
-		{
-			if (timer_fd_ == -1)
-				return;
-
-			::close(timer_fd_);
-			timer_fd_ = -1;
 		}
 
 		static constexpr struct timespec time_spec_from_ns(std::chrono::nanoseconds ns)
@@ -183,7 +156,7 @@ namespace Rayni
 			return std::chrono::seconds(time_spec.tv_sec) + std::chrono::nanoseconds(time_spec.tv_nsec);
 		}
 
-		int timer_fd_ = -1;
+		UniqueFD timer_fd_;
 	};
 }
 

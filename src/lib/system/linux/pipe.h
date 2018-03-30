@@ -28,7 +28,8 @@
 #include <climits>
 #include <cstdlib>
 #include <system_error>
-#include <utility>
+
+#include "lib/system/unique_fd.h"
 
 namespace Rayni
 {
@@ -41,28 +42,13 @@ namespace Rayni
 
 		explicit Pipe(int flags)
 		{
-			if (pipe2(fds_.data(), flags) != 0)
+			std::array<int, 2> fds = {-1, -1};
+
+			if (pipe2(fds.data(), flags) != 0)
 				throw std::system_error(errno, std::system_category(), "pipe2() failed");
-		}
 
-		Pipe(const Pipe &other) = delete;
-
-		Pipe(Pipe &&other) noexcept : fds_(std::exchange(other.fds_, {-1, -1}))
-		{
-		}
-
-		~Pipe()
-		{
-			close_fds();
-		}
-
-		Pipe &operator=(const Pipe &other) = delete;
-
-		Pipe &operator=(Pipe &&other) noexcept
-		{
-			close_fds();
-			fds_ = std::exchange(other.fds_, {-1, -1});
-			return *this;
+			read_fd_ = UniqueFD(fds[0]);
+			write_fd_ = UniqueFD(fds[1]);
 		}
 
 		void close_fds()
@@ -73,22 +59,22 @@ namespace Rayni
 
 		void close_read_fd()
 		{
-			safe_close(fds_[0]);
+			read_fd_.close();
 		}
 
 		void close_write_fd()
 		{
-			safe_close(fds_[1]);
+			write_fd_.close();
 		}
 
 		int read_fd() const
 		{
-			return fds_[0];
+			return read_fd_.get();
 		}
 
 		int write_fd() const
 		{
-			return fds_[1];
+			return write_fd_.get();
 		}
 
 		template <typename Buffer>
@@ -139,16 +125,8 @@ namespace Rayni
 		}
 
 	private:
-		static void safe_close(int &fd)
-		{
-			if (fd == -1)
-				return;
-
-			close(fd);
-			fd = -1;
-		}
-
-		std::array<int, 2> fds_ = {-1, -1};
+		UniqueFD read_fd_;
+		UniqueFD write_fd_;
 	};
 }
 

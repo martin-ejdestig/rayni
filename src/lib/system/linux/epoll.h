@@ -30,9 +30,9 @@
 #include <limits>
 #include <system_error>
 #include <type_traits>
-#include <utility>
 
 #include "lib/math/bitmask.h"
+#include "lib/system/unique_fd.h"
 
 namespace Rayni
 {
@@ -78,33 +78,13 @@ namespace Rayni
 
 		Epoll() : epoll_fd_(epoll_create1(EPOLL_CLOEXEC))
 		{
-			if (epoll_fd_ == -1)
+			if (epoll_fd_.get() == -1)
 				throw std::system_error(errno, std::system_category(), "epoll_create1() failed");
-		}
-
-		Epoll(const Epoll &other) = delete;
-
-		Epoll(Epoll &&other) noexcept : epoll_fd_(std::exchange(other.epoll_fd_, -1))
-		{
-		}
-
-		~Epoll()
-		{
-			close();
-		}
-
-		Epoll &operator=(const Epoll &other) = delete;
-
-		Epoll &operator=(Epoll &&other) noexcept
-		{
-			close();
-			epoll_fd_ = std::exchange(other.epoll_fd_, -1);
-			return *this;
 		}
 
 		int fd() const
 		{
-			return epoll_fd_;
+			return epoll_fd_.get();
 		}
 
 		void add(int fd, Flags flags)
@@ -165,7 +145,7 @@ namespace Rayni
 
 		void ctl(int op, int fd, Event *event) const
 		{
-			if (epoll_ctl(epoll_fd_, op, fd, event) == -1)
+			if (epoll_ctl(epoll_fd_.get(), op, fd, event) == -1)
 				throw std::system_error(errno, std::system_category(), "epoll_ctl() failed");
 		}
 
@@ -182,7 +162,7 @@ namespace Rayni
 
 			while (true) // Loops if EINTR. Will cause timeout "drift" but leave as is for now.
 			{
-				ret = epoll_wait(epoll_fd_, events, max_events_int, timeout_int);
+				ret = epoll_wait(epoll_fd_.get(), events, max_events_int, timeout_int);
 
 				if (ret >= 0)
 					break;
@@ -193,16 +173,7 @@ namespace Rayni
 			return static_cast<EventCount>(ret);
 		}
 
-		void close()
-		{
-			if (epoll_fd_ == -1)
-				return;
-
-			::close(epoll_fd_);
-			epoll_fd_ = -1;
-		}
-
-		int epoll_fd_ = -1;
+		UniqueFD epoll_fd_;
 	};
 
 	enum class Epoll::Flag : std::uint32_t

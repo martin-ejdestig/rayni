@@ -26,7 +26,8 @@
 #include <cerrno>
 #include <cstdint>
 #include <system_error>
-#include <utility>
+
+#include "lib/system/unique_fd.h"
 
 namespace Rayni
 {
@@ -38,40 +39,20 @@ namespace Rayni
 
 		EventFD() : event_fd_(eventfd(0, EFD_CLOEXEC))
 		{
-			if (event_fd_ == -1)
+			if (event_fd_.get() == -1)
 				throw std::system_error(errno, std::system_category(), "eventfd() failed");
-		}
-
-		EventFD(const EventFD &other) = delete;
-
-		EventFD(EventFD &&other) noexcept : event_fd_(std::exchange(other.event_fd_, -1))
-		{
-		}
-
-		~EventFD()
-		{
-			close();
-		}
-
-		EventFD &operator=(const EventFD &other) = delete;
-
-		EventFD &operator=(EventFD &&other) noexcept
-		{
-			close();
-			event_fd_ = std::exchange(other.event_fd_, -1);
-			return *this;
 		}
 
 		int fd() const
 		{
-			return event_fd_;
+			return event_fd_.get();
 		}
 
 		std::uint64_t read() const
 		{
 			std::uint64_t value = 0;
 
-			while (::read(event_fd_, &value, sizeof value) != static_cast<ssize_t>(sizeof value))
+			while (::read(event_fd_.get(), &value, sizeof value) != static_cast<ssize_t>(sizeof value))
 				if (errno != EINTR)
 					throw std::system_error(errno,
 					                        std::system_category(),
@@ -82,7 +63,7 @@ namespace Rayni
 
 		void write(std::uint64_t value) const
 		{
-			while (::write(event_fd_, &value, sizeof value) != static_cast<ssize_t>(sizeof value))
+			while (::write(event_fd_.get(), &value, sizeof value) != static_cast<ssize_t>(sizeof value))
 				if (errno != EINTR)
 					throw std::system_error(errno,
 					                        std::system_category(),
@@ -90,16 +71,7 @@ namespace Rayni
 		}
 
 	private:
-		void close()
-		{
-			if (event_fd_ == -1)
-				return;
-
-			::close(event_fd_);
-			event_fd_ = -1;
-		}
-
-		int event_fd_ = -1;
+		UniqueFD event_fd_;
 	};
 }
 

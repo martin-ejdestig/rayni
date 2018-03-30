@@ -37,29 +37,6 @@ namespace Rayni
 		EXPECT_NE(-1, timer_fd.fd());
 	}
 
-	TEST(TimerFD, MoveConstructor)
-	{
-		TimerFD timer_fd1;
-		int fd = timer_fd1.fd();
-
-		TimerFD timer_fd2(std::move(timer_fd1));
-
-		EXPECT_EQ(-1, timer_fd1.fd()); // NOLINT: misc-use-after-move (tests move)
-		EXPECT_EQ(fd, timer_fd2.fd());
-	}
-
-	TEST(TimerFD, MoveAssignment)
-	{
-		TimerFD timer_fd1;
-		int fd = timer_fd1.fd();
-
-		TimerFD timer_fd2;
-		timer_fd2 = std::move(timer_fd1);
-
-		EXPECT_EQ(-1, timer_fd1.fd()); // NOLINT: misc-use-after-move (tests move)
-		EXPECT_EQ(fd, timer_fd2.fd());
-	}
-
 	TEST(TimerFD, SetGetTime)
 	{
 		TimerFD timer_fd;

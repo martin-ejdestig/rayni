@@ -122,7 +122,7 @@ namespace Rayni
 		reader.open_file(exists2_path);
 		EXPECT_EQ(exists2_path + ":1:1", reader.position().to_string());
 
-		EXPECT_THROW(TextReader().open_file(does_not_exist_path), TextReader::Exception);
+		EXPECT_THROW(reader.open_file(does_not_exist_path), TextReader::Exception);
 	}
 
 	TEST(TextReader, SetString)

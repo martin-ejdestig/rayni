@@ -19,6 +19,7 @@
 
 #include <gtest/gtest.h>
 
+#include <cstdint>
 #include <limits>
 #include <string>
 
@@ -120,8 +121,6 @@ namespace Rayni
 		EXPECT_FALSE(string_to_float("1e"));
 		EXPECT_FALSE(string_to_float("+"));
 		EXPECT_FALSE(string_to_float("-"));
-
-		EXPECT_FLOAT_EQ(1.0f, string_to_number<float>("1.0").value());
 	}
 
 	TEST(String, ToDouble)
@@ -152,8 +151,6 @@ namespace Rayni
 		EXPECT_FALSE(string_to_double("1e"));
 		EXPECT_FALSE(string_to_double("+"));
 		EXPECT_FALSE(string_to_double("-"));
-
-		EXPECT_DOUBLE_EQ(1.0, string_to_number<double>("1.0").value());
 	}
 
 	TEST(String, ToLong)
@@ -188,5 +185,25 @@ namespace Rayni
 
 		EXPECT_FALSE(string_to_long(max_str + "0"));
 		EXPECT_FALSE(string_to_long(min_str + "0"));
+	}
+
+	TEST(String, ToNumber)
+	{
+		// Only testing template specific parts here. Non-template functions used in
+		// string_to_number() tested more extensively above.
+
+		EXPECT_FLOAT_EQ(1.0f, string_to_number<float>("1.0").value());
+
+		EXPECT_DOUBLE_EQ(1.0, string_to_number<double>("1.0").value());
+
+		EXPECT_EQ(127, string_to_number<std::int8_t>("127").value());
+		EXPECT_EQ(-128, string_to_number<std::int8_t>("-128").value());
+		EXPECT_FALSE(string_to_number<std::int8_t>("128"));
+		EXPECT_FALSE(string_to_number<std::int8_t>("-129"));
+
+		EXPECT_EQ(255, string_to_number<std::uint8_t>("255").value());
+		EXPECT_EQ(0, string_to_number<std::uint8_t>("0").value());
+		EXPECT_FALSE(string_to_number<std::uint8_t>("256"));
+		EXPECT_FALSE(string_to_number<std::uint8_t>("-1"));
 	}
 }

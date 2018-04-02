@@ -545,4 +545,21 @@ namespace Rayni
 		auto b6 = reader.peek_int8();
 		EXPECT_FALSE(b6);
 	}
+
+	TEST(BinaryReader, PositionAtEOF)
+	{
+		BinaryReader reader;
+
+		reader.set_data({0});
+		EXPECT_EQ(0, reader.read_int8());
+		EXPECT_EQ(position(1), reader.position());
+		EXPECT_THROW(reader.read_int8(), BinaryReader::Exception);
+		EXPECT_EQ("", reader.position());
+
+		reader.set_data({0}, "prefix");
+		EXPECT_EQ(0, reader.read_int8());
+		EXPECT_EQ(position("prefix", 1), reader.position());
+		EXPECT_THROW(reader.read_int8(), BinaryReader::Exception);
+		EXPECT_EQ("prefix", reader.position());
+	}
 }

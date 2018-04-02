@@ -193,11 +193,15 @@ namespace Rayni
 		std::string str;
 
 		if (!position_prefix_.empty())
-			str += position_prefix_ + ":";
+			str += position_prefix_;
 
 		std::istream::pos_type pos = istream_->tellg();
 		if (pos != std::istream::pos_type(-1))
+		{
+			if (!str.empty())
+				str += ":";
 			str += "<offset " + std::to_string(pos) + ">";
+		}
 
 		return str;
 	}

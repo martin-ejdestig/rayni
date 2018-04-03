@@ -17,12 +17,12 @@
  * along with Rayni. If not, see <http://www.gnu.org/licenses/>.
  */
 
+#include "lib/containers/listener_list.h"
+
 #include <gtest/gtest.h>
 
 #include <string>
 #include <utility>
-
-#include "lib/containers/listener_list.h"
 
 namespace Rayni
 {

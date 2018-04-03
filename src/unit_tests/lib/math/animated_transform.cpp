@@ -17,12 +17,13 @@
  * along with Rayni. If not, see <http://www.gnu.org/licenses/>.
  */
 
+#include "lib/math/animated_transform.h"
+
 #include <gtest/gtest.h>
 
 #include <cmath>
 
 #include "lib/containers/variant.h"
-#include "lib/math/animated_transform.h"
 
 namespace Rayni
 {

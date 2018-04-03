@@ -17,10 +17,11 @@
  * along with Rayni. If not, see <http://www.gnu.org/licenses/>.
  */
 
+#include "lib/math/polar_decomposition.h"
+
 #include <gtest/gtest.h>
 
 #include "lib/math/matrix3x3.h"
-#include "lib/math/polar_decomposition.h"
 
 namespace Rayni
 {

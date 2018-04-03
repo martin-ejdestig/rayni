@@ -17,13 +17,14 @@
  * along with Rayni. If not, see <http://www.gnu.org/licenses/>.
  */
 
+#include "lib/system/main_loop.h"
+
 #include <algorithm>
 #include <experimental/optional>
 #include <map>
 #include <unordered_map>
 
 #include "lib/math/hash.h"
-#include "lib/system/main_loop.h"
 
 namespace Rayni
 {

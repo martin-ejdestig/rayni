@@ -17,6 +17,8 @@
  * along with Rayni. If not, see <http://www.gnu.org/licenses/>.
  */
 
+#include "lib/concurrency/thread_pool.h"
+
 #include <gtest/gtest.h>
 
 #include <array>
@@ -28,7 +30,6 @@
 #include <vector>
 
 #include "lib/concurrency/barrier.h"
-#include "lib/concurrency/thread_pool.h"
 
 namespace
 {

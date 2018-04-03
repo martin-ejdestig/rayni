@@ -17,13 +17,14 @@
  * along with Rayni. If not, see <http://www.gnu.org/licenses/>.
  */
 
+#include "lib/file_formats/image/image_reader.h"
+
 #include <gtest/gtest.h>
 
 #include <cstdint>
 #include <string>
 #include <vector>
 
-#include "lib/file_formats/image/image_reader.h"
 #include "lib/file_formats/write_to_file.h"
 #include "lib/image.h"
 #include "lib/system/scoped_temp_dir.h"

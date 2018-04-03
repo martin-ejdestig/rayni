@@ -17,6 +17,8 @@
  * along with Rayni. If not, see <http://www.gnu.org/licenses/>.
  */
 
+#include "lib/file_formats/write_to_file.h"
+
 #include <gtest/gtest.h>
 
 #include <cstdint>
@@ -25,7 +27,6 @@
 #include <vector>
 
 #include "lib/file_formats/file_format_exception.h"
-#include "lib/file_formats/write_to_file.h"
 #include "lib/system/scoped_temp_dir.h"
 
 namespace Rayni

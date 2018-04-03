@@ -62,7 +62,7 @@ namespace Rayni
 			// store it in a std::function (must be copyable).
 			auto promise = std::make_shared<std::promise<Result>>();
 
-			add_task([ promise, function = std::forward<Function>(function) ]() mutable {
+			add_task([promise, function = std::forward<Function>(function)]() mutable {
 				promise->set_value(function());
 			});
 

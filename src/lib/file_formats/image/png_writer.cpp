@@ -17,12 +17,13 @@
  * along with Rayni. If not, see <http://www.gnu.org/licenses/>.
  */
 
+#include "lib/file_formats/image/png_writer.h"
+
 #include <png.h>
 
 #include <cstring>
 #include <string>
 
-#include "lib/file_formats/image/png_writer.h"
 #include "lib/image.h"
 
 namespace Rayni

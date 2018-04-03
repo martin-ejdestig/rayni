@@ -17,11 +17,12 @@
  * along with Rayni. If not, see <http://www.gnu.org/licenses/>.
  */
 
+#include "lib/math/lerp.h"
+
 #include <gtest/gtest.h>
 
 #include <cmath>
 
-#include "lib/math/lerp.h"
 #include "lib/math/math.h"
 
 namespace Rayni

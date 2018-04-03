@@ -17,12 +17,13 @@
  * along with Rayni. If not, see <http://www.gnu.org/licenses/>.
  */
 
+#include "lib/file_formats/text_reader.h"
+
 #include <gtest/gtest.h>
 
 #include <fstream>
 #include <string>
 
-#include "lib/file_formats/text_reader.h"
 #include "lib/system/scoped_temp_dir.h"
 
 namespace

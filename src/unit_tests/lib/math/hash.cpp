@@ -17,11 +17,11 @@
  * along with Rayni. If not, see <http://www.gnu.org/licenses/>.
  */
 
+#include "lib/math/hash.h"
+
 #include <gtest/gtest.h>
 
 #include <functional>
-
-#include "lib/math/hash.h"
 
 namespace Rayni
 {

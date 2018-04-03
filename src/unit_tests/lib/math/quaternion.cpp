@@ -17,10 +17,11 @@
  * along with Rayni. If not, see <http://www.gnu.org/licenses/>.
  */
 
+#include "lib/math/quaternion.h"
+
 #include <gtest/gtest.h>
 
 #include "lib/containers/variant.h"
-#include "lib/math/quaternion.h"
 
 namespace Rayni
 {

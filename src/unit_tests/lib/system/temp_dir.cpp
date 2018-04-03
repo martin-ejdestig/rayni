@@ -17,11 +17,11 @@
  * along with Rayni. If not, see <http://www.gnu.org/licenses/>.
  */
 
+#include "lib/system/temp_dir.h"
+
 #include <gtest/gtest.h>
 
 #include <experimental/filesystem>
-
-#include "lib/system/temp_dir.h"
 
 namespace Rayni
 {

@@ -17,9 +17,9 @@
  * along with Rayni. If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include <gtest/gtest.h>
-
 #include "lib/math/vector4.h"
+
+#include <gtest/gtest.h>
 
 namespace Rayni
 {

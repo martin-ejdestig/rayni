@@ -17,12 +17,13 @@
  * along with Rayni. If not, see <http://www.gnu.org/licenses/>.
  */
 
+#include "lib/file_formats/binary_type_reader.h"
+
 #include <gtest/gtest.h>
 
 #include <cstdint>
 #include <string>
 
-#include "lib/file_formats/binary_type_reader.h"
 #include "lib/file_formats/write_to_file.h"
 #include "lib/system/scoped_temp_dir.h"
 

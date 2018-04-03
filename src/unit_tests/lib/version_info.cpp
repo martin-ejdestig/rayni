@@ -17,12 +17,12 @@
  * along with Rayni. If not, see <http://www.gnu.org/licenses/>.
  */
 
+#include "lib/version_info.h"
+
 #include <gtest/gtest.h>
 
 #include <regex>
 #include <string>
-
-#include "lib/version_info.h"
 
 namespace Rayni
 {

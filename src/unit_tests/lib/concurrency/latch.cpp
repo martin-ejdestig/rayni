@@ -17,12 +17,12 @@
  * along with Rayni. If not, see <http://www.gnu.org/licenses/>.
  */
 
+#include "lib/concurrency/latch.h"
+
 #include <gtest/gtest.h>
 
 #include <atomic>
 #include <thread>
-
-#include "lib/concurrency/latch.h"
 
 namespace Rayni
 {

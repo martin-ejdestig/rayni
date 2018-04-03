@@ -17,14 +17,14 @@
  * along with Rayni. If not, see <http://www.gnu.org/licenses/>.
  */
 
+#include "lib/system/linux/event_fd.h"
+
 #include <gtest/gtest.h>
 #include <poll.h>
 
 #include <array>
 #include <cerrno>
 #include <system_error>
-
-#include "lib/system/linux/event_fd.h"
 
 namespace Rayni
 {

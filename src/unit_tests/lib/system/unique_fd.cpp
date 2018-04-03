@@ -17,13 +17,13 @@
  * along with Rayni. If not, see <http://www.gnu.org/licenses/>.
  */
 
+#include "lib/system/unique_fd.h"
+
 #include <gtest/gtest.h>
 #include <sys/eventfd.h>
 
 #include <system_error>
 #include <utility>
-
-#include "lib/system/unique_fd.h"
 
 namespace
 {

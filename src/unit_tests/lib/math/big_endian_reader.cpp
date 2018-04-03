@@ -17,6 +17,8 @@
  * along with Rayni. If not, see <http://www.gnu.org/licenses/>.
  */
 
+#include "lib/math/big_endian_reader.h"
+
 #include <gtest/gtest.h>
 
 #include <array>
@@ -24,7 +26,6 @@
 #include <stdexcept>
 #include <vector>
 
-#include "lib/math/big_endian_reader.h"
 #include "lib/math/math.h"
 
 namespace Rayni

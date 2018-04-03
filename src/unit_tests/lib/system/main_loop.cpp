@@ -17,6 +17,8 @@
  * along with Rayni. If not, see <http://www.gnu.org/licenses/>.
  */
 
+#include "lib/system/main_loop.h"
+
 #include <gtest/gtest.h>
 
 #include <array>
@@ -28,7 +30,6 @@
 
 #include "lib/system/linux/epoll.h"
 #include "lib/system/linux/event_fd.h"
-#include "lib/system/main_loop.h"
 
 using namespace std::chrono_literals;
 

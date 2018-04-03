@@ -17,9 +17,9 @@
  * along with Rayni. If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include <gtest/gtest.h>
-
 #include "lib/function/scope_exit.h"
+
+#include <gtest/gtest.h>
 
 namespace Rayni
 {

@@ -17,11 +17,11 @@
  * along with Rayni. If not, see <http://www.gnu.org/licenses/>.
  */
 
+#include "lib/time/stopwatch.h"
+
 #include <gtest/gtest.h>
 
 #include <chrono>
-
-#include "lib/time/stopwatch.h"
 
 namespace Rayni
 {

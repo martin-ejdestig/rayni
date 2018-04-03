@@ -17,6 +17,8 @@
  * along with Rayni. If not, see <http://www.gnu.org/licenses/>.
  */
 
+#include "lib/system/linux/timer_fd.h"
+
 #include <gtest/gtest.h>
 
 #include <array>
@@ -24,7 +26,6 @@
 #include <thread>
 
 #include "lib/system/linux/epoll.h"
-#include "lib/system/linux/timer_fd.h"
 
 using namespace std::chrono_literals;
 

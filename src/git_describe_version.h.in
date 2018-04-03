@@ -21,7 +21,7 @@
 #define RAYNI_GIT_DESCRIBE_VERSION_H
 
 #ifndef RAYNI_GIT_DESCRIBE_VERSION_INCLUDED_FROM_SRC_LIB_VERSION_INFO_CPP
-#error May only be included from src/lib/version_info.cpp
+#	error May only be included from src/lib/version_info.cpp
 #endif
 
 #include <string>

@@ -17,11 +17,12 @@
  * along with Rayni. If not, see <http://www.gnu.org/licenses/>.
  */
 
+#include "lib/math/decomposed_matrix4x4.h"
+
 #include <gtest/gtest.h>
 
 #include <cmath>
 
-#include "lib/math/decomposed_matrix4x4.h"
 #include "lib/math/matrix4x4.h"
 
 namespace Rayni

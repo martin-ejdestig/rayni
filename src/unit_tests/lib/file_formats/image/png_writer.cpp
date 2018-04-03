@@ -17,11 +17,12 @@
  * along with Rayni. If not, see <http://www.gnu.org/licenses/>.
  */
 
+#include "lib/file_formats/image/png_writer.h"
+
 #include <gtest/gtest.h>
 
 #include "lib/color.h"
 #include "lib/file_formats/image/png_reader.h"
-#include "lib/file_formats/image/png_writer.h"
 #include "lib/image.h"
 #include "lib/system/scoped_temp_dir.h"
 

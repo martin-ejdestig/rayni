@@ -17,14 +17,14 @@
  * along with Rayni. If not, see <http://www.gnu.org/licenses/>.
  */
 
+#include "lib/system/linux/pipe.h"
+
 #include <gtest/gtest.h>
 
 #include <array>
 #include <string>
 #include <system_error>
 #include <utility>
-
-#include "lib/system/linux/pipe.h"
 
 namespace Rayni
 {

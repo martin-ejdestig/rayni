@@ -17,11 +17,11 @@
  * along with Rayni. If not, see <http://www.gnu.org/licenses/>.
  */
 
+#include "lib/math/bitmask.h"
+
 #include <gtest/gtest.h>
 
 #include <cstdint>
-
-#include "lib/math/bitmask.h"
 
 namespace Rayni
 {

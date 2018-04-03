@@ -21,32 +21,28 @@
 
 // TODO: Should be possible to remove diagnostic pragmas when https://github.com/mesonbuild/meson/issues/963 is fixed
 //       which will make it so -isystem is used for include paths of external dependencies.
-// TODO: Disable clang-format for block until it can indent preprocessor directives.
-//       See https://llvm.org/bugs/show_bug.cgi?id=17362 .
-// clang-format off
 #if defined __clang__
-# pragma clang diagnostic push
-# pragma clang diagnostic ignored "-Wdeprecated-register"
-# pragma clang diagnostic ignored "-Wold-style-cast"
-# pragma clang diagnostic ignored "-Wsign-conversion"
+#	pragma clang diagnostic push
+#	pragma clang diagnostic ignored "-Wdeprecated-register"
+#	pragma clang diagnostic ignored "-Wold-style-cast"
+#	pragma clang diagnostic ignored "-Wsign-conversion"
 #elif defined __GNUC__
-# pragma GCC diagnostic push
-# pragma GCC diagnostic ignored "-Wsuggest-override"
-# pragma GCC diagnostic ignored "-Wzero-as-null-pointer-constant"
-# pragma GCC diagnostic ignored "-Wold-style-cast"
-# pragma GCC diagnostic ignored "-Wsign-conversion"
-# pragma GCC diagnostic ignored "-Wdeprecated"
+#	pragma GCC diagnostic push
+#	pragma GCC diagnostic ignored "-Wsuggest-override"
+#	pragma GCC diagnostic ignored "-Wzero-as-null-pointer-constant"
+#	pragma GCC diagnostic ignored "-Wold-style-cast"
+#	pragma GCC diagnostic ignored "-Wsign-conversion"
+#	pragma GCC diagnostic ignored "-Wdeprecated"
 #endif
 #include <IexBaseExc.h>
 #include <ImathBox.h>
 #include <ImfRgba.h>
 #include <ImfRgbaFile.h>
 #if defined __clang__
-# pragma clang diagnostic pop
+#	pragma clang diagnostic pop
 #elif defined __GNUC__
-# pragma GCC diagnostic pop
+#	pragma GCC diagnostic pop
 #endif
-// clang-format on
 
 #include <cstddef>
 #include <string>

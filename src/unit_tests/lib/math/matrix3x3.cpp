@@ -17,13 +17,14 @@
  * along with Rayni. If not, see <http://www.gnu.org/licenses/>.
  */
 
+#include "lib/math/matrix3x3.h"
+
 #include <gtest/gtest.h>
 
 #include <cmath>
 #include <string>
 
 #include "lib/math/math.h"
-#include "lib/math/matrix3x3.h"
 #include "lib/math/quaternion.h"
 
 namespace Rayni

@@ -17,9 +17,10 @@
  * along with Rayni. If not, see <http://www.gnu.org/licenses/>.
  */
 
+#include "lib/math/aabb.h"
+
 #include <gtest/gtest.h>
 
-#include "lib/math/aabb.h"
 #include "lib/math/ray.h"
 
 namespace Rayni

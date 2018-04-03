@@ -17,10 +17,11 @@
  * along with Rayni. If not, see <http://www.gnu.org/licenses/>.
  */
 
+#include "lib/file_formats/json_reader.h"
+
 #include <gtest/gtest.h>
 
 #include "lib/containers/variant.h"
-#include "lib/file_formats/json_reader.h"
 
 namespace Rayni
 {

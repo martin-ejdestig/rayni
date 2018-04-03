@@ -17,14 +17,14 @@
  * along with Rayni. If not, see <http://www.gnu.org/licenses/>.
  */
 
+#include "lib/concurrency/barrier.h"
+
 #include <gtest/gtest.h>
 
 #include <array>
 #include <atomic>
 #include <thread>
 #include <vector>
-
-#include "lib/concurrency/barrier.h"
 
 namespace Rayni
 {

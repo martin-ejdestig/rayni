@@ -17,13 +17,13 @@
  * along with Rayni. If not, see <http://www.gnu.org/licenses/>.
  */
 
+#include "lib/string/string.h"
+
 #include <gtest/gtest.h>
 
 #include <cstdint>
 #include <limits>
 #include <string>
-
-#include "lib/string/string.h"
 
 namespace Rayni
 {

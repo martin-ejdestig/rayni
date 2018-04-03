@@ -17,6 +17,8 @@
  * along with Rayni. If not, see <http://www.gnu.org/licenses/>.
  */
 
+#include "lib/image.h"
+
 #include <gtest/gtest.h>
 
 #include <cmath>
@@ -25,7 +27,6 @@
 
 #include "lib/color.h"
 #include "lib/file_formats/write_to_file.h"
-#include "lib/image.h"
 #include "lib/system/scoped_temp_dir.h"
 
 namespace Rayni

@@ -17,12 +17,12 @@
  * along with Rayni. If not, see <http://www.gnu.org/licenses/>.
  */
 
+#include "lib/time/scoped_stopwatch.h"
+
 #include <gtest/gtest.h>
 
 #include <regex>
 #include <sstream>
-
-#include "lib/time/scoped_stopwatch.h"
 
 namespace Rayni
 {

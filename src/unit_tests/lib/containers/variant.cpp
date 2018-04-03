@@ -17,14 +17,14 @@
  * along with Rayni. If not, see <http://www.gnu.org/licenses/>.
  */
 
+#include "lib/containers/variant.h"
+
 #include <gtest/gtest.h>
 
 #include <memory>
 #include <string>
 #include <utility>
 #include <vector>
-
-#include "lib/containers/variant.h"
 
 namespace Rayni
 {

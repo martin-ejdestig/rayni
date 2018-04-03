@@ -17,12 +17,12 @@
  * along with Rayni. If not, see <http://www.gnu.org/licenses/>.
  */
 
+#include "lib/string/base85.h"
+
 #include <gtest/gtest.h>
 
 #include <cstdint>
 #include <vector>
-
-#include "lib/string/base85.h"
 
 namespace Rayni
 {

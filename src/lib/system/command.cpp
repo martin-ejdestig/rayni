@@ -61,7 +61,7 @@ namespace
 			argv.push_back(arg.data());
 		argv.push_back(nullptr);
 
-		execvp(argv[0], const_cast<char **>(&argv[0])); // NOLINT: cppcoreguidelines-pro-type-const-cast
+		execvp(argv[0], const_cast<char **>(&argv[0])); // NOLINT(cppcoreguidelines-pro-type-const-cast)
 		std::_Exit(CHILD_SETUP_FAILURE_EXIT_CODE);
 	}
 

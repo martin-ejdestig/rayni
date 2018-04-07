@@ -112,7 +112,7 @@ namespace Rayni
 		TimerFD timer_fd1;
 		TimerFD timer_fd2(std::move(timer_fd1));
 
-		EXPECT_THROW(timer_fd1.set(10s), std::system_error); // NOLINT: misc-use-after-move (tests move)
+		EXPECT_THROW(timer_fd1.set(10s), std::system_error); // NOLINT(bugprone-use-after-move) Tests move.
 		EXPECT_THROW(timer_fd1.get(), std::system_error);
 		EXPECT_THROW(timer_fd1.disarm(), std::system_error);
 		EXPECT_THROW(timer_fd1.read(), std::system_error);

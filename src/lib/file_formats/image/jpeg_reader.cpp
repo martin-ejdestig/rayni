@@ -62,9 +62,9 @@ namespace Rayni
 	{
 		static void error_exit(j_common_ptr jpeg_common)
 		{
-			// cppcoreguidelines-pro-type-static-cast-downcast warning for static_cast,
-			// but dynamic_cast not possible since no control over base class.
-			auto error_manager = static_cast<ErrorManager *>(jpeg_common->err); // NOLINT
+			// dynamic_cast not possible since no control over base class.
+			// NOLINTNEXTLINE(cppcoreguidelines-pro-type-static-cast-downcast)
+			auto error_manager = static_cast<ErrorManager *>(jpeg_common->err);
 
 			(*error_manager->output_message)(jpeg_common);
 

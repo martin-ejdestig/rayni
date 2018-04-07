@@ -55,7 +55,7 @@ namespace Rayni
 
 		UniqueFD fd2(std::move(fd1));
 
-		EXPECT_EQ(-1, fd1.get()); // NOLINT: misc-use-after-move (tests move)
+		EXPECT_EQ(-1, fd1.get()); // NOLINT(bugprone-use-after-move) Tests move.
 		EXPECT_EQ(fd, fd2.get());
 	}
 
@@ -67,7 +67,7 @@ namespace Rayni
 		UniqueFD fd2;
 		fd2 = std::move(fd1);
 
-		EXPECT_EQ(-1, fd1.get()); // NOLINT: misc-use-after-move (tests move)
+		EXPECT_EQ(-1, fd1.get()); // NOLINT(bugprone-use-after-move) Tests move.
 		EXPECT_EQ(fd, fd2.get());
 	}
 

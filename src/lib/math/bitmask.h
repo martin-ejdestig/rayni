@@ -37,7 +37,8 @@ namespace Rayni
 		{
 		}
 
-		constexpr Bitmask(Enum e) : Bitmask(static_cast<Value>(e)) // NOLINT: google-explicit-constructor
+		// NOLINTNEXTLINE(google-explicit-constructor) Want implicit conversion for less verbosity.
+		constexpr Bitmask(Enum e) : Bitmask(static_cast<Value>(e))
 		{
 		}
 
@@ -107,25 +108,23 @@ namespace Rayni
 
 // TODO: Find better alternative to macro. All SFINAE alternatives I can
 //       come up with at the moment are more verbose and harder to read.
-//       NOLINT is used to silence clang-tidy's misc-macro-parentheses warning.
-//       Would be nice to get rid of that as well.
 #define RAYNI_BITMASK_GLOBAL_OPERATORS(Bitmask)                                                                        \
-	static constexpr inline Bitmask operator&(Bitmask::Enum e, Bitmask b) /* NOLINT */                             \
+	static constexpr inline Bitmask operator&(Bitmask::Enum e, Bitmask b) /* NOLINT(misc-macro-parentheses) */     \
 	{                                                                                                              \
 		return Bitmask(e) & b;                                                                                 \
 	}                                                                                                              \
                                                                                                                        \
-	static constexpr inline Bitmask operator|(Bitmask::Enum e, Bitmask b) /* NOLINT */                             \
+	static constexpr inline Bitmask operator|(Bitmask::Enum e, Bitmask b) /* NOLINT(misc-macro-parentheses) */     \
 	{                                                                                                              \
 		return Bitmask(e) | b;                                                                                 \
 	}                                                                                                              \
                                                                                                                        \
-	static constexpr inline Bitmask operator^(Bitmask::Enum e, Bitmask b) /* NOLINT */                             \
+	static constexpr inline Bitmask operator^(Bitmask::Enum e, Bitmask b) /* NOLINT(misc-macro-parentheses) */     \
 	{                                                                                                              \
 		return Bitmask(e) ^ b;                                                                                 \
 	}                                                                                                              \
                                                                                                                        \
-	static constexpr inline Bitmask operator~(Bitmask::Enum e) /* NOLINT */                                        \
+	static constexpr inline Bitmask operator~(Bitmask::Enum e) /* NOLINT(misc-macro-parentheses) */                \
 	{                                                                                                              \
 		return ~Bitmask(e);                                                                                    \
 	}                                                                                                              \

@@ -56,7 +56,7 @@ namespace Rayni
 		EventFD event_fd1;
 		EventFD event_fd2(std::move(event_fd1));
 
-		EXPECT_THROW(event_fd1.write(1), std::system_error); // NOLINT: misc-use-after-move (tests move)
+		EXPECT_THROW(event_fd1.write(1), std::system_error); // NOLINT(bugprone-use-after-move) Tests move.
 		EXPECT_THROW(event_fd1.read(), std::system_error);
 	}
 

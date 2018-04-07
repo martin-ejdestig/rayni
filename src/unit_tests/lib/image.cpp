@@ -177,7 +177,7 @@ namespace Rayni
 		Image image2(std::move(image1));
 
 		EXPECT_PRED_FORMAT2(expect_pixels, image2, pixels_2x2());
-		EXPECT_TRUE(image1.is_empty()); // NOLINT: misc-use-after-move (want to test state after move...)
+		EXPECT_TRUE(image1.is_empty()); // NOLINT(bugprone-use-after-move) Tests move.
 	}
 
 	TEST(Image, MoveAssignment)
@@ -187,6 +187,6 @@ namespace Rayni
 		Image image2 = std::move(image1);
 
 		EXPECT_PRED_FORMAT2(expect_pixels, image2, pixels_2x2());
-		EXPECT_TRUE(image1.is_empty()); // NOLINT: misc-use-after-move (want to test state after move...)
+		EXPECT_TRUE(image1.is_empty()); // NOLINT(bugprone-use-after-move) Tests move.
 	}
 }

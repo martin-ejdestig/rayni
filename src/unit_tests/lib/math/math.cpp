@@ -46,6 +46,6 @@ namespace Rayni
 	TEST(Math, RadiansFromDegrees)
 	{
 		for (int i = -8; i <= 8; i++)
-			EXPECT_NEAR(2 * PI * i / 8, radians_from_degrees(360 * i / 8), 1e-6) << "i: " << i;
+			EXPECT_NEAR(2 * PI * i / 8, radians_from_degrees(real_t(360) * i / 8), 1e-6) << "i: " << i;
 	}
 }

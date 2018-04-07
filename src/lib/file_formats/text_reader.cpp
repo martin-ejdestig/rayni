@@ -78,8 +78,8 @@ namespace Rayni
 		{
 			if (istream_->eof())
 				throw EOFException(position_, "end of stream");
-			else
-				throw Exception(position_, "read error");
+
+			throw Exception(position_, "read error");
 		}
 
 		// NOTE: std::getline() strips '\n'. There is no way to detect if '\n' was in

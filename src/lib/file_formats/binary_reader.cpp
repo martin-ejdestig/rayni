@@ -99,8 +99,8 @@ namespace Rayni
 		{
 			if (istream_->eof())
 				throw Exception(position(), "unexpected end of stream");
-			else
-				throw Exception(position(), "read error");
+
+			throw Exception(position(), "read error");
 		}
 	}
 

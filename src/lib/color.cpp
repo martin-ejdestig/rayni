@@ -44,10 +44,9 @@ namespace Rayni
 
 			throw Variant::Exception(v, "unknown color \"" + str + "\"");
 		}
-		else if (v.is_vector())
-		{
+
+		if (v.is_vector())
 			return Color(v.get<real_t>(0), v.get<real_t>(1), v.get<real_t>(2)).clamp();
-		}
 
 		throw Variant::Exception(v, "color must be a string or vector");
 	}

@@ -29,11 +29,6 @@ if get_option('extra_warnings')
     endif
 endif
 
-if cpp.get_id() == 'clang'
-    # TODO: https://llvm.org/bugs/show_bug.cgi?id=21629
-    cpp_args += ['-Wno-missing-braces']
-endif
-
 if get_option('libcxx')
     cpp_args += ['-stdlib=libc++']
     cpp_link_args += ['-stdlib=libc++', '-lc++abi']

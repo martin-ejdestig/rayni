@@ -49,6 +49,7 @@ lib_unit_tests_sources = [
     'system/main_loop.cpp',
     'system/scoped_temp_dir.cpp',
     'system/temp_dir.cpp',
+    'system/unique_fd.cpp',
     'time/duration_formatter.cpp',
     'time/scoped_stopwatch.cpp',
     'time/stopwatch.cpp',

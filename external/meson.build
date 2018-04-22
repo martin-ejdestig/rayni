@@ -9,7 +9,19 @@ libgtest = static_library('gtest',
                               join_paths(gtest_dir, 'src', 'gtest_main.cc')
                           ])
 
+gtest_compile_args = []
+
+if get_option('extra_warnings')
+    # Clang warns for -Wzero-as-null-pointer-constant in googletest headers even
+    # though -isystem is used. See https://bugs.llvm.org/show_bug.cgi?id=33771#c5
+    # See https://github.com/google/googletest/issues/1323 for googletest issue.
+    if meson.get_compiler('cpp').get_id() == 'clang'
+        gtest_compile_args += ['-Wno-zero-as-null-pointer-constant']
+    endif
+endif
+
 gtest = declare_dependency(dependencies : dependency('threads'),
+                           compile_args : gtest_compile_args,
                            include_directories : gtest_incdir,
                            link_with : libgtest)
 

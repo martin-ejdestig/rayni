@@ -14,19 +14,16 @@ cpp_args = []
 cpp_link_args = []
 
 if get_option('extra_warnings')
-    cpp_args += [
+    extra_warnings_cpp_args = [
+        '-Wdouble-promotion',
+        '-Wformat=2',
         '-Wold-style-cast',
         '-Woverloaded-virtual',
-        '-Wformat=2',
-        '-Wsign-conversion'
+        '-Wsign-conversion',
+        '-Wsuggest-override',
+        '-Wzero-as-null-pointer-constant'
     ]
-    if cpp.get_id() == 'gcc'
-        cpp_args += [
-            '-Wdouble-promotion',
-            '-Wsuggest-override',
-            '-Wzero-as-null-pointer-constant'
-        ]
-    endif
+    cpp_args += cpp.get_supported_arguments(extra_warnings_cpp_args)
 endif
 
 if get_option('libcxx')

@@ -2,7 +2,7 @@ project('rayni-staging',
         'cpp',
         license : 'GPLv3+',
         version : '0.0.1',
-        meson_version : '>=0.41.0',
+        meson_version : '>=0.43.0',
         default_options : [
             'cpp_std=c++14',
             'warning_level=3',

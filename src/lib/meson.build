@@ -102,3 +102,6 @@ lib = static_library('rayni',
                      include_directories : src_incdir,
                      sources : lib_sources,
                      pic : false)
+
+lib_dependency = declare_dependency(include_directories : src_incdir,
+                                    link_with : lib)

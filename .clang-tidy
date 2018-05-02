@@ -77,7 +77,7 @@ performance-*,\
 readability-*,\
 "
 
-HeaderFilterRegex: '.*'
+HeaderFilterRegex: '^src/'
 
 CheckOptions:
   - key:   cppcoreguidelines-special-member-functions.AllowSoleDefaultDtor

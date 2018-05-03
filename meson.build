@@ -44,11 +44,6 @@ else
     cpp_link_args += ['-lstdc++fs']
 endif
 
-if get_option('link_time_optimization')
-    cpp_args += ['-flto']
-    cpp_link_args += ['-flto']
-endif
-
 if get_option('ofast_native')
     cpp_args += ['-DNDEBUG', '-Ofast', '-march=native', '-funroll-loops']
     cpp_link_args += ['-Ofast', '-march=native']

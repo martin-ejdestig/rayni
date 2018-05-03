@@ -13,11 +13,6 @@ option('libcxx',
        value : false,
        description : 'Build with Clang\'s libc++ instead of libstdc++ on Linux')
 
-option('link_time_optimization',
-       type : 'boolean',
-       value : false,
-       description : 'Enable link time optimization')
-
 option('ofast_native',
        type : 'boolean',
        value : false,

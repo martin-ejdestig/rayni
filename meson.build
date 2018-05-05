@@ -4,6 +4,7 @@ project('rayni-staging',
         version : '0.0.1',
         meson_version : '>=0.43.0',
         default_options : [
+            'buildtype=release',
             'cpp_std=c++14',
             'warning_level=3',
             'werror=true'

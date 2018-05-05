@@ -15,5 +15,5 @@ option('libcxx',
 
 option('ofast_native',
        type : 'boolean',
-       value : false,
-       description : 'Build with -Ofast, -march=native and some other optimization flags')
+       value : true,
+       description : 'Build with -Ofast, -march=native and some other optimization flags in release mode')

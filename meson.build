@@ -46,7 +46,7 @@ else
     cpp_link_args += ['-lstdc++fs']
 endif
 
-if get_option('ofast_native')
+if get_option('ofast_native') and get_option('buildtype') == 'release'
     cpp_args += ['-Ofast', '-march=native', '-funroll-loops']
     cpp_link_args += ['-Ofast', '-march=native']
 endif

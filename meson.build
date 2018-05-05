@@ -2,8 +2,9 @@ project('rayni-staging',
         'cpp',
         license : 'GPLv3+',
         version : '0.0.1',
-        meson_version : '>=0.43.0',
+        meson_version : '>=0.46.0',
         default_options : [
+            'b_ndebug=if-release',
             'buildtype=release',
             'cpp_std=c++14',
             'warning_level=3',
@@ -46,7 +47,7 @@ else
 endif
 
 if get_option('ofast_native')
-    cpp_args += ['-DNDEBUG', '-Ofast', '-march=native', '-funroll-loops']
+    cpp_args += ['-Ofast', '-march=native', '-funroll-loops']
     cpp_link_args += ['-Ofast', '-march=native']
 endif
 

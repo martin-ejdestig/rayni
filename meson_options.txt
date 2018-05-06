@@ -1,19 +1,19 @@
 option('double_precision',
        type : 'boolean',
        value : false,
-       description : 'Build with double (instead of single) precision')
+       description : 'Build with double (instead of single) precision.')
 
 option('extra_warnings',
        type : 'boolean',
        value : true,
-       description : 'Enable extra compiler warnings')
+       description : 'Enable extra compiler warnings.')
 
 option('libcxx',
        type : 'boolean',
        value : false,
-       description : 'Build with Clang\'s libc++ instead of libstdc++ on Linux')
+       description : 'Build with Clang\'s libc++ instead of libstdc++ on Linux.')
 
 option('ofast_native',
        type : 'boolean',
        value : true,
-       description : 'Build with -Ofast, -march=native and some other optimization flags in release mode')
+       description : 'Build with -Ofast, -march=native and some other optimization flags in release mode.')

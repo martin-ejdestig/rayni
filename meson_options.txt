@@ -17,3 +17,8 @@ option('ofast_native',
        type : 'boolean',
        value : true,
        description : 'Build with -Ofast, -march=native and some other optimization flags in release mode.')
+
+option('ray_triangle_intersection',
+       type : 'combo',
+       choices : ['moller_trumbore', 'watertight'], value : 'watertight',
+       description : 'Algorithm to use for ray/triangle intersection.')

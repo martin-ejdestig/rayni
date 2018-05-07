@@ -1,5 +1,4 @@
 lib_unit_tests_sources = [
-    'color.cpp',
     'concurrency/barrier.cpp',
     'concurrency/cancellable.cpp',
     'concurrency/latch.cpp',
@@ -22,7 +21,8 @@ lib_unit_tests_sources = [
     'file_formats/text_type_reader.cpp',
     'file_formats/write_to_file.cpp',
     'function/scope_exit.cpp',
-    'image.cpp',
+    'graphics/color.cpp',
+    'graphics/image.cpp',
     'math/aabb.cpp',
     'math/animated_transform.cpp',
     'math/big_endian_reader.cpp',

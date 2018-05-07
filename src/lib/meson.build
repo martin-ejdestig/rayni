@@ -6,8 +6,6 @@ lib_dependencies = [
 ]
 
 lib_sources = [
-    'color.cpp',
-    'color.h',
     'concurrency/barrier.h',
     'concurrency/cancellable.h',
     'concurrency/latch.h',
@@ -45,8 +43,10 @@ lib_sources = [
     'file_formats/write_to_file.cpp',
     'file_formats/write_to_file.h',
     'function/scope_exit.h',
-    'image.cpp',
-    'image.h',
+    'graphics/color.cpp',
+    'graphics/color.h',
+    'graphics/image.cpp',
+    'graphics/image.h',
     'math/aabb.cpp',
     'math/aabb.h',
     'math/animated_transform.cpp',

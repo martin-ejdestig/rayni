@@ -17,7 +17,7 @@
  * along with Rayni. If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "lib/color.h"
+#include "lib/graphics/color.h"
 
 #include <gtest/gtest.h>
 

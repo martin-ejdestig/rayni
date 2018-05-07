@@ -17,8 +17,8 @@
  * along with Rayni. If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef RAYNI_LIB_COLOR_H
-#define RAYNI_LIB_COLOR_H
+#ifndef RAYNI_LIB_GRAPHICS_COLOR_H
+#define RAYNI_LIB_GRAPHICS_COLOR_H
 
 #include <algorithm>
 #include <cmath>
@@ -166,4 +166,4 @@ namespace Rayni
 	};
 }
 
-#endif // RAYNI_LIB_COLOR_H
+#endif // RAYNI_LIB_GRAPHICS_COLOR_H

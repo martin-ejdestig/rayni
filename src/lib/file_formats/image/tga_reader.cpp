@@ -24,8 +24,8 @@
 #include <cassert>
 #include <cstdint>
 
-#include "lib/color.h"
-#include "lib/image.h"
+#include "lib/graphics/color.h"
+#include "lib/graphics/image.h"
 #include "lib/math/enum.h"
 
 namespace Rayni

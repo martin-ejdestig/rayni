@@ -26,7 +26,7 @@
 #include <vector>
 
 #include "lib/file_formats/write_to_file.h"
-#include "lib/image.h"
+#include "lib/graphics/image.h"
 #include "lib/system/scoped_temp_dir.h"
 
 namespace Rayni

@@ -49,8 +49,8 @@
 #include <string>
 #include <vector>
 
-#include "lib/color.h"
-#include "lib/image.h"
+#include "lib/graphics/color.h"
+#include "lib/graphics/image.h"
 
 namespace Rayni
 {

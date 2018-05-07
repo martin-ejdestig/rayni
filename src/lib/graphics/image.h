@@ -17,16 +17,16 @@
  * along with Rayni. If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef RAYNI_LIB_IMAGE_H
-#define RAYNI_LIB_IMAGE_H
+#ifndef RAYNI_LIB_GRAPHICS_IMAGE_H
+#define RAYNI_LIB_GRAPHICS_IMAGE_H
 
 #include <cassert>
 #include <cstddef>
 #include <cstdint>
 #include <vector>
 
-#include "lib/color.h"
 #include "lib/containers/variant.h"
+#include "lib/graphics/color.h"
 #include "lib/math/math.h"
 
 namespace Rayni
@@ -134,4 +134,4 @@ namespace Rayni
 	}
 }
 
-#endif // RAYNI_LIB_IMAGE_H
+#endif // RAYNI_LIB_GRAPHICS_IMAGE_H

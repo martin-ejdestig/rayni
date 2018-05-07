@@ -24,7 +24,7 @@
 #include <cstring>
 #include <string>
 
-#include "lib/image.h"
+#include "lib/graphics/image.h"
 
 namespace Rayni
 {

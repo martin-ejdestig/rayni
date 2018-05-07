@@ -21,9 +21,9 @@
 
 #include <gtest/gtest.h>
 
-#include "lib/color.h"
 #include "lib/file_formats/image/png_reader.h"
-#include "lib/image.h"
+#include "lib/graphics/color.h"
+#include "lib/graphics/image.h"
 #include "lib/system/scoped_temp_dir.h"
 
 namespace Rayni

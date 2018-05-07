@@ -26,7 +26,7 @@
 #include <vector>
 
 #include "lib/function/scope_exit.h"
-#include "lib/image.h"
+#include "lib/graphics/image.h"
 
 namespace Rayni
 {

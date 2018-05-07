@@ -26,7 +26,7 @@
 #include <memory>
 #include <string>
 
-#include "lib/image.h"
+#include "lib/graphics/image.h"
 
 namespace
 {

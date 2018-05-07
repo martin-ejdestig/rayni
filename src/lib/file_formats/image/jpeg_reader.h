@@ -24,7 +24,7 @@
 #include <string>
 
 #include "lib/file_formats/file_format_exception.h"
-#include "lib/image.h"
+#include "lib/graphics/image.h"
 
 namespace Rayni
 {

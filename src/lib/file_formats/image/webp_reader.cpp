@@ -28,7 +28,7 @@
 #include <string>
 #include <vector>
 
-#include "lib/image.h"
+#include "lib/graphics/image.h"
 
 namespace Rayni
 {

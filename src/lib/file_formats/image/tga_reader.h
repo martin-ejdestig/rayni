@@ -25,7 +25,7 @@
 #include <vector>
 
 #include "lib/file_formats/binary_type_reader.h"
-#include "lib/image.h"
+#include "lib/graphics/image.h"
 
 namespace Rayni
 {

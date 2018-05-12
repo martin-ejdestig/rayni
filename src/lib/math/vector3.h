@@ -186,6 +186,17 @@ namespace Rayni
 			return *this - normal * dot(normal) * 2.0;
 		}
 
+		unsigned int max_extent_axis() const
+		{
+			unsigned int max_axis = 0;
+
+			for (unsigned int axis = 1; axis < SIZE; axis++)
+				if (std::abs(xyz_[max_axis]) < std::abs(xyz_[axis]))
+					max_axis = axis;
+
+			return max_axis;
+		}
+
 		std::size_t hash() const
 		{
 			return hash_combine_for(x(), y(), z());

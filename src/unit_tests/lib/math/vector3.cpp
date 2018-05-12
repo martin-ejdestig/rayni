@@ -208,6 +208,26 @@ namespace Rayni
 		EXPECT_NEAR(0, v.z(), 1e-100);
 	}
 
+	TEST(Vector3, MaxExtentAxis)
+	{
+		EXPECT_EQ(0, Vector3(0, 0, 0).max_extent_axis());
+
+		EXPECT_EQ(0, Vector3(10, 2, 3).max_extent_axis());
+		EXPECT_EQ(0, Vector3(-10, 2, 3).max_extent_axis());
+		EXPECT_EQ(0, Vector3(10, -2, -3).max_extent_axis());
+		EXPECT_EQ(0, Vector3(-10, -2, -3).max_extent_axis());
+
+		EXPECT_EQ(1, Vector3(1, 20, 3).max_extent_axis());
+		EXPECT_EQ(1, Vector3(1, -20, 3).max_extent_axis());
+		EXPECT_EQ(1, Vector3(-1, 20, -3).max_extent_axis());
+		EXPECT_EQ(1, Vector3(-1, -20, -3).max_extent_axis());
+
+		EXPECT_EQ(2, Vector3(1, 2, 30).max_extent_axis());
+		EXPECT_EQ(2, Vector3(1, 2, -30).max_extent_axis());
+		EXPECT_EQ(2, Vector3(-1, -2, 30).max_extent_axis());
+		EXPECT_EQ(2, Vector3(-1, -2, -30).max_extent_axis());
+	}
+
 	TEST(Vector3, Hash)
 	{
 		EXPECT_TRUE(Vector3(1, 0, 0).hash() != Vector3(0, 1, 0).hash());

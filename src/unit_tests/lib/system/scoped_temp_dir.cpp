@@ -21,7 +21,7 @@
 
 #include <gtest/gtest.h>
 
-#include <experimental/filesystem>
+#include <filesystem>
 #include <fstream>
 
 namespace Rayni
@@ -35,7 +35,7 @@ namespace Rayni
 				FAIL() << "Failed to write to file " << path << ".";
 		};
 
-		std::experimental::filesystem::path path;
+		std::filesystem::path path;
 
 		{
 			ScopedTempDir dir;
@@ -43,10 +43,10 @@ namespace Rayni
 
 			output_to_file(path / "foo", "bla bla");
 
-			std::experimental::filesystem::create_directory(path / "bar");
+			std::filesystem::create_directory(path / "bar");
 			output_to_file(path / "bar" / "baz", "yada yada");
 		}
 
-		EXPECT_FALSE(std::experimental::filesystem::exists(path));
+		EXPECT_FALSE(std::filesystem::exists(path));
 	}
 }

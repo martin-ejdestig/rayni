@@ -36,10 +36,9 @@ namespace Rayni
 	//
 	// Or will there be something for this in the standard? Boost has unique_path() but I
 	// suspect the standard group removed it from the TS since they found it inadequate.
-	std::experimental::filesystem::path temp_dir_create_unique()
+	std::filesystem::path temp_dir_create_unique()
 	{
-		std::experimental::filesystem::path template_path =
-		        std::experimental::filesystem::temp_directory_path() / "XXXXXX";
+		std::filesystem::path template_path = std::filesystem::temp_directory_path() / "XXXXXX";
 
 		std::vector<char> buffer(template_path.native().cbegin(), template_path.native().cend());
 		buffer.push_back('\0');
@@ -47,11 +46,9 @@ namespace Rayni
 		if (!mkdtemp(buffer.data()))
 		{
 			std::error_code error_code(errno, std::system_category());
-			throw std::experimental::filesystem::filesystem_error("mkdtemp() failed",
-			                                                      template_path,
-			                                                      error_code);
+			throw std::filesystem::filesystem_error("mkdtemp() failed", template_path, error_code);
 		}
 
-		return std::experimental::filesystem::path(buffer.data());
+		return std::filesystem::path(buffer.data());
 	}
 }

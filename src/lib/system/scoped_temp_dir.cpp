@@ -19,7 +19,7 @@
 
 #include "lib/system/scoped_temp_dir.h"
 
-#include <experimental/filesystem>
+#include <filesystem>
 #include <iostream>
 #include <system_error>
 
@@ -35,7 +35,7 @@ namespace Rayni
 	{
 		std::error_code error_code;
 
-		std::experimental::filesystem::remove_all(path(), error_code); // noexcept, safe in destructor
+		std::filesystem::remove_all(path(), error_code); // noexcept, safe in destructor
 		if (error_code)
 			std::cerr << "Failed to remove " << path() << ": " << error_code.message() << '\n';
 	}

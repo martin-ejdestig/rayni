@@ -21,7 +21,7 @@
 
 #include <algorithm>
 #include <cstdint>
-#include <experimental/filesystem>
+#include <filesystem>
 #include <fstream>
 #include <istream>
 #include <string>
@@ -66,8 +66,7 @@ namespace Rayni
 
 		ImageFormat image_format_from_extension(const std::string &file_name)
 		{
-			const std::string extension =
-			        string_to_lower(std::experimental::filesystem::path(file_name).extension());
+			const std::string extension = string_to_lower(std::filesystem::path(file_name).extension());
 
 			auto extension_is_any_of = [&](const std::vector<std::string> &strs) {
 				return std::find(strs.begin(), strs.end(), extension) != strs.end();

@@ -21,15 +21,15 @@
 
 #include <gtest/gtest.h>
 
-#include <experimental/filesystem>
+#include <filesystem>
 
 namespace Rayni
 {
 	TEST(TempDir, CreateUnique)
 	{
-		std::experimental::filesystem::path path = temp_dir_create_unique();
+		std::filesystem::path path = temp_dir_create_unique();
 
-		EXPECT_TRUE(std::experimental::filesystem::is_directory(path));
-		EXPECT_TRUE(std::experimental::filesystem::remove(path)); // Must be empty.
+		EXPECT_TRUE(std::filesystem::is_directory(path));
+		EXPECT_TRUE(std::filesystem::remove(path)); // Must be empty.
 	}
 }

@@ -22,6 +22,7 @@
 #include <gtest/gtest.h>
 
 #include <cstdint>
+#include <filesystem>
 #include <string>
 #include <vector>
 
@@ -36,7 +37,7 @@ namespace Rayni
 		                                 const std::string &file_name,
 		                                 const std::vector<std::uint8_t> &data)
 		{
-			std::experimental::filesystem::path path = temp_dir.path() / file_name;
+			std::filesystem::path path = temp_dir.path() / file_name;
 			write_to_file(path, data);
 			return image_format_from_file(path);
 		}

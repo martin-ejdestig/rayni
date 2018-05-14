@@ -20,7 +20,7 @@
 #ifndef RAYNI_LIB_SYSTEM_SCOPED_TEMP_DIR_H
 #define RAYNI_LIB_SYSTEM_SCOPED_TEMP_DIR_H
 
-#include <experimental/filesystem>
+#include <filesystem>
 
 namespace Rayni
 {
@@ -36,13 +36,13 @@ namespace Rayni
 		ScopedTempDir &operator=(const ScopedTempDir &other) = delete;
 		ScopedTempDir &operator=(ScopedTempDir &&other) = default;
 
-		const std::experimental::filesystem::path &path() const
+		const std::filesystem::path &path() const
 		{
 			return path_;
 		}
 
 	private:
-		std::experimental::filesystem::path path_;
+		std::filesystem::path path_;
 	};
 }
 

@@ -6,7 +6,7 @@ project('rayni-staging',
         default_options : [
             'b_ndebug=if-release',
             'buildtype=release',
-            'cpp_std=c++14',
+            'cpp_std=c++17',
             'warning_level=3',
             'werror=true'
         ])
@@ -42,7 +42,7 @@ if get_option('libcxx')
     # TODO: For std::experimental::filesystem. Remove when libc++ with C++17 is released.
     cpp_link_args += ['-llibc++experimental']
 else
-    # TODO: For std::experimental::filesystem. Remove when libstdc++ with C++17 is released.
+    # TODO: For std::filesystem in libstdc++. Still unstable? Or why is it not in libstdc++ proper yet?
     cpp_link_args += ['-lstdc++fs']
 endif
 

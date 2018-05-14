@@ -33,12 +33,6 @@ namespace Rayni
 {
 	namespace
 	{
-		struct Info
-		{
-			std::string suffix;
-			std::vector<std::uint8_t> data_1x1;
-		};
-
 		std::vector<std::uint8_t> exr_data_1x1()
 		{
 			return {0x76, 0x2f, 0x31, 0x01, 0x02, 0x00, 0x00, 0x00, 0x63, 0x68, 0x61, 0x6e, 0x6e, 0x65,
@@ -107,30 +101,47 @@ namespace Rayni
 			        0x00, 0x9d, 0x01, 0x2a, 0x01, 0x00, 0x01, 0x00, 0x02, 0x00, 0x34,
 			        0x25, 0xa4, 0x00, 0x03, 0x70, 0x00, 0xfe, 0xfb, 0x94, 0x00, 0x00};
 		}
-	}
 
-	TEST(ImageReader, ReadFile)
-	{
-		ScopedTempDir temp_dir;
-
-		for (const auto &info : {Info{"exr", exr_data_1x1()},
-		                         Info{"jpeg", jpeg_data_1x1()},
-		                         Info{"png", png_data_1x1()},
-		                         Info{"tga", tga_data_1x1()},
-		                         Info{"webp", webp_data_1x1()}})
+		void test_read_file(const std::string &suffix, const std::vector<std::uint8_t> &valid_data_1x1)
 		{
-			const std::string read_success_path = temp_dir.path() / ("valid." + info.suffix);
-			const std::string type_determinable_read_fail_path = temp_dir.path() / ("empty." + info.suffix);
+			ScopedTempDir temp_dir;
+			const std::string read_success_path = temp_dir.path() / ("valid." + suffix);
+			const std::string type_determinable_read_fail_path = temp_dir.path() / ("empty." + suffix);
 
-			write_to_file(read_success_path, info.data_1x1);
+			write_to_file(read_success_path, valid_data_1x1);
 			write_to_file(type_determinable_read_fail_path, {});
 
 			Image image = ImageReader().read_file(read_success_path);
-			EXPECT_EQ(1u, image.width()) << info.suffix;
-			EXPECT_EQ(1u, image.height()) << info.suffix;
+			EXPECT_EQ(1u, image.width()) << suffix;
+			EXPECT_EQ(1u, image.height()) << suffix;
 
 			EXPECT_THROW(ImageReader().read_file(type_determinable_read_fail_path), ImageReader::Exception)
-			        << info.suffix;
+			        << suffix;
 		}
+	}
+
+	TEST(ImageReader, ReadEXRFile)
+	{
+		test_read_file("exr", exr_data_1x1());
+	}
+
+	TEST(ImageReader, ReadJPEGFile)
+	{
+		test_read_file("jpeg", jpeg_data_1x1());
+	}
+
+	TEST(ImageReader, ReadPNGFile)
+	{
+		test_read_file("png", png_data_1x1());
+	}
+
+	TEST(ImageReader, ReadTGAFile)
+	{
+		test_read_file("tga", tga_data_1x1());
+	}
+
+	TEST(ImageReader, ReadWebPFile)
+	{
+		test_read_file("webp", webp_data_1x1());
 	}
 }

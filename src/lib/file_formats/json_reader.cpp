@@ -218,7 +218,7 @@ namespace Rayni
 		}
 
 		auto d = string_to_double(number);
-		if (!d)
+		if (!d.has_value())
 			throw Exception(position(), "number conversion failed");
 
 		return Variant(d.value());

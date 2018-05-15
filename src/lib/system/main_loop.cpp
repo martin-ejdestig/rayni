@@ -317,8 +317,8 @@ namespace Rayni
 	{
 		std::optional<clock::time_point> expiration = timer_data_->earliest_expiration();
 
-		if (expiration)
-			timer_fd_.set(*expiration);
+		if (expiration.has_value())
+			timer_fd_.set(expiration.value());
 		else
 			timer_fd_.disarm();
 	}

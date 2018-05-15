@@ -108,19 +108,19 @@ namespace Rayni
 		EXPECT_FLOAT_EQ(0.0123f, string_to_float("123e-4").value());
 		EXPECT_FLOAT_EQ(1230000.0f, string_to_float("123e+4").value());
 
-		EXPECT_FALSE(string_to_float(""));
-		EXPECT_FALSE(string_to_float(" "));
-		EXPECT_FALSE(string_to_float("1,0"));
-		EXPECT_FALSE(string_to_float(",1"));
-		EXPECT_FALSE(string_to_float("1,"));
-		EXPECT_FALSE(string_to_float(""));
-		EXPECT_FALSE(string_to_float("a"));
-		EXPECT_FALSE(string_to_float("1a"));
-		EXPECT_FALSE(string_to_float("1 "));
-		EXPECT_FALSE(string_to_float("a1"));
-		EXPECT_FALSE(string_to_float("1e"));
-		EXPECT_FALSE(string_to_float("+"));
-		EXPECT_FALSE(string_to_float("-"));
+		EXPECT_FALSE(string_to_float("").has_value());
+		EXPECT_FALSE(string_to_float(" ").has_value());
+		EXPECT_FALSE(string_to_float("1,0").has_value());
+		EXPECT_FALSE(string_to_float(",1").has_value());
+		EXPECT_FALSE(string_to_float("1,").has_value());
+		EXPECT_FALSE(string_to_float("").has_value());
+		EXPECT_FALSE(string_to_float("a").has_value());
+		EXPECT_FALSE(string_to_float("1a").has_value());
+		EXPECT_FALSE(string_to_float("1 ").has_value());
+		EXPECT_FALSE(string_to_float("a1").has_value());
+		EXPECT_FALSE(string_to_float("1e").has_value());
+		EXPECT_FALSE(string_to_float("+").has_value());
+		EXPECT_FALSE(string_to_float("-").has_value());
 	}
 
 	TEST(String, ToDouble)
@@ -138,19 +138,19 @@ namespace Rayni
 		EXPECT_DOUBLE_EQ(0.0123, string_to_double("123e-4").value());
 		EXPECT_DOUBLE_EQ(1230000.0, string_to_double("123e+4").value());
 
-		EXPECT_FALSE(string_to_double(""));
-		EXPECT_FALSE(string_to_double(" "));
-		EXPECT_FALSE(string_to_double("1,0"));
-		EXPECT_FALSE(string_to_double(",1"));
-		EXPECT_FALSE(string_to_double("1,"));
-		EXPECT_FALSE(string_to_double(""));
-		EXPECT_FALSE(string_to_double("a"));
-		EXPECT_FALSE(string_to_double("1a"));
-		EXPECT_FALSE(string_to_double("1 "));
-		EXPECT_FALSE(string_to_double("a1"));
-		EXPECT_FALSE(string_to_double("1e"));
-		EXPECT_FALSE(string_to_double("+"));
-		EXPECT_FALSE(string_to_double("-"));
+		EXPECT_FALSE(string_to_double("").has_value());
+		EXPECT_FALSE(string_to_double(" ").has_value());
+		EXPECT_FALSE(string_to_double("1,0").has_value());
+		EXPECT_FALSE(string_to_double(",1").has_value());
+		EXPECT_FALSE(string_to_double("1,").has_value());
+		EXPECT_FALSE(string_to_double("").has_value());
+		EXPECT_FALSE(string_to_double("a").has_value());
+		EXPECT_FALSE(string_to_double("1a").has_value());
+		EXPECT_FALSE(string_to_double("1 ").has_value());
+		EXPECT_FALSE(string_to_double("a1").has_value());
+		EXPECT_FALSE(string_to_double("1e").has_value());
+		EXPECT_FALSE(string_to_double("+").has_value());
+		EXPECT_FALSE(string_to_double("-").has_value());
 	}
 
 	TEST(String, ToLong)
@@ -165,12 +165,12 @@ namespace Rayni
 		EXPECT_EQ(0, string_to_long("+0").value());
 		EXPECT_EQ(0, string_to_long("-0").value());
 
-		EXPECT_FALSE(string_to_long(""));
-		EXPECT_FALSE(string_to_long(" "));
-		EXPECT_FALSE(string_to_long("123 "));
-		EXPECT_FALSE(string_to_long("123a"));
-		EXPECT_FALSE(string_to_long("12.3"));
-		EXPECT_FALSE(string_to_long("1.23e4"));
+		EXPECT_FALSE(string_to_long("").has_value());
+		EXPECT_FALSE(string_to_long(" ").has_value());
+		EXPECT_FALSE(string_to_long("123 ").has_value());
+		EXPECT_FALSE(string_to_long("123a").has_value());
+		EXPECT_FALSE(string_to_long("12.3").has_value());
+		EXPECT_FALSE(string_to_long("1.23e4").has_value());
 	}
 
 	TEST(String, ToLongOutOfRange)
@@ -183,8 +183,8 @@ namespace Rayni
 		EXPECT_EQ(max, string_to_long(max_str).value());
 		EXPECT_EQ(min, string_to_long(min_str).value());
 
-		EXPECT_FALSE(string_to_long(max_str + "0"));
-		EXPECT_FALSE(string_to_long(min_str + "0"));
+		EXPECT_FALSE(string_to_long(max_str + "0").has_value());
+		EXPECT_FALSE(string_to_long(min_str + "0").has_value());
 	}
 
 	TEST(String, ToNumber)
@@ -198,12 +198,12 @@ namespace Rayni
 
 		EXPECT_EQ(127, string_to_number<std::int8_t>("127").value());
 		EXPECT_EQ(-128, string_to_number<std::int8_t>("-128").value());
-		EXPECT_FALSE(string_to_number<std::int8_t>("128"));
-		EXPECT_FALSE(string_to_number<std::int8_t>("-129"));
+		EXPECT_FALSE(string_to_number<std::int8_t>("128").has_value());
+		EXPECT_FALSE(string_to_number<std::int8_t>("-129").has_value());
 
 		EXPECT_EQ(255, string_to_number<std::uint8_t>("255").value());
 		EXPECT_EQ(0, string_to_number<std::uint8_t>("0").value());
-		EXPECT_FALSE(string_to_number<std::uint8_t>("256"));
-		EXPECT_FALSE(string_to_number<std::uint8_t>("-1"));
+		EXPECT_FALSE(string_to_number<std::uint8_t>("256").has_value());
+		EXPECT_FALSE(string_to_number<std::uint8_t>("-1").has_value());
 	}
 }

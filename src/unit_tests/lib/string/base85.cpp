@@ -57,19 +57,19 @@ namespace Rayni
 
 	TEST(Base85, DecodeInvalidChar)
 	{
-		EXPECT_FALSE(base85_decode(" 0000"));
-		EXPECT_FALSE(base85_decode("0 000"));
-		EXPECT_FALSE(base85_decode("00 00"));
-		EXPECT_FALSE(base85_decode("000 0"));
-		EXPECT_FALSE(base85_decode("0000 "));
+		EXPECT_FALSE(base85_decode(" 0000").has_value());
+		EXPECT_FALSE(base85_decode("0 000").has_value());
+		EXPECT_FALSE(base85_decode("00 00").has_value());
+		EXPECT_FALSE(base85_decode("000 0").has_value());
+		EXPECT_FALSE(base85_decode("0000 ").has_value());
 	}
 
 	TEST(Base85, DecodeOverflow)
 	{
-		EXPECT_FALSE(base85_decode("|NsC1"));
-		EXPECT_FALSE(base85_decode("|NsD0"));
-		EXPECT_FALSE(base85_decode("|NtC0"));
-		EXPECT_FALSE(base85_decode("|OsC0"));
-		EXPECT_FALSE(base85_decode("}NsC0"));
+		EXPECT_FALSE(base85_decode("|NsC1").has_value());
+		EXPECT_FALSE(base85_decode("|NsD0").has_value());
+		EXPECT_FALSE(base85_decode("|NtC0").has_value());
+		EXPECT_FALSE(base85_decode("|OsC0").has_value());
+		EXPECT_FALSE(base85_decode("}NsC0").has_value());
 	}
 }

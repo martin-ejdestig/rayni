@@ -197,21 +197,21 @@ namespace Rayni
 
 	TGAReader::ColorMapType TGAReader::byte_to_color_map_type(std::uint8_t byte) const
 	{
-		auto i = enum_from_value({ColorMapType::ABSCENT, ColorMapType::PRESENT}, byte);
+		auto e = enum_from_value({ColorMapType::ABSCENT, ColorMapType::PRESENT}, byte);
 
-		if (!i)
+		if (!e.has_value())
 			throw Exception(position(), "unknown color map type field in TGA header");
 
-		return i.value();
+		return e.value();
 	}
 
 	TGAReader::ImageType TGAReader::byte_to_image_type(std::uint8_t byte) const
 	{
-		auto i = enum_from_value({ImageType::NONE, ImageType::COLOR_MAPPED, ImageType::RGB, ImageType::MONO},
+		auto e = enum_from_value({ImageType::NONE, ImageType::COLOR_MAPPED, ImageType::RGB, ImageType::MONO},
 		                         byte);
-		if (!i)
+		if (!e.has_value())
 			throw Exception(position(), "unknown image type field in TGA header");
 
-		return i.value();
+		return e.value();
 	}
 }

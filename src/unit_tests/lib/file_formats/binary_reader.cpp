@@ -541,10 +541,10 @@ namespace Rayni
 		reader.skip_bytes(1);
 
 		auto b5 = reader.peek_int8();
-		EXPECT_FALSE(b5);
+		EXPECT_FALSE(b5.has_value());
 
 		auto b6 = reader.peek_int8();
-		EXPECT_FALSE(b6);
+		EXPECT_FALSE(b6.has_value());
 	}
 
 	TEST(BinaryReader, PositionAtEOF)

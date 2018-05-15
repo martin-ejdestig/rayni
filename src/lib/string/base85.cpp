@@ -58,7 +58,7 @@ namespace
 
 namespace Rayni
 {
-	std::experimental::optional<std::vector<std::uint8_t>> base85_decode(const std::string &str)
+	std::optional<std::vector<std::uint8_t>> base85_decode(const std::string &str)
 	{
 		static const Base85DecodingTable decoding_table = base85_generate_decoding_table();
 		std::vector<std::uint8_t> decoded_data;
@@ -73,7 +73,7 @@ namespace Rayni
 				std::uint8_t decoded_byte = decoding_table[c];
 
 				if (decoded_byte == 0)
-					return std::experimental::nullopt;
+					return std::nullopt;
 
 				decoded_byte--;
 
@@ -81,7 +81,7 @@ namespace Rayni
 				{
 					if (accumulator > 0xffffffff / 85 ||
 					    accumulator * 85 > 0xffffffff - decoded_byte)
-						return std::experimental::nullopt;
+						return std::nullopt;
 				}
 
 				accumulator = accumulator * 85 + decoded_byte;

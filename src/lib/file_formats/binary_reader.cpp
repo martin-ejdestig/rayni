@@ -172,12 +172,12 @@ namespace Rayni
 			throw Exception(position(), "failed to skip " + std::to_string(num_bytes) + " bytes");
 	}
 
-	std::experimental::optional<std::int8_t> BinaryReader::peek_int8()
+	std::optional<std::int8_t> BinaryReader::peek_int8()
 	{
 		auto c = istream_->peek();
 
 		if (istream_->eof())
-			return std::experimental::nullopt;
+			return std::nullopt;
 
 		if (!istream_->good())
 			throw Exception(position(), "failed to peek");

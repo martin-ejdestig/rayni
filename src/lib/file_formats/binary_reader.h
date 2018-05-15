@@ -22,9 +22,9 @@
 
 #include <cstddef>
 #include <cstdint>
-#include <experimental/optional>
 #include <istream>
 #include <memory>
+#include <optional>
 #include <string>
 #include <utility>
 #include <vector>
@@ -112,7 +112,7 @@ namespace Rayni
 
 		void skip_bytes(std::size_t num_bytes);
 
-		std::experimental::optional<std::int8_t> peek_int8();
+		std::optional<std::int8_t> peek_int8();
 
 		std::string position() const;
 

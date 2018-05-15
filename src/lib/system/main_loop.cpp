@@ -20,8 +20,8 @@
 #include "lib/system/main_loop.h"
 
 #include <algorithm>
-#include <experimental/optional>
 #include <map>
+#include <optional>
 #include <unordered_map>
 
 #include "lib/math/hash.h"
@@ -143,7 +143,7 @@ namespace Rayni
 			changed_event_fd.write(1);
 		}
 
-		std::experimental::optional<clock::time_point> earliest_expiration()
+		std::optional<clock::time_point> earliest_expiration()
 		{
 			std::unique_lock<std::recursive_mutex> lock(mutex_);
 			clock::time_point expiration = clock::time_point::max();
@@ -157,7 +157,7 @@ namespace Rayni
 			}
 
 			if (expiration == clock::time_point::max())
-				return std::experimental::nullopt;
+				return std::nullopt;
 
 			return expiration;
 		}
@@ -315,7 +315,7 @@ namespace Rayni
 
 	void MainLoop::set_timer_fd_from_timer_data() const
 	{
-		std::experimental::optional<clock::time_point> expiration = timer_data_->earliest_expiration();
+		std::optional<clock::time_point> expiration = timer_data_->earliest_expiration();
 
 		if (expiration)
 			timer_fd_.set(*expiration);

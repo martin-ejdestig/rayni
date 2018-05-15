@@ -151,14 +151,14 @@ namespace
 
 namespace Rayni
 {
-	std::experimental::optional<Command::Result> Command::run() const
+	std::optional<Command::Result> Command::run() const
 	{
 		Pipe stdout_pipe(O_CLOEXEC);
 		Pipe stderr_pipe(O_CLOEXEC);
 
 		ChildProcess child_process(fork());
 		if (child_process.pid() == -1)
-			return std::experimental::nullopt;
+			return std::nullopt;
 
 		if (child_process.pid() == 0)
 			child_exec(args_, stdout_pipe, stderr_pipe);
@@ -173,12 +173,12 @@ namespace Rayni
 		stderr_pipe.close_read_fd();
 
 		if (!child_process.wait())
-			return std::experimental::nullopt;
+			return std::nullopt;
 
 		result.exit_code = child_process.exit_code();
 
 		if (!read_success)
-			return std::experimental::nullopt;
+			return std::nullopt;
 
 		return result;
 	}

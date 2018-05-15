@@ -20,7 +20,7 @@
 #ifndef RAYNI_LIB_SYSTEM_COMMAND_H
 #define RAYNI_LIB_SYSTEM_COMMAND_H
 
-#include <experimental/optional>
+#include <optional>
 #include <string>
 #include <utility>
 #include <vector>
@@ -36,7 +36,7 @@ namespace Rayni
 		{
 		}
 
-		std::experimental::optional<Result> run() const;
+		std::optional<Result> run() const;
 
 	private:
 		const std::vector<std::string> args_;

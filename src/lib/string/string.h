@@ -20,8 +20,8 @@
 #ifndef RAYNI_LIB_STRING_STRING_H
 #define RAYNI_LIB_STRING_STRING_H
 
-#include <experimental/optional>
 #include <limits>
+#include <optional>
 #include <string>
 
 namespace Rayni
@@ -31,36 +31,33 @@ namespace Rayni
 
 	std::string string_to_lower(const std::string &str);
 
-	std::experimental::optional<float> string_to_float(const std::string &str);
-	std::experimental::optional<double> string_to_double(const std::string &str);
-	std::experimental::optional<long> string_to_long(const std::string &str);
+	std::optional<float> string_to_float(const std::string &str);
+	std::optional<double> string_to_double(const std::string &str);
+	std::optional<long> string_to_long(const std::string &str);
 
 	template <typename T>
-	std::enable_if_t<std::is_same<T, float>::value, std::experimental::optional<T>> string_to_number(
-	        const std::string &str)
+	std::enable_if_t<std::is_same<T, float>::value, std::optional<T>> string_to_number(const std::string &str)
 	{
 		return string_to_float(str);
 	}
 
 	template <typename T>
-	std::enable_if_t<std::is_same<T, double>::value, std::experimental::optional<T>> string_to_number(
-	        const std::string &str)
+	std::enable_if_t<std::is_same<T, double>::value, std::optional<T>> string_to_number(const std::string &str)
 	{
 		return string_to_double(str);
 	}
 
 	template <typename T>
-	std::enable_if_t<std::is_integral<T>::value, std::experimental::optional<T>> string_to_number(
-	        const std::string &str)
+	std::enable_if_t<std::is_integral<T>::value, std::optional<T>> string_to_number(const std::string &str)
 	{
 		// TODO: Can be smarter here, use more SFINAE etc. But good enough for now (only
 		//       need <= std::uint32_t and long is 64 bits on all interesting platforms).
 		static_assert(sizeof(long) > sizeof(T), "");
 
-		std::experimental::optional<long> l = string_to_long(str);
+		std::optional<long> l = string_to_long(str);
 
 		if (!l || *l < std::numeric_limits<T>::lowest() || *l > std::numeric_limits<T>::max())
-			return std::experimental::nullopt;
+			return std::nullopt;
 
 		return static_cast<T>(*l);
 	}

@@ -21,8 +21,8 @@
 #define RAYNI_LIB_MATH_ENUM_H
 
 #include <algorithm>
-#include <experimental/optional>
 #include <initializer_list>
+#include <optional>
 #include <type_traits>
 
 namespace Rayni
@@ -36,20 +36,20 @@ namespace Rayni
 	template <typename EnumValues,
 	          typename E = typename EnumValues::value_type,
 	          typename U = std::underlying_type_t<E>>
-	static std::experimental::optional<E> enum_from_value(const EnumValues &enum_values, U value)
+	static std::optional<E> enum_from_value(const EnumValues &enum_values, U value)
 	{
 		auto iterator = std::find_if(enum_values.begin(), enum_values.end(), [&](const E &enum_value) {
 			return value == static_cast<U>(enum_value);
 		});
 
 		if (iterator == enum_values.end())
-			return std::experimental::nullopt;
+			return std::nullopt;
 
 		return *iterator;
 	}
 
 	template <typename E, typename U = std::underlying_type_t<E>>
-	static std::experimental::optional<E> enum_from_value(std::initializer_list<E> enum_values, U value)
+	static std::optional<E> enum_from_value(std::initializer_list<E> enum_values, U value)
 	{
 		// NOTE: Explicit template types in call to avoid endless recursion.
 		return enum_from_value<std::initializer_list<E>, E, U>(enum_values, value);

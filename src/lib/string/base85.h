@@ -21,13 +21,13 @@
 #define RAYNI_LIB_STRING_BASE85_H
 
 #include <cstdint>
-#include <experimental/optional>
+#include <optional>
 #include <string>
 #include <vector>
 
 namespace Rayni
 {
-	std::experimental::optional<std::vector<std::uint8_t>> base85_decode(const std::string &str);
+	std::optional<std::vector<std::uint8_t>> base85_decode(const std::string &str);
 }
 
 #endif // RAYNI_LIB_STRING_BASE85_H

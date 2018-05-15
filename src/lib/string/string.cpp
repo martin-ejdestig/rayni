@@ -94,7 +94,7 @@ namespace Rayni
 		return result;
 	}
 
-	std::experimental::optional<float> string_to_float(const std::string &str)
+	std::optional<float> string_to_float(const std::string &str)
 	{
 		std::istringstream &stream = classic_locale_istringstream_get_with_string(str);
 		float value;
@@ -102,12 +102,12 @@ namespace Rayni
 		stream >> value;
 
 		if (stream.fail() || !stream.eof())
-			return std::experimental::nullopt;
+			return std::nullopt;
 
 		return value;
 	}
 
-	std::experimental::optional<double> string_to_double(const std::string &str)
+	std::optional<double> string_to_double(const std::string &str)
 	{
 		std::istringstream &stream = classic_locale_istringstream_get_with_string(str);
 		double value;
@@ -115,19 +115,19 @@ namespace Rayni
 		stream >> value;
 
 		if (stream.fail() || !stream.eof())
-			return std::experimental::nullopt;
+			return std::nullopt;
 
 		return value;
 	}
 
-	std::experimental::optional<long> string_to_long(const std::string &str)
+	std::optional<long> string_to_long(const std::string &str)
 	{
 		char *end;
 		long value = std::strtol(str.c_str(), &end, 10);
 		bool out_of_range = (value == LONG_MAX || value == LONG_MIN) && errno == ERANGE;
 
 		if (out_of_range || end == str.data() || end != str.data() + str.length())
-			return std::experimental::nullopt;
+			return std::nullopt;
 
 		return value;
 	}

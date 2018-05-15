@@ -103,7 +103,7 @@ namespace Rayni
 		if (num_transforms < 2)
 			throw Variant::Exception(v, "transform vector must contain at least 2 elements");
 
-		Transform t = v.get<Transform>(0);
+		auto t = v.get<Transform>(0);
 
 		for (std::size_t i = 1; i < num_transforms; i++)
 			t = Transform::combine(t, v.get<Transform>(i));

@@ -64,7 +64,7 @@ namespace Rayni
 		template <typename T>
 		void read_bytes(T &dest, std::size_t dest_offset, std::size_t num_bytes)
 		{
-			static_assert(sizeof(typename T::value_type) == 1, "size of container elements must be 1 byte");
+			static_assert(sizeof(typename T::value_type) == 1);
 			read_bytes(dest.data(), dest.size(), dest_offset, num_bytes);
 		}
 

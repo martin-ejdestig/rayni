@@ -52,7 +52,7 @@ namespace Rayni
 	{
 		// TODO: Can be smarter here, use more SFINAE etc. But good enough for now (only
 		//       need <= std::uint32_t and long is 64 bits on all interesting platforms).
-		static_assert(sizeof(long) > sizeof(T), "");
+		static_assert(sizeof(long) > sizeof(T));
 
 		std::optional<long> l = string_to_long(str);
 

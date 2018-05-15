@@ -37,7 +37,7 @@ namespace Rayni
 		using Container = std::vector<Byte>;
 		using Size = typename Container::size_type;
 
-		static_assert(sizeof(Byte) == 1, "size of byte type must 1");
+		static_assert(sizeof(Byte) == 1);
 
 		explicit BigEndianReader(const Container &data) : data_(data)
 		{

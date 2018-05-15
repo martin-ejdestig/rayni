@@ -90,7 +90,7 @@ namespace Rayni
 			                "byte count too large (byte count: " + std::to_string(num_bytes) +
 			                        ", max: " + std::to_string(max_num_bytes) + ")");
 
-		static_assert(sizeof(std::istream::char_type) == 1, "size of type not 1");
+		static_assert(sizeof(std::istream::char_type) == 1);
 
 		istream_->read(static_cast<std::istream::char_type *>(dest) + dest_offset,
 		               static_cast<std::streamsize>(num_bytes));

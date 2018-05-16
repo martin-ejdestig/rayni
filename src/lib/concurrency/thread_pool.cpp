@@ -62,7 +62,7 @@ namespace Rayni
 
 	void ThreadPool::add_task(std::function<void()> &&task)
 	{
-		std::unique_lock<std::mutex> lock(mutex_);
+		std::lock_guard<std::mutex> lock(mutex_);
 
 		tasks_.emplace_back(std::move(task));
 
@@ -72,7 +72,7 @@ namespace Rayni
 	void ThreadPool::add_tasks(std::vector<std::function<void()>> &&tasks)
 	{
 		{
-			std::unique_lock<std::mutex> lock(mutex_);
+			std::lock_guard<std::mutex> lock(mutex_);
 
 			tasks_.insert(tasks_.end(),
 			              std::make_move_iterator(tasks.begin()),

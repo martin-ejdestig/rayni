@@ -71,7 +71,7 @@ namespace Rayni
 
 		bool thread_available() const
 		{
-			std::unique_lock<std::mutex> lock(mutex_);
+			std::lock_guard<std::mutex> lock(mutex_);
 			return threads_.size() - threads_working_ > 0;
 		}
 

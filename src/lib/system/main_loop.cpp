@@ -46,7 +46,7 @@ namespace Rayni
 	public:
 		void add(int fd, FDFlags flags, std::function<void(FDFlags flags)> &&callback)
 		{
-			std::unique_lock<std::recursive_mutex> lock(mutex_);
+			std::lock_guard<std::recursive_mutex> lock(mutex_);
 
 			epoll.add(fd, flags);
 			map_[fd] = Data{std::move(callback)};
@@ -54,7 +54,7 @@ namespace Rayni
 
 		void modify(int fd, FDFlags flags, std::function<void(FDFlags flags)> &&callback)
 		{
-			std::unique_lock<std::recursive_mutex> lock(mutex_);
+			std::lock_guard<std::recursive_mutex> lock(mutex_);
 
 			epoll.modify(fd, flags);
 			map_[fd] = Data{std::move(callback)};
@@ -62,7 +62,7 @@ namespace Rayni
 
 		void remove(int fd)
 		{
-			std::unique_lock<std::recursive_mutex> lock(mutex_);
+			std::lock_guard<std::recursive_mutex> lock(mutex_);
 
 			auto i = map_.find(fd);
 			if (i == map_.cend())
@@ -76,7 +76,7 @@ namespace Rayni
 		{
 			std::array<Epoll::Event, 4> events;
 			Epoll::EventCount num_events = epoll.wait(events);
-			std::unique_lock<std::recursive_mutex> lock(mutex_);
+			std::lock_guard<std::recursive_mutex> lock(mutex_);
 
 			for (Epoll::EventCount i = 0; i < num_events; i++)
 			{
@@ -118,7 +118,7 @@ namespace Rayni
 		            std::chrono::nanoseconds interval,
 		            std::function<void()> &&callback) // TODO: [[nodiscard]] when C++17
 		{
-			std::unique_lock<std::recursive_mutex> lock(mutex_);
+			std::lock_guard<std::recursive_mutex> lock(mutex_);
 
 			if (id == TIMER_ID_EMPTY)
 				id = generate_id(timer);
@@ -132,7 +132,7 @@ namespace Rayni
 
 		void remove(TimerId id)
 		{
-			std::unique_lock<std::recursive_mutex> lock(mutex_);
+			std::lock_guard<std::recursive_mutex> lock(mutex_);
 
 			auto i = map_.find(id);
 			if (i == map_.cend())
@@ -145,7 +145,7 @@ namespace Rayni
 
 		std::optional<clock::time_point> earliest_expiration()
 		{
-			std::unique_lock<std::recursive_mutex> lock(mutex_);
+			std::lock_guard<std::recursive_mutex> lock(mutex_);
 			clock::time_point expiration = clock::time_point::max();
 
 			for (const auto &key_value : map_)
@@ -164,7 +164,7 @@ namespace Rayni
 
 		void dispatch()
 		{
-			std::unique_lock<std::recursive_mutex> lock(mutex_);
+			std::lock_guard<std::recursive_mutex> lock(mutex_);
 			clock::time_point now = clock::now();
 			bool dispatch_needed = true; // Repeat timers may expire again and callback can restart timer.
 
@@ -325,7 +325,7 @@ namespace Rayni
 
 	void MainLoop::RunInFunctions::add(std::function<void()> &&function)
 	{
-		std::unique_lock<std::mutex> lock(mutex_);
+		std::lock_guard<std::mutex> lock(mutex_);
 
 		functions_.emplace_back(std::move(function));
 	}
@@ -334,7 +334,7 @@ namespace Rayni
 	{
 		std::vector<std::function<void()>> functions_to_dispatch;
 		{
-			std::unique_lock<std::mutex> lock(mutex_);
+			std::lock_guard<std::mutex> lock(mutex_);
 			functions_to_dispatch = std::move(functions_);
 		}
 

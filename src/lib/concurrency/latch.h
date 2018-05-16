@@ -41,7 +41,7 @@ namespace Rayni
 
 		void count_down()
 		{
-			std::unique_lock<std::mutex> lock(mutex_);
+			std::lock_guard<std::mutex> lock(mutex_);
 
 			assert(count_ > 0);
 			count_--;

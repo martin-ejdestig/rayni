@@ -28,17 +28,17 @@
 #if defined __clang__
 #	pragma clang diagnostic push
 #	pragma clang diagnostic ignored "-Wdeprecated-register"
-#	pragma clang diagnostic ignored "-Wzero-as-null-pointer-constant"
 #	pragma clang diagnostic ignored "-Wold-style-cast"
 #	pragma clang diagnostic ignored "-Wsign-conversion"
+#	pragma clang diagnostic ignored "-Wzero-as-null-pointer-constant"
 #elif defined __GNUC__
 #	pragma GCC diagnostic push
-#	pragma GCC diagnostic ignored "-Wsuggest-override"
-#	pragma GCC diagnostic ignored "-Wzero-as-null-pointer-constant"
+#	pragma GCC diagnostic ignored "-Wdeprecated"
 #	pragma GCC diagnostic ignored "-Wold-style-cast"
 #	pragma GCC diagnostic ignored "-Wshadow"
 #	pragma GCC diagnostic ignored "-Wsign-conversion"
-#	pragma GCC diagnostic ignored "-Wdeprecated"
+#	pragma GCC diagnostic ignored "-Wsuggest-override"
+#	pragma GCC diagnostic ignored "-Wzero-as-null-pointer-constant"
 #endif
 #ifndef RAYNI_OPENEXR_TOO_OLD_OR_NOT_AVAILABLE
 #	include <IexBaseExc.h>

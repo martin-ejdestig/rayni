@@ -34,7 +34,7 @@ namespace Rayni
 		std::atomic<int> counter{0};
 		std::vector<std::thread> threads;
 
-		for (unsigned int i = 0; i < NUM_THREADS; i++)
+		for (unsigned int t = 0; t < NUM_THREADS; t++)
 			threads.emplace_back([&] {
 				for (unsigned int i = 0; i < ITERATIONS_PER_THREAD; i++)
 				{

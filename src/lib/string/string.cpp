@@ -51,9 +51,9 @@ namespace
 	std::istringstream &classic_locale_istringstream_get_with_string(const std::string &str)
 	{
 		static thread_local std::istringstream stream = [] {
-			std::istringstream stream;
-			stream.imbue(std::locale::classic());
-			return stream;
+			std::istringstream s;
+			s.imbue(std::locale::classic());
+			return s;
 		}();
 
 		stream.clear();

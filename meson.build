@@ -21,6 +21,7 @@ if get_option('extra_warnings')
         '-Wformat=2',
         '-Wold-style-cast',
         '-Woverloaded-virtual',
+        '-Wshadow',
         '-Wsign-conversion',
         '-Wsuggest-override',
         '-Wzero-as-null-pointer-constant'

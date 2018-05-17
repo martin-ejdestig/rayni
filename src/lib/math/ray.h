@@ -27,10 +27,10 @@ namespace Rayni
 {
 	struct Ray
 	{
-		Ray(const Vector3 &origin, const Vector3 &direction, real_t time) :
-		        origin(origin),
-		        direction(direction),
-		        time(time)
+		Ray(const Vector3 &origin_in, const Vector3 &direction_in, real_t time_in) :
+		        origin(origin_in),
+		        direction(direction_in),
+		        time(time_in)
 		{
 		}
 

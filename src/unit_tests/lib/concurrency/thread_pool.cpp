@@ -127,6 +127,22 @@ namespace Rayni
 		EXPECT_EQ(SUM, sum);
 	}
 
+	TEST(ThreadPool, AsyncNoReturnValue)
+	{
+		ThreadPool thread_pool;
+		std::atomic<unsigned int> counter{0};
+		std::atomic<unsigned int> sum{0};
+		std::array<std::future<void>, SUM_TERM_COUNT> futures;
+
+		for (auto &future : futures)
+			future = thread_pool.async([&] { sum += counter.fetch_add(1); });
+
+		for (auto &future : futures)
+			future.wait();
+
+		EXPECT_EQ(SUM, sum);
+	}
+
 	TEST(ThreadPool, ThreadAvailable)
 	{
 		constexpr unsigned int NUM_THREADS = 2;

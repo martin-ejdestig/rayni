@@ -63,7 +63,15 @@ namespace Rayni
 			auto promise = std::make_shared<std::promise<Result>>();
 
 			add_task([promise, function = std::forward<Function>(function)]() mutable {
-				promise->set_value(function());
+				if constexpr (std::is_void_v<Result>)
+				{
+					function();
+					promise->set_value();
+				}
+				else
+				{
+					promise->set_value(function());
+				}
 			});
 
 			return promise->get_future();

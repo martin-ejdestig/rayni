@@ -17,7 +17,7 @@
  * along with Rayni. If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "lib/file_formats/image/image_reader.h"
+#include "lib/file_formats/image_reader.h"
 
 #include <string>
 

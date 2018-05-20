@@ -17,8 +17,8 @@
  * along with Rayni. If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef RAYNI_LIB_FILE_FORMATS_IMAGE_IMAGE_READER_H
-#define RAYNI_LIB_FILE_FORMATS_IMAGE_IMAGE_READER_H
+#ifndef RAYNI_LIB_FILE_FORMATS_IMAGE_READER_H
+#define RAYNI_LIB_FILE_FORMATS_IMAGE_READER_H
 
 #include <string>
 
@@ -36,4 +36,4 @@ namespace Rayni
 	};
 }
 
-#endif // RAYNI_LIB_FILE_FORMATS_IMAGE_IMAGE_READER_H
+#endif // RAYNI_LIB_FILE_FORMATS_IMAGE_READER_H

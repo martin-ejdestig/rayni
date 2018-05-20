@@ -25,7 +25,7 @@
 #include <string>
 #include <utility>
 
-#include "lib/file_formats/image/image_reader.h"
+#include "lib/file_formats/image_reader.h"
 #include "lib/graphics/color.h"
 
 namespace Rayni

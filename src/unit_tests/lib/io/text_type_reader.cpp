@@ -17,7 +17,7 @@
  * along with Rayni. If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "lib/file_formats/text_type_reader.h"
+#include "lib/io/text_type_reader.h"
 
 #include <gtest/gtest.h>
 

@@ -17,13 +17,13 @@
  * along with Rayni. If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef RAYNI_LIB_FILE_FORMATS_TEXT_TYPE_READER_H
-#define RAYNI_LIB_FILE_FORMATS_TEXT_TYPE_READER_H
+#ifndef RAYNI_LIB_IO_TEXT_TYPE_READER_H
+#define RAYNI_LIB_IO_TEXT_TYPE_READER_H
 
 #include <string>
 
-#include "lib/file_formats/text_reader.h"
 #include "lib/function/scope_exit.h"
+#include "lib/io/text_reader.h"
 
 namespace Rayni
 {
@@ -61,4 +61,4 @@ namespace Rayni
 	};
 }
 
-#endif // RAYNI_LIB_FILE_FORMATS_TEXT_TYPE_READER_H
+#endif // RAYNI_LIB_IO_TEXT_TYPE_READER_H

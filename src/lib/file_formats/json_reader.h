@@ -21,7 +21,7 @@
 #define RAYNI_LIB_FILE_FORMATS_JSON_READER_H
 
 #include "lib/containers/variant.h"
-#include "lib/file_formats/text_type_reader.h"
+#include "lib/io/text_type_reader.h"
 
 namespace Rayni
 {

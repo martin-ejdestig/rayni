@@ -17,7 +17,7 @@
  * along with Rayni. If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "lib/file_formats/binary_reader.h"
+#include "lib/io/binary_reader.h"
 
 #include <algorithm>
 #include <array>

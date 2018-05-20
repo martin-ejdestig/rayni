@@ -17,8 +17,8 @@
  * along with Rayni. If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef RAYNI_LIB_FILE_FORMATS_BINARY_READER_H
-#define RAYNI_LIB_FILE_FORMATS_BINARY_READER_H
+#ifndef RAYNI_LIB_IO_BINARY_READER_H
+#define RAYNI_LIB_IO_BINARY_READER_H
 
 #include <cstddef>
 #include <cstdint>
@@ -132,4 +132,4 @@ namespace Rayni
 	};
 }
 
-#endif // RAYNI_LIB_FILE_FORMATS_BINARY_READER_H
+#endif // RAYNI_LIB_IO_BINARY_READER_H

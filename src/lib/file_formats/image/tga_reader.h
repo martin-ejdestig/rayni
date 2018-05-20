@@ -24,8 +24,8 @@
 #include <cstdint>
 #include <vector>
 
-#include "lib/file_formats/binary_type_reader.h"
 #include "lib/graphics/image.h"
+#include "lib/io/binary_type_reader.h"
 
 namespace Rayni
 {

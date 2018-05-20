@@ -25,7 +25,7 @@
 #include <memory>
 #include <string>
 
-#include "lib/file_formats/file_format_exception.h"
+#include "lib/io/io_exception.h"
 
 namespace Rayni
 {
@@ -156,13 +156,12 @@ namespace Rayni
 		Position position_;
 	};
 
-	class TextReader::Exception : public FileFormatException
+	class TextReader::Exception : public IOException
 	{
 	public:
-		using FileFormatException::FileFormatException;
+		using IOException::IOException;
 
-		Exception(const Position &position, const std::string &str) :
-		        FileFormatException(position.to_string(), str)
+		Exception(const Position &position, const std::string &str) : IOException(position.to_string(), str)
 		{
 		}
 	};

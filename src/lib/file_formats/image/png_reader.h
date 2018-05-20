@@ -22,15 +22,15 @@
 
 #include <string>
 
-#include "lib/file_formats/file_format_exception.h"
 #include "lib/graphics/image.h"
+#include "lib/io/io_exception.h"
 
 namespace Rayni
 {
 	class PNGReader
 	{
 	public:
-		using Exception = FileFormatException;
+		using Exception = IOException;
 
 		Image read_file(const std::string &file_name);
 	};

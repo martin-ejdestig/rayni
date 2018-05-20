@@ -17,24 +17,24 @@
  * along with Rayni. If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef RAYNI_LIB_FILE_FORMATS_FILE_FORMAT_EXCEPTION_H
-#define RAYNI_LIB_FILE_FORMATS_FILE_FORMAT_EXCEPTION_H
+#ifndef RAYNI_LIB_IO_IO_EXCEPTION_H
+#define RAYNI_LIB_IO_IO_EXCEPTION_H
 
 #include <stdexcept>
 #include <string>
 
 namespace Rayni
 {
-	class FileFormatException : public std::runtime_error
+	class IOException : public std::runtime_error
 	{
 	public:
 		using std::runtime_error::runtime_error;
 
-		FileFormatException(const std::string &prefix, const std::string &str) :
+		IOException(const std::string &prefix, const std::string &str) :
 		        std::runtime_error(prefix.empty() ? str : prefix + ": " + str)
 		{
 		}
 	};
 }
 
-#endif // RAYNI_LIB_FILE_FORMATS_FILE_FORMAT_EXCEPTION_H
+#endif // RAYNI_LIB_IO_IO_EXCEPTION_H

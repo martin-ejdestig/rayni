@@ -26,7 +26,7 @@
 #include <string>
 #include <vector>
 
-#include "lib/file_formats/file_format_exception.h"
+#include "lib/io/io_exception.h"
 #include "lib/system/scoped_temp_dir.h"
 
 namespace Rayni
@@ -46,6 +46,6 @@ namespace Rayni
 		EXPECT_EQ(write_data, read_data);
 
 		EXPECT_THROW(write_to_file(temp_dir.path() / "dir_that_does_not_exist" / "bar", write_data),
-		             FileFormatException);
+		             IOException);
 	}
 }

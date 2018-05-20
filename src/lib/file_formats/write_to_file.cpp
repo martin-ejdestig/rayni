@@ -23,7 +23,7 @@
 #include <fstream>
 #include <iterator>
 
-#include "lib/file_formats/file_format_exception.h"
+#include "lib/io/io_exception.h"
 
 namespace Rayni
 {
@@ -34,6 +34,6 @@ namespace Rayni
 		std::copy(data.begin(), data.end(), std::ostream_iterator<std::uint8_t>(file));
 
 		if (!file.good())
-			throw FileFormatException(path, "failed to write to file");
+			throw IOException(path, "failed to write to file");
 	}
 }

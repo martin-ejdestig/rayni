@@ -29,8 +29,8 @@
 #include <utility>
 #include <vector>
 
-#include "lib/file_formats/file_format_exception.h"
 #include "lib/function/scope_exit.h"
+#include "lib/io/io_exception.h"
 
 namespace Rayni
 {
@@ -125,10 +125,10 @@ namespace Rayni
 		std::string position_prefix_;
 	};
 
-	class BinaryReader::Exception : public FileFormatException
+	class BinaryReader::Exception : public IOException
 	{
 	public:
-		using FileFormatException::FileFormatException;
+		using IOException::IOException;
 	};
 }
 

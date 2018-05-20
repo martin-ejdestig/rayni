@@ -19,11 +19,41 @@
 
 #include "lib/system/scoped_temp_dir.h"
 
+#include <cerrno>
+#include <cstdlib>
 #include <filesystem>
 #include <iostream>
 #include <system_error>
+#include <vector>
 
-#include "lib/system/temp_dir.h"
+namespace
+{
+	// TODO: Possible to implement with final version of C++17 std::filesystem?
+	//
+	// If so, do it in temp_dir.cpp and remove OS specific temp_dir_*.cpp files.
+	//
+	// Cannot be done in a race-free manner with std::filesystem in draft. It is not possible
+	// to determine if directory already existed with std::filesystem::create_directory().
+	// Checking before with std::filesystem::exists() introduces a race condition.
+	//
+	// Or will there be something for this in the standard? Boost has unique_path() but I
+	// suspect the standard group removed it from the TS since they found it inadequate.
+	std::filesystem::path temp_dir_create_unique()
+	{
+		std::filesystem::path template_path = std::filesystem::temp_directory_path() / "XXXXXX";
+
+		std::vector<char> buffer(template_path.native().cbegin(), template_path.native().cend());
+		buffer.push_back('\0');
+
+		if (!mkdtemp(buffer.data()))
+		{
+			std::error_code error_code(errno, std::system_category());
+			throw std::filesystem::filesystem_error("mkdtemp() failed", template_path, error_code);
+		}
+
+		return std::filesystem::path(buffer.data());
+	}
+}
 
 namespace Rayni
 {

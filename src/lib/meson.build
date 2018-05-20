@@ -82,8 +82,6 @@ lib_sources = [
     'system/main_loop.h',
     'system/scoped_temp_dir.cpp',
     'system/scoped_temp_dir.h',
-    'system/temp_dir.cpp',
-    'system/temp_dir.h',
     'system/unique_fd.h',
     'time/duration_formatter.cpp',
     'time/duration_formatter.h',

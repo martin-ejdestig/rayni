@@ -25,8 +25,8 @@
 #include <string>
 #include <vector>
 
-#include "lib/file_formats/write_to_file.h"
 #include "lib/graphics/image.h"
+#include "lib/io/file.h"
 #include "lib/system/scoped_temp_dir.h"
 
 namespace Rayni
@@ -96,7 +96,7 @@ namespace Rayni
 		ScopedTempDir temp_dir;
 
 		const std::string valid_path = temp_dir.path() / "valid.jpg";
-		write_to_file(valid_path, jpeg_data());
+		file_write(valid_path, jpeg_data());
 		Image image = JPEGReader().read_file(valid_path);
 
 		ASSERT_EQ(VALID_WIDTH, image.width());
@@ -116,11 +116,11 @@ namespace Rayni
 		}
 
 		const std::string corrupt_path = temp_dir.path() / "corrupt.jpg";
-		write_to_file(corrupt_path, corrupt_jpeg_data());
+		file_write(corrupt_path, corrupt_jpeg_data());
 		EXPECT_THROW(JPEGReader().read_file(corrupt_path), JPEGReader::Exception);
 
 		const std::string short_path = temp_dir.path() / "short.jpg";
-		write_to_file(short_path, short_jpeg_data());
+		file_write(short_path, short_jpeg_data());
 		EXPECT_THROW(JPEGReader().read_file(short_path), JPEGReader::Exception);
 
 		EXPECT_THROW(JPEGReader().read_file(temp_dir.path() / "does_not_exist.jpg"), JPEGReader::Exception);

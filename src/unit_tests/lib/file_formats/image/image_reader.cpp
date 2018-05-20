@@ -25,8 +25,8 @@
 #include <string>
 #include <vector>
 
-#include "lib/file_formats/write_to_file.h"
 #include "lib/graphics/image.h"
+#include "lib/io/file.h"
 #include "lib/system/scoped_temp_dir.h"
 
 namespace Rayni
@@ -108,8 +108,8 @@ namespace Rayni
 			const std::string read_success_path = temp_dir.path() / ("valid." + suffix);
 			const std::string type_determinable_read_fail_path = temp_dir.path() / ("empty." + suffix);
 
-			write_to_file(read_success_path, valid_data_1x1);
-			write_to_file(type_determinable_read_fail_path, {});
+			file_write(read_success_path, valid_data_1x1);
+			file_write(type_determinable_read_fail_path, {});
 
 			Image image = ImageReader().read_file(read_success_path);
 			EXPECT_EQ(1u, image.width()) << suffix;

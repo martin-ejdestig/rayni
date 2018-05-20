@@ -24,7 +24,7 @@
 #include <cstdint>
 #include <string>
 
-#include "lib/file_formats/write_to_file.h"
+#include "lib/io/file.h"
 #include "lib/system/scoped_temp_dir.h"
 
 namespace Rayni
@@ -59,8 +59,8 @@ namespace Rayni
 		const std::string bad_path = temp_dir.path() / "bad.bin";
 		const std::string does_not_exist_path = temp_dir.path() / "does_not_exist.bin";
 
-		write_to_file(good_path, {0x12, 0x34, 0x56, 0x78});
-		write_to_file(bad_path, {0x12, 0x34, 0x56});
+		file_write(good_path, {0x12, 0x34, 0x56, 0x78});
+		file_write(bad_path, {0x12, 0x34, 0x56});
 
 		FooReader reader;
 

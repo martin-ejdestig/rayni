@@ -26,7 +26,7 @@
 #include <string>
 #include <vector>
 
-#include "lib/file_formats/write_to_file.h"
+#include "lib/io/file.h"
 #include "lib/system/scoped_temp_dir.h"
 
 namespace Rayni
@@ -38,7 +38,7 @@ namespace Rayni
 		                                 const std::vector<std::uint8_t> &data)
 		{
 			std::filesystem::path path = temp_dir.path() / file_name;
-			write_to_file(path, data);
+			file_write(path, data);
 			return image_format_from_file(path);
 		}
 

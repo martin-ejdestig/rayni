@@ -17,23 +17,34 @@
  * along with Rayni. If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "lib/file_formats/write_to_file.h"
+#include "lib/io/file.h"
 
-#include <algorithm>
+#include <gtest/gtest.h>
+
+#include <cstdint>
 #include <fstream>
-#include <iterator>
+#include <string>
+#include <vector>
 
 #include "lib/io/io_exception.h"
+#include "lib/system/scoped_temp_dir.h"
 
 namespace Rayni
 {
-	void write_to_file(const std::string &path, const std::vector<std::uint8_t> &data)
+	TEST(File, Write)
 	{
-		std::ofstream file(path, std::ios_base::binary);
+		ScopedTempDir temp_dir;
+		const std::string path = temp_dir.path() / "foo";
+		const std::vector<std::uint8_t> write_data = {0x12, 0x34};
 
-		std::copy(data.begin(), data.end(), std::ostream_iterator<std::uint8_t>(file));
+		file_write(path, write_data);
 
-		if (!file.good())
-			throw IOException(path, "failed to write to file");
+		std::ifstream file(path, std::ios::binary);
+		std::vector<std::uint8_t> read_data((std::istreambuf_iterator<char>(file)),
+		                                    std::istreambuf_iterator<char>());
+
+		EXPECT_EQ(write_data, read_data);
+
+		EXPECT_THROW(file_write(temp_dir.path() / "dir_that_does_not_exist" / "bar", write_data), IOException);
 	}
 }

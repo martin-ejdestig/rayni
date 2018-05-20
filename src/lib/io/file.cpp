@@ -17,16 +17,23 @@
  * along with Rayni. If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef RAYNI_LIB_FILE_FORMATS_WRITE_TO_FILE_H
-#define RAYNI_LIB_FILE_FORMATS_WRITE_TO_FILE_H
+#include "lib/io/file.h"
 
-#include <cstdint>
-#include <string>
-#include <vector>
+#include <algorithm>
+#include <fstream>
+#include <iterator>
+
+#include "lib/io/io_exception.h"
 
 namespace Rayni
 {
-	void write_to_file(const std::string &path, const std::vector<std::uint8_t> &data);
-}
+	void file_write(const std::string &path, const std::vector<std::uint8_t> &data)
+	{
+		std::ofstream file(path, std::ios_base::binary);
 
-#endif // RAYNI_LIB_FILE_FORMATS_WRITE_TO_FILE_H
+		std::copy(data.begin(), data.end(), std::ostream_iterator<std::uint8_t>(file));
+
+		if (!file.good())
+			throw IOException(path, "failed to write to file");
+	}
+}

@@ -25,8 +25,8 @@
 #include <string>
 #include <vector>
 
-#include "lib/file_formats/write_to_file.h"
 #include "lib/graphics/color.h"
+#include "lib/io/file.h"
 #include "lib/system/scoped_temp_dir.h"
 
 namespace Rayni
@@ -113,8 +113,8 @@ namespace Rayni
 		const std::string path = temp_dir.path() / "image.tga";
 		const std::string missing_path = temp_dir.path() / "missing.tga";
 
-		write_to_file(path, {0x00, 0x00, 0x02, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
-		                     0x00, 0x01, 0x00, 0x01, 0x00, 0x18, 0x00, 0xff, 0xff, 0xff});
+		file_write(path, {0x00, 0x00, 0x02, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+		                  0x00, 0x01, 0x00, 0x01, 0x00, 0x18, 0x00, 0xff, 0xff, 0xff});
 
 		Image image = Variant::map("path", path).to<Image>();
 		EXPECT_PRED_FORMAT4(expect_color_at, image, 0, 0, Color::white());

@@ -17,35 +17,16 @@
  * along with Rayni. If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "lib/file_formats/write_to_file.h"
-
-#include <gtest/gtest.h>
+#ifndef RAYNI_LIB_IO_FILE_H
+#define RAYNI_LIB_IO_FILE_H
 
 #include <cstdint>
-#include <fstream>
 #include <string>
 #include <vector>
 
-#include "lib/io/io_exception.h"
-#include "lib/system/scoped_temp_dir.h"
-
 namespace Rayni
 {
-	TEST(WriteToFile, Write)
-	{
-		ScopedTempDir temp_dir;
-		const std::string path = temp_dir.path() / "foo";
-		const std::vector<std::uint8_t> write_data = {0x12, 0x34};
-
-		write_to_file(path, write_data);
-
-		std::ifstream file(path, std::ios::binary);
-		std::vector<std::uint8_t> read_data((std::istreambuf_iterator<char>(file)),
-		                                    std::istreambuf_iterator<char>());
-
-		EXPECT_EQ(write_data, read_data);
-
-		EXPECT_THROW(write_to_file(temp_dir.path() / "dir_that_does_not_exist" / "bar", write_data),
-		             IOException);
-	}
+	void file_write(const std::string &path, const std::vector<std::uint8_t> &data);
 }
+
+#endif // RAYNI_LIB_IO_FILE_H

@@ -300,12 +300,22 @@ namespace Rayni
 	TEST(BinaryReader, ReadInt8)
 	{
 		BinaryReader reader;
-		reader.set_data({1, 0xff});
+		reader.set_data({1, 0xff, 2, 0xfe, 3, 0xfd});
 
 		EXPECT_EQ(1, reader.read_int8());
 		EXPECT_EQ(position(1), reader.position());
 		EXPECT_EQ(-1, reader.read_int8());
 		EXPECT_EQ(position(2), reader.position());
+
+		EXPECT_EQ(2, reader.read_big_endian<std::int8_t>());
+		EXPECT_EQ(position(3), reader.position());
+		EXPECT_EQ(-2, reader.read_big_endian<std::int8_t>());
+		EXPECT_EQ(position(4), reader.position());
+
+		EXPECT_EQ(3, reader.read_little_endian<std::int8_t>());
+		EXPECT_EQ(position(5), reader.position());
+		EXPECT_EQ(-3, reader.read_little_endian<std::int8_t>());
+		EXPECT_EQ(position(6), reader.position());
 
 		EXPECT_THROW(reader.read_int8(), BinaryReader::Exception);
 	}
@@ -313,12 +323,22 @@ namespace Rayni
 	TEST(BinaryReader, ReadUInt8)
 	{
 		BinaryReader reader;
-		reader.set_data({1, 0xff});
+		reader.set_data({1, 0xff, 2, 0xfe, 3, 0xfd});
 
 		EXPECT_EQ(1, reader.read_uint8());
 		EXPECT_EQ(position(1), reader.position());
 		EXPECT_EQ(255, reader.read_uint8());
 		EXPECT_EQ(position(2), reader.position());
+
+		EXPECT_EQ(2, reader.read_big_endian<std::uint8_t>());
+		EXPECT_EQ(position(3), reader.position());
+		EXPECT_EQ(254, reader.read_big_endian<std::uint8_t>());
+		EXPECT_EQ(position(4), reader.position());
+
+		EXPECT_EQ(3, reader.read_little_endian<std::uint8_t>());
+		EXPECT_EQ(position(5), reader.position());
+		EXPECT_EQ(253, reader.read_little_endian<std::uint8_t>());
+		EXPECT_EQ(position(6), reader.position());
 
 		EXPECT_THROW(reader.read_uint8(), BinaryReader::Exception);
 	}
@@ -326,12 +346,17 @@ namespace Rayni
 	TEST(BinaryReader, ReadBigEndianInt16)
 	{
 		BinaryReader reader;
-		reader.set_data({1, 2, 0xff, 0xfe});
+		reader.set_data({1, 2, 0xff, 0xfe, 3, 4, 0xff, 0xfd});
 
 		EXPECT_EQ(0x0102, reader.read_big_endian_int16());
 		EXPECT_EQ(position(2), reader.position());
 		EXPECT_EQ(-2, reader.read_big_endian_int16());
 		EXPECT_EQ(position(4), reader.position());
+
+		EXPECT_EQ(0x0304, reader.read_big_endian<std::int16_t>());
+		EXPECT_EQ(position(6), reader.position());
+		EXPECT_EQ(-3, reader.read_big_endian<std::int16_t>());
+		EXPECT_EQ(position(8), reader.position());
 
 		EXPECT_THROW(reader.read_big_endian_int16(), BinaryReader::Exception);
 	}
@@ -339,12 +364,17 @@ namespace Rayni
 	TEST(BinaryReader, ReadBigEndianUInt16)
 	{
 		BinaryReader reader;
-		reader.set_data({1, 2, 0xff, 0xfe});
+		reader.set_data({1, 2, 0xff, 0xfe, 3, 4, 0xff, 0xfd});
 
 		EXPECT_EQ(0x0102, reader.read_big_endian_uint16());
 		EXPECT_EQ(position(2), reader.position());
 		EXPECT_EQ(0xfffe, reader.read_big_endian_uint16());
 		EXPECT_EQ(position(4), reader.position());
+
+		EXPECT_EQ(0x0304, reader.read_big_endian<std::uint16_t>());
+		EXPECT_EQ(position(6), reader.position());
+		EXPECT_EQ(0xfffd, reader.read_big_endian<std::uint16_t>());
+		EXPECT_EQ(position(8), reader.position());
 
 		EXPECT_THROW(reader.read_big_endian_uint16(), BinaryReader::Exception);
 	}
@@ -352,12 +382,17 @@ namespace Rayni
 	TEST(BinaryReader, ReadLittleEndianInt16)
 	{
 		BinaryReader reader;
-		reader.set_data({1, 2, 0xfe, 0xff});
+		reader.set_data({1, 2, 0xfe, 0xff, 3, 4, 0xfd, 0xff});
 
 		EXPECT_EQ(0x0201, reader.read_little_endian_int16());
 		EXPECT_EQ(position(2), reader.position());
 		EXPECT_EQ(-2, reader.read_little_endian_int16());
 		EXPECT_EQ(position(4), reader.position());
+
+		EXPECT_EQ(0x0403, reader.read_little_endian<std::int16_t>());
+		EXPECT_EQ(position(6), reader.position());
+		EXPECT_EQ(-3, reader.read_little_endian<std::int16_t>());
+		EXPECT_EQ(position(8), reader.position());
 
 		EXPECT_THROW(reader.read_little_endian_int16(), BinaryReader::Exception);
 	}
@@ -365,12 +400,17 @@ namespace Rayni
 	TEST(BinaryReader, ReadLittleEndianUInt16)
 	{
 		BinaryReader reader;
-		reader.set_data({1, 2, 0xfe, 0xff});
+		reader.set_data({1, 2, 0xfe, 0xff, 3, 4, 0xfd, 0xff});
 
 		EXPECT_EQ(0x0201, reader.read_little_endian_uint16());
 		EXPECT_EQ(position(2), reader.position());
 		EXPECT_EQ(0xfffe, reader.read_little_endian_uint16());
 		EXPECT_EQ(position(4), reader.position());
+
+		EXPECT_EQ(0x0403, reader.read_little_endian<std::uint16_t>());
+		EXPECT_EQ(position(6), reader.position());
+		EXPECT_EQ(0xfffd, reader.read_little_endian<std::uint16_t>());
+		EXPECT_EQ(position(8), reader.position());
 
 		EXPECT_THROW(reader.read_little_endian_uint16(), BinaryReader::Exception);
 	}
@@ -378,12 +418,17 @@ namespace Rayni
 	TEST(BinaryReader, ReadBigEndianInt32)
 	{
 		BinaryReader reader;
-		reader.set_data({1, 2, 3, 4, 0xff, 0xff, 0xff, 0xfe});
+		reader.set_data({1, 2, 3, 4, 0xff, 0xff, 0xff, 0xfe, 5, 6, 7, 8, 0xff, 0xff, 0xff, 0xfd});
 
 		EXPECT_EQ(0x01020304, reader.read_big_endian_int32());
 		EXPECT_EQ(position(4), reader.position());
 		EXPECT_EQ(-2, reader.read_big_endian_int32());
 		EXPECT_EQ(position(8), reader.position());
+
+		EXPECT_EQ(0x05060708, reader.read_big_endian<std::int32_t>());
+		EXPECT_EQ(position(12), reader.position());
+		EXPECT_EQ(-3, reader.read_big_endian<std::int32_t>());
+		EXPECT_EQ(position(16), reader.position());
 
 		EXPECT_THROW(reader.read_big_endian_int32(), BinaryReader::Exception);
 	}
@@ -391,12 +436,17 @@ namespace Rayni
 	TEST(BinaryReader, ReadBigEndianUInt32)
 	{
 		BinaryReader reader;
-		reader.set_data({1, 2, 3, 4, 0xff, 0xff, 0xff, 0xfe});
+		reader.set_data({1, 2, 3, 4, 0xff, 0xff, 0xff, 0xfe, 5, 6, 7, 8, 0xff, 0xff, 0xff, 0xfd});
 
 		EXPECT_EQ(0x01020304, reader.read_big_endian_uint32());
 		EXPECT_EQ(position(4), reader.position());
 		EXPECT_EQ(0xfffffffe, reader.read_big_endian_uint32());
 		EXPECT_EQ(position(8), reader.position());
+
+		EXPECT_EQ(0x05060708, reader.read_big_endian<std::uint32_t>());
+		EXPECT_EQ(position(12), reader.position());
+		EXPECT_EQ(0xfffffffd, reader.read_big_endian<std::uint32_t>());
+		EXPECT_EQ(position(16), reader.position());
 
 		EXPECT_THROW(reader.read_big_endian_uint32(), BinaryReader::Exception);
 	}
@@ -404,12 +454,17 @@ namespace Rayni
 	TEST(BinaryReader, ReadLittleEndianInt32)
 	{
 		BinaryReader reader;
-		reader.set_data({1, 2, 3, 4, 0xfe, 0xff, 0xff, 0xff});
+		reader.set_data({1, 2, 3, 4, 0xfe, 0xff, 0xff, 0xff, 5, 6, 7, 8, 0xfd, 0xff, 0xff, 0xff});
 
 		EXPECT_EQ(0x04030201, reader.read_little_endian_int32());
 		EXPECT_EQ(position(4), reader.position());
 		EXPECT_EQ(-2, reader.read_little_endian_int32());
 		EXPECT_EQ(position(8), reader.position());
+
+		EXPECT_EQ(0x08070605, reader.read_little_endian<std::int32_t>());
+		EXPECT_EQ(position(12), reader.position());
+		EXPECT_EQ(-3, reader.read_little_endian<std::int32_t>());
+		EXPECT_EQ(position(16), reader.position());
 
 		EXPECT_THROW(reader.read_little_endian_int32(), BinaryReader::Exception);
 	}
@@ -417,12 +472,17 @@ namespace Rayni
 	TEST(BinaryReader, ReadLittleEndianUInt32)
 	{
 		BinaryReader reader;
-		reader.set_data({1, 2, 3, 4, 0xfe, 0xff, 0xff, 0xff});
+		reader.set_data({1, 2, 3, 4, 0xfe, 0xff, 0xff, 0xff, 5, 6, 7, 8, 0xfd, 0xff, 0xff, 0xff});
 
 		EXPECT_EQ(0x04030201, reader.read_little_endian_uint32());
 		EXPECT_EQ(position(4), reader.position());
 		EXPECT_EQ(0xfffffffe, reader.read_little_endian_uint32());
 		EXPECT_EQ(position(8), reader.position());
+
+		EXPECT_EQ(0x08070605, reader.read_little_endian<std::uint32_t>());
+		EXPECT_EQ(position(12), reader.position());
+		EXPECT_EQ(0xfffffffd, reader.read_little_endian<std::uint32_t>());
+		EXPECT_EQ(position(16), reader.position());
 
 		EXPECT_THROW(reader.read_little_endian_uint32(), BinaryReader::Exception);
 	}
@@ -430,12 +490,18 @@ namespace Rayni
 	TEST(BinaryReader, ReadBigEndianInt64)
 	{
 		BinaryReader reader;
-		reader.set_data({1, 2, 3, 4, 5, 6, 7, 8, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xfe});
+		reader.set_data({1, 2,  3,  4,  5,  6,  7,  8,  0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xfe,
+		                 9, 10, 11, 12, 13, 14, 15, 16, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xfd});
 
 		EXPECT_EQ(0x0102030405060708, reader.read_big_endian_int64());
 		EXPECT_EQ(position(8), reader.position());
 		EXPECT_EQ(-2, reader.read_big_endian_int64());
 		EXPECT_EQ(position(16), reader.position());
+
+		EXPECT_EQ(0x090a0b0c0d0e0f10, reader.read_big_endian<std::int64_t>());
+		EXPECT_EQ(position(24), reader.position());
+		EXPECT_EQ(-3, reader.read_big_endian<std::int64_t>());
+		EXPECT_EQ(position(32), reader.position());
 
 		EXPECT_THROW(reader.read_big_endian_int64(), BinaryReader::Exception);
 	}
@@ -443,12 +509,18 @@ namespace Rayni
 	TEST(BinaryReader, ReadBigEndianUInt64)
 	{
 		BinaryReader reader;
-		reader.set_data({1, 2, 3, 4, 5, 6, 7, 8, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xfe});
+		reader.set_data({1, 2,  3,  4,  5,  6,  7,  8,  0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xfe,
+		                 9, 10, 11, 12, 13, 14, 15, 16, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xfd});
 
 		EXPECT_EQ(0x0102030405060708, reader.read_big_endian_uint64());
 		EXPECT_EQ(position(8), reader.position());
 		EXPECT_EQ(0xfffffffffffffffe, reader.read_big_endian_uint64());
 		EXPECT_EQ(position(16), reader.position());
+
+		EXPECT_EQ(0x090a0b0c0d0e0f10, reader.read_big_endian<std::uint64_t>());
+		EXPECT_EQ(position(24), reader.position());
+		EXPECT_EQ(0xfffffffffffffffd, reader.read_big_endian<std::uint64_t>());
+		EXPECT_EQ(position(32), reader.position());
 
 		EXPECT_THROW(reader.read_big_endian_uint64(), BinaryReader::Exception);
 	}
@@ -456,12 +528,18 @@ namespace Rayni
 	TEST(BinaryReader, ReadLittleEndianInt64)
 	{
 		BinaryReader reader;
-		reader.set_data({1, 2, 3, 4, 5, 6, 7, 8, 0xfe, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff});
+		reader.set_data({1, 2,  3,  4,  5,  6,  7,  8,  0xfe, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff,
+		                 9, 10, 11, 12, 13, 14, 15, 16, 0xfd, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff});
 
 		EXPECT_EQ(0x0807060504030201, reader.read_little_endian_int64());
 		EXPECT_EQ(position(8), reader.position());
 		EXPECT_EQ(-2, reader.read_little_endian_int64());
 		EXPECT_EQ(position(16), reader.position());
+
+		EXPECT_EQ(0x100f0e0d0c0b0a09, reader.read_little_endian<std::int64_t>());
+		EXPECT_EQ(position(24), reader.position());
+		EXPECT_EQ(-3, reader.read_little_endian<std::int64_t>());
+		EXPECT_EQ(position(32), reader.position());
 
 		EXPECT_THROW(reader.read_little_endian_int64(), BinaryReader::Exception);
 	}
@@ -469,14 +547,38 @@ namespace Rayni
 	TEST(BinaryReader, ReadLittleEndianUInt64)
 	{
 		BinaryReader reader;
-		reader.set_data({1, 2, 3, 4, 5, 6, 7, 8, 0xfe, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff});
+		reader.set_data({1, 2,  3,  4,  5,  6,  7,  8,  0xfe, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff,
+		                 9, 10, 11, 12, 13, 14, 15, 16, 0xfd, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff});
 
 		EXPECT_EQ(0x0807060504030201, reader.read_little_endian_uint64());
 		EXPECT_EQ(position(8), reader.position());
 		EXPECT_EQ(0xfffffffffffffffe, reader.read_little_endian_uint64());
 		EXPECT_EQ(position(16), reader.position());
 
+		EXPECT_EQ(0x100f0e0d0c0b0a09, reader.read_little_endian<std::uint64_t>());
+		EXPECT_EQ(position(24), reader.position());
+		EXPECT_EQ(0xfffffffffffffffd, reader.read_little_endian<std::uint64_t>());
+		EXPECT_EQ(position(32), reader.position());
+
 		EXPECT_THROW(reader.read_little_endian_uint64(), BinaryReader::Exception);
+	}
+
+	TEST(BinaryReader, ReadBigEndianUnsopportedTypeThrows)
+	{
+		BinaryReader reader;
+		reader.set_data({1, 2, 3, 4, 5, 6, 7, 8});
+
+		EXPECT_THROW(reader.read_big_endian<bool>(), BinaryReader::Exception);
+		EXPECT_THROW(reader.read_big_endian<float>(), BinaryReader::Exception);
+	}
+
+	TEST(BinaryReader, ReadLittleEndianUnsopportedTypeThrows)
+	{
+		BinaryReader reader;
+		reader.set_data({1, 2, 3, 4, 5, 6, 7, 8});
+
+		EXPECT_THROW(reader.read_little_endian<bool>(), BinaryReader::Exception);
+		EXPECT_THROW(reader.read_little_endian<float>(), BinaryReader::Exception);
 	}
 
 	TEST(BinaryReader, SkipBytes)

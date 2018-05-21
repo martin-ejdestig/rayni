@@ -110,6 +110,12 @@ namespace Rayni
 			return static_cast<std::int64_t>(read_little_endian_uint64());
 		}
 
+		template <typename T>
+		T read_big_endian();
+
+		template <typename T>
+		T read_little_endian();
+
 		void skip_bytes(std::size_t num_bytes);
 
 		std::optional<std::int8_t> peek_int8();
@@ -130,6 +136,66 @@ namespace Rayni
 	public:
 		using IOException::IOException;
 	};
+
+	template <typename T>
+	T BinaryReader::read_big_endian()
+	{
+		if constexpr (std::is_same_v<T, std::int8_t>)
+			return read_int8();
+
+		if constexpr (std::is_same_v<T, std::uint8_t>)
+			return read_uint8();
+
+		if constexpr (std::is_same_v<T, std::int16_t>)
+			return read_big_endian_int16();
+
+		if constexpr (std::is_same_v<T, std::uint16_t>)
+			return read_big_endian_uint16();
+
+		if constexpr (std::is_same_v<T, std::int32_t>)
+			return read_big_endian_int32();
+
+		if constexpr (std::is_same_v<T, std::uint32_t>)
+			return read_big_endian_uint32();
+
+		if constexpr (std::is_same_v<T, std::int64_t>)
+			return read_big_endian_int64();
+
+		if constexpr (std::is_same_v<T, std::uint64_t>)
+			return read_big_endian_uint64();
+
+		throw Exception("Invalid type for read_big_endian().");
+	}
+
+	template <typename T>
+	T BinaryReader::read_little_endian()
+	{
+		if constexpr (std::is_same_v<T, std::int8_t>)
+			return read_int8();
+
+		if constexpr (std::is_same_v<T, std::uint8_t>)
+			return read_uint8();
+
+		if constexpr (std::is_same_v<T, std::int16_t>)
+			return read_little_endian_int16();
+
+		if constexpr (std::is_same_v<T, std::uint16_t>)
+			return read_little_endian_uint16();
+
+		if constexpr (std::is_same_v<T, std::int32_t>)
+			return read_little_endian_int32();
+
+		if constexpr (std::is_same_v<T, std::uint32_t>)
+			return read_little_endian_uint32();
+
+		if constexpr (std::is_same_v<T, std::int64_t>)
+			return read_little_endian_int64();
+
+		if constexpr (std::is_same_v<T, std::uint64_t>)
+			return read_little_endian_uint64();
+
+		throw Exception("Invalid type for BinaryReader::read_little_endian().");
+	}
 }
 
 #endif // RAYNI_LIB_IO_BINARY_READER_H

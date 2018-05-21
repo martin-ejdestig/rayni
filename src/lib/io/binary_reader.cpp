@@ -45,7 +45,6 @@ namespace Rayni
 	void BinaryReader::set_data(std::vector<std::uint8_t> &&data, const std::string &position_prefix)
 	{
 		// TODO: Copying data (twice), misuse of std::istringstream and ugly sign conversion.
-		//       OK for now since set_data() is currently only used in tests.
 		//
 		// Complexity of implementing an std::istream/std::streambuf that reads from a
 		// memory area is not worth it. (Two classes and ugly const casting for

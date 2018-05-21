@@ -25,7 +25,6 @@ lib_unit_tests_sources = [
     'io/text_type_reader.cpp',
     'math/aabb.cpp',
     'math/animated_transform.cpp',
-    'math/big_endian_reader.cpp',
     'math/bitmask.cpp',
     'math/decomposed_matrix4x4.cpp',
     'math/enum.cpp',

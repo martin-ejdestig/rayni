@@ -55,7 +55,7 @@ namespace Rayni
 		unsigned int size = std::thread::hardware_concurrency();
 
 		if (size == 0)
-			std::runtime_error("Unable to determine number of default threads to use in thread pool");
+			throw std::runtime_error("Unable to determine number of default threads to use in thread pool");
 
 		return size;
 	}

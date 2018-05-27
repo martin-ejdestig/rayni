@@ -23,7 +23,36 @@
 
 #include <cstdint>
 #include <limits>
+#include <locale>
 #include <string>
+
+namespace
+{
+	const char LOCALE_WITH_COMMA_AS_DECIMAL_SEPARATOR[] = "sv_SE.UTF-8";
+
+	class ScopedLocale
+	{
+	public:
+		explicit ScopedLocale(const std::string &locale_name)
+		{
+			std::locale locale(locale_name);
+			original_locale_ = std::locale::global(locale);
+		}
+
+		~ScopedLocale()
+		{
+			std::locale::global(original_locale_);
+		}
+
+		ScopedLocale(const ScopedLocale &) = delete;
+		ScopedLocale(ScopedLocale &&) = delete;
+		ScopedLocale &operator=(const ScopedLocale &) = delete;
+		ScopedLocale &operator=(ScopedLocale &&) = delete;
+
+	private:
+		std::locale original_locale_;
+	};
+}
 
 namespace Rayni
 {
@@ -95,6 +124,8 @@ namespace Rayni
 
 	TEST(String, ToFloat)
 	{
+		ScopedLocale locale(LOCALE_WITH_COMMA_AS_DECIMAL_SEPARATOR);
+
 		EXPECT_FLOAT_EQ(1.0f, string_to_float("1").value_or(0));
 		EXPECT_FLOAT_EQ(1.0f, string_to_float("1.0").value_or(0));
 		EXPECT_FLOAT_EQ(1.0f, string_to_float(" 1").value_or(0));
@@ -125,6 +156,8 @@ namespace Rayni
 
 	TEST(String, ToDouble)
 	{
+		ScopedLocale locale(LOCALE_WITH_COMMA_AS_DECIMAL_SEPARATOR);
+
 		EXPECT_DOUBLE_EQ(1.0, string_to_double("1").value_or(0));
 		EXPECT_DOUBLE_EQ(1.0, string_to_double("1.0").value_or(0));
 		EXPECT_DOUBLE_EQ(1.0, string_to_double(" 1").value_or(0));

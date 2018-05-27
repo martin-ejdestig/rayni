@@ -95,18 +95,18 @@ namespace Rayni
 
 	TEST(String, ToFloat)
 	{
-		EXPECT_FLOAT_EQ(1.0f, string_to_float("1").value());
-		EXPECT_FLOAT_EQ(1.0f, string_to_float("1.0").value());
-		EXPECT_FLOAT_EQ(1.0f, string_to_float(" 1").value());
-		EXPECT_FLOAT_EQ(1.0f, string_to_float("+1").value());
-		EXPECT_FLOAT_EQ(-1.0f, string_to_float("-1").value());
-		EXPECT_FLOAT_EQ(0.1f, string_to_float(".1").value());
-		EXPECT_FLOAT_EQ(1.0f, string_to_float("1.").value());
-		EXPECT_FLOAT_EQ(12.34f, string_to_float("12.34").value());
-		EXPECT_FLOAT_EQ(-12.34f, string_to_float("-12.34").value());
-		EXPECT_FLOAT_EQ(1230.0f, string_to_float("0.123e4").value());
-		EXPECT_FLOAT_EQ(0.0123f, string_to_float("123e-4").value());
-		EXPECT_FLOAT_EQ(1230000.0f, string_to_float("123e+4").value());
+		EXPECT_FLOAT_EQ(1.0f, string_to_float("1").value_or(0));
+		EXPECT_FLOAT_EQ(1.0f, string_to_float("1.0").value_or(0));
+		EXPECT_FLOAT_EQ(1.0f, string_to_float(" 1").value_or(0));
+		EXPECT_FLOAT_EQ(1.0f, string_to_float("+1").value_or(0));
+		EXPECT_FLOAT_EQ(-1.0f, string_to_float("-1").value_or(0));
+		EXPECT_FLOAT_EQ(0.1f, string_to_float(".1").value_or(0));
+		EXPECT_FLOAT_EQ(1.0f, string_to_float("1.").value_or(0));
+		EXPECT_FLOAT_EQ(12.34f, string_to_float("12.34").value_or(0));
+		EXPECT_FLOAT_EQ(-12.34f, string_to_float("-12.34").value_or(0));
+		EXPECT_FLOAT_EQ(1230.0f, string_to_float("0.123e4").value_or(0));
+		EXPECT_FLOAT_EQ(0.0123f, string_to_float("123e-4").value_or(0));
+		EXPECT_FLOAT_EQ(1230000.0f, string_to_float("123e+4").value_or(0));
 
 		EXPECT_FALSE(string_to_float("").has_value());
 		EXPECT_FALSE(string_to_float(" ").has_value());
@@ -125,18 +125,18 @@ namespace Rayni
 
 	TEST(String, ToDouble)
 	{
-		EXPECT_DOUBLE_EQ(1.0, string_to_double("1").value());
-		EXPECT_DOUBLE_EQ(1.0, string_to_double("1.0").value());
-		EXPECT_DOUBLE_EQ(1.0, string_to_double(" 1").value());
-		EXPECT_DOUBLE_EQ(1.0, string_to_double("+1").value());
-		EXPECT_DOUBLE_EQ(-1.0, string_to_double("-1").value());
-		EXPECT_DOUBLE_EQ(0.1, string_to_double(".1").value());
-		EXPECT_DOUBLE_EQ(1.0, string_to_double("1.").value());
-		EXPECT_DOUBLE_EQ(12.34, string_to_double("12.34").value());
-		EXPECT_DOUBLE_EQ(-12.34, string_to_double("-12.34").value());
-		EXPECT_DOUBLE_EQ(1230.0, string_to_double("0.123e4").value());
-		EXPECT_DOUBLE_EQ(0.0123, string_to_double("123e-4").value());
-		EXPECT_DOUBLE_EQ(1230000.0, string_to_double("123e+4").value());
+		EXPECT_DOUBLE_EQ(1.0, string_to_double("1").value_or(0));
+		EXPECT_DOUBLE_EQ(1.0, string_to_double("1.0").value_or(0));
+		EXPECT_DOUBLE_EQ(1.0, string_to_double(" 1").value_or(0));
+		EXPECT_DOUBLE_EQ(1.0, string_to_double("+1").value_or(0));
+		EXPECT_DOUBLE_EQ(-1.0, string_to_double("-1").value_or(0));
+		EXPECT_DOUBLE_EQ(0.1, string_to_double(".1").value_or(0));
+		EXPECT_DOUBLE_EQ(1.0, string_to_double("1.").value_or(0));
+		EXPECT_DOUBLE_EQ(12.34, string_to_double("12.34").value_or(0));
+		EXPECT_DOUBLE_EQ(-12.34, string_to_double("-12.34").value_or(0));
+		EXPECT_DOUBLE_EQ(1230.0, string_to_double("0.123e4").value_or(0));
+		EXPECT_DOUBLE_EQ(0.0123, string_to_double("123e-4").value_or(0));
+		EXPECT_DOUBLE_EQ(1230000.0, string_to_double("123e+4").value_or(0));
 
 		EXPECT_FALSE(string_to_double("").has_value());
 		EXPECT_FALSE(string_to_double(" ").has_value());
@@ -155,15 +155,15 @@ namespace Rayni
 
 	TEST(String, ToLong)
 	{
-		EXPECT_EQ(123, string_to_long("123").value());
-		EXPECT_EQ(123, string_to_long(" 123").value());
-		EXPECT_EQ(123, string_to_long("+123").value());
-		EXPECT_EQ(-123, string_to_long("-123").value());
-		EXPECT_EQ(123, string_to_long("0123").value());
+		EXPECT_EQ(123, string_to_long("123").value_or(0));
+		EXPECT_EQ(123, string_to_long(" 123").value_or(0));
+		EXPECT_EQ(123, string_to_long("+123").value_or(0));
+		EXPECT_EQ(-123, string_to_long("-123").value_or(0));
+		EXPECT_EQ(123, string_to_long("0123").value_or(0));
 
-		EXPECT_EQ(0, string_to_long("0").value());
-		EXPECT_EQ(0, string_to_long("+0").value());
-		EXPECT_EQ(0, string_to_long("-0").value());
+		EXPECT_EQ(0, string_to_long("0").value_or(1));
+		EXPECT_EQ(0, string_to_long("+0").value_or(1));
+		EXPECT_EQ(0, string_to_long("-0").value_or(1));
 
 		EXPECT_FALSE(string_to_long("").has_value());
 		EXPECT_FALSE(string_to_long(" ").has_value());
@@ -180,8 +180,8 @@ namespace Rayni
 		const std::string max_str = std::to_string(max);
 		const std::string min_str = std::to_string(min);
 
-		EXPECT_EQ(max, string_to_long(max_str).value());
-		EXPECT_EQ(min, string_to_long(min_str).value());
+		EXPECT_EQ(max, string_to_long(max_str).value_or(123));
+		EXPECT_EQ(min, string_to_long(min_str).value_or(123));
 
 		EXPECT_FALSE(string_to_long(max_str + "0").has_value());
 		EXPECT_FALSE(string_to_long(min_str + "0").has_value());
@@ -192,17 +192,17 @@ namespace Rayni
 		// Only testing template specific parts here. Non-template functions used in
 		// string_to_number() tested more extensively above.
 
-		EXPECT_FLOAT_EQ(1.0f, string_to_number<float>("1.0").value());
+		EXPECT_FLOAT_EQ(1.0f, string_to_number<float>("1.0").value_or(0));
 
-		EXPECT_DOUBLE_EQ(1.0, string_to_number<double>("1.0").value());
+		EXPECT_DOUBLE_EQ(1.0, string_to_number<double>("1.0").value_or(0));
 
-		EXPECT_EQ(127, string_to_number<std::int8_t>("127").value());
-		EXPECT_EQ(-128, string_to_number<std::int8_t>("-128").value());
+		EXPECT_EQ(127, string_to_number<std::int8_t>("127").value_or(0));
+		EXPECT_EQ(-128, string_to_number<std::int8_t>("-128").value_or(0));
 		EXPECT_FALSE(string_to_number<std::int8_t>("128").has_value());
 		EXPECT_FALSE(string_to_number<std::int8_t>("-129").has_value());
 
-		EXPECT_EQ(255, string_to_number<std::uint8_t>("255").value());
-		EXPECT_EQ(0, string_to_number<std::uint8_t>("0").value());
+		EXPECT_EQ(255, string_to_number<std::uint8_t>("255").value_or(0));
+		EXPECT_EQ(0, string_to_number<std::uint8_t>("0").value_or(1));
 		EXPECT_FALSE(string_to_number<std::uint8_t>("256").has_value());
 		EXPECT_FALSE(string_to_number<std::uint8_t>("-1").has_value());
 	}

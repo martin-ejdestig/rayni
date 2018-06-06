@@ -22,7 +22,6 @@
 #include <gtest/gtest.h>
 
 #include <cstdint>
-#include <limits>
 #include <locale>
 #include <string>
 
@@ -122,121 +121,199 @@ namespace Rayni
 		EXPECT_EQ("abc_def123ghi#jkl", string_to_lower("abc_DEF123ghi#JKL"));
 	}
 
-	TEST(String, ToFloat)
+	TEST(String, ToNumberFloat)
 	{
 		ScopedLocale locale(LOCALE_WITH_COMMA_AS_DECIMAL_SEPARATOR);
 
-		EXPECT_FLOAT_EQ(1.0f, string_to_float("1").value_or(0));
-		EXPECT_FLOAT_EQ(1.0f, string_to_float("1.0").value_or(0));
-		EXPECT_FLOAT_EQ(1.0f, string_to_float(" 1").value_or(0));
-		EXPECT_FLOAT_EQ(1.0f, string_to_float("+1").value_or(0));
-		EXPECT_FLOAT_EQ(-1.0f, string_to_float("-1").value_or(0));
-		EXPECT_FLOAT_EQ(0.1f, string_to_float(".1").value_or(0));
-		EXPECT_FLOAT_EQ(1.0f, string_to_float("1.").value_or(0));
-		EXPECT_FLOAT_EQ(12.34f, string_to_float("12.34").value_or(0));
-		EXPECT_FLOAT_EQ(-12.34f, string_to_float("-12.34").value_or(0));
-		EXPECT_FLOAT_EQ(1230.0f, string_to_float("0.123e4").value_or(0));
-		EXPECT_FLOAT_EQ(0.0123f, string_to_float("123e-4").value_or(0));
-		EXPECT_FLOAT_EQ(1230000.0f, string_to_float("123e+4").value_or(0));
-
-		EXPECT_FALSE(string_to_float("").has_value());
-		EXPECT_FALSE(string_to_float(" ").has_value());
-		EXPECT_FALSE(string_to_float("1,0").has_value());
-		EXPECT_FALSE(string_to_float(",1").has_value());
-		EXPECT_FALSE(string_to_float("1,").has_value());
-		EXPECT_FALSE(string_to_float("").has_value());
-		EXPECT_FALSE(string_to_float("a").has_value());
-		EXPECT_FALSE(string_to_float("1a").has_value());
-		EXPECT_FALSE(string_to_float("1 ").has_value());
-		EXPECT_FALSE(string_to_float("a1").has_value());
-		EXPECT_FALSE(string_to_float("1e").has_value());
-		EXPECT_FALSE(string_to_float("+").has_value());
-		EXPECT_FALSE(string_to_float("-").has_value());
-	}
-
-	TEST(String, ToDouble)
-	{
-		ScopedLocale locale(LOCALE_WITH_COMMA_AS_DECIMAL_SEPARATOR);
-
-		EXPECT_DOUBLE_EQ(1.0, string_to_double("1").value_or(0));
-		EXPECT_DOUBLE_EQ(1.0, string_to_double("1.0").value_or(0));
-		EXPECT_DOUBLE_EQ(1.0, string_to_double(" 1").value_or(0));
-		EXPECT_DOUBLE_EQ(1.0, string_to_double("+1").value_or(0));
-		EXPECT_DOUBLE_EQ(-1.0, string_to_double("-1").value_or(0));
-		EXPECT_DOUBLE_EQ(0.1, string_to_double(".1").value_or(0));
-		EXPECT_DOUBLE_EQ(1.0, string_to_double("1.").value_or(0));
-		EXPECT_DOUBLE_EQ(12.34, string_to_double("12.34").value_or(0));
-		EXPECT_DOUBLE_EQ(-12.34, string_to_double("-12.34").value_or(0));
-		EXPECT_DOUBLE_EQ(1230.0, string_to_double("0.123e4").value_or(0));
-		EXPECT_DOUBLE_EQ(0.0123, string_to_double("123e-4").value_or(0));
-		EXPECT_DOUBLE_EQ(1230000.0, string_to_double("123e+4").value_or(0));
-
-		EXPECT_FALSE(string_to_double("").has_value());
-		EXPECT_FALSE(string_to_double(" ").has_value());
-		EXPECT_FALSE(string_to_double("1,0").has_value());
-		EXPECT_FALSE(string_to_double(",1").has_value());
-		EXPECT_FALSE(string_to_double("1,").has_value());
-		EXPECT_FALSE(string_to_double("").has_value());
-		EXPECT_FALSE(string_to_double("a").has_value());
-		EXPECT_FALSE(string_to_double("1a").has_value());
-		EXPECT_FALSE(string_to_double("1 ").has_value());
-		EXPECT_FALSE(string_to_double("a1").has_value());
-		EXPECT_FALSE(string_to_double("1e").has_value());
-		EXPECT_FALSE(string_to_double("+").has_value());
-		EXPECT_FALSE(string_to_double("-").has_value());
-	}
-
-	TEST(String, ToLong)
-	{
-		EXPECT_EQ(123, string_to_long("123").value_or(0));
-		EXPECT_EQ(123, string_to_long(" 123").value_or(0));
-		EXPECT_EQ(123, string_to_long("+123").value_or(0));
-		EXPECT_EQ(-123, string_to_long("-123").value_or(0));
-		EXPECT_EQ(123, string_to_long("0123").value_or(0));
-
-		EXPECT_EQ(0, string_to_long("0").value_or(1));
-		EXPECT_EQ(0, string_to_long("+0").value_or(1));
-		EXPECT_EQ(0, string_to_long("-0").value_or(1));
-
-		EXPECT_FALSE(string_to_long("").has_value());
-		EXPECT_FALSE(string_to_long(" ").has_value());
-		EXPECT_FALSE(string_to_long("123 ").has_value());
-		EXPECT_FALSE(string_to_long("123a").has_value());
-		EXPECT_FALSE(string_to_long("12.3").has_value());
-		EXPECT_FALSE(string_to_long("1.23e4").has_value());
-	}
-
-	TEST(String, ToLongOutOfRange)
-	{
-		const long max = std::numeric_limits<long>::max();
-		const long min = std::numeric_limits<long>::min();
-		const std::string max_str = std::to_string(max);
-		const std::string min_str = std::to_string(min);
-
-		EXPECT_EQ(max, string_to_long(max_str).value_or(123));
-		EXPECT_EQ(min, string_to_long(min_str).value_or(123));
-
-		EXPECT_FALSE(string_to_long(max_str + "0").has_value());
-		EXPECT_FALSE(string_to_long(min_str + "0").has_value());
-	}
-
-	TEST(String, ToNumber)
-	{
-		// Only testing template specific parts here. Non-template functions used in
-		// string_to_number() tested more extensively above.
-
+		EXPECT_FLOAT_EQ(1.0f, string_to_number<float>("1").value_or(0));
 		EXPECT_FLOAT_EQ(1.0f, string_to_number<float>("1.0").value_or(0));
+		EXPECT_FLOAT_EQ(1.0f, string_to_number<float>(" 1").value_or(0));
+		EXPECT_FLOAT_EQ(1.0f, string_to_number<float>("+1").value_or(0));
+		EXPECT_FLOAT_EQ(-1.0f, string_to_number<float>("-1").value_or(0));
+		EXPECT_FLOAT_EQ(0.1f, string_to_number<float>(".1").value_or(0));
+		EXPECT_FLOAT_EQ(1.0f, string_to_number<float>("1.").value_or(0));
+		EXPECT_FLOAT_EQ(12.34f, string_to_number<float>("12.34").value_or(0));
+		EXPECT_FLOAT_EQ(-12.34f, string_to_number<float>("-12.34").value_or(0));
+		EXPECT_FLOAT_EQ(1230.0f, string_to_number<float>("0.123e4").value_or(0));
+		EXPECT_FLOAT_EQ(0.0123f, string_to_number<float>("123e-4").value_or(0));
+		EXPECT_FLOAT_EQ(1230000.0f, string_to_number<float>("123e+4").value_or(0));
 
+		EXPECT_FALSE(string_to_number<float>("").has_value());
+		EXPECT_FALSE(string_to_number<float>(" ").has_value());
+		EXPECT_FALSE(string_to_number<float>("1,0").has_value());
+		EXPECT_FALSE(string_to_number<float>(",1").has_value());
+		EXPECT_FALSE(string_to_number<float>("1,").has_value());
+		EXPECT_FALSE(string_to_number<float>("").has_value());
+		EXPECT_FALSE(string_to_number<float>("a").has_value());
+		EXPECT_FALSE(string_to_number<float>("1a").has_value());
+		EXPECT_FALSE(string_to_number<float>("1 ").has_value());
+		EXPECT_FALSE(string_to_number<float>("a1").has_value());
+		EXPECT_FALSE(string_to_number<float>("1e").has_value());
+		EXPECT_FALSE(string_to_number<float>("+").has_value());
+		EXPECT_FALSE(string_to_number<float>("-").has_value());
+	}
+
+	TEST(String, ToNumberDouble)
+	{
+		ScopedLocale locale(LOCALE_WITH_COMMA_AS_DECIMAL_SEPARATOR);
+
+		EXPECT_DOUBLE_EQ(1.0, string_to_number<double>("1").value_or(0));
 		EXPECT_DOUBLE_EQ(1.0, string_to_number<double>("1.0").value_or(0));
+		EXPECT_DOUBLE_EQ(1.0, string_to_number<double>(" 1").value_or(0));
+		EXPECT_DOUBLE_EQ(1.0, string_to_number<double>("+1").value_or(0));
+		EXPECT_DOUBLE_EQ(-1.0, string_to_number<double>("-1").value_or(0));
+		EXPECT_DOUBLE_EQ(0.1, string_to_number<double>(".1").value_or(0));
+		EXPECT_DOUBLE_EQ(1.0, string_to_number<double>("1.").value_or(0));
+		EXPECT_DOUBLE_EQ(12.34, string_to_number<double>("12.34").value_or(0));
+		EXPECT_DOUBLE_EQ(-12.34, string_to_number<double>("-12.34").value_or(0));
+		EXPECT_DOUBLE_EQ(1230.0, string_to_number<double>("0.123e4").value_or(0));
+		EXPECT_DOUBLE_EQ(0.0123, string_to_number<double>("123e-4").value_or(0));
+		EXPECT_DOUBLE_EQ(1230000.0, string_to_number<double>("123e+4").value_or(0));
 
+		EXPECT_FALSE(string_to_number<double>("").has_value());
+		EXPECT_FALSE(string_to_number<double>(" ").has_value());
+		EXPECT_FALSE(string_to_number<double>("1,0").has_value());
+		EXPECT_FALSE(string_to_number<double>(",1").has_value());
+		EXPECT_FALSE(string_to_number<double>("1,").has_value());
+		EXPECT_FALSE(string_to_number<double>("").has_value());
+		EXPECT_FALSE(string_to_number<double>("a").has_value());
+		EXPECT_FALSE(string_to_number<double>("1a").has_value());
+		EXPECT_FALSE(string_to_number<double>("1 ").has_value());
+		EXPECT_FALSE(string_to_number<double>("a1").has_value());
+		EXPECT_FALSE(string_to_number<double>("1e").has_value());
+		EXPECT_FALSE(string_to_number<double>("+").has_value());
+		EXPECT_FALSE(string_to_number<double>("-").has_value());
+	}
+
+	TEST(String, ToNumberInt8)
+	{
+		EXPECT_EQ(1, string_to_number<std::int8_t>("1").value_or(0));
+		EXPECT_EQ(1, string_to_number<std::int8_t>(" 1").value_or(0));
+		EXPECT_EQ(1, string_to_number<std::int8_t>("+1").value_or(0));
+		EXPECT_EQ(-1, string_to_number<std::int8_t>("-1").value_or(0));
+		EXPECT_EQ(0, string_to_number<std::int8_t>("0").value_or(1));
+		EXPECT_EQ(0, string_to_number<std::int8_t>("+0").value_or(1));
+		EXPECT_EQ(0, string_to_number<std::int8_t>("-0").value_or(1));
+		EXPECT_EQ(123, string_to_number<std::int8_t>("123").value_or(0));
 		EXPECT_EQ(127, string_to_number<std::int8_t>("127").value_or(0));
 		EXPECT_EQ(-128, string_to_number<std::int8_t>("-128").value_or(0));
+
+		EXPECT_FALSE(string_to_number<std::int8_t>("").has_value());
+		EXPECT_FALSE(string_to_number<std::int8_t>(" ").has_value());
+		EXPECT_FALSE(string_to_number<std::int8_t>("1 ").has_value());
+		EXPECT_FALSE(string_to_number<std::int8_t>("1a").has_value());
 		EXPECT_FALSE(string_to_number<std::int8_t>("128").has_value());
 		EXPECT_FALSE(string_to_number<std::int8_t>("-129").has_value());
+		EXPECT_FALSE(string_to_number<std::int8_t>("1.2").has_value());
+		EXPECT_FALSE(string_to_number<std::int8_t>("1.23e2").has_value());
+	}
 
-		EXPECT_EQ(255, string_to_number<std::uint8_t>("255").value_or(0));
+	TEST(String, ToNumberUInt8)
+	{
+		EXPECT_EQ(1, string_to_number<std::uint8_t>("1").value_or(0));
+		EXPECT_EQ(1, string_to_number<std::uint8_t>(" 1").value_or(0));
+		EXPECT_EQ(1, string_to_number<std::uint8_t>("+1").value_or(0));
 		EXPECT_EQ(0, string_to_number<std::uint8_t>("0").value_or(1));
+		EXPECT_EQ(0, string_to_number<std::uint8_t>("+0").value_or(1));
+		EXPECT_EQ(0, string_to_number<std::uint8_t>("-0").value_or(1));
+		EXPECT_EQ(123, string_to_number<std::uint8_t>("123").value_or(0));
+		EXPECT_EQ(255, string_to_number<std::uint8_t>("255").value_or(0));
+
+		EXPECT_FALSE(string_to_number<std::uint8_t>("").has_value());
+		EXPECT_FALSE(string_to_number<std::uint8_t>(" ").has_value());
+		EXPECT_FALSE(string_to_number<std::uint8_t>("1 ").has_value());
+		EXPECT_FALSE(string_to_number<std::uint8_t>("1a").has_value());
 		EXPECT_FALSE(string_to_number<std::uint8_t>("256").has_value());
 		EXPECT_FALSE(string_to_number<std::uint8_t>("-1").has_value());
+		EXPECT_FALSE(string_to_number<std::uint8_t>("1.2").has_value());
+		EXPECT_FALSE(string_to_number<std::uint8_t>("1.23e2").has_value());
+	}
+
+	TEST(String, ToNumberInt16)
+	{
+		EXPECT_EQ(1, string_to_number<std::int16_t>("1").value_or(0));
+		EXPECT_EQ(1, string_to_number<std::int16_t>(" 1").value_or(0));
+		EXPECT_EQ(1, string_to_number<std::int16_t>("+1").value_or(0));
+		EXPECT_EQ(-1, string_to_number<std::int16_t>("-1").value_or(0));
+		EXPECT_EQ(0, string_to_number<std::int16_t>("0").value_or(1));
+		EXPECT_EQ(0, string_to_number<std::int16_t>("+0").value_or(1));
+		EXPECT_EQ(0, string_to_number<std::int16_t>("-0").value_or(1));
+		EXPECT_EQ(12345, string_to_number<std::int16_t>("12345").value_or(0));
+		EXPECT_EQ(32767, string_to_number<std::int16_t>("32767").value_or(0));
+		EXPECT_EQ(-32768, string_to_number<std::int16_t>("-32768").value_or(0));
+
+		EXPECT_FALSE(string_to_number<std::int16_t>("").has_value());
+		EXPECT_FALSE(string_to_number<std::int16_t>(" ").has_value());
+		EXPECT_FALSE(string_to_number<std::int16_t>("1 ").has_value());
+		EXPECT_FALSE(string_to_number<std::int16_t>("1a").has_value());
+		EXPECT_FALSE(string_to_number<std::int16_t>("32768").has_value());
+		EXPECT_FALSE(string_to_number<std::int16_t>("-32769").has_value());
+		EXPECT_FALSE(string_to_number<std::int16_t>("1.2").has_value());
+		EXPECT_FALSE(string_to_number<std::int16_t>("1.23e2").has_value());
+	}
+
+	TEST(String, ToNumberUInt16)
+	{
+		EXPECT_EQ(1, string_to_number<std::uint16_t>("1").value_or(0));
+		EXPECT_EQ(1, string_to_number<std::uint16_t>(" 1").value_or(0));
+		EXPECT_EQ(1, string_to_number<std::uint16_t>("+1").value_or(0));
+		EXPECT_EQ(0, string_to_number<std::uint16_t>("0").value_or(1));
+		EXPECT_EQ(0, string_to_number<std::uint16_t>("+0").value_or(1));
+		EXPECT_EQ(0, string_to_number<std::uint16_t>("-0").value_or(1));
+		EXPECT_EQ(12345, string_to_number<std::uint16_t>("12345").value_or(0));
+		EXPECT_EQ(65535, string_to_number<std::uint16_t>("65535").value_or(0));
+
+		EXPECT_FALSE(string_to_number<std::uint16_t>("").has_value());
+		EXPECT_FALSE(string_to_number<std::uint16_t>(" ").has_value());
+		EXPECT_FALSE(string_to_number<std::uint16_t>("1 ").has_value());
+		EXPECT_FALSE(string_to_number<std::uint16_t>("1a").has_value());
+		EXPECT_FALSE(string_to_number<std::uint16_t>("65536").has_value());
+		EXPECT_FALSE(string_to_number<std::uint16_t>("-1").has_value());
+		EXPECT_FALSE(string_to_number<std::uint16_t>("1.2").has_value());
+		EXPECT_FALSE(string_to_number<std::uint16_t>("1.23e2").has_value());
+	}
+
+	TEST(String, ToNumberInt32)
+	{
+		EXPECT_EQ(1, string_to_number<std::int32_t>("1").value_or(0));
+		EXPECT_EQ(1, string_to_number<std::int32_t>(" 1").value_or(0));
+		EXPECT_EQ(1, string_to_number<std::int32_t>("+1").value_or(0));
+		EXPECT_EQ(-1, string_to_number<std::int32_t>("-1").value_or(0));
+		EXPECT_EQ(0, string_to_number<std::int32_t>("0").value_or(1));
+		EXPECT_EQ(0, string_to_number<std::int32_t>("+0").value_or(1));
+		EXPECT_EQ(0, string_to_number<std::int32_t>("-0").value_or(1));
+		EXPECT_EQ(1234567890, string_to_number<std::int32_t>("1234567890").value_or(0));
+		EXPECT_EQ(2147483647, string_to_number<std::int32_t>("2147483647").value_or(0));
+		EXPECT_EQ(-2147483648, string_to_number<std::int32_t>("-2147483648").value_or(0));
+
+		EXPECT_FALSE(string_to_number<std::int32_t>("").has_value());
+		EXPECT_FALSE(string_to_number<std::int32_t>(" ").has_value());
+		EXPECT_FALSE(string_to_number<std::int32_t>("1 ").has_value());
+		EXPECT_FALSE(string_to_number<std::int32_t>("1a").has_value());
+		EXPECT_FALSE(string_to_number<std::int32_t>("2147483648").has_value());
+		EXPECT_FALSE(string_to_number<std::int32_t>("-2147483649").has_value());
+		EXPECT_FALSE(string_to_number<std::int32_t>("1.2").has_value());
+		EXPECT_FALSE(string_to_number<std::int32_t>("1.23e2").has_value());
+	}
+
+	TEST(String, ToNumberUInt32)
+	{
+		EXPECT_EQ(1, string_to_number<std::uint32_t>("1").value_or(0));
+		EXPECT_EQ(1, string_to_number<std::uint32_t>(" 1").value_or(0));
+		EXPECT_EQ(1, string_to_number<std::uint32_t>("+1").value_or(0));
+		EXPECT_EQ(0, string_to_number<std::uint32_t>("0").value_or(1));
+		EXPECT_EQ(0, string_to_number<std::uint32_t>("+0").value_or(1));
+		EXPECT_EQ(0, string_to_number<std::uint32_t>("-0").value_or(1));
+		EXPECT_EQ(1234567890, string_to_number<std::uint32_t>("1234567890").value_or(0));
+		EXPECT_EQ(4294967295, string_to_number<std::uint32_t>("4294967295").value_or(0));
+
+		EXPECT_FALSE(string_to_number<std::uint32_t>("").has_value());
+		EXPECT_FALSE(string_to_number<std::uint32_t>(" ").has_value());
+		EXPECT_FALSE(string_to_number<std::uint32_t>("1 ").has_value());
+		EXPECT_FALSE(string_to_number<std::uint32_t>("1a").has_value());
+		EXPECT_FALSE(string_to_number<std::uint32_t>("4294967296").has_value());
+		EXPECT_FALSE(string_to_number<std::uint32_t>("-1").has_value());
+		EXPECT_FALSE(string_to_number<std::uint32_t>("1.2").has_value());
+		EXPECT_FALSE(string_to_number<std::uint32_t>("1.23e2").has_value());
 	}
 }

@@ -217,7 +217,7 @@ namespace Rayni
 				number += next_get();
 		}
 
-		auto d = string_to_double(number);
+		auto d = string_to_number<double>(number);
 		if (!d.has_value())
 			throw Exception(position(), "number conversion failed");
 

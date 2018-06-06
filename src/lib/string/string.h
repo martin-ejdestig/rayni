@@ -21,9 +21,10 @@
 #define RAYNI_LIB_STRING_STRING_H
 
 #include <cassert>
-#include <limits>
+#include <charconv>
 #include <optional>
 #include <string>
+#include <system_error>
 #include <type_traits>
 
 namespace Rayni
@@ -33,9 +34,20 @@ namespace Rayni
 
 	std::string string_to_lower(const std::string &str);
 
+	// TODO: Remove string_to_float/double() once std::from_chars() is fully supported in
+	// libstdc++ (currently only supports int:s) and libc++ (currently not implemented at all).
+	//
+	// Modify string_to_number() to unconditionally use std::from_chars(). Still want to keep
+	// string_to_number() to not repeat std::from_chars() begin/and argument creation and
+	// std::from_chars_result error checking everywhere.
+	//
+	// Once std::from_chars() is used for float/double it also makes sense to change argument to
+	// a std::string_view. At the moment it will be more expensive since std::istringstream is
+	// used in string_to_float/double(). There is no way to initialize a stream directly from a
+	// std::string_view so a temporary std::string is created. When reading large object files
+	// with millions of strings this results in a noticable slowdown.
 	std::optional<float> string_to_float(const std::string &str);
 	std::optional<double> string_to_double(const std::string &str);
-	std::optional<long> string_to_long(const std::string &str);
 
 	template <typename T>
 	std::optional<T> string_to_number(const std::string &str)
@@ -46,16 +58,15 @@ namespace Rayni
 		if constexpr (std::is_same_v<T, double>)
 			return string_to_double(str);
 
-		// TODO: Can be smarter here, use more SFINAE etc. But good enough for now (only
-		//       need <= std::uint32_t and long is 64 bits on all interesting platforms).
-		if constexpr (std::is_integral_v<T> && sizeof(long) > sizeof(T))
+		if constexpr (std::is_integral_v<T>)
 		{
-			std::optional<long> l = string_to_long(str);
+			T value;
+			std::from_chars_result result = std::from_chars(str.data(), str.data() + str.length(), value);
 
-			if (!l || *l < std::numeric_limits<T>::lowest() || *l > std::numeric_limits<T>::max())
+			if (result.ec != std::errc() || result.ptr != str.data() + str.length())
 				return std::nullopt;
 
-			return static_cast<T>(*l);
+			return value;
 		}
 
 		assert(false);

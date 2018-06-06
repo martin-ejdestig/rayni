@@ -188,11 +188,8 @@ namespace Rayni
 	TEST(String, ToNumberInt8)
 	{
 		EXPECT_EQ(1, string_to_number<std::int8_t>("1").value_or(0));
-		EXPECT_EQ(1, string_to_number<std::int8_t>(" 1").value_or(0));
-		EXPECT_EQ(1, string_to_number<std::int8_t>("+1").value_or(0));
 		EXPECT_EQ(-1, string_to_number<std::int8_t>("-1").value_or(0));
 		EXPECT_EQ(0, string_to_number<std::int8_t>("0").value_or(1));
-		EXPECT_EQ(0, string_to_number<std::int8_t>("+0").value_or(1));
 		EXPECT_EQ(0, string_to_number<std::int8_t>("-0").value_or(1));
 		EXPECT_EQ(123, string_to_number<std::int8_t>("123").value_or(0));
 		EXPECT_EQ(127, string_to_number<std::int8_t>("127").value_or(0));
@@ -200,7 +197,10 @@ namespace Rayni
 
 		EXPECT_FALSE(string_to_number<std::int8_t>("").has_value());
 		EXPECT_FALSE(string_to_number<std::int8_t>(" ").has_value());
+		EXPECT_FALSE(string_to_number<std::int8_t>(" 1").has_value());
 		EXPECT_FALSE(string_to_number<std::int8_t>("1 ").has_value());
+		EXPECT_FALSE(string_to_number<std::int8_t>("+1").has_value());
+		EXPECT_FALSE(string_to_number<std::int8_t>("+0").has_value());
 		EXPECT_FALSE(string_to_number<std::int8_t>("1a").has_value());
 		EXPECT_FALSE(string_to_number<std::int8_t>("128").has_value());
 		EXPECT_FALSE(string_to_number<std::int8_t>("-129").has_value());
@@ -211,20 +211,20 @@ namespace Rayni
 	TEST(String, ToNumberUInt8)
 	{
 		EXPECT_EQ(1, string_to_number<std::uint8_t>("1").value_or(0));
-		EXPECT_EQ(1, string_to_number<std::uint8_t>(" 1").value_or(0));
-		EXPECT_EQ(1, string_to_number<std::uint8_t>("+1").value_or(0));
 		EXPECT_EQ(0, string_to_number<std::uint8_t>("0").value_or(1));
-		EXPECT_EQ(0, string_to_number<std::uint8_t>("+0").value_or(1));
-		EXPECT_EQ(0, string_to_number<std::uint8_t>("-0").value_or(1));
 		EXPECT_EQ(123, string_to_number<std::uint8_t>("123").value_or(0));
 		EXPECT_EQ(255, string_to_number<std::uint8_t>("255").value_or(0));
 
 		EXPECT_FALSE(string_to_number<std::uint8_t>("").has_value());
 		EXPECT_FALSE(string_to_number<std::uint8_t>(" ").has_value());
+		EXPECT_FALSE(string_to_number<std::uint8_t>(" 1").has_value());
 		EXPECT_FALSE(string_to_number<std::uint8_t>("1 ").has_value());
+		EXPECT_FALSE(string_to_number<std::uint8_t>("+1").has_value());
+		EXPECT_FALSE(string_to_number<std::uint8_t>("-1").has_value());
+		EXPECT_FALSE(string_to_number<std::uint8_t>("+0").has_value());
+		EXPECT_FALSE(string_to_number<std::uint8_t>("-0").has_value());
 		EXPECT_FALSE(string_to_number<std::uint8_t>("1a").has_value());
 		EXPECT_FALSE(string_to_number<std::uint8_t>("256").has_value());
-		EXPECT_FALSE(string_to_number<std::uint8_t>("-1").has_value());
 		EXPECT_FALSE(string_to_number<std::uint8_t>("1.2").has_value());
 		EXPECT_FALSE(string_to_number<std::uint8_t>("1.23e2").has_value());
 	}
@@ -232,11 +232,8 @@ namespace Rayni
 	TEST(String, ToNumberInt16)
 	{
 		EXPECT_EQ(1, string_to_number<std::int16_t>("1").value_or(0));
-		EXPECT_EQ(1, string_to_number<std::int16_t>(" 1").value_or(0));
-		EXPECT_EQ(1, string_to_number<std::int16_t>("+1").value_or(0));
 		EXPECT_EQ(-1, string_to_number<std::int16_t>("-1").value_or(0));
 		EXPECT_EQ(0, string_to_number<std::int16_t>("0").value_or(1));
-		EXPECT_EQ(0, string_to_number<std::int16_t>("+0").value_or(1));
 		EXPECT_EQ(0, string_to_number<std::int16_t>("-0").value_or(1));
 		EXPECT_EQ(12345, string_to_number<std::int16_t>("12345").value_or(0));
 		EXPECT_EQ(32767, string_to_number<std::int16_t>("32767").value_or(0));
@@ -244,7 +241,10 @@ namespace Rayni
 
 		EXPECT_FALSE(string_to_number<std::int16_t>("").has_value());
 		EXPECT_FALSE(string_to_number<std::int16_t>(" ").has_value());
+		EXPECT_FALSE(string_to_number<std::int16_t>(" 1").has_value());
 		EXPECT_FALSE(string_to_number<std::int16_t>("1 ").has_value());
+		EXPECT_FALSE(string_to_number<std::int16_t>("+1").has_value());
+		EXPECT_FALSE(string_to_number<std::int16_t>("+0").has_value());
 		EXPECT_FALSE(string_to_number<std::int16_t>("1a").has_value());
 		EXPECT_FALSE(string_to_number<std::int16_t>("32768").has_value());
 		EXPECT_FALSE(string_to_number<std::int16_t>("-32769").has_value());
@@ -255,20 +255,20 @@ namespace Rayni
 	TEST(String, ToNumberUInt16)
 	{
 		EXPECT_EQ(1, string_to_number<std::uint16_t>("1").value_or(0));
-		EXPECT_EQ(1, string_to_number<std::uint16_t>(" 1").value_or(0));
-		EXPECT_EQ(1, string_to_number<std::uint16_t>("+1").value_or(0));
 		EXPECT_EQ(0, string_to_number<std::uint16_t>("0").value_or(1));
-		EXPECT_EQ(0, string_to_number<std::uint16_t>("+0").value_or(1));
-		EXPECT_EQ(0, string_to_number<std::uint16_t>("-0").value_or(1));
 		EXPECT_EQ(12345, string_to_number<std::uint16_t>("12345").value_or(0));
 		EXPECT_EQ(65535, string_to_number<std::uint16_t>("65535").value_or(0));
 
 		EXPECT_FALSE(string_to_number<std::uint16_t>("").has_value());
 		EXPECT_FALSE(string_to_number<std::uint16_t>(" ").has_value());
+		EXPECT_FALSE(string_to_number<std::uint16_t>(" 1").has_value());
 		EXPECT_FALSE(string_to_number<std::uint16_t>("1 ").has_value());
+		EXPECT_FALSE(string_to_number<std::uint16_t>("+1").has_value());
+		EXPECT_FALSE(string_to_number<std::uint16_t>("-1").has_value());
+		EXPECT_FALSE(string_to_number<std::uint16_t>("+0").has_value());
+		EXPECT_FALSE(string_to_number<std::uint16_t>("-0").has_value());
 		EXPECT_FALSE(string_to_number<std::uint16_t>("1a").has_value());
 		EXPECT_FALSE(string_to_number<std::uint16_t>("65536").has_value());
-		EXPECT_FALSE(string_to_number<std::uint16_t>("-1").has_value());
 		EXPECT_FALSE(string_to_number<std::uint16_t>("1.2").has_value());
 		EXPECT_FALSE(string_to_number<std::uint16_t>("1.23e2").has_value());
 	}
@@ -276,11 +276,8 @@ namespace Rayni
 	TEST(String, ToNumberInt32)
 	{
 		EXPECT_EQ(1, string_to_number<std::int32_t>("1").value_or(0));
-		EXPECT_EQ(1, string_to_number<std::int32_t>(" 1").value_or(0));
-		EXPECT_EQ(1, string_to_number<std::int32_t>("+1").value_or(0));
 		EXPECT_EQ(-1, string_to_number<std::int32_t>("-1").value_or(0));
 		EXPECT_EQ(0, string_to_number<std::int32_t>("0").value_or(1));
-		EXPECT_EQ(0, string_to_number<std::int32_t>("+0").value_or(1));
 		EXPECT_EQ(0, string_to_number<std::int32_t>("-0").value_or(1));
 		EXPECT_EQ(1234567890, string_to_number<std::int32_t>("1234567890").value_or(0));
 		EXPECT_EQ(2147483647, string_to_number<std::int32_t>("2147483647").value_or(0));
@@ -288,7 +285,10 @@ namespace Rayni
 
 		EXPECT_FALSE(string_to_number<std::int32_t>("").has_value());
 		EXPECT_FALSE(string_to_number<std::int32_t>(" ").has_value());
+		EXPECT_FALSE(string_to_number<std::int32_t>(" 1").has_value());
 		EXPECT_FALSE(string_to_number<std::int32_t>("1 ").has_value());
+		EXPECT_FALSE(string_to_number<std::int32_t>("+1").has_value());
+		EXPECT_FALSE(string_to_number<std::int32_t>("+0").has_value());
 		EXPECT_FALSE(string_to_number<std::int32_t>("1a").has_value());
 		EXPECT_FALSE(string_to_number<std::int32_t>("2147483648").has_value());
 		EXPECT_FALSE(string_to_number<std::int32_t>("-2147483649").has_value());
@@ -299,20 +299,20 @@ namespace Rayni
 	TEST(String, ToNumberUInt32)
 	{
 		EXPECT_EQ(1, string_to_number<std::uint32_t>("1").value_or(0));
-		EXPECT_EQ(1, string_to_number<std::uint32_t>(" 1").value_or(0));
-		EXPECT_EQ(1, string_to_number<std::uint32_t>("+1").value_or(0));
 		EXPECT_EQ(0, string_to_number<std::uint32_t>("0").value_or(1));
-		EXPECT_EQ(0, string_to_number<std::uint32_t>("+0").value_or(1));
-		EXPECT_EQ(0, string_to_number<std::uint32_t>("-0").value_or(1));
 		EXPECT_EQ(1234567890, string_to_number<std::uint32_t>("1234567890").value_or(0));
 		EXPECT_EQ(4294967295, string_to_number<std::uint32_t>("4294967295").value_or(0));
 
 		EXPECT_FALSE(string_to_number<std::uint32_t>("").has_value());
 		EXPECT_FALSE(string_to_number<std::uint32_t>(" ").has_value());
+		EXPECT_FALSE(string_to_number<std::uint32_t>(" 1").has_value());
 		EXPECT_FALSE(string_to_number<std::uint32_t>("1 ").has_value());
+		EXPECT_FALSE(string_to_number<std::uint32_t>("+1").has_value());
+		EXPECT_FALSE(string_to_number<std::uint32_t>("-1").has_value());
+		EXPECT_FALSE(string_to_number<std::uint32_t>("+0").has_value());
+		EXPECT_FALSE(string_to_number<std::uint32_t>("-0").has_value());
 		EXPECT_FALSE(string_to_number<std::uint32_t>("1a").has_value());
 		EXPECT_FALSE(string_to_number<std::uint32_t>("4294967296").has_value());
-		EXPECT_FALSE(string_to_number<std::uint32_t>("-1").has_value());
 		EXPECT_FALSE(string_to_number<std::uint32_t>("1.2").has_value());
 		EXPECT_FALSE(string_to_number<std::uint32_t>("1.23e2").has_value());
 	}

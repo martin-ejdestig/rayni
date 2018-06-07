@@ -19,7 +19,6 @@
 
 #include "lib/string/base85.h"
 
-#include <algorithm>
 #include <array>
 #include <cstdint>
 
@@ -28,39 +27,34 @@ namespace
 	using Base85Alphabet = std::array<char, 85>;
 	using Base85DecodingTable = std::array<std::uint8_t, 256>;
 
-	const Base85Alphabet &base85_alphabet()
+	constexpr Base85Alphabet BASE85_ALPHABET = {'0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'A', 'B', 'C',
+	                                            'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P',
+	                                            'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z', 'a', 'b', 'c',
+	                                            'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p',
+	                                            'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z', '!', '#', '$',
+	                                            '%', '&', '(', ')', '*', '+', '-', ';', '<', '=', '>', '?', '@',
+	                                            '^', '_', '`', '{', '|', '}', '~'};
+
+	constexpr Base85DecodingTable base85_generate_decoding_table()
 	{
-		static const Base85Alphabet alphabet = {'0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'A', 'B', 'C',
-		                                        'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P',
-		                                        'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z', 'a', 'b', 'c',
-		                                        'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p',
-		                                        'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z', '!', '#', '$',
-		                                        '%', '&', '(', ')', '*', '+', '-', ';', '<', '=', '>', '?', '@',
-		                                        '^', '_', '`', '{', '|', '}', '~'};
-		return alphabet;
-	}
+		Base85DecodingTable table = {};
 
-	Base85DecodingTable base85_generate_decoding_table()
-	{
-		Base85DecodingTable table;
-
-		std::fill(table.begin(), table.end(), 0);
-
-		for (unsigned int i = 0; i < base85_alphabet().size(); i++)
+		for (unsigned int i = 0; i < BASE85_ALPHABET.size(); i++)
 		{
-			auto index = static_cast<std::uint8_t>(base85_alphabet()[i]);
+			auto index = static_cast<std::uint8_t>(BASE85_ALPHABET[i]);
 			table[index] = static_cast<std::uint8_t>(i + 1);
 		}
 
 		return table;
 	}
+
+	constexpr Base85DecodingTable BASE85_DECODING_TABLE = base85_generate_decoding_table();
 }
 
 namespace Rayni
 {
 	std::optional<std::vector<std::uint8_t>> base85_decode(const std::string &str)
 	{
-		static const Base85DecodingTable decoding_table = base85_generate_decoding_table();
 		std::vector<std::uint8_t> decoded_data;
 
 		for (std::string::size_type pos = 0; pos < str.length(); pos += 5)
@@ -70,7 +64,7 @@ namespace Rayni
 			for (unsigned int i = 0; i < 5; i++)
 			{
 				auto c = static_cast<std::uint8_t>(pos + i < str.length() ? str[pos + i] : '~');
-				std::uint8_t decoded_byte = decoding_table[c];
+				std::uint8_t decoded_byte = BASE85_DECODING_TABLE[c];
 
 				if (decoded_byte == 0)
 					return std::nullopt;

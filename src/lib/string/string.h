@@ -24,6 +24,7 @@
 #include <charconv>
 #include <optional>
 #include <string>
+#include <string_view>
 #include <system_error>
 #include <type_traits>
 
@@ -40,17 +41,11 @@ namespace Rayni
 	// Modify string_to_number() to unconditionally use std::from_chars(). Still want to keep
 	// string_to_number() to not repeat std::from_chars() begin/and argument creation and
 	// std::from_chars_result error checking everywhere.
-	//
-	// Once std::from_chars() is used for float/double it also makes sense to change argument to
-	// a std::string_view. At the moment it will be more expensive since std::istringstream is
-	// used in string_to_float/double(). There is no way to initialize a stream directly from a
-	// std::string_view so a temporary std::string is created. When reading large object files
-	// with millions of strings this results in a noticable slowdown.
-	std::optional<float> string_to_float(const std::string &str);
-	std::optional<double> string_to_double(const std::string &str);
+	std::optional<float> string_to_float(std::string_view str);
+	std::optional<double> string_to_double(std::string_view str);
 
 	template <typename T>
-	std::optional<T> string_to_number(const std::string &str)
+	std::optional<T> string_to_number(std::string_view str)
 	{
 		if constexpr (std::is_same_v<T, float>)
 			return string_to_float(str);

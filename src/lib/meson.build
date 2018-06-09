@@ -69,6 +69,8 @@ lib_sources = [
     'math/vector4.h',
     'string/base85.cpp',
     'string/base85.h',
+    'string/split.cpp',
+    'string/split.h',
     'string/string.cpp',
     'string/string.h',
     'system/command.cpp',

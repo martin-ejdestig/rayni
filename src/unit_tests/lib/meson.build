@@ -39,6 +39,7 @@ lib_unit_tests_sources = [
     'math/vector3.cpp',
     'math/vector4.cpp',
     'string/base85.cpp',
+    'string/split.cpp',
     'string/string.cpp',
     'system/command.cpp',
     'system/linux/epoll.cpp',

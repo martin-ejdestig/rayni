@@ -23,6 +23,7 @@
 #include <cstddef>
 #include <cstdint>
 #include <istream>
+#include <limits>
 #include <memory>
 #include <optional>
 #include <string>
@@ -110,6 +111,11 @@ namespace Rayni
 			return static_cast<std::int64_t>(read_little_endian_uint64());
 		}
 
+		float read_big_endian_ieee_754_float();
+		float read_little_endian_ieee_754_float();
+		double read_big_endian_ieee_754_double();
+		double read_little_endian_ieee_754_double();
+
 		template <typename T>
 		T read_big_endian();
 
@@ -137,6 +143,54 @@ namespace Rayni
 		using IOException::IOException;
 	};
 
+	inline float BinaryReader::read_big_endian_ieee_754_float()
+	{
+		static_assert(std::numeric_limits<float>::is_iec559, "float is not IEEE 754");
+		union
+		{
+			std::uint32_t i;
+			float f;
+		} u;
+		u.i = read_big_endian_uint32();
+		return u.f;
+	}
+
+	inline float BinaryReader::read_little_endian_ieee_754_float()
+	{
+		static_assert(std::numeric_limits<float>::is_iec559, "float is not IEEE 754");
+		union
+		{
+			std::uint32_t i;
+			float f;
+		} u;
+		u.i = read_little_endian_uint32();
+		return u.f;
+	}
+
+	inline double BinaryReader::read_big_endian_ieee_754_double()
+	{
+		static_assert(std::numeric_limits<double>::is_iec559, "double is not IEEE 754");
+		union
+		{
+			std::uint64_t i;
+			double d;
+		} u;
+		u.i = read_big_endian_uint64();
+		return u.d;
+	}
+
+	inline double BinaryReader::read_little_endian_ieee_754_double()
+	{
+		static_assert(std::numeric_limits<double>::is_iec559, "double is not IEEE 754");
+		union
+		{
+			std::uint64_t i;
+			double d;
+		} u;
+		u.i = read_little_endian_uint64();
+		return u.d;
+	}
+
 	template <typename T>
 	T BinaryReader::read_big_endian()
 	{
@@ -163,6 +217,12 @@ namespace Rayni
 
 		if constexpr (std::is_same_v<T, std::uint64_t>)
 			return read_big_endian_uint64();
+
+		if constexpr (std::is_same_v<T, float>)
+			return read_big_endian_ieee_754_float();
+
+		if constexpr (std::is_same_v<T, double>)
+			return read_big_endian_ieee_754_double();
 
 		throw Exception("Invalid type for read_big_endian().");
 	}
@@ -193,6 +253,12 @@ namespace Rayni
 
 		if constexpr (std::is_same_v<T, std::uint64_t>)
 			return read_little_endian_uint64();
+
+		if constexpr (std::is_same_v<T, float>)
+			return read_little_endian_ieee_754_float();
+
+		if constexpr (std::is_same_v<T, double>)
+			return read_little_endian_ieee_754_double();
 
 		throw Exception("Invalid type for BinaryReader::read_little_endian().");
 	}

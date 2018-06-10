@@ -563,22 +563,134 @@ namespace Rayni
 		EXPECT_THROW(reader.read_little_endian_uint64(), BinaryReader::Exception);
 	}
 
+	TEST(BinaryReader, ReadBigEndianIEEE754Float)
+	{
+		BinaryReader reader;
+		reader.set_data({0x00, 0x00, 0x00, 0x00, 0x3f, 0x80, 0x00, 0x00, 0xbf, 0x80, 0x00, 0x00, 0x44, 0x9a,
+		                 0x52, 0x2c, 0xc4, 0x9a, 0x52, 0x2c, 0x44, 0x9a, 0x52, 0x2c, 0xc4, 0x9a, 0x52, 0x2c});
+
+		EXPECT_NEAR(0, reader.read_big_endian_ieee_754_float(), 1e-100);
+		EXPECT_EQ(position(4), reader.position());
+
+		EXPECT_NEAR(1.0, reader.read_big_endian_ieee_754_float(), 1e-100);
+		EXPECT_EQ(position(8), reader.position());
+		EXPECT_NEAR(-1.0, reader.read_big_endian_ieee_754_float(), 1e-100);
+		EXPECT_EQ(position(12), reader.position());
+
+		EXPECT_NEAR(1234.56789, reader.read_big_endian_ieee_754_float(), 1e-4);
+		EXPECT_EQ(position(16), reader.position());
+		EXPECT_NEAR(-1234.56789, reader.read_big_endian_ieee_754_float(), 1e-4);
+		EXPECT_EQ(position(20), reader.position());
+
+		EXPECT_NEAR(1234.56789, reader.read_big_endian<float>(), 1e-4);
+		EXPECT_EQ(position(24), reader.position());
+		EXPECT_NEAR(-1234.56789, reader.read_big_endian<float>(), 1e-4);
+		EXPECT_EQ(position(28), reader.position());
+
+		EXPECT_THROW(reader.read_big_endian_ieee_754_float(), BinaryReader::Exception);
+	}
+
+	TEST(BinaryReader, ReadLittleEndianIEEE754Float)
+	{
+		BinaryReader reader;
+		reader.set_data({0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x80, 0x3f, 0x00, 0x00, 0x80, 0xbf, 0x2c, 0x52,
+		                 0x9a, 0x44, 0x2c, 0x52, 0x9a, 0xc4, 0x2c, 0x52, 0x9a, 0x44, 0x2c, 0x52, 0x9a, 0xc4});
+
+		EXPECT_NEAR(0, reader.read_little_endian_ieee_754_float(), 1e-100);
+		EXPECT_EQ(position(4), reader.position());
+
+		EXPECT_NEAR(1.0, reader.read_little_endian_ieee_754_float(), 1e-100);
+		EXPECT_EQ(position(8), reader.position());
+		EXPECT_NEAR(-1.0, reader.read_little_endian_ieee_754_float(), 1e-100);
+		EXPECT_EQ(position(12), reader.position());
+
+		EXPECT_NEAR(1234.56789, reader.read_little_endian_ieee_754_float(), 1e-4);
+		EXPECT_EQ(position(16), reader.position());
+		EXPECT_NEAR(-1234.56789, reader.read_little_endian_ieee_754_float(), 1e-4);
+		EXPECT_EQ(position(20), reader.position());
+
+		EXPECT_NEAR(1234.56789, reader.read_little_endian<float>(), 1e-4);
+		EXPECT_EQ(position(24), reader.position());
+		EXPECT_NEAR(-1234.56789, reader.read_little_endian<float>(), 1e-4);
+		EXPECT_EQ(position(28), reader.position());
+
+		EXPECT_THROW(reader.read_little_endian_ieee_754_float(), BinaryReader::Exception);
+	}
+
+	TEST(BinaryReader, ReadBigEndianIEEE754Double)
+	{
+		BinaryReader reader;
+		reader.set_data({0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x3f, 0xf0, 0x00, 0x00, 0x00, 0x00,
+		                 0x00, 0x00, 0xbf, 0xf0, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x40, 0x93, 0x4a, 0x45,
+		                 0x84, 0xf4, 0xc6, 0xe7, 0xc0, 0x93, 0x4a, 0x45, 0x84, 0xf4, 0xc6, 0xe7, 0x40, 0x93,
+		                 0x4a, 0x45, 0x84, 0xf4, 0xc6, 0xe7, 0xc0, 0x93, 0x4a, 0x45, 0x84, 0xf4, 0xc6, 0xe7});
+
+		EXPECT_NEAR(0, reader.read_big_endian_ieee_754_double(), 1e-100);
+		EXPECT_EQ(position(8), reader.position());
+
+		EXPECT_NEAR(1.0, reader.read_big_endian_ieee_754_double(), 1e-100);
+		EXPECT_EQ(position(16), reader.position());
+		EXPECT_NEAR(-1.0, reader.read_big_endian_ieee_754_double(), 1e-100);
+		EXPECT_EQ(position(24), reader.position());
+
+		EXPECT_NEAR(1234.56789, reader.read_big_endian_ieee_754_double(), 1e-100);
+		EXPECT_EQ(position(32), reader.position());
+		EXPECT_NEAR(-1234.56789, reader.read_big_endian_ieee_754_double(), 1e-100);
+		EXPECT_EQ(position(40), reader.position());
+
+		EXPECT_NEAR(1234.56789, reader.read_big_endian<double>(), 1e-100);
+		EXPECT_EQ(position(48), reader.position());
+		EXPECT_NEAR(-1234.56789, reader.read_big_endian<double>(), 1e-100);
+		EXPECT_EQ(position(56), reader.position());
+
+		EXPECT_THROW(reader.read_big_endian_ieee_754_double(), BinaryReader::Exception);
+	}
+
+	TEST(BinaryReader, ReadLittleEndianIEEE754Double)
+	{
+		BinaryReader reader;
+		reader.set_data({0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+		                 0xf0, 0x3f, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0xf0, 0xbf, 0xe7, 0xc6, 0xf4, 0x84,
+		                 0x45, 0x4a, 0x93, 0x40, 0xe7, 0xc6, 0xf4, 0x84, 0x45, 0x4a, 0x93, 0xc0, 0xe7, 0xc6,
+		                 0xf4, 0x84, 0x45, 0x4a, 0x93, 0x40, 0xe7, 0xc6, 0xf4, 0x84, 0x45, 0x4a, 0x93, 0xc0});
+
+		EXPECT_NEAR(0, reader.read_little_endian_ieee_754_double(), 1e-100);
+		EXPECT_EQ(position(8), reader.position());
+
+		EXPECT_NEAR(1.0, reader.read_little_endian_ieee_754_double(), 1e-100);
+		EXPECT_EQ(position(16), reader.position());
+		EXPECT_NEAR(-1.0, reader.read_little_endian_ieee_754_double(), 1e-100);
+		EXPECT_EQ(position(24), reader.position());
+
+		EXPECT_NEAR(1234.56789, reader.read_little_endian_ieee_754_double(), 1e-100);
+		EXPECT_EQ(position(32), reader.position());
+		EXPECT_NEAR(-1234.56789, reader.read_little_endian_ieee_754_double(), 1e-100);
+		EXPECT_EQ(position(40), reader.position());
+
+		EXPECT_NEAR(1234.56789, reader.read_little_endian<double>(), 1e-100);
+		EXPECT_EQ(position(48), reader.position());
+		EXPECT_NEAR(-1234.56789, reader.read_little_endian<double>(), 1e-100);
+		EXPECT_EQ(position(56), reader.position());
+
+		EXPECT_THROW(reader.read_little_endian_ieee_754_double(), BinaryReader::Exception);
+	}
+
 	TEST(BinaryReader, ReadBigEndianUnsopportedTypeThrows)
 	{
 		BinaryReader reader;
-		reader.set_data({1, 2, 3, 4, 5, 6, 7, 8});
+		reader.set_data({1, 2, 3, 4, 5, 6, 7, 8, 9, 0});
 
 		EXPECT_THROW(reader.read_big_endian<bool>(), BinaryReader::Exception);
-		EXPECT_THROW(reader.read_big_endian<float>(), BinaryReader::Exception);
+		EXPECT_THROW(reader.read_big_endian<void *>(), BinaryReader::Exception);
 	}
 
 	TEST(BinaryReader, ReadLittleEndianUnsopportedTypeThrows)
 	{
 		BinaryReader reader;
-		reader.set_data({1, 2, 3, 4, 5, 6, 7, 8});
+		reader.set_data({1, 2, 3, 4, 5, 6, 7, 8, 9, 0});
 
 		EXPECT_THROW(reader.read_little_endian<bool>(), BinaryReader::Exception);
-		EXPECT_THROW(reader.read_little_endian<float>(), BinaryReader::Exception);
+		EXPECT_THROW(reader.read_little_endian<void *>(), BinaryReader::Exception);
 	}
 
 	TEST(BinaryReader, SkipBytes)

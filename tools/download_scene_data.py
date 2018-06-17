@@ -73,7 +73,7 @@ def _download(url: str, dest_path: str):
 
 
 def _gzip_extract(archive_path: str, dest_dir_path: str):
-    os.makedirs(os.path.dirname(dest_dir_path), exist_ok=True)
+    os.makedirs(dest_dir_path, exist_ok=True)
 
     basename = os.path.basename(archive_path)
     stem, _ = os.path.splitext(basename)

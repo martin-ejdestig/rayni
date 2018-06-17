@@ -102,9 +102,6 @@ def _extract(archive_path: str, dest_dir_path: str, archive_member: Optional[str
                 zip_file.extractall(dest_dir_path)
 
     elif os.path.splitext(archive_path)[1] == '.gz':
-        # Should check magic instead of extension. But why is there no gzip.is_gzipfile()
-        # and GzipFile.extract() (similar to what there is for tarfile and zipfile)?
-        #
         # Note that .tar.gz files are handled by tarfile module above. This is for non
         # tar files that have been compressed with gzip.
         assert not archive_member

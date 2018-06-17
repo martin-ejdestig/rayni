@@ -47,11 +47,11 @@ namespace Rayni
 
 		Image image(static_cast<unsigned int>(width), static_cast<unsigned int>(height));
 
-		if (!WebPDecodeBGRAInto(file_data.data(),
-		                        file_data.size(),
-		                        image.buffer().data(),
-		                        image.buffer().size(),
-		                        static_cast<int>(image.stride())))
+		if (!WebPDecodeRGBInto(file_data.data(),
+		                       file_data.size(),
+		                       image.buffer().data(),
+		                       image.buffer().size(),
+		                       static_cast<int>(image.stride())))
 			throw Exception(file_name, "failed to decode WebP image");
 
 		return image;

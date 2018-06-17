@@ -46,13 +46,6 @@ namespace Rayni
 	        height_(height),
 	        buffer_(stride() * height)
 	{
-		for (std::size_t i = 0; i < buffer().size(); i += BYTES_PER_PIXEL)
-		{
-			buffer()[i + A_PIXEL_OFFSET] = 0xff;
-			buffer()[i + R_PIXEL_OFFSET] = 0x00;
-			buffer()[i + G_PIXEL_OFFSET] = 0x00;
-			buffer()[i + B_PIXEL_OFFSET] = 0x00;
-		}
 	}
 
 	Image Image::from_variant(const Variant &v)

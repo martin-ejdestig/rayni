@@ -36,7 +36,7 @@ namespace Rayni
 		pngimage.version = PNG_IMAGE_VERSION;
 		pngimage.width = image.width();
 		pngimage.height = image.height();
-		pngimage.format = PNG_FORMAT_BGRA;
+		pngimage.format = PNG_FORMAT_RGB;
 
 		if (!png_image_write_to_file(&pngimage,
 		                             file_name.c_str(),

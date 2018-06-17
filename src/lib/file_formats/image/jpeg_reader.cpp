@@ -127,8 +127,8 @@ namespace Rayni
 			return false;
 		}
 
-		jpeg_decompress.out_color_space = JCS_EXT_BGRA;
-		jpeg_decompress.output_components = 4;
+		jpeg_decompress.out_color_space = JCS_EXT_RGB;
+		jpeg_decompress.output_components = 3;
 		image = Image(jpeg_decompress.image_width, jpeg_decompress.image_height);
 
 		jpeg_start_decompress(&jpeg_decompress);

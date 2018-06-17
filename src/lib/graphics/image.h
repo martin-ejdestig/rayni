@@ -89,15 +89,11 @@ namespace Rayni
 		Color read_pixel(unsigned int x, unsigned int y) const;
 
 	private:
-		// Order in memory is BBGGRRAA. I.e. ARGB32 stored in little-endian order. Alpha is
-		// always set to 0xff. The reason for including an alpha channel is to avoid pixel
-		// conversions when drawing an Image to the screen. Some toolkits (e.g. Cairo) do
-		// not support RGB24.
-		static constexpr unsigned int A_PIXEL_OFFSET = 3;
-		static constexpr unsigned int R_PIXEL_OFFSET = 2;
+		// Order in memory is RRGGBB. I.e. RGB24 stored in big-endian order.
+		static constexpr unsigned int R_PIXEL_OFFSET = 0;
 		static constexpr unsigned int G_PIXEL_OFFSET = 1;
-		static constexpr unsigned int B_PIXEL_OFFSET = 0;
-		static constexpr unsigned int BYTES_PER_PIXEL = 4;
+		static constexpr unsigned int B_PIXEL_OFFSET = 2;
+		static constexpr unsigned int BYTES_PER_PIXEL = 3;
 
 		unsigned int offset_to(unsigned int x, unsigned int y) const
 		{

@@ -40,7 +40,7 @@ namespace Rayni
 		if (!png_image_begin_read_from_file(&pngimage, file_name.c_str()))
 			throw Exception(file_name, pngimage.message);
 
-		pngimage.format = PNG_FORMAT_BGRA;
+		pngimage.format = PNG_FORMAT_RGB;
 		Image image(pngimage.width, pngimage.height);
 
 		if (!png_image_finish_read(&pngimage,

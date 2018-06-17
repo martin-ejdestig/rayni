@@ -22,6 +22,7 @@
 import gzip
 import hashlib
 import os
+import subprocess
 import sys
 import tarfile
 import urllib.request
@@ -84,6 +85,17 @@ def _gzip_extract(archive_path: str, dest_dir_path: str):
             dest.write(data)
 
 
+def _rar_extract(archive_path: str, dest_dir_path: str, archive_member: Optional[str] = None):
+    os.makedirs(dest_dir_path, exist_ok=True)
+
+    args = ['unrar', 'x', '-y', '-idq', '--', archive_path]
+    if archive_member:
+        args.append(archive_member)
+    args.append(dest_dir_path)
+
+    subprocess.run(args, check=True)
+
+
 def _extract(archive_path: str, dest_dir_path: str, archive_member: Optional[str] = None):
     _print_no_newline(f'Extracting {archive_path} to {dest_dir_path}...')
 
@@ -106,6 +118,9 @@ def _extract(archive_path: str, dest_dir_path: str, archive_member: Optional[str
         # tar files that have been compressed with gzip.
         assert not archive_member
         _gzip_extract(archive_path, dest_dir_path)
+
+    elif os.path.splitext(archive_path)[1] == '.rar':
+        _rar_extract(archive_path, dest_dir_path, archive_member)
 
     else:
         raise RuntimeError(f'extraction of {archive_path} not supported')

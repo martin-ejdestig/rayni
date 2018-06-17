@@ -140,35 +140,34 @@ class DownloadFile:
                  self._archive_member)
 
 
-_STANFORD_OBJECTS_PATH = 'objects/stanford'
 
 _DOWNLOAD_FILES = [
     DownloadFile('http://graphics.stanford.edu/pub/3Dscanrep/bunny.tar.gz',
                  'a5720bd96d158df403d153381b8411a727a1d73cff2f33dc9b212d6f75455b84',
-                 _STANFORD_OBJECTS_PATH,
+                 'stanford',
                  'bunny/reconstruction/bun_zipper.ply'),
 
     DownloadFile('http://graphics.stanford.edu/pub/3Dscanrep/dragon/dragon_recon.tar.gz',
                  '74ac1d90989c9b1732edee82d57e9ce71452144cf4355f108d8c9c616d28d02f',
-                 _STANFORD_OBJECTS_PATH,
+                 'stanford',
                  'dragon_recon/dragon_vrip.ply'),
 
     DownloadFile('http://graphics.stanford.edu/pub/3Dscanrep/happy/happy_recon.tar.gz',
                  '409cd294efbfd8244e15a382b95a9423f153b7776e736c9b09f19ec9d3c10ed0',
-                 _STANFORD_OBJECTS_PATH,
+                 'stanford',
                  'happy_recon/happy_vrip.ply'),
 
     DownloadFile('http://graphics.stanford.edu/data/3Dscanrep/lucy.tar.gz',
                  'c4beb1f7bfa965643bbbf889bd1849a4b4b955e95c731941be61e6edac65616a',
-                 _STANFORD_OBJECTS_PATH),
+                 'stanford'),
 
     DownloadFile('http://graphics.stanford.edu/data/3Dscanrep/xyzrgb/xyzrgb_dragon.ply.gz',
                  '8aa449f1966cbb50e5896ecc32cf57ab5f0cdfd3c3e37d3e6f60b948997da5c1',
-                 _STANFORD_OBJECTS_PATH),
+                 'stanford'),
 
     DownloadFile('http://graphics.stanford.edu/data/3Dscanrep/xyzrgb/xyzrgb_statuette.ply.gz',
                  '1d867b6540c02935caa777bd6746429a62d4a5d23f11c9bfdfebbaa90c05ca8b',
-                 _STANFORD_OBJECTS_PATH)
+                 'stanford')
 ]
 
 

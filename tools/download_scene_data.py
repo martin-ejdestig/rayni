@@ -155,8 +155,17 @@ class DownloadFile:
                  self._archive_member)
 
 
+_SPONZA_DOWNLOAD_FILES = [
+    DownloadFile('http://www.crytek.com/download/sponza_obj.rar',
+                 '0add5d571196781fa3e819821d1b313c5dc0670bb8c89c5705d1cf9c9baa451b',
+                 'sponza'),
 
-_DOWNLOAD_FILES = [
+    DownloadFile('http://www.crytek.com/download/sponza_textures.rar',
+                 '31d4bbf3748d7099cc0afeb452d7a6959d15455b8e3be167e35e4bffd2c738c4',
+                 'sponza')
+]
+
+_STANFORD_DOWNLOAD_FILES = [
     DownloadFile('http://graphics.stanford.edu/pub/3Dscanrep/bunny.tar.gz',
                  'a5720bd96d158df403d153381b8411a727a1d73cff2f33dc9b212d6f75455b84',
                  'stanford',
@@ -184,6 +193,8 @@ _DOWNLOAD_FILES = [
                  '1d867b6540c02935caa777bd6746429a62d4a5d23f11c9bfdfebbaa90c05ca8b',
                  'stanford')
 ]
+
+_DOWNLOAD_FILES = _SPONZA_DOWNLOAD_FILES + _STANFORD_DOWNLOAD_FILES
 
 
 def main():

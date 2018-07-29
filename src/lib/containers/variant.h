@@ -199,9 +199,6 @@ namespace Rayni
 			return type_ == Type::STRING;
 		}
 
-		template <typename T>
-		bool is() const;
-
 		Map &as_map()
 		{
 			require_type(Type::MAP);
@@ -261,9 +258,6 @@ namespace Rayni
 			require_type(Type::STRING);
 			return value_.string;
 		}
-
-		template <typename T>
-		const T &as() const;
 
 		bool has(const std::string &key) const
 		{
@@ -490,102 +484,6 @@ namespace Rayni
 			std::string string;
 		} value_;
 	};
-
-	template <>
-	inline bool Variant::is<Variant::Map>() const
-	{
-		return is_map();
-	}
-
-	template <>
-	inline bool Variant::is<Variant::Vector>() const
-	{
-		return is_vector();
-	}
-
-	template <>
-	inline bool Variant::is<bool>() const
-	{
-		return is_bool();
-	}
-
-	template <>
-	inline bool Variant::is<int>() const
-	{
-		return is_int();
-	}
-
-	template <>
-	inline bool Variant::is<unsigned int>() const
-	{
-		return is_unsigned_int();
-	}
-
-	template <>
-	inline bool Variant::is<float>() const
-	{
-		return is_float();
-	}
-
-	template <>
-	inline bool Variant::is<double>() const
-	{
-		return is_double();
-	}
-
-	template <>
-	inline bool Variant::is<std::string>() const
-	{
-		return is_string();
-	}
-
-	template <>
-	inline const Variant::Map &Variant::as() const
-	{
-		return as_map();
-	}
-
-	template <>
-	inline const Variant::Vector &Variant::as() const
-	{
-		return as_vector();
-	}
-
-	template <>
-	inline const bool &Variant::as() const
-	{
-		return as_bool();
-	}
-
-	template <>
-	inline const int &Variant::as() const
-	{
-		return as_int();
-	}
-
-	template <>
-	inline const unsigned int &Variant::as() const
-	{
-		return as_unsigned_int();
-	}
-
-	template <>
-	inline const float &Variant::as() const
-	{
-		return as_float();
-	}
-
-	template <>
-	inline const double &Variant::as() const
-	{
-		return as_double();
-	}
-
-	template <>
-	inline const std::string &Variant::as() const
-	{
-		return as_string();
-	}
 }
 
 #endif // RAYNI_LIB_CONTAINERS_VARIANT_H

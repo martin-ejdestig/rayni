@@ -40,15 +40,6 @@ namespace Rayni
 		EXPECT_TRUE(Variant(0.0f).is_float());
 		EXPECT_TRUE(Variant(0.0).is_double());
 		EXPECT_TRUE(Variant("").is_string());
-
-		EXPECT_TRUE(Variant::vector().is<Variant::Vector>());
-		EXPECT_TRUE(Variant::map().is<Variant::Map>());
-		EXPECT_TRUE(Variant(false).is<bool>());
-		EXPECT_TRUE(Variant(0).is<int>());
-		EXPECT_TRUE(Variant(0u).is<unsigned int>());
-		EXPECT_TRUE(Variant(0.0f).is<float>());
-		EXPECT_TRUE(Variant(0.0).is<double>());
-		EXPECT_TRUE(Variant("").is<std::string>());
 	}
 
 	TEST(Variant, Move)
@@ -75,15 +66,6 @@ namespace Rayni
 		EXPECT_FLOAT_EQ(1.0f, Variant(1.0f).as_float());
 		EXPECT_DOUBLE_EQ(1.0, Variant(1.0).as_double());
 		EXPECT_EQ("abc", Variant("abc").as_string());
-
-		EXPECT_EQ(0, Variant::map().as<Variant::Map>().size());
-		EXPECT_EQ(0, Variant::vector().as<Variant::Vector>().size());
-		EXPECT_EQ(true, Variant(true).as<bool>());
-		EXPECT_EQ(1, Variant(1).as<int>());
-		EXPECT_EQ(1u, Variant(1u).as<unsigned int>());
-		EXPECT_FLOAT_EQ(1.0f, Variant(1.0f).as<float>());
-		EXPECT_DOUBLE_EQ(1.0, Variant(1.0).as<double>());
-		EXPECT_EQ("abc", Variant("abc").as<std::string>());
 
 		EXPECT_THROW(Variant().as_map(), Variant::Exception);
 		EXPECT_THROW(Variant().as_vector(), Variant::Exception);

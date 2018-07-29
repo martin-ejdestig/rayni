@@ -295,68 +295,7 @@ namespace Rayni
 		std::string to_string() const;
 
 		template <typename T>
-		std::enable_if_t<std::is_same<T, int>::value, T> to() const
-		{
-			return to_int();
-		}
-
-		template <typename T>
-		std::enable_if_t<std::is_same<T, unsigned int>::value, T> to() const
-		{
-			return to_unsigned_int();
-		}
-
-		template <typename T>
-		std::enable_if_t<std::is_same<T, float>::value, T> to() const
-		{
-			return to_float();
-		}
-
-		template <typename T>
-		std::enable_if_t<std::is_same<T, double>::value, T> to() const
-		{
-			return to_double();
-		}
-
-		template <typename T>
-		std::enable_if_t<std::is_same<T, std::string>::value, T> to() const
-		{
-			return to_string();
-		}
-
-		template <typename T>
-		std::enable_if_t<std::is_constructible<T, const Variant &>::value && std::is_class<T>::value, T> to()
-		        const
-		{
-			return T(*this);
-		}
-
-		template <typename T>
-		std::enable_if_t<std::is_abstract<T>::value, std::unique_ptr<T>> to() const
-		{
-			return T::from_variant(*this);
-		}
-
-		template <typename T>
-		std::enable_if_t<!std::is_constructible<T, const Variant &>::value && std::is_class<T>::value &&
-		                         !std::is_abstract<T>::value && !std::is_same<T, std::string>::value,
-		                 T>
-		to() const
-		{
-			return T::from_variant(*this);
-		}
-
-		template <typename T>
-		std::enable_if_t<std::is_lvalue_reference<T>::value, T> to() const
-		{
-			return std::remove_reference<T>::type::get_from_variant(*this);
-		}
-
-		template <typename T>
-		std::enable_if_t<std::is_pointer<T>::value, T> to() const
-		{
-			return &std::remove_pointer<T>::type::get_from_variant(*this);
-		}
+		auto to() const;
 
 		std::string path() const;
 
@@ -484,6 +423,30 @@ namespace Rayni
 			std::string string;
 		} value_;
 	};
+
+	template <typename T>
+	auto Variant::to() const
+	{
+		// TODO: All statements are not valid for all T so must have "else" after "return".
+		//       Can remove the NOLINT(readability-else-after-return) below when
+		//       https://bugs.llvm.org/show_bug.cgi?id=32197 is fixed?
+		if constexpr (std::is_same_v<T, int>)
+			return to_int();
+		else if constexpr (std::is_same_v<T, unsigned int>) // NOLINT(readability-else-after-return)
+			return to_unsigned_int();
+		else if constexpr (std::is_same_v<T, float>)
+			return to_float();
+		else if constexpr (std::is_same_v<T, double>)
+			return to_double();
+		else if constexpr (std::is_same_v<T, std::string>)
+			return to_string();
+		else if constexpr (std::is_constructible_v<T, const Variant &>)
+			return T(*this);
+		else if constexpr (std::is_pointer_v<T>)
+			return std::remove_pointer_t<T>::get_from_variant(*this);
+		else
+			return T::from_variant(*this);
+	}
 }
 
 #endif // RAYNI_LIB_CONTAINERS_VARIANT_H

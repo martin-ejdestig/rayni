@@ -213,25 +213,23 @@ namespace Rayni
 			{
 			}
 
-			static Foo &get_from_variant(const Variant &v)
+			static Foo *get_from_variant(const Variant &v)
 			{
 				static std::vector<std::unique_ptr<Foo>> foos;
 				int bar = v.to_int();
 
 				for (auto &foo : foos)
 					if (foo->bar == bar)
-						return *foo;
+						return foo.get();
 
 				foos.emplace_back(std::make_unique<Foo>(bar));
 
-				return *foos.back();
+				return foos.back().get();
 			}
 
 			int bar = 0;
 		};
 
-		EXPECT_EQ(123, Variant(123).to<Foo &>().bar);
-		EXPECT_EQ(123, Variant(123).to<const Foo &>().bar);
 		EXPECT_EQ(123, Variant(123).to<Foo *>()->bar);
 		EXPECT_EQ(123, Variant(123).to<const Foo *>()->bar);
 	}

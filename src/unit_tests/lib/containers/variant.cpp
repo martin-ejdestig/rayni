@@ -31,7 +31,6 @@ namespace Rayni
 	TEST(Variant, Is)
 	{
 		EXPECT_TRUE(Variant().is_none());
-
 		EXPECT_TRUE(Variant::vector().is_vector());
 		EXPECT_TRUE(Variant::map().is_map());
 		EXPECT_TRUE(Variant(false).is_bool());
@@ -40,6 +39,16 @@ namespace Rayni
 		EXPECT_TRUE(Variant(0.0f).is_float());
 		EXPECT_TRUE(Variant(0.0).is_double());
 		EXPECT_TRUE(Variant("").is_string());
+
+		EXPECT_FALSE(Variant(0).is_none());
+		EXPECT_FALSE(Variant().is_map());
+		EXPECT_FALSE(Variant().is_vector());
+		EXPECT_FALSE(Variant().is_bool());
+		EXPECT_FALSE(Variant().is_int());
+		EXPECT_FALSE(Variant().is_unsigned_int());
+		EXPECT_FALSE(Variant().is_float());
+		EXPECT_FALSE(Variant().is_double());
+		EXPECT_FALSE(Variant().is_string());
 	}
 
 	TEST(Variant, Move)

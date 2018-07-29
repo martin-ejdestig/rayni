@@ -215,16 +215,16 @@ namespace Rayni
 
 			static Foo &get_from_variant(const Variant &v)
 			{
-				static std::vector<Foo> foos;
+				static std::vector<std::unique_ptr<Foo>> foos;
 				int bar = v.to_int();
 
 				for (auto &foo : foos)
-					if (foo.bar == bar)
-						return foo;
+					if (foo->bar == bar)
+						return *foo;
 
-				foos.emplace_back(bar);
+				foos.emplace_back(std::make_unique<Foo>(bar));
 
-				return foos.back();
+				return *foos.back();
 			}
 
 			int bar = 0;

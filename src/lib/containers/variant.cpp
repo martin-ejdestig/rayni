@@ -142,6 +142,14 @@ namespace Rayni
 		return value_.vector[index];
 	}
 
+	bool Variant::to_bool() const
+	{
+		if (is_bool())
+			return value_.boolean;
+
+		throw Exception(*this, "cannot convert \"" + type_to_string() + "\" to \"bool\"");
+	}
+
 	int Variant::to_int() const
 	{
 		if (is_int())

@@ -88,6 +88,9 @@ namespace Rayni
 
 	TEST(Variant, To)
 	{
+		EXPECT_EQ(true, Variant(true).to_bool());
+		EXPECT_THROW(Variant().to_bool(), Variant::Exception);
+
 		EXPECT_EQ(1, Variant(1).to_int());
 		EXPECT_EQ(1, Variant(1u).to_int());
 		EXPECT_EQ(1, Variant(1.0f).to_int());
@@ -123,6 +126,7 @@ namespace Rayni
 		EXPECT_EQ("abc", Variant("abc").to_string());
 		EXPECT_THROW(Variant().to_string(), Variant::Exception);
 
+		EXPECT_EQ(false, Variant(false).to<bool>());
 		EXPECT_EQ(123, Variant(123).to<int>());
 		EXPECT_EQ(123u, Variant(123).to<unsigned int>());
 		EXPECT_FLOAT_EQ(123.0f, Variant(123).to<float>());

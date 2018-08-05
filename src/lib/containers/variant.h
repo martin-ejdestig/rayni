@@ -34,14 +34,7 @@ namespace Rayni
 	class Variant
 	{
 	public:
-		class Exception : public std::runtime_error
-		{
-		public:
-			Exception(const Variant &variant, const std::string &str) :
-			        std::runtime_error(variant.prepend_path_if_has_parent(str))
-			{
-			}
-		};
+		class Exception;
 
 		using Map = std::map<std::string, Variant>;
 		using Vector = std::vector<Variant>;
@@ -424,6 +417,15 @@ namespace Rayni
 
 			std::string string;
 		} value_;
+	};
+
+	class Variant::Exception : public std::runtime_error
+	{
+	public:
+		Exception(const Variant &variant, const std::string &str) :
+		        std::runtime_error(variant.prepend_path_if_has_parent(str))
+		{
+		}
 	};
 
 	template <typename T>

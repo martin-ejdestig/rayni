@@ -66,7 +66,8 @@ namespace Rayni
 		// TODO: Variant::map() should be replaced with a
 		//       Variant(std::initializer_list<Map::value_type>). Not possible right
 		//       now since std::initializer_list requires the type to be copyable.
-		//       Will be fixed in C++17 with N4166?
+		//       Will be fixed in C++20 with N4166? See
+		//       http://open-std.org/jtc1/sc22/wg21/docs/papers/2015/p0065r0.pdf .
 		static Variant map()
 		{
 			return Variant(Map());

@@ -24,8 +24,8 @@
 
 namespace Rayni
 {
-	// TODO: Looks like N4189 (scope_exit) will not make it into C++17. Is it in the next
-	//       version of the standard so this naive implementation can be removed?
+	// TODO: Will p0052r6 make it into C++20 so this naive implementation can be removed?
+	//       See http://www.open-std.org/jtc1/sc22/wg21/docs/papers/2017/p0052r6.pdf .
 	template <typename F>
 	class ScopeExit
 	{

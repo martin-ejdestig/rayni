@@ -110,8 +110,8 @@ namespace Rayni
 	{
 		if (is_map())
 		{
-			for (auto &key_value : value_.map)
-				key_value.second.parent_ = this;
+			for (auto &[key, value] : value_.map)
+				value.parent_ = this;
 		}
 		else if (is_vector())
 		{
@@ -238,14 +238,14 @@ namespace Rayni
 		std::string delimiter;
 		std::string str = "{ ";
 
-		for (auto &key_value : map)
+		for (auto &[key, value] : map)
 		{
 			if (delimiter.empty())
 				delimiter = ", ";
 			else
 				str += delimiter;
 
-			str += key_value.first + ": " + key_value.second.to_string();
+			str += key + ": " + value.to_string();
 		}
 
 		str += " }";
@@ -293,9 +293,9 @@ namespace Rayni
 	{
 		assert(parent_ && parent_->is_map());
 
-		for (auto &key_value : parent_->value_.map)
-			if (&key_value.second == this)
-				return key_value.first;
+		for (auto &[key, value] : parent_->value_.map)
+			if (&value == this)
+				return key;
 
 		assert(false);
 		return "";

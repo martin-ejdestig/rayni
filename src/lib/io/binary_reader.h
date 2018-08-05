@@ -159,8 +159,8 @@ namespace Rayni
 				I i;
 				F f;
 			} u;
-			u.i = i;
-			return u.f;
+			u.i = i; // NOLINT(cppcoreguidelines-pro-type-union-access) Type punning is a valid use case.
+			return u.f; // NOLINT(cppcoreguidelines-pro-type-union-access)
 		}
 
 		std::unique_ptr<std::istream> istream_;

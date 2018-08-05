@@ -23,13 +23,6 @@
 #   https://llvm.org/bugs/show_bug.cgi?id=31039
 #   https://llvm.org/bugs/show_bug.cgi?id=31420
 #
-# - cppcoreguidelines-pro-type-union-access is disabled since C++17 is not
-#   released yet and hence std::variant, which the check suggests, cannot be
-#   used. Boost, which the check gives as an alternative, is not an option.
-#   It also warns when accessing unions in system headers, which is not
-#   something the user can change. See
-#   https://llvm.org/bugs/show_bug.cgi?id=31418 .
-#
 # - cppcoreguidelines-pro-type-vararg is disabled because it reports false
 #   positives in googletest. See https://llvm.org/bugs/show_bug.cgi?id=31194 .
 #
@@ -61,7 +54,6 @@ cppcoreguidelines-*,\
 -cppcoreguidelines-pro-bounds-*,\
 -cppcoreguidelines-pro-type-cstyle-cast,\
 -cppcoreguidelines-pro-type-member-init,\
--cppcoreguidelines-pro-type-union-access,\
 -cppcoreguidelines-pro-type-vararg,\
 -cppcoreguidelines-special-member-functions,\
 google-build-namespaces,\

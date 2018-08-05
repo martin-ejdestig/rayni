@@ -50,7 +50,7 @@ namespace Rayni
 
 	Transform AnimatedTransform::interpolate(real_t time) const
 	{
-		real_t ct = std::min(std::max(time, start_time_), end_time_);
+		real_t ct = std::clamp(time, start_time_, end_time_);
 		real_t dt = (ct - start_time_) / (end_time_ - start_time_);
 		Matrix4x4 m = start_.interpolate(dt, end_).compose();
 

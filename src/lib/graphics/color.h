@@ -156,9 +156,9 @@ namespace Rayni
 
 		Color clamp() const
 		{
-			return {std::min(std::max(r_, real_t(0)), real_t(1)),
-			        std::min(std::max(g_, real_t(0)), real_t(1)),
-			        std::min(std::max(b_, real_t(0)), real_t(1))};
+			return {std::clamp(r_, real_t(0), real_t(1)),
+			        std::clamp(g_, real_t(0), real_t(1)),
+			        std::clamp(b_, real_t(0), real_t(1))};
 		}
 
 	private:

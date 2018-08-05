@@ -47,7 +47,7 @@ namespace Rayni
 		if (dot > real_t(0.9995))
 			return lerp(t, x0, x1).normalize();
 
-		real_t angle = std::acos(std::min(std::max(dot, real_t(-1)), real_t(1)));
+		real_t angle = std::acos(std::clamp(dot, real_t(-1), real_t(1)));
 		real_t angle_t = angle * t;
 		T orthogonal_to_x0 = (x1 - x0 * dot).normalize();
 

@@ -23,6 +23,7 @@
 #include <sys/epoll.h>
 #include <unistd.h>
 
+#include <algorithm>
 #include <cerrno>
 #include <chrono>
 #include <cstddef>
@@ -157,7 +158,7 @@ namespace Rayni
 			static constexpr int TIMEOUT_MAX_INT = std::numeric_limits<int>::max();
 
 			int max_events_int = int(std::min(max_events, std::size_t(NUM_EVENTS_MAX_INT)));
-			int timeout_int = int(std::min(std::max(MsRep(-1), timeout.count()), MsRep(TIMEOUT_MAX_INT)));
+			int timeout_int = int(std::clamp(timeout.count(), MsRep(-1), MsRep(TIMEOUT_MAX_INT)));
 			int ret = 0;
 
 			while (true) // Loops if EINTR. Will cause timeout "drift" but leave as is for now.

@@ -75,8 +75,7 @@ namespace Rayni
 
 		ListenerList()
 		{
-			static_assert(std::is_base_of<ListenerBase, Listener>::value,
-			              "Listener must inherit from ListenerBase");
+			static_assert(std::is_base_of_v<ListenerBase, Listener>);
 		}
 
 		ListenerList(const ListenerList &other) = delete;

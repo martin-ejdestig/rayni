@@ -58,8 +58,7 @@ namespace Rayni
 		if (map.size() != 1)
 			throw Variant::Exception(v, "transform map must contain a single key value pair");
 
-		const std::string &type = map.cbegin()->first;
-		const Variant &args = map.cbegin()->second;
+		const auto &[type, args] = *map.cbegin();
 
 		if (type == "translate")
 			return Transform::translate(args.to<Vector3>());

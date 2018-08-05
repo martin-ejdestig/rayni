@@ -226,9 +226,9 @@ namespace Rayni
 					if (foo->bar == bar)
 						return foo.get();
 
-				foos.emplace_back(std::make_unique<Foo>(bar));
+				auto &new_foo = foos.emplace_back(std::make_unique<Foo>(bar));
 
-				return foos.back().get();
+				return new_foo.get();
 			}
 
 			int bar = 0;

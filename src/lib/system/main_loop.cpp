@@ -149,13 +149,9 @@ namespace Rayni
 			std::lock_guard<std::recursive_mutex> lock(mutex_);
 			clock::time_point expiration = clock::time_point::max();
 
-			for (const auto &key_value : map_)
-			{
-				const Data &data = key_value.second;
-
+			for (const auto &[key, data] : map_)
 				if (data.active())
 					expiration = std::min(expiration, data.expiration);
-			}
 
 			if (expiration == clock::time_point::max())
 				return std::nullopt;
@@ -173,10 +169,8 @@ namespace Rayni
 			{
 				dispatch_needed = false;
 
-				for (auto &key_value : map_)
+				for (auto &[key, data] : map_)
 				{
-					Data &data = key_value.second;
-
 					if (data.expired(now))
 					{
 						data.dispatch();

@@ -38,9 +38,7 @@ namespace Rayni
 	public:
 		static constexpr unsigned int SIZE = Vector4::SIZE;
 
-		Matrix4x4()
-		{
-		}
+		Matrix4x4() = default;
 
 		Matrix4x4(const Vector4 &row0, const Vector4 &row1, const Vector4 &row2, const Vector4 &row3) :
 		        rows_{row0, row1, row2, row3}

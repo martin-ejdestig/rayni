@@ -38,9 +38,7 @@ namespace Rayni
 	public:
 		static constexpr unsigned int SIZE = 3;
 
-		Vector3()
-		{
-		}
+		Vector3() = default;
 
 		constexpr Vector3(real_t x, real_t y, real_t z) : xyz_{x, y, z}
 		{

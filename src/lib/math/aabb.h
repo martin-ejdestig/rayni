@@ -34,9 +34,7 @@ namespace Rayni
 	public:
 		struct Split;
 
-		AABB()
-		{
-		}
+		AABB() = default;
 
 		AABB(const Vector3 &minimum, const Vector3 &maximum) : minimum_(minimum), maximum_(maximum)
 		{

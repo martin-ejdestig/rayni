@@ -36,9 +36,7 @@ namespace Rayni
 	public:
 		static constexpr unsigned int SIZE = Vector3::SIZE;
 
-		Matrix3x3()
-		{
-		}
+		Matrix3x3() = default;
 
 		Matrix3x3(const Vector3 &row0, const Vector3 &row1, const Vector3 &row2) : rows_{row0, row1, row2}
 		{

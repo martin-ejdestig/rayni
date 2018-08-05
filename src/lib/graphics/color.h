@@ -32,9 +32,7 @@ namespace Rayni
 	class Color
 	{
 	public:
-		Color()
-		{
-		}
+		Color() = default;
 
 		constexpr Color(real_t r, real_t g, real_t b) : r_(r), g_(g), b_(b)
 		{

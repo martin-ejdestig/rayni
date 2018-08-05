@@ -30,9 +30,7 @@
 
 namespace Rayni
 {
-	Image::Image()
-	{
-	}
+	Image::Image() = default;
 
 	Image::Image(Image &&other) noexcept :
 	        width_(std::exchange(other.width_, 0)),

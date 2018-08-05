@@ -30,9 +30,7 @@ namespace Rayni
 	class Quaternion
 	{
 	public:
-		Quaternion()
-		{
-		}
+		Quaternion() = default;
 
 		Quaternion(real_t x, real_t y, real_t z, real_t w) : x_(x), y_(y), z_(z), w_(w)
 		{

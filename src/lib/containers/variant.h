@@ -50,7 +50,7 @@ namespace Rayni
 			initialize_from(std::move(other));
 		}
 
-		explicit Variant(Map &&map) : type_(Type::MAP)
+		explicit Variant(Map &&map) noexcept : type_(Type::MAP)
 		{
 			new (&value_.map) Map(std::move(map));
 			reparent_children();
@@ -74,7 +74,7 @@ namespace Rayni
 			return Variant(std::move(map));
 		}
 
-		explicit Variant(Vector &&vector) : type_(Type::VECTOR)
+		explicit Variant(Vector &&vector) noexcept : type_(Type::VECTOR)
 		{
 			new (&value_.vector) Vector(std::move(vector));
 			reparent_children();
@@ -95,27 +95,27 @@ namespace Rayni
 			return Variant(std::move(vector));
 		}
 
-		explicit Variant(bool boolean) : type_(Type::BOOL)
+		explicit Variant(bool boolean) noexcept : type_(Type::BOOL)
 		{
 			value_.boolean = boolean;
 		}
 
-		explicit Variant(int number) : type_(Type::INT)
+		explicit Variant(int number) noexcept : type_(Type::INT)
 		{
 			value_.number_int = number;
 		}
 
-		explicit Variant(unsigned int number) : type_(Type::UNSIGNED_INT)
+		explicit Variant(unsigned int number) noexcept : type_(Type::UNSIGNED_INT)
 		{
 			value_.number_unsigned_int = number;
 		}
 
-		explicit Variant(float number) : type_(Type::FLOAT)
+		explicit Variant(float number) noexcept : type_(Type::FLOAT)
 		{
 			value_.number_float = number;
 		}
 
-		explicit Variant(double number) : type_(Type::DOUBLE)
+		explicit Variant(double number) noexcept : type_(Type::DOUBLE)
 		{
 			value_.number_double = number;
 		}
@@ -124,7 +124,7 @@ namespace Rayni
 		{
 		}
 
-		explicit Variant(std::string &&string) : type_(Type::STRING)
+		explicit Variant(std::string &&string) noexcept : type_(Type::STRING)
 		{
 			new (&value_.string) std::string(std::move(string));
 		}
@@ -366,7 +366,7 @@ namespace Rayni
 
 		void reset_to_none() noexcept;
 		void initialize_from(Variant &&other) noexcept;
-		void reparent_children();
+		void reparent_children() noexcept;
 
 		Map::const_iterator map_iterator(const std::string &key) const;
 

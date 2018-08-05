@@ -106,7 +106,7 @@ namespace Rayni
 		other.reset_to_none();
 	}
 
-	void Variant::reparent_children()
+	void Variant::reparent_children() noexcept
 	{
 		if (is_map())
 		{

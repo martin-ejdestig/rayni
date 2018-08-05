@@ -62,18 +62,14 @@ namespace Rayni
 
 	TEST(EventFD, MaxValue)
 	{
-		// TODO: EXPECT_EQ => odr-use. C++17 will add inline variables and (constexpr variables will be
-		//       implicitly inlined). Should be possible to remove MAX and use EventFD::MAX_VALUE directly then.
-		static constexpr auto MAX = EventFD::MAX_VALUE;
-
 		EventFD event_fd;
 
 		event_fd.write(EventFD::MAX_VALUE);
-		EXPECT_EQ(MAX, event_fd.read());
+		EXPECT_EQ(EventFD::MAX_VALUE, event_fd.read());
 
 		event_fd.write(EventFD::MAX_VALUE - 1);
 		event_fd.write(1);
-		EXPECT_EQ(MAX, event_fd.read());
+		EXPECT_EQ(EventFD::MAX_VALUE, event_fd.read());
 	}
 
 	TEST(EventFD, Poll)

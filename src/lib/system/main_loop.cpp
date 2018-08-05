@@ -112,11 +112,12 @@ namespace Rayni
 	class MainLoop::TimerData
 	{
 	public:
+		// TODO: [[nodiscard]] when https://bugs.llvm.org/show_bug.cgi?id=38401 is fixed.
 		TimerId set(const Timer *timer,
 		            TimerId id,
 		            clock::time_point expiration,
 		            std::chrono::nanoseconds interval,
-		            std::function<void()> &&callback) // TODO: [[nodiscard]] when C++17
+		            std::function<void()> &&callback)
 		{
 			std::lock_guard<std::recursive_mutex> lock(mutex_);
 

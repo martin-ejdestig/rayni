@@ -192,7 +192,8 @@ def _download_and_extract(download_file: DownloadFile,
     if digest != download_file.digest:
         _download(download_file.url, dest_path)
 
-        if _hash_file(dest_path) != download_file.digest:
+        digest = _hash_file(dest_path)
+        if digest != download_file.digest:
             raise RuntimeError(f'{download_file.url} hash mismatch ({digest}, '
                                f'expected {download_file.digest})')
 

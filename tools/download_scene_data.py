@@ -31,6 +31,60 @@ import zipfile
 from typing import BinaryIO, Iterable, Optional
 
 
+class DownloadFile:
+    def __init__(self,
+                 url: str,
+                 digest: str,
+                 dest_dir_path: str,
+                 archive_member: Optional[str] = None) -> None:
+        self.url = url
+        self.digest = digest
+        self.dest_dir_path = dest_dir_path
+        self.archive_member = archive_member
+
+
+_SPONZA_DOWNLOAD_FILES = [
+    DownloadFile('http://www.crytek.com/download/sponza_obj.rar',
+                 '0add5d571196781fa3e819821d1b313c5dc0670bb8c89c5705d1cf9c9baa451b',
+                 'sponza'),
+
+    DownloadFile('http://www.crytek.com/download/sponza_textures.rar',
+                 '31d4bbf3748d7099cc0afeb452d7a6959d15455b8e3be167e35e4bffd2c738c4',
+                 'sponza')
+]
+
+_STANFORD_DOWNLOAD_FILES = [
+    DownloadFile('http://graphics.stanford.edu/pub/3Dscanrep/bunny.tar.gz',
+                 'a5720bd96d158df403d153381b8411a727a1d73cff2f33dc9b212d6f75455b84',
+                 'stanford',
+                 'bunny/reconstruction/bun_zipper.ply'),
+
+    DownloadFile('http://graphics.stanford.edu/pub/3Dscanrep/dragon/dragon_recon.tar.gz',
+                 '74ac1d90989c9b1732edee82d57e9ce71452144cf4355f108d8c9c616d28d02f',
+                 'stanford',
+                 'dragon_recon/dragon_vrip.ply'),
+
+    DownloadFile('http://graphics.stanford.edu/pub/3Dscanrep/happy/happy_recon.tar.gz',
+                 '409cd294efbfd8244e15a382b95a9423f153b7776e736c9b09f19ec9d3c10ed0',
+                 'stanford',
+                 'happy_recon/happy_vrip.ply'),
+
+    DownloadFile('http://graphics.stanford.edu/data/3Dscanrep/lucy.tar.gz',
+                 'c4beb1f7bfa965643bbbf889bd1849a4b4b955e95c731941be61e6edac65616a',
+                 'stanford'),
+
+    DownloadFile('http://graphics.stanford.edu/data/3Dscanrep/xyzrgb/xyzrgb_dragon.ply.gz',
+                 '8aa449f1966cbb50e5896ecc32cf57ab5f0cdfd3c3e37d3e6f60b948997da5c1',
+                 'stanford'),
+
+    DownloadFile('http://graphics.stanford.edu/data/3Dscanrep/xyzrgb/xyzrgb_statuette.ply.gz',
+                 '1d867b6540c02935caa777bd6746429a62d4a5d23f11c9bfdfebbaa90c05ca8b',
+                 'stanford')
+]
+
+_DOWNLOAD_FILES = _SPONZA_DOWNLOAD_FILES + _STANFORD_DOWNLOAD_FILES
+
+
 def _print_no_newline(string: str):
     print(string, end='', flush=True)
 
@@ -128,7 +182,7 @@ def _extract(archive_path: str, dest_dir_path: str, archive_member: Optional[str
     print('done')
 
 
-def _download_and_extract(download_file,
+def _download_and_extract(download_file: DownloadFile,
                           download_dir_path: str,
                           scenes_dir_path: str):
     basename = os.path.basename(download_file.url)
@@ -145,59 +199,6 @@ def _download_and_extract(download_file,
     _extract(dest_path,
              os.path.join(scenes_dir_path, download_file.dest_dir_path),
              download_file.archive_member)
-
-class DownloadFile:
-    def __init__(self,
-                 url: str,
-                 digest: str,
-                 dest_dir_path: str,
-                 archive_member: Optional[str] = None) -> None:
-        self.url = url
-        self.digest = digest
-        self.dest_dir_path = dest_dir_path
-        self.archive_member = archive_member
-
-
-_SPONZA_DOWNLOAD_FILES = [
-    DownloadFile('http://www.crytek.com/download/sponza_obj.rar',
-                 '0add5d571196781fa3e819821d1b313c5dc0670bb8c89c5705d1cf9c9baa451b',
-                 'sponza'),
-
-    DownloadFile('http://www.crytek.com/download/sponza_textures.rar',
-                 '31d4bbf3748d7099cc0afeb452d7a6959d15455b8e3be167e35e4bffd2c738c4',
-                 'sponza')
-]
-
-_STANFORD_DOWNLOAD_FILES = [
-    DownloadFile('http://graphics.stanford.edu/pub/3Dscanrep/bunny.tar.gz',
-                 'a5720bd96d158df403d153381b8411a727a1d73cff2f33dc9b212d6f75455b84',
-                 'stanford',
-                 'bunny/reconstruction/bun_zipper.ply'),
-
-    DownloadFile('http://graphics.stanford.edu/pub/3Dscanrep/dragon/dragon_recon.tar.gz',
-                 '74ac1d90989c9b1732edee82d57e9ce71452144cf4355f108d8c9c616d28d02f',
-                 'stanford',
-                 'dragon_recon/dragon_vrip.ply'),
-
-    DownloadFile('http://graphics.stanford.edu/pub/3Dscanrep/happy/happy_recon.tar.gz',
-                 '409cd294efbfd8244e15a382b95a9423f153b7776e736c9b09f19ec9d3c10ed0',
-                 'stanford',
-                 'happy_recon/happy_vrip.ply'),
-
-    DownloadFile('http://graphics.stanford.edu/data/3Dscanrep/lucy.tar.gz',
-                 'c4beb1f7bfa965643bbbf889bd1849a4b4b955e95c731941be61e6edac65616a',
-                 'stanford'),
-
-    DownloadFile('http://graphics.stanford.edu/data/3Dscanrep/xyzrgb/xyzrgb_dragon.ply.gz',
-                 '8aa449f1966cbb50e5896ecc32cf57ab5f0cdfd3c3e37d3e6f60b948997da5c1',
-                 'stanford'),
-
-    DownloadFile('http://graphics.stanford.edu/data/3Dscanrep/xyzrgb/xyzrgb_statuette.ply.gz',
-                 '1d867b6540c02935caa777bd6746429a62d4a5d23f11c9bfdfebbaa90c05ca8b',
-                 'stanford')
-]
-
-_DOWNLOAD_FILES = _SPONZA_DOWNLOAD_FILES + _STANFORD_DOWNLOAD_FILES
 
 
 def main():

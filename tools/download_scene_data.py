@@ -128,31 +128,34 @@ def _extract(archive_path: str, dest_dir_path: str, archive_member: Optional[str
     print('done')
 
 
+def _download_and_extract(download_file,
+                          download_dir_path: str,
+                          scenes_dir_path: str):
+    basename = os.path.basename(download_file.url)
+    dest_path = os.path.join(download_dir_path, download_file.dest_dir_path, basename)
+    digest = _hash_file(dest_path) if os.path.exists(dest_path) else None
+
+    if digest != download_file.digest:
+        _download(download_file.url, dest_path)
+
+        if _hash_file(dest_path) != download_file.digest:
+            raise RuntimeError(f'{download_file.url} hash mismatch ({digest}, '
+                               f'expected {download_file.digest})')
+
+    _extract(dest_path,
+             os.path.join(scenes_dir_path, download_file.dest_dir_path),
+             download_file.archive_member)
+
 class DownloadFile:
     def __init__(self,
                  url: str,
                  digest: str,
                  dest_dir_path: str,
                  archive_member: Optional[str] = None) -> None:
-        self._url = url
-        self._digest = digest
-        self._dest_dir_path = dest_dir_path
-        self._archive_member = archive_member
-
-    def download_and_extract(self, download_dir_path: str, scenes_dir_path: str):
-        basename = os.path.basename(self._url)
-        dest_path = os.path.join(download_dir_path, self._dest_dir_path, basename)
-        digest = _hash_file(dest_path) if os.path.exists(dest_path) else None
-
-        if digest != self._digest:
-            _download(self._url, dest_path)
-
-            if _hash_file(dest_path) != self._digest:
-                raise RuntimeError(f'{self._url} hash mismatch ({digest}, expected {self._digest})')
-
-        _extract(dest_path,
-                 os.path.join(scenes_dir_path, self._dest_dir_path),
-                 self._archive_member)
+        self.url = url
+        self.digest = digest
+        self.dest_dir_path = dest_dir_path
+        self.archive_member = archive_member
 
 
 _SPONZA_DOWNLOAD_FILES = [
@@ -213,7 +216,7 @@ def main():
     scenes_dir_path = sys.argv[2]
 
     for download_file in _DOWNLOAD_FILES:
-        download_file.download_and_extract(download_dir_path, scenes_dir_path)
+        _download_and_extract(download_file, download_dir_path, scenes_dir_path)
 
 
 if __name__ == "__main__":

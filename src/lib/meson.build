@@ -60,6 +60,7 @@ lib_sources = [
     'math/matrix3x3.h',
     'math/matrix4x4.h',
     'math/matrix_inverse.h',
+    'math/numeric_cast.h',
     'math/polar_decomposition.h',
     'math/quaternion.h',
     'math/ray.h',

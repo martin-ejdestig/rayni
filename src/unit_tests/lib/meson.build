@@ -33,6 +33,7 @@ lib_unit_tests_sources = [
     'math/math.cpp',
     'math/matrix3x3.cpp',
     'math/matrix4x4.cpp',
+    'math/numeric_cast.cpp',
     'math/polar_decomposition.cpp',
     'math/quaternion.cpp',
     'math/transform.cpp',

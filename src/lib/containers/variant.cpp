@@ -20,8 +20,9 @@
 #include "lib/containers/variant.h"
 
 #include <cassert>
-#include <cmath>
 #include <string>
+
+#include "lib/math/numeric_cast.h"
 
 namespace Rayni
 {
@@ -159,56 +160,80 @@ namespace Rayni
 	{
 		if (is_int())
 			return as_int();
-		if (is_unsigned_int())
-			return static_cast<int>(as_unsigned_int());
-		if (is_float())
-			return static_cast<int>(std::round(as_float()));
-		if (is_double())
-			return static_cast<int>(std::round(as_double()));
 
-		throw Exception(*this, "cannot convert to int");
+		std::optional<int> result;
+
+		if (is_unsigned_int())
+			result = numeric_cast<int>(as_unsigned_int());
+		else if (is_float())
+			result = numeric_cast<int>(as_float());
+		else if (is_double())
+			result = numeric_cast<int>(as_double());
+
+		if (!result.has_value())
+			throw Exception(*this, "cannot convert to int");
+
+		return result.value();
 	}
 
 	unsigned int Variant::to_unsigned_int() const
 	{
-		if (is_int())
-			return static_cast<unsigned int>(as_int());
 		if (is_unsigned_int())
 			return as_unsigned_int();
-		if (is_float())
-			return static_cast<unsigned int>(std::round(as_float()));
-		if (is_double())
-			return static_cast<unsigned int>(std::round(as_double()));
 
-		throw Exception(*this, "cannot convert to unsigned int");
+		std::optional<unsigned int> result;
+
+		if (is_int())
+			result = numeric_cast<unsigned int>(as_int());
+		else if (is_float())
+			result = numeric_cast<unsigned int>(as_float());
+		else if (is_double())
+			result = numeric_cast<unsigned int>(as_double());
+
+		if (!result.has_value())
+			throw Exception(*this, "cannot convert to unsigned int");
+
+		return result.value();
 	}
 
 	float Variant::to_float() const
 	{
-		if (is_int())
-			return static_cast<float>(as_int());
-		if (is_unsigned_int())
-			return static_cast<float>(as_unsigned_int());
 		if (is_float())
 			return as_float();
-		if (is_double())
-			return static_cast<float>(as_double());
 
-		throw Exception(*this, "cannot convert to float");
+		std::optional<float> result;
+
+		if (is_int())
+			result = numeric_cast<float>(as_int());
+		else if (is_unsigned_int())
+			result = numeric_cast<float>(as_unsigned_int());
+		else if (is_double())
+			result = numeric_cast<float>(as_double());
+
+		if (!result.has_value())
+			throw Exception(*this, "cannot convert to float");
+
+		return result.value();
 	}
 
 	double Variant::to_double() const
 	{
-		if (is_int())
-			return static_cast<double>(as_int());
-		if (is_unsigned_int())
-			return static_cast<double>(as_unsigned_int());
-		if (is_float())
-			return static_cast<double>(as_float());
 		if (is_double())
 			return as_double();
 
-		throw Exception(*this, "cannot convert to double");
+		std::optional<double> result;
+
+		if (is_int())
+			result = numeric_cast<double>(as_int());
+		else if (is_unsigned_int())
+			result = numeric_cast<double>(as_unsigned_int());
+		else if (is_float())
+			result = numeric_cast<double>(as_float());
+
+		if (!result.has_value())
+			throw Exception(*this, "cannot convert to double");
+
+		return result.value();
 	}
 
 	std::string Variant::to_string() const

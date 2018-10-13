@@ -1,4 +1,21 @@
 ---
+# - bugprone-exception-escape is disabled because it causes too many false
+#   positives. E.g. if a function marked noexcept needs to take a mutex lock
+#   and that throws a std::system_error, what other reasonable thing is there
+#   to do than to exit the program? This is well defined. (std::terminate() is
+#   called if an exception is thrown in a method marked noexcept.) There also
+#   seems to be a bug with std::variant/std::monostate. Warnings are emitted
+#   even though only std::variant/std::monostate methods that should be noexcept
+#   are called in a function marked noexcept. Unclear if the bug is in
+#   clang-tidy or libstdc++. TODO: Fixed? File bug(s)?
+#
+# - bugprone-suspicious-semicolon is broken with "if constexpr" in templates. See
+#   https://bugs.llvm.org/show_bug.cgi?id=35824 .
+#
+# - clang-analyzer-* is disabled because... googletest... *sigh*.
+#
+# - cppcoreguidelines-avoid-goto is disabled because googletest uses goto.
+#
 # - cppcoreguidelines-owning-memory is disabled because googletest uses new in
 #   its TEST macro to create testing::internal::TestFactoryImp.
 #
@@ -29,9 +46,6 @@
 # - cppcoreguidelines-special-member-functions is disabled because violations
 #   in googletest macros. E.g. each TEST(..) emits warning.
 #
-# - misc-suspicious-semicolon is broken with "if constexpr" in templates. See
-#   https://bugs.llvm.org/show_bug.cgi?id=35824 .
-#
 # - modernize-pass-by-value is disabled because it causes many "false" warnings
 #   and I have never really liked the recommendation in general. It is too
 #   broad. It also seems like the C++ community has swung around a bit on this
@@ -43,10 +57,17 @@
 # - modernize-use-equals-delete is disabled because Google Test does not use
 #   = delete. Filed https://github.com/google/googletest/issues/1072 for at
 #   least adding NOLINT.
+#
+# - readability-misleading-indentation is broken with "if constexpr". See
+#   https://bugs.llvm.org/show_bug.cgi?id=32204 .
 
 Checks: "\
 bugprone-*,\
+-bugprone-exception-escape,\
+-bugprone-suspicious-semicolon,\
+-clang-analyzer-*,\
 cppcoreguidelines-*,\
+-cppcoreguidelines-avoid-goto,\
 -cppcoreguidelines-owning-memory,\
 -cppcoreguidelines-pro-bounds-*,\
 -cppcoreguidelines-pro-type-cstyle-cast,\
@@ -60,13 +81,13 @@ google-explicit-constructor,\
 google-global-names-in-headers,\
 google-readability-casting,\
 misc-*,\
--misc-suspicious-semicolon,\
 modernize-*,\
 -modernize-pass-by-value,\
 -modernize-raw-string-literal,\
 -modernize-use-equals-delete,\
 performance-*,\
 readability-*,\
+-readability-misleading-indentation,\
 "
 
 HeaderFilterRegex: '^src/'

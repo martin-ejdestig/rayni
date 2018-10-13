@@ -59,6 +59,7 @@ namespace Rayni
 				if constexpr (std::is_unsigned_v<V>)
 					return CU(v) <= CU(std::numeric_limits<T>::max());
 
+				// NOLINTNEXTLINE(misc-redundant-expression) False positive. TODO: Fixed? File bug?
 				return C(v) <= C(std::numeric_limits<T>::max()) &&
 				       C(v) >= C(std::numeric_limits<T>::lowest());
 			}

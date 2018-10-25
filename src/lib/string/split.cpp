@@ -32,9 +32,6 @@ namespace Rayni
 
 		while (!remaining.empty())
 		{
-			// TODO: False positive in Clang's analyzer with structured bindings. Remove
-			// once Clang 7.0 is released. See https://bugs.llvm.org/show_bug.cgi?id=36283 .
-			// NOLINTNEXTLINE(clang-analyzer-deadcode.DeadStores)
 			auto [left, right] = string_split_to_array<std::string_view, 2>(remaining, split_char);
 			splits.emplace_back(left);
 			remaining = right;

@@ -102,7 +102,7 @@ CheckOptions:
   - key:   readability-braces-around-statements.ShortStatementLines
     value: '8'
   - key:   readability-function-size.LineThreshold
-    value: '64'
+    value: '100'
   - key:   readability-function-size.ParameterThreshold
     value: '8'
   - key:   readability-identifier-naming.AbstractClassCase

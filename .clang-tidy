@@ -22,10 +22,6 @@
 # - modernize-raw-string-literal is disabled because it is too agressive. See
 #   https://llvm.org/bugs/show_bug.cgi?id=30964
 #
-# - modernize-use-equals-delete is disabled because Google Test does not use
-#   = delete. Filed https://github.com/google/googletest/issues/1072 for at
-#   least adding NOLINT.
-#
 # - readability-misleading-indentation is broken with "if constexpr". See
 #   https://bugs.llvm.org/show_bug.cgi?id=32204 .
 
@@ -44,7 +40,6 @@ misc-*,\
 modernize-*,\
 -modernize-pass-by-value,\
 -modernize-raw-string-literal,\
--modernize-use-equals-delete,\
 performance-*,\
 readability-*,\
 -readability-misleading-indentation,\

@@ -34,7 +34,7 @@ namespace Rayni
 			return size_ == 0;
 		}
 
-		void push(const Type &&value)
+		void push(Type &&value)
 		{
 			assert(size_ < MAX_SIZE);
 			array_[size_] = std::move(value);

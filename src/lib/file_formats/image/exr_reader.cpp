@@ -17,12 +17,6 @@
  * along with Rayni. If not, see <http://www.gnu.org/licenses/>.
  */
 
-// TODO: Remove and update version in meson.build when version that is C++17 compatible has been
-//       released. See https://github.com/openexr/openexr/issues/289 .
-#if !__has_include(<OpenEXRConfig.h>)
-#	define RAYNI_OPENEXR_TOO_OLD_OR_NOT_AVAILABLE
-#endif
-
 #include "lib/file_formats/image/exr_reader.h"
 
 #if defined __clang__
@@ -40,12 +34,12 @@
 #	pragma GCC diagnostic ignored "-Wsuggest-override"
 #	pragma GCC diagnostic ignored "-Wzero-as-null-pointer-constant"
 #endif
-#ifndef RAYNI_OPENEXR_TOO_OLD_OR_NOT_AVAILABLE
-#	include <IexBaseExc.h>
-#	include <ImathBox.h>
-#	include <ImfRgba.h>
-#	include <ImfRgbaFile.h>
-#endif
+
+#include <IexBaseExc.h>
+#include <ImathBox.h>
+#include <ImfRgba.h>
+#include <ImfRgbaFile.h>
+
 #if defined __clang__
 #	pragma clang diagnostic pop
 #elif defined __GNUC__
@@ -63,9 +57,6 @@ namespace Rayni
 {
 	Image EXRReader::read_file(const std::string &file_name)
 	{
-#ifdef RAYNI_OPENEXR_TOO_OLD_OR_NOT_AVAILABLE
-		throw Exception(file_name, "OpenEXR too old (does not support C++17) or not available.");
-#else
 		Image image;
 		std::vector<Imf::Rgba> pixels;
 
@@ -104,6 +95,5 @@ namespace Rayni
 		}
 
 		return image;
-#endif
 	}
 }

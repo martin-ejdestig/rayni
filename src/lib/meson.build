@@ -2,7 +2,7 @@ lib_dependencies = [
     dependency('libjpeg', version : '>=1.5.0'),
     dependency('libpng', version : '>=1.6'),
     dependency('libwebp', version : '>=0.4'),
-    dependency('OpenEXR', version : '>2.2.1', required : false) # TODO: Remove "required : false". See exr_reader.cpp.
+    dependency('OpenEXR', version : '>=2.3.0')
 ]
 
 lib_sources = [

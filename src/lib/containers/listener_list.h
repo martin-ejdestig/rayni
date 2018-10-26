@@ -33,21 +33,9 @@ namespace Rayni
 	public:
 		class ListenerBase
 		{
-			friend class ListenerList<Listener>;
-
-		protected:
-			explicit ListenerBase(Listener &self) : self_(self)
-			{
-			}
-
+		public:
 			ListenerBase(const ListenerBase &other) = delete;
 			ListenerBase(ListenerBase &&other) = delete;
-
-			virtual ~ListenerBase()
-			{
-				if (list_)
-					list_->remove(self_);
-			}
 
 			ListenerBase &operator=(const ListenerBase &other) = delete; // TODO: Make copyable... ?
 
@@ -68,7 +56,20 @@ namespace Rayni
 				return *this;
 			}
 
+		protected:
+			explicit ListenerBase(Listener &self) : self_(self)
+			{
+			}
+
+			virtual ~ListenerBase()
+			{
+				if (list_)
+					list_->remove(self_);
+			}
+
 		private:
+			friend class ListenerList<Listener>;
+
 			Listener &self_; // Needed to avoid unsafe downcast. TODO: Alternatives?
 			ListenerList<Listener> *list_ = nullptr;
 		};

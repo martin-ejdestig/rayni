@@ -39,6 +39,7 @@ lib_unit_tests_sources = [
     'math/transform.cpp',
     'math/vector3.cpp',
     'math/vector4.cpp',
+    'shapes/triangle_mesh_data.cpp',
     'string/base85.cpp',
     'string/split.cpp',
     'string/string.cpp',

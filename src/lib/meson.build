@@ -68,6 +68,8 @@ lib_sources = [
     'math/transform.h',
     'math/vector3.h',
     'math/vector4.h',
+    'shapes/triangle_mesh_data.cpp',
+    'shapes/triangle_mesh_data.h',
     'string/base85.cpp',
     'string/base85.h',
     'string/split.cpp',

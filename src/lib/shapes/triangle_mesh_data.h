@@ -36,7 +36,6 @@ namespace Rayni
 	struct TriangleMeshData
 	{
 		struct Indices;
-		struct Data;
 		struct UV;
 
 		using Index = unsigned int;

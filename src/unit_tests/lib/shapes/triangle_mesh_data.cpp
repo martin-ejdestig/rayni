@@ -51,7 +51,7 @@ namespace Rayni
 
 				for (unsigned int j = 0; j < 3; j++)
 				{
-					if (std::abs(diff[i]) > abs_error)
+					if (std::abs(diff[j]) > abs_error)
 						return testing::AssertionFailure()
 						       << "Normal component " << j << " of normal " << i
 						       << " differs more than " << abs_error_expr << ".\n"

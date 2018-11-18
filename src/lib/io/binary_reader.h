@@ -31,7 +31,6 @@
 #include <utility>
 #include <vector>
 
-#include "lib/function/scope_exit.h"
 #include "lib/io/io_exception.h"
 
 namespace Rayni

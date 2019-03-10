@@ -1,6 +1,5 @@
 project('rayni-staging',
         'cpp',
-        license : 'GPLv3+',
         version : '0.0.1',
         meson_version : '>=0.46.0',
         default_options : [

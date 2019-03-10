@@ -60,7 +60,7 @@ lib_unit_tests_sources = [
 
 lib_unit_tests = executable('librayni-unit_tests',
                             include_directories : src_incdir,
-                            dependencies : [gtest_dependency, lib_dependency],
+                            dependencies : [gtest_dep, lib_dep],
                             sources : lib_unit_tests_sources)
 
 test('librayni tests', lib_unit_tests)

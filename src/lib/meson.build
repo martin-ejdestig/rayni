@@ -1,4 +1,4 @@
-lib_dependencies = [
+lib_deps = [
     dependency('libjpeg', version : '>=1.5.0'),
     dependency('libpng', version : '>=1.6'),
     dependency('libwebp', version : '>=0.4'),
@@ -102,10 +102,10 @@ lib_sources = [
 ]
 
 lib = static_library('rayni',
-                     dependencies : lib_dependencies,
+                     dependencies : lib_deps,
                      include_directories : src_incdir,
                      sources : lib_sources,
                      pic : false)
 
-lib_dependency = declare_dependency(include_directories : src_incdir,
-                                    link_with : lib)
+lib_dep = declare_dependency(include_directories : src_incdir,
+                             link_with : lib)

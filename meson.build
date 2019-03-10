@@ -51,8 +51,8 @@ if get_option('ofast_native') and get_option('buildtype') == 'release'
     cpp_link_args += ['-Ofast', '-march=native']
 endif
 
-add_global_arguments(cpp_args, language : 'cpp')
-add_global_link_arguments(cpp_link_args, language : 'cpp')
+add_project_arguments(cpp_args, language : 'cpp')
+add_project_link_arguments(cpp_link_args, language : 'cpp')
 
 subdir('external')
 subdir('src')

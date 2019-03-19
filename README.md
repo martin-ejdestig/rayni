@@ -2,4 +2,4 @@
 
 [![License](http://img.shields.io/:License-GPLv3+-blue.svg)](COPYING)
 
-Work in progress path tracer.
+Public staging area for Rayni, a work in progress path tracer.

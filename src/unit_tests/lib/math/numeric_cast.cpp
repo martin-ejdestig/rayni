@@ -80,17 +80,17 @@ namespace Rayni
 	{
 		auto cast = [](float in) { return numeric_cast<std::int8_t>(in); };
 
-		EXPECT_EQ(0, cast(0.0f).value_or(1));
+		EXPECT_EQ(0, cast(0.0F).value_or(1));
 
-		EXPECT_EQ(127, cast(127.0f).value_or(0));
-		EXPECT_EQ(127, cast(127.4f).value_or(0));
-		EXPECT_FALSE(cast(127.5f).has_value());
-		EXPECT_FALSE(cast(128.0f).has_value());
+		EXPECT_EQ(127, cast(127.0F).value_or(0));
+		EXPECT_EQ(127, cast(127.4F).value_or(0));
+		EXPECT_FALSE(cast(127.5F).has_value());
+		EXPECT_FALSE(cast(128.0F).has_value());
 
-		EXPECT_EQ(-128, cast(-128.0f).value_or(0));
-		EXPECT_EQ(-128, cast(-128.4f).value_or(0));
-		EXPECT_FALSE(cast(-128.5f).has_value());
-		EXPECT_FALSE(cast(-129.0f).has_value());
+		EXPECT_EQ(-128, cast(-128.0F).value_or(0));
+		EXPECT_EQ(-128, cast(-128.4F).value_or(0));
+		EXPECT_FALSE(cast(-128.5F).has_value());
+		EXPECT_FALSE(cast(-129.0F).has_value());
 	}
 
 	TEST(NumericCast, Int8FromDouble)
@@ -154,16 +154,16 @@ namespace Rayni
 	{
 		auto cast = [](float in) { return numeric_cast<std::uint8_t>(in); };
 
-		EXPECT_EQ(0, cast(0.0f).value_or(1));
+		EXPECT_EQ(0, cast(0.0F).value_or(1));
 
-		EXPECT_EQ(255, cast(255.0f).value_or(0));
-		EXPECT_EQ(255, cast(255.4f).value_or(0));
-		EXPECT_FALSE(cast(255.5f).has_value());
-		EXPECT_FALSE(cast(256.0f).has_value());
+		EXPECT_EQ(255, cast(255.0F).value_or(0));
+		EXPECT_EQ(255, cast(255.4F).value_or(0));
+		EXPECT_FALSE(cast(255.5F).has_value());
+		EXPECT_FALSE(cast(256.0F).has_value());
 
-		EXPECT_EQ(0, cast(-0.4f).value_or(0));
-		EXPECT_FALSE(cast(-0.5f).has_value());
-		EXPECT_FALSE(cast(-1.0f).has_value());
+		EXPECT_EQ(0, cast(-0.4F).value_or(0));
+		EXPECT_FALSE(cast(-0.5F).has_value());
+		EXPECT_FALSE(cast(-1.0F).has_value());
 	}
 
 	TEST(NumericCast, UInt8FromDouble)
@@ -223,17 +223,17 @@ namespace Rayni
 	{
 		auto cast = [](float in) { return numeric_cast<std::int32_t>(in); };
 
-		EXPECT_EQ(0, cast(0.0f).value_or(1));
+		EXPECT_EQ(0, cast(0.0F).value_or(1));
 
-		EXPECT_EQ(2147483520, cast(2147483520.0f).value_or(0)); // 2^31 - 128
-		EXPECT_EQ(2147483520, cast(2147483583.0f).value_or(0)); // 2^31 - 128 + 63
-		EXPECT_FALSE(cast(2147483584.0f).has_value()); // 2^31 - 128 + 64
-		EXPECT_FALSE(cast(2147483647.0f).has_value()); // 2^31 - 1
+		EXPECT_EQ(2147483520, cast(2147483520.0F).value_or(0)); // 2^31 - 128
+		EXPECT_EQ(2147483520, cast(2147483583.0F).value_or(0)); // 2^31 - 128 + 63
+		EXPECT_FALSE(cast(2147483584.0F).has_value()); // 2^31 - 128 + 64
+		EXPECT_FALSE(cast(2147483647.0F).has_value()); // 2^31 - 1
 
-		EXPECT_EQ(-2147483648, cast(-2147483648.0f).value_or(0)); // - 2^31
-		EXPECT_EQ(-2147483648, cast(-2147483776.0f).value_or(0)); // - 2^31 - 128
-		EXPECT_FALSE(cast(-2147483777.0f).has_value()); // - 2^31 - 129
-		EXPECT_FALSE(cast(-2147483904.0f).has_value()); // - 2^31 - 256
+		EXPECT_EQ(-2147483648, cast(-2147483648.0F).value_or(0)); // - 2^31
+		EXPECT_EQ(-2147483648, cast(-2147483776.0F).value_or(0)); // - 2^31 - 128
+		EXPECT_FALSE(cast(-2147483777.0F).has_value()); // - 2^31 - 129
+		EXPECT_FALSE(cast(-2147483904.0F).has_value()); // - 2^31 - 256
 	}
 
 	TEST(NumericCast, Int32FromDouble)
@@ -297,19 +297,19 @@ namespace Rayni
 	{
 		auto cast = [](float in) { return numeric_cast<std::uint32_t>(in); };
 
-		EXPECT_EQ(0, cast(0.0f).value_or(1));
+		EXPECT_EQ(0, cast(0.0F).value_or(1));
 
-		EXPECT_EQ(4294967040, cast(4294967040.0f).value_or(0)); // 2^32 - 256
-		EXPECT_EQ(4294967040, cast(4294967167.0f).value_or(0)); // 2^32 - 256 + 127
-		EXPECT_FALSE(cast(4294967168.0f).has_value()); // 2^32 - 256 + 128
-		EXPECT_FALSE(cast(4294967295.0f).has_value()); // 2^32 - 1
+		EXPECT_EQ(4294967040, cast(4294967040.0F).value_or(0)); // 2^32 - 256
+		EXPECT_EQ(4294967040, cast(4294967167.0F).value_or(0)); // 2^32 - 256 + 127
+		EXPECT_FALSE(cast(4294967168.0F).has_value()); // 2^32 - 256 + 128
+		EXPECT_FALSE(cast(4294967295.0F).has_value()); // 2^32 - 1
 
-		EXPECT_FALSE(cast(4294967295.5f).has_value());
-		EXPECT_FALSE(cast(4294967296.0f).has_value());
+		EXPECT_FALSE(cast(4294967295.5F).has_value());
+		EXPECT_FALSE(cast(4294967296.0F).has_value());
 
-		EXPECT_EQ(0, cast(-0.4f).value_or(0));
-		EXPECT_FALSE(cast(-0.5f).has_value());
-		EXPECT_FALSE(cast(-1.0f).has_value());
+		EXPECT_EQ(0, cast(-0.4F).value_or(0));
+		EXPECT_FALSE(cast(-0.5F).has_value());
+		EXPECT_FALSE(cast(-1.0F).has_value());
 	}
 
 	TEST(NumericCast, UInt32FromDouble)
@@ -332,80 +332,80 @@ namespace Rayni
 	{
 		auto cast = [](std::int8_t in) { return numeric_cast<float>(in); };
 
-		EXPECT_NEAR(0.0f, cast(0).value_or(1.0f), 1e-100);
-		EXPECT_NEAR(127.0f, cast(127).value_or(0.0f), 1e-100);
-		EXPECT_NEAR(-128.0f, cast(-128).value_or(0.0f), 1e-100);
+		EXPECT_NEAR(0.0F, cast(0).value_or(1.0F), 1e-100);
+		EXPECT_NEAR(127.0F, cast(127).value_or(0.0F), 1e-100);
+		EXPECT_NEAR(-128.0F, cast(-128).value_or(0.0F), 1e-100);
 	}
 
 	TEST(NumericCast, FloatFromUInt8)
 	{
 		auto cast = [](std::uint8_t in) { return numeric_cast<float>(in); };
 
-		EXPECT_NEAR(0.0f, cast(0).value_or(1.0f), 1e-100);
-		EXPECT_NEAR(255.0f, cast(255).value_or(0.0f), 1e-100);
+		EXPECT_NEAR(0.0F, cast(0).value_or(1.0F), 1e-100);
+		EXPECT_NEAR(255.0F, cast(255).value_or(0.0F), 1e-100);
 	}
 
 	TEST(NumericCast, FloatFromInt32)
 	{
 		auto cast = [](std::int32_t in) { return numeric_cast<float>(in); };
 
-		EXPECT_NEAR(0.0f, cast(0).value_or(1.0f), 1e-100);
+		EXPECT_NEAR(0.0F, cast(0).value_or(1.0F), 1e-100);
 
-		EXPECT_NEAR(2147483520.0f, cast(2147483520).value_or(0.0f), 1e-100); // 2^31 - 128
-		EXPECT_NEAR(2147483520.0f, cast(2147483583).value_or(0.0f), 1e-100); // 2^32 - 128 + 63
-		EXPECT_NEAR(2147483648.0f, cast(2147483584).value_or(0.0f), 1e-100); // 2^32 - 128 + 64
-		EXPECT_NEAR(2147483648.0f, cast(2147483647).value_or(0.0f), 1e-100); // 2^31 - 1
+		EXPECT_NEAR(2147483520.0F, cast(2147483520).value_or(0.0F), 1e-100); // 2^31 - 128
+		EXPECT_NEAR(2147483520.0F, cast(2147483583).value_or(0.0F), 1e-100); // 2^32 - 128 + 63
+		EXPECT_NEAR(2147483648.0F, cast(2147483584).value_or(0.0F), 1e-100); // 2^32 - 128 + 64
+		EXPECT_NEAR(2147483648.0F, cast(2147483647).value_or(0.0F), 1e-100); // 2^31 - 1
 
-		EXPECT_NEAR(-2147483648.0f, cast(-2147483648).value_or(0.0f), 1e-100); // - 2^31
-		EXPECT_NEAR(-2147483648.0f, cast(-2147483584).value_or(0.0f), 1e-100); // - 2^31 + 64
-		EXPECT_NEAR(-2147483520.0f, cast(-2147483583).value_or(0.0f), 1e-100); // - 2^31 + 65
-		EXPECT_NEAR(-2147483520.0f, cast(-2147483519).value_or(0.0f), 1e-100); // - 2^31 + 128
+		EXPECT_NEAR(-2147483648.0F, cast(-2147483648).value_or(0.0F), 1e-100); // - 2^31
+		EXPECT_NEAR(-2147483648.0F, cast(-2147483584).value_or(0.0F), 1e-100); // - 2^31 + 64
+		EXPECT_NEAR(-2147483520.0F, cast(-2147483583).value_or(0.0F), 1e-100); // - 2^31 + 65
+		EXPECT_NEAR(-2147483520.0F, cast(-2147483519).value_or(0.0F), 1e-100); // - 2^31 + 128
 	}
 
 	TEST(NumericCast, FloatFromUInt32)
 	{
 		auto cast = [](std::uint32_t in) { return numeric_cast<float>(in); };
 
-		EXPECT_NEAR(0.0f, cast(0).value_or(1.0f), 1e-100);
+		EXPECT_NEAR(0.0F, cast(0).value_or(1.0F), 1e-100);
 
-		EXPECT_NEAR(4294967040.0f, cast(4294967040).value_or(0.0f), 1e-100); // 2^32 - 256
-		EXPECT_NEAR(4294967040.0f, cast(4294967167).value_or(0.0f), 1e-100); // 2^32 - 256 + 127
-		EXPECT_NEAR(4294967296.0f, cast(4294967168).value_or(0.0f), 1e-100); // 2^32 - 256 + 128
-		EXPECT_NEAR(4294967296.0f, cast(4294967295).value_or(0.0f), 1e-100); // 2^32 - 1
+		EXPECT_NEAR(4294967040.0F, cast(4294967040).value_or(0.0F), 1e-100); // 2^32 - 256
+		EXPECT_NEAR(4294967040.0F, cast(4294967167).value_or(0.0F), 1e-100); // 2^32 - 256 + 127
+		EXPECT_NEAR(4294967296.0F, cast(4294967168).value_or(0.0F), 1e-100); // 2^32 - 256 + 128
+		EXPECT_NEAR(4294967296.0F, cast(4294967295).value_or(0.0F), 1e-100); // 2^32 - 1
 	}
 
 	TEST(NumericCast, FloatFromFloat)
 	{
 		auto cast = [](float in) { return numeric_cast<float>(in); };
 
-		EXPECT_NEAR(0.0f, cast(0.0f).value_or(1.0f), 1e-100);
+		EXPECT_NEAR(0.0F, cast(0.0F).value_or(1.0F), 1e-100);
 
-		EXPECT_NEAR(12345.6789f, cast(12345.6789f).value_or(0.0f), 1e-100);
-		EXPECT_NEAR(-12345.6789f, cast(-12345.6789f).value_or(0.0f), 1e-100);
+		EXPECT_NEAR(12345.6789F, cast(12345.6789F).value_or(0.0F), 1e-100);
+		EXPECT_NEAR(-12345.6789F, cast(-12345.6789F).value_or(0.0F), 1e-100);
 
-		EXPECT_NEAR(3.4e38f, cast(3.4e38f).value_or(0.0f), 1e-100);
-		EXPECT_NEAR(-3.4e38f, cast(-3.4e38f).value_or(0.0f), 1e-100);
+		EXPECT_NEAR(3.4e38F, cast(3.4e38F).value_or(0.0F), 1e-100);
+		EXPECT_NEAR(-3.4e38F, cast(-3.4e38F).value_or(0.0F), 1e-100);
 
-		EXPECT_NEAR(1.17e-38f, cast(1.17e-38f).value_or(0.0f), 1e-100);
-		EXPECT_NEAR(-1.17e-38f, cast(-1.17e-38f).value_or(0.0f), 1e-100);
+		EXPECT_NEAR(1.17e-38F, cast(1.17e-38F).value_or(0.0F), 1e-100);
+		EXPECT_NEAR(-1.17e-38F, cast(-1.17e-38F).value_or(0.0F), 1e-100);
 	}
 
 	TEST(NumericCast, FloatFromDouble)
 	{
 		auto cast = [](double in) { return numeric_cast<float>(in); };
 
-		EXPECT_NEAR(0.0f, cast(0.0).value_or(1.0f), 1e-100);
+		EXPECT_NEAR(0.0F, cast(0.0).value_or(1.0F), 1e-100);
 
-		EXPECT_NEAR(12345.6789f, cast(12345.6789).value_or(0.0f), 1e-100);
-		EXPECT_NEAR(-12345.6789f, cast(-12345.6789).value_or(0.0f), 1e-100);
+		EXPECT_NEAR(12345.6789F, cast(12345.6789).value_or(0.0F), 1e-100);
+		EXPECT_NEAR(-12345.6789F, cast(-12345.6789).value_or(0.0F), 1e-100);
 
-		EXPECT_NEAR(3.4e38f, cast(3.4e38).value_or(0.0f), 1e-100);
-		EXPECT_NEAR(-3.4e38f, cast(-3.4e38).value_or(0.0f), 1e-100);
+		EXPECT_NEAR(3.4e38F, cast(3.4e38).value_or(0.0F), 1e-100);
+		EXPECT_NEAR(-3.4e38F, cast(-3.4e38).value_or(0.0F), 1e-100);
 		EXPECT_FALSE(cast(3.5e38).has_value());
 		EXPECT_FALSE(cast(-3.5e38).has_value());
 
-		EXPECT_NEAR(1.17e-38f, cast(1.17e-38).value_or(0.0f), 1e-100);
-		EXPECT_NEAR(-1.17e-38f, cast(-1.17e-38).value_or(0.0f), 1e-100);
+		EXPECT_NEAR(1.17e-38F, cast(1.17e-38).value_or(0.0F), 1e-100);
+		EXPECT_NEAR(-1.17e-38F, cast(-1.17e-38).value_or(0.0F), 1e-100);
 	}
 
 	TEST(NumericCast, DoubleFromInt8)
@@ -446,16 +446,16 @@ namespace Rayni
 	{
 		auto cast = [](float in) { return numeric_cast<double>(in); };
 
-		EXPECT_NEAR(0.0, cast(0.0f).value_or(1.0), 1e-100);
+		EXPECT_NEAR(0.0, cast(0.0F).value_or(1.0), 1e-100);
 
-		EXPECT_NEAR(12345.6789, cast(12345.6789f).value_or(0.0), 1e-3);
-		EXPECT_NEAR(-12345.6789, cast(-12345.6789f).value_or(0.0), 1e-3);
+		EXPECT_NEAR(12345.6789, cast(12345.6789F).value_or(0.0), 1e-3);
+		EXPECT_NEAR(-12345.6789, cast(-12345.6789F).value_or(0.0), 1e-3);
 
-		EXPECT_NEAR(3.4e38, cast(3.4e38f).value_or(0.0), 1e31);
-		EXPECT_NEAR(-3.4e38, cast(-3.4e38f).value_or(0.0), 1e31);
+		EXPECT_NEAR(3.4e38, cast(3.4e38F).value_or(0.0), 1e31);
+		EXPECT_NEAR(-3.4e38, cast(-3.4e38F).value_or(0.0), 1e31);
 
-		EXPECT_NEAR(1.17e-38, cast(1.17e-38f).value_or(0.0), 1e-47);
-		EXPECT_NEAR(-1.17e-38, cast(-1.17e-38f).value_or(0.0), 1e-47);
+		EXPECT_NEAR(1.17e-38, cast(1.17e-38F).value_or(0.0), 1e-47);
+		EXPECT_NEAR(-1.17e-38, cast(-1.17e-38F).value_or(0.0), 1e-47);
 	}
 
 	TEST(NumericCast, DoubleFromDouble)
@@ -476,14 +476,14 @@ namespace Rayni
 
 	TEST(NumericCast, FromFloatPlusMinusZero)
 	{
-		EXPECT_EQ(0, numeric_cast<std::int8_t>(+0.0f).value_or(1));
-		EXPECT_EQ(0, numeric_cast<std::int8_t>(-0.0f).value_or(1));
+		EXPECT_EQ(0, numeric_cast<std::int8_t>(+0.0F).value_or(1));
+		EXPECT_EQ(0, numeric_cast<std::int8_t>(-0.0F).value_or(1));
 
-		EXPECT_NEAR(0.0f, numeric_cast<float>(+0.0f).value_or(1.0f), 1e-100);
-		EXPECT_NEAR(0.0f, numeric_cast<float>(-0.0f).value_or(1.0f), 1e-100);
+		EXPECT_NEAR(0.0F, numeric_cast<float>(+0.0F).value_or(1.0F), 1e-100);
+		EXPECT_NEAR(0.0F, numeric_cast<float>(-0.0F).value_or(1.0F), 1e-100);
 
-		EXPECT_NEAR(0.0, numeric_cast<double>(+0.0f).value_or(1.0), 1e-100);
-		EXPECT_NEAR(0.0, numeric_cast<double>(-0.0f).value_or(1.0), 1e-100);
+		EXPECT_NEAR(0.0, numeric_cast<double>(+0.0F).value_or(1.0), 1e-100);
+		EXPECT_NEAR(0.0, numeric_cast<double>(-0.0F).value_or(1.0), 1e-100);
 	}
 
 	TEST(NumericCast, FromDoublePlusMinusZero)
@@ -491,8 +491,8 @@ namespace Rayni
 		EXPECT_EQ(0, numeric_cast<std::int8_t>(+0.0).value_or(1));
 		EXPECT_EQ(0, numeric_cast<std::int8_t>(-0.0).value_or(1));
 
-		EXPECT_NEAR(0.0f, numeric_cast<float>(+0.0).value_or(1.0f), 1e-100);
-		EXPECT_NEAR(0.0f, numeric_cast<float>(-0.0).value_or(1.0f), 1e-100);
+		EXPECT_NEAR(0.0F, numeric_cast<float>(+0.0).value_or(1.0F), 1e-100);
+		EXPECT_NEAR(0.0F, numeric_cast<float>(-0.0).value_or(1.0F), 1e-100);
 
 		EXPECT_NEAR(0.0, numeric_cast<double>(+0.0).value_or(1.0), 1e-100);
 		EXPECT_NEAR(0.0, numeric_cast<double>(-0.0).value_or(1.0), 1e-100);
@@ -505,8 +505,8 @@ namespace Rayni
 		EXPECT_FALSE(numeric_cast<int>(infinity).has_value());
 		EXPECT_FALSE(numeric_cast<int>(-infinity).has_value());
 
-		EXPECT_EQ(infinity, numeric_cast<float>(infinity).value_or(0.0f));
-		EXPECT_EQ(-infinity, numeric_cast<float>(-infinity).value_or(0.0f));
+		EXPECT_EQ(infinity, numeric_cast<float>(infinity).value_or(0.0F));
+		EXPECT_EQ(-infinity, numeric_cast<float>(-infinity).value_or(0.0F));
 
 		const double double_infinity = std::numeric_limits<double>::infinity();
 		EXPECT_EQ(double_infinity, numeric_cast<double>(infinity).value_or(0.0));

@@ -125,18 +125,18 @@ namespace Rayni
 	{
 		ScopedLocale locale(LOCALE_WITH_COMMA_AS_DECIMAL_SEPARATOR);
 
-		EXPECT_FLOAT_EQ(1.0f, string_to_number<float>("1").value_or(0));
-		EXPECT_FLOAT_EQ(1.0f, string_to_number<float>("1.0").value_or(0));
-		EXPECT_FLOAT_EQ(1.0f, string_to_number<float>(" 1").value_or(0));
-		EXPECT_FLOAT_EQ(1.0f, string_to_number<float>("+1").value_or(0));
-		EXPECT_FLOAT_EQ(-1.0f, string_to_number<float>("-1").value_or(0));
-		EXPECT_FLOAT_EQ(0.1f, string_to_number<float>(".1").value_or(0));
-		EXPECT_FLOAT_EQ(1.0f, string_to_number<float>("1.").value_or(0));
-		EXPECT_FLOAT_EQ(12.34f, string_to_number<float>("12.34").value_or(0));
-		EXPECT_FLOAT_EQ(-12.34f, string_to_number<float>("-12.34").value_or(0));
-		EXPECT_FLOAT_EQ(1230.0f, string_to_number<float>("0.123e4").value_or(0));
-		EXPECT_FLOAT_EQ(0.0123f, string_to_number<float>("123e-4").value_or(0));
-		EXPECT_FLOAT_EQ(1230000.0f, string_to_number<float>("123e+4").value_or(0));
+		EXPECT_FLOAT_EQ(1.0F, string_to_number<float>("1").value_or(0));
+		EXPECT_FLOAT_EQ(1.0F, string_to_number<float>("1.0").value_or(0));
+		EXPECT_FLOAT_EQ(1.0F, string_to_number<float>(" 1").value_or(0));
+		EXPECT_FLOAT_EQ(1.0F, string_to_number<float>("+1").value_or(0));
+		EXPECT_FLOAT_EQ(-1.0F, string_to_number<float>("-1").value_or(0));
+		EXPECT_FLOAT_EQ(0.1F, string_to_number<float>(".1").value_or(0));
+		EXPECT_FLOAT_EQ(1.0F, string_to_number<float>("1.").value_or(0));
+		EXPECT_FLOAT_EQ(12.34F, string_to_number<float>("12.34").value_or(0));
+		EXPECT_FLOAT_EQ(-12.34F, string_to_number<float>("-12.34").value_or(0));
+		EXPECT_FLOAT_EQ(1230.0F, string_to_number<float>("0.123e4").value_or(0));
+		EXPECT_FLOAT_EQ(0.0123F, string_to_number<float>("123e-4").value_or(0));
+		EXPECT_FLOAT_EQ(1230000.0F, string_to_number<float>("123e+4").value_or(0));
 
 		EXPECT_FALSE(string_to_number<float>("").has_value());
 		EXPECT_FALSE(string_to_number<float>(" ").has_value());

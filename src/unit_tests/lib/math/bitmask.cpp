@@ -40,20 +40,20 @@ namespace Rayni
 
 	TEST(Bitmask, ZeroByDefault)
 	{
-		EXPECT_EQ(0u, FooMask().value());
+		EXPECT_EQ(0U, FooMask().value());
 	}
 
 	TEST(Bitmask, And)
 	{
-		EXPECT_EQ(1u, (Foo::BAR & Foo::BAR).value());
-		EXPECT_EQ(1u, (Foo::BAR & FooMask(Foo::BAR)).value());
-		EXPECT_EQ(1u, (FooMask(Foo::BAR) & Foo::BAR).value());
-		EXPECT_EQ(1u, (FooMask(Foo::BAR) & FooMask(Foo::BAR)).value());
+		EXPECT_EQ(1U, (Foo::BAR & Foo::BAR).value());
+		EXPECT_EQ(1U, (Foo::BAR & FooMask(Foo::BAR)).value());
+		EXPECT_EQ(1U, (FooMask(Foo::BAR) & Foo::BAR).value());
+		EXPECT_EQ(1U, (FooMask(Foo::BAR) & FooMask(Foo::BAR)).value());
 
-		EXPECT_EQ(0u, (Foo::BAR & Foo::BAZ).value());
-		EXPECT_EQ(0u, (Foo::BAR & FooMask(Foo::BAZ)).value());
-		EXPECT_EQ(0u, (FooMask(Foo::BAR) & Foo::BAZ).value());
-		EXPECT_EQ(0u, (FooMask(Foo::BAR) & FooMask(Foo::BAZ)).value());
+		EXPECT_EQ(0U, (Foo::BAR & Foo::BAZ).value());
+		EXPECT_EQ(0U, (Foo::BAR & FooMask(Foo::BAZ)).value());
+		EXPECT_EQ(0U, (FooMask(Foo::BAR) & Foo::BAZ).value());
+		EXPECT_EQ(0U, (FooMask(Foo::BAR) & FooMask(Foo::BAZ)).value());
 	}
 
 	TEST(Bitmask, AndAssign)
@@ -61,39 +61,39 @@ namespace Rayni
 		{
 			FooMask m = Foo::BAR;
 			m &= Foo::BAR;
-			EXPECT_EQ(1u, m.value());
+			EXPECT_EQ(1U, m.value());
 		}
 
 		{
 			FooMask m = Foo::BAR;
 			m &= FooMask(Foo::BAR);
-			EXPECT_EQ(1u, m.value());
+			EXPECT_EQ(1U, m.value());
 		}
 
 		{
 			FooMask m = Foo::BAR;
 			m &= Foo::BAZ;
-			EXPECT_EQ(0u, m.value());
+			EXPECT_EQ(0U, m.value());
 		}
 
 		{
 			FooMask m = Foo::BAR;
 			m &= FooMask(Foo::BAZ);
-			EXPECT_EQ(0u, m.value());
+			EXPECT_EQ(0U, m.value());
 		}
 	}
 
 	TEST(Bitmask, Or)
 	{
-		EXPECT_EQ(1u, (Foo::BAR | Foo::BAR).value());
-		EXPECT_EQ(1u, (Foo::BAR | FooMask(Foo::BAR)).value());
-		EXPECT_EQ(1u, (FooMask(Foo::BAR) | Foo::BAR).value());
-		EXPECT_EQ(1u, (FooMask(Foo::BAR) | FooMask(Foo::BAR)).value());
+		EXPECT_EQ(1U, (Foo::BAR | Foo::BAR).value());
+		EXPECT_EQ(1U, (Foo::BAR | FooMask(Foo::BAR)).value());
+		EXPECT_EQ(1U, (FooMask(Foo::BAR) | Foo::BAR).value());
+		EXPECT_EQ(1U, (FooMask(Foo::BAR) | FooMask(Foo::BAR)).value());
 
-		EXPECT_EQ(3u, (Foo::BAR | Foo::BAZ).value());
-		EXPECT_EQ(3u, (Foo::BAR | FooMask(Foo::BAZ)).value());
-		EXPECT_EQ(3u, (FooMask(Foo::BAR) | Foo::BAZ).value());
-		EXPECT_EQ(3u, (FooMask(Foo::BAR) | FooMask(Foo::BAZ)).value());
+		EXPECT_EQ(3U, (Foo::BAR | Foo::BAZ).value());
+		EXPECT_EQ(3U, (Foo::BAR | FooMask(Foo::BAZ)).value());
+		EXPECT_EQ(3U, (FooMask(Foo::BAR) | Foo::BAZ).value());
+		EXPECT_EQ(3U, (FooMask(Foo::BAR) | FooMask(Foo::BAZ)).value());
 	}
 
 	TEST(Bitmask, OrAssign)
@@ -101,39 +101,39 @@ namespace Rayni
 		{
 			FooMask m(Foo::BAR);
 			m |= Foo::BAR;
-			EXPECT_EQ(1u, m.value());
+			EXPECT_EQ(1U, m.value());
 		}
 
 		{
 			FooMask m(Foo::BAR);
 			m |= FooMask(Foo::BAR);
-			EXPECT_EQ(1u, m.value());
+			EXPECT_EQ(1U, m.value());
 		}
 
 		{
 			FooMask m(Foo::BAR);
 			m |= Foo::BAZ;
-			EXPECT_EQ(3u, m.value());
+			EXPECT_EQ(3U, m.value());
 		}
 
 		{
 			FooMask m(Foo::BAR);
 			m |= FooMask(Foo::BAZ);
-			EXPECT_EQ(3u, m.value());
+			EXPECT_EQ(3U, m.value());
 		}
 	}
 
 	TEST(Bitmask, Xor)
 	{
-		EXPECT_EQ(0u, (Foo::BAR ^ Foo::BAR).value());
-		EXPECT_EQ(0u, (Foo::BAR ^ FooMask(Foo::BAR)).value());
-		EXPECT_EQ(0u, (FooMask(Foo::BAR) ^ Foo::BAR).value());
-		EXPECT_EQ(0u, (FooMask(Foo::BAR) ^ FooMask(Foo::BAR)).value());
+		EXPECT_EQ(0U, (Foo::BAR ^ Foo::BAR).value());
+		EXPECT_EQ(0U, (Foo::BAR ^ FooMask(Foo::BAR)).value());
+		EXPECT_EQ(0U, (FooMask(Foo::BAR) ^ Foo::BAR).value());
+		EXPECT_EQ(0U, (FooMask(Foo::BAR) ^ FooMask(Foo::BAR)).value());
 
-		EXPECT_EQ(3u, (Foo::BAR ^ Foo::BAZ).value());
-		EXPECT_EQ(3u, (Foo::BAR ^ FooMask(Foo::BAZ)).value());
-		EXPECT_EQ(3u, (FooMask(Foo::BAR) ^ Foo::BAZ).value());
-		EXPECT_EQ(3u, (FooMask(Foo::BAR) ^ FooMask(Foo::BAZ)).value());
+		EXPECT_EQ(3U, (Foo::BAR ^ Foo::BAZ).value());
+		EXPECT_EQ(3U, (Foo::BAR ^ FooMask(Foo::BAZ)).value());
+		EXPECT_EQ(3U, (FooMask(Foo::BAR) ^ Foo::BAZ).value());
+		EXPECT_EQ(3U, (FooMask(Foo::BAR) ^ FooMask(Foo::BAZ)).value());
 	}
 
 	TEST(Bitmask, XorAssign)
@@ -141,32 +141,32 @@ namespace Rayni
 		{
 			FooMask m(Foo::BAR);
 			m ^= Foo::BAR;
-			EXPECT_EQ(0u, m.value());
+			EXPECT_EQ(0U, m.value());
 		}
 
 		{
 			FooMask m(Foo::BAR);
 			m ^= FooMask(Foo::BAR);
-			EXPECT_EQ(0u, m.value());
+			EXPECT_EQ(0U, m.value());
 		}
 
 		{
 			FooMask m(Foo::BAR);
 			m ^= Foo::BAZ;
-			EXPECT_EQ(3u, m.value());
+			EXPECT_EQ(3U, m.value());
 		}
 
 		{
 			FooMask m(Foo::BAR);
 			m ^= FooMask(Foo::BAZ);
-			EXPECT_EQ(3u, m.value());
+			EXPECT_EQ(3U, m.value());
 		}
 	}
 
 	TEST(Bitmask, Not)
 	{
-		EXPECT_EQ(0b11111110u, (~Foo::BAR).value());
-		EXPECT_EQ(0b11111110u, (~FooMask(Foo::BAR)).value());
+		EXPECT_EQ(0b11111110U, (~Foo::BAR).value());
+		EXPECT_EQ(0b11111110U, (~FooMask(Foo::BAR)).value());
 	}
 
 	TEST(Bitmask, Equal)

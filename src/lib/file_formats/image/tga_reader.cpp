@@ -122,11 +122,11 @@ namespace Rayni
 
 				if (rle_state_.raw)
 				{
-					rle_state_.bytes_left = (repetition_count + 1u) * bytes_per_pixel();
+					rle_state_.bytes_left = (repetition_count + 1U) * bytes_per_pixel();
 				}
 				else
 				{
-					rle_state_.bytes_left = (repetition_count - 127u) * bytes_per_pixel();
+					rle_state_.bytes_left = (repetition_count - 127U) * bytes_per_pixel();
 					rle_state_.pixel_pos = 0;
 					read_bytes(rle_state_.pixel, bytes_per_pixel());
 				}
@@ -155,19 +155,19 @@ namespace Rayni
 
 	unsigned int TGAReader::bytes_per_pixel() const
 	{
-		return (header_.image.pixel_size + 7u) / 8;
+		return (header_.image.pixel_size + 7U) / 8;
 	}
 
 	unsigned int TGAReader::x_to_image_x(unsigned int x) const
 	{
 		bool right_to_left = (header_.image.descriptor & 0x10) != 0;
-		return right_to_left ? header_.image.width - 1u - x : x;
+		return right_to_left ? header_.image.width - 1U - x : x;
 	}
 
 	unsigned int TGAReader::y_to_image_y(unsigned int y) const
 	{
 		bool top_to_bottom = (header_.image.descriptor & 0x20) != 0;
-		return top_to_bottom ? y : header_.image.height - 1u - y;
+		return top_to_bottom ? y : header_.image.height - 1U - y;
 	}
 
 	Color TGAReader::pixel_to_color(const std::vector<std::uint8_t> &bytes, unsigned int pixel_offset) const

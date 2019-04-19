@@ -35,8 +35,8 @@ namespace Rayni
 		EXPECT_TRUE(Variant::map().is_map());
 		EXPECT_TRUE(Variant(false).is_bool());
 		EXPECT_TRUE(Variant(0).is_int());
-		EXPECT_TRUE(Variant(0u).is_unsigned_int());
-		EXPECT_TRUE(Variant(0.0f).is_float());
+		EXPECT_TRUE(Variant(0U).is_unsigned_int());
+		EXPECT_TRUE(Variant(0.0F).is_float());
 		EXPECT_TRUE(Variant(0.0).is_double());
 		EXPECT_TRUE(Variant("").is_string());
 
@@ -71,8 +71,8 @@ namespace Rayni
 		EXPECT_EQ(0, Variant::vector().as_vector().size());
 		EXPECT_EQ(true, Variant(true).as_bool());
 		EXPECT_EQ(1, Variant(1).as_int());
-		EXPECT_EQ(1u, Variant(1u).as_unsigned_int());
-		EXPECT_FLOAT_EQ(1.0f, Variant(1.0f).as_float());
+		EXPECT_EQ(1U, Variant(1U).as_unsigned_int());
+		EXPECT_FLOAT_EQ(1.0F, Variant(1.0F).as_float());
 		EXPECT_DOUBLE_EQ(1.0, Variant(1.0).as_double());
 		EXPECT_EQ("abc", Variant("abc").as_string());
 
@@ -92,26 +92,26 @@ namespace Rayni
 		EXPECT_THROW(Variant().to_bool(), Variant::Exception);
 
 		EXPECT_EQ(1, Variant(1).to_int());
-		EXPECT_EQ(1, Variant(1u).to_int());
-		EXPECT_EQ(1, Variant(1.0f).to_int());
+		EXPECT_EQ(1, Variant(1U).to_int());
+		EXPECT_EQ(1, Variant(1.0F).to_int());
 		EXPECT_EQ(1, Variant(1.0).to_int());
 		EXPECT_THROW(Variant().to_int(), Variant::Exception);
 
-		EXPECT_EQ(1u, Variant(1).to_unsigned_int());
-		EXPECT_EQ(1u, Variant(1u).to_unsigned_int());
-		EXPECT_EQ(1u, Variant(1.0f).to_unsigned_int());
-		EXPECT_EQ(1u, Variant(1.0).to_unsigned_int());
+		EXPECT_EQ(1U, Variant(1).to_unsigned_int());
+		EXPECT_EQ(1U, Variant(1U).to_unsigned_int());
+		EXPECT_EQ(1U, Variant(1.0F).to_unsigned_int());
+		EXPECT_EQ(1U, Variant(1.0).to_unsigned_int());
 		EXPECT_THROW(Variant().to_unsigned_int(), Variant::Exception);
 
-		EXPECT_FLOAT_EQ(1.0f, Variant(1).to_float());
-		EXPECT_FLOAT_EQ(1.0f, Variant(1u).to_float());
-		EXPECT_FLOAT_EQ(1.0f, Variant(1.0f).to_float());
-		EXPECT_FLOAT_EQ(1.0f, Variant(1.0).to_float());
+		EXPECT_FLOAT_EQ(1.0F, Variant(1).to_float());
+		EXPECT_FLOAT_EQ(1.0F, Variant(1U).to_float());
+		EXPECT_FLOAT_EQ(1.0F, Variant(1.0F).to_float());
+		EXPECT_FLOAT_EQ(1.0F, Variant(1.0).to_float());
 		EXPECT_THROW(Variant().to_float(), Variant::Exception);
 
 		EXPECT_DOUBLE_EQ(1.0, Variant(1).to_double());
-		EXPECT_DOUBLE_EQ(1.0, Variant(1u).to_double());
-		EXPECT_DOUBLE_EQ(1.0, Variant(1.0f).to_double());
+		EXPECT_DOUBLE_EQ(1.0, Variant(1U).to_double());
+		EXPECT_DOUBLE_EQ(1.0, Variant(1.0F).to_double());
 		EXPECT_DOUBLE_EQ(1.0, Variant(1.0).to_double());
 		EXPECT_THROW(Variant().to_double(), Variant::Exception);
 
@@ -120,16 +120,16 @@ namespace Rayni
 		EXPECT_EQ("[ 123, abc ]", Variant::vector(123, "abc").to_string());
 
 		EXPECT_EQ("1", Variant(1).to_string());
-		EXPECT_EQ("1", Variant(1u).to_string());
-		EXPECT_EQ(std::to_string(1.0f), Variant(1.0f).to_string());
+		EXPECT_EQ("1", Variant(1U).to_string());
+		EXPECT_EQ(std::to_string(1.0F), Variant(1.0F).to_string());
 		EXPECT_EQ(std::to_string(1.0), Variant(1.0).to_string());
 		EXPECT_EQ("abc", Variant("abc").to_string());
 		EXPECT_THROW(Variant().to_string(), Variant::Exception);
 
 		EXPECT_EQ(false, Variant(false).to<bool>());
 		EXPECT_EQ(123, Variant(123).to<int>());
-		EXPECT_EQ(123u, Variant(123).to<unsigned int>());
-		EXPECT_FLOAT_EQ(123.0f, Variant(123).to<float>());
+		EXPECT_EQ(123U, Variant(123).to<unsigned int>());
+		EXPECT_FLOAT_EQ(123.0F, Variant(123).to<float>());
 		EXPECT_DOUBLE_EQ(123.0, Variant(123).to<double>());
 		EXPECT_EQ("123", Variant(123).to<std::string>());
 	}
@@ -250,8 +250,8 @@ namespace Rayni
 		EXPECT_THROW(Variant::vector().has("key"), Variant::Exception);
 		EXPECT_THROW(Variant(false).has("key"), Variant::Exception);
 		EXPECT_THROW(Variant(0).has("key"), Variant::Exception);
-		EXPECT_THROW(Variant(0u).has("key"), Variant::Exception);
-		EXPECT_THROW(Variant(0.0f).has("key"), Variant::Exception);
+		EXPECT_THROW(Variant(0U).has("key"), Variant::Exception);
+		EXPECT_THROW(Variant(0.0F).has("key"), Variant::Exception);
 		EXPECT_THROW(Variant(0.0).has("key"), Variant::Exception);
 		EXPECT_THROW(Variant("").has("key"), Variant::Exception);
 	}

@@ -42,9 +42,9 @@ namespace Rayni
 	TEST(TextReader, PositionNotSet)
 	{
 		TextReader::Position position;
-		EXPECT_EQ(0u, position.line());
-		EXPECT_EQ(0u, position.column());
-		EXPECT_EQ(0u, position.line_index());
+		EXPECT_EQ(0U, position.line());
+		EXPECT_EQ(0U, position.column());
+		EXPECT_EQ(0U, position.line_index());
 	}
 
 	TEST(TextReader, PositionNextLineAndColumn)
@@ -52,29 +52,29 @@ namespace Rayni
 		TextReader::Position position;
 
 		position.next_line();
-		EXPECT_EQ(1u, position.line());
-		EXPECT_EQ(1u, position.column());
-		EXPECT_EQ(0u, position.line_index());
+		EXPECT_EQ(1U, position.line());
+		EXPECT_EQ(1U, position.column());
+		EXPECT_EQ(0U, position.line_index());
 
 		position.next_line();
-		EXPECT_EQ(2u, position.line());
-		EXPECT_EQ(1u, position.column());
-		EXPECT_EQ(0u, position.line_index());
+		EXPECT_EQ(2U, position.line());
+		EXPECT_EQ(1U, position.column());
+		EXPECT_EQ(0U, position.line_index());
 
 		position.next_column();
-		EXPECT_EQ(2u, position.line());
-		EXPECT_EQ(2u, position.column());
-		EXPECT_EQ(1u, position.line_index());
+		EXPECT_EQ(2U, position.line());
+		EXPECT_EQ(2U, position.column());
+		EXPECT_EQ(1U, position.line_index());
 
 		position.next_line();
-		EXPECT_EQ(3u, position.line());
-		EXPECT_EQ(1u, position.column());
-		EXPECT_EQ(0u, position.line_index());
+		EXPECT_EQ(3U, position.line());
+		EXPECT_EQ(1U, position.column());
+		EXPECT_EQ(0U, position.line_index());
 
 		position.next_columns(10);
-		EXPECT_EQ(3u, position.line());
-		EXPECT_EQ(11u, position.column());
-		EXPECT_EQ(10u, position.line_index());
+		EXPECT_EQ(3U, position.line());
+		EXPECT_EQ(11U, position.column());
+		EXPECT_EQ(10U, position.line_index());
 	}
 
 	TEST(TextReader, PositionToString)

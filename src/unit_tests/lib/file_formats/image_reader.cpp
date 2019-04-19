@@ -112,8 +112,8 @@ namespace Rayni
 			file_write(type_determinable_read_fail_path, {});
 
 			Image image = ImageReader().read_file(read_success_path);
-			EXPECT_EQ(1u, image.width()) << suffix;
-			EXPECT_EQ(1u, image.height()) << suffix;
+			EXPECT_EQ(1U, image.width()) << suffix;
+			EXPECT_EQ(1U, image.height()) << suffix;
 
 			EXPECT_THROW(ImageReader().read_file(type_determinable_read_fail_path), ImageReader::Exception)
 			        << suffix;

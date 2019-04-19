@@ -107,11 +107,11 @@ namespace Rayni
 		EXPECT_EQ(0, JSONReader().read_string("[]").as_vector().size());
 
 		Variant variant1 = JSONReader().read_string("[12]");
-		EXPECT_EQ(1u, variant1.as_vector().size());
+		EXPECT_EQ(1U, variant1.as_vector().size());
 		EXPECT_NEAR(12, variant1.get(0).as_double(), 1e-100);
 
 		Variant variant4 = JSONReader().read_string("[   true, 56,\"abc\" \n ,90     \t\n\n\n\t   ]");
-		EXPECT_EQ(4u, variant4.as_vector().size());
+		EXPECT_EQ(4U, variant4.as_vector().size());
 		EXPECT_EQ(true, variant4.get(0).as_bool());
 		EXPECT_NEAR(56, variant4.get(1).as_double(), 1e-100);
 		EXPECT_EQ("abc", variant4.get(2).as_string());
@@ -133,11 +133,11 @@ namespace Rayni
 		EXPECT_EQ(0, JSONReader().read_string("{}").as_map().size());
 
 		Variant variant1 = JSONReader().read_string("{\"ab\":12}");
-		EXPECT_EQ(1u, variant1.as_map().size());
+		EXPECT_EQ(1U, variant1.as_map().size());
 		EXPECT_NEAR(12, variant1.get("ab").as_double(), 1e-100);
 
 		Variant variant3 = JSONReader().read_string("{   \"a\": false, \n \"b\":\n  \"xyz\",\n\"c\":  3   } ");
-		EXPECT_EQ(3u, variant3.as_map().size());
+		EXPECT_EQ(3U, variant3.as_map().size());
 		EXPECT_EQ(false, variant3.get("a").as_bool());
 		EXPECT_EQ("xyz", variant3.get("b").as_string());
 		EXPECT_NEAR(3, variant3.get("c").as_double(), 1e-100);

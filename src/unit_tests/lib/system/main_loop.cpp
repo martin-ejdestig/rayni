@@ -261,13 +261,13 @@ namespace Rayni
 		MainLoop::FDMonitor fd_monitor;
 		bool called1 = false, called2 = false;
 
-		fd_monitor.start(main_loop1, event_fd.fd(), MainLoop::FDFlag::OUT, [&](auto) {
+		fd_monitor.start(main_loop1, event_fd.fd(), MainLoop::FDFlag::OUT, [&](auto /*flags*/) {
 			called1 = true;
 			main_loop1.exit();
 			main_loop2.exit();
 		});
 
-		fd_monitor.start(main_loop2, event_fd.fd(), MainLoop::FDFlag::OUT, [&](auto) {
+		fd_monitor.start(main_loop2, event_fd.fd(), MainLoop::FDFlag::OUT, [&](auto /*flags*/) {
 			called2 = true;
 			main_loop1.exit();
 			main_loop2.exit();
@@ -312,9 +312,11 @@ namespace Rayni
 		MainLoop main_loop;
 		MainLoop::FDMonitor fd_monitor;
 
-		EXPECT_THROW(fd_monitor.start(main_loop, -1, MainLoop::FDFlag::OUT, [](auto) {}), std::exception);
-		EXPECT_THROW(fd_monitor.start(main_loop, -123, MainLoop::FDFlag::OUT, [](auto) {}), std::exception);
-		EXPECT_THROW(fd_monitor.start(main_loop, 2147483647, MainLoop::FDFlag::OUT, [](auto) {}),
+		EXPECT_THROW(fd_monitor.start(main_loop, -1, MainLoop::FDFlag::OUT, [](auto /*flags*/) {}),
+		             std::exception);
+		EXPECT_THROW(fd_monitor.start(main_loop, -123, MainLoop::FDFlag::OUT, [](auto /*flags*/) {}),
+		             std::exception);
+		EXPECT_THROW(fd_monitor.start(main_loop, 2147483647, MainLoop::FDFlag::OUT, [](auto /*flags*/) {}),
 		             std::exception);
 	}
 
@@ -325,8 +327,8 @@ namespace Rayni
 		MainLoop::FDMonitor fd_monitor;
 		bool called = false;
 
-		fd_monitor.start(main_loop, event_fd.fd(), MainLoop::FDFlag::IN, [&](auto) {
-			fd_monitor.start(main_loop, event_fd.fd(), MainLoop::FDFlag::OUT, [&](auto) {
+		fd_monitor.start(main_loop, event_fd.fd(), MainLoop::FDFlag::IN, [&](auto /*flags*/) {
+			fd_monitor.start(main_loop, event_fd.fd(), MainLoop::FDFlag::OUT, [&](auto /*flags*/) {
 				called = true;
 				main_loop.exit();
 			});
@@ -346,7 +348,9 @@ namespace Rayni
 		MainLoop::FDMonitor fd_monitor;
 		bool called = false;
 
-		fd_monitor.start(main_loop, event_fd.fd(), MainLoop::FDFlag::OUT, [&](auto) { called = true; });
+		fd_monitor.start(main_loop, event_fd.fd(), MainLoop::FDFlag::OUT, [&](auto /*flags*/) {
+			called = true;
+		});
 		fd_monitor.stop();
 
 		while (main_loop.wait(0s) && !called)
@@ -362,7 +366,9 @@ namespace Rayni
 		MainLoop::FDMonitor fd_monitor1, fd_monitor2;
 		bool called = false;
 
-		fd_monitor1.start(main_loop, event_fd.fd(), MainLoop::FDFlag::IN, [&](auto) { called = true; });
+		fd_monitor1.start(main_loop, event_fd.fd(), MainLoop::FDFlag::IN, [&](auto /*flags*/) {
+			called = true;
+		});
 		fd_monitor1.stop();
 		EXPECT_NO_THROW(fd_monitor1.stop());
 
@@ -381,7 +387,7 @@ namespace Rayni
 		MainLoop::FDMonitor fd_monitor;
 		int count = 0;
 
-		fd_monitor.start(main_loop, event_fd.fd(), MainLoop::FDFlag::OUT, [&](auto) {
+		fd_monitor.start(main_loop, event_fd.fd(), MainLoop::FDFlag::OUT, [&](auto /*flags*/) {
 			count++;
 			if (count == 2)
 			{
@@ -402,7 +408,9 @@ namespace Rayni
 		auto fd_monitor = std::make_unique<MainLoop::FDMonitor>();
 		bool called = false;
 
-		fd_monitor->start(main_loop, event_fd.fd(), MainLoop::FDFlag::OUT, [&](auto) { called = true; });
+		fd_monitor->start(main_loop, event_fd.fd(), MainLoop::FDFlag::OUT, [&](auto /*flags*/) {
+			called = true;
+		});
 		fd_monitor.reset();
 
 		while (main_loop.wait(0s) && !called)
@@ -418,7 +426,7 @@ namespace Rayni
 		MainLoop::FDMonitor fd_monitor1, fd_monitor2, fd_monitor3;
 		int count = 0;
 
-		fd_monitor1.start(main_loop, event_fd.fd(), MainLoop::FDFlag::OUT, [&](auto) {
+		fd_monitor1.start(main_loop, event_fd.fd(), MainLoop::FDFlag::OUT, [&](auto /*flags*/) {
 			count++;
 			if (count == 1)
 			{
@@ -444,7 +452,7 @@ namespace Rayni
 		EventFD event_fd;
 		MainLoop::FDMonitor fd_monitor;
 		std::thread::id thread_id;
-		auto func = [&](MainLoop::FDFlags) {
+		auto func = [&](MainLoop::FDFlags /*flags*/) {
 			thread_id = std::this_thread::get_id();
 			main_loop.exit();
 		};
@@ -464,7 +472,7 @@ namespace Rayni
 
 		{
 			MainLoop main_loop;
-			fd_monitor.start(main_loop, event_fd.fd(), MainLoop::FDFlag::OUT, [&](auto) {
+			fd_monitor.start(main_loop, event_fd.fd(), MainLoop::FDFlag::OUT, [&](auto /*flags*/) {
 				main_loop.exit();
 			});
 			main_loop.loop();

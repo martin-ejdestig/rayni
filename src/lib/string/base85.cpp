@@ -39,10 +39,10 @@ namespace
 	{
 		Base85DecodingTable table = {};
 
-		for (unsigned int i = 0; i < BASE85_ALPHABET.size(); i++)
+		for (std::uint8_t i = 0; i < static_cast<std::uint8_t>(BASE85_ALPHABET.size()); i++)
 		{
 			auto index = static_cast<std::uint8_t>(BASE85_ALPHABET[i]);
-			table[index] = static_cast<std::uint8_t>(i + 1);
+			table[index] = i + 1;
 		}
 
 		return table;

@@ -39,7 +39,8 @@ namespace Rayni
 			if (!stream.is_open())
 				return ImageFormat::UNDETERMINED;
 
-			auto magic_matches = [&](std::istream::pos_type offset, const std::vector<std::uint8_t> magic) {
+			auto magic_matches = [&](std::istream::pos_type offset,
+			                         const std::vector<std::uint8_t> &magic) {
 				stream.seekg(offset);
 
 				for (auto &byte : magic)

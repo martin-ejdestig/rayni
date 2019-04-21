@@ -118,15 +118,15 @@ namespace Rayni
 		{
 			for (int end = start + 1; end < start + CIRCLE_STEPS / 2; end++)
 			{
-				real_t start_angle = 2 * PI * start / CIRCLE_STEPS;
-				real_t end_angle = 2 * PI * end / CIRCLE_STEPS;
+				real_t start_angle = 2 * PI * real_t(start) / CIRCLE_STEPS;
+				real_t end_angle = 2 * PI * real_t(end) / CIRCLE_STEPS;
 				Point start_point = {std::cos(start_angle), std::sin(start_angle)};
 				Point end_point = {std::cos(end_angle), std::sin(end_angle)};
 
 				for (int i = 0; i <= STEPS; i++)
 				{
 					Point p = slerp(real_t(i) / STEPS, start_point, end_point);
-					real_t angle = start_angle + (end_angle - start_angle) * i / STEPS;
+					real_t angle = start_angle + (end_angle - start_angle) * real_t(i) / STEPS;
 					EXPECT_NEAR(std::cos(angle), p.x, 1e-6);
 					EXPECT_NEAR(std::sin(angle), p.y, 1e-6);
 				}

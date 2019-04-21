@@ -48,7 +48,7 @@ namespace Rayni
 		{
 			std::lock_guard<std::recursive_mutex> lock(mutex_);
 
-			epoll.add(fd, flags);
+			epoll_.add(fd, flags);
 			map_[fd] = Data{std::move(callback)};
 		}
 
@@ -56,7 +56,7 @@ namespace Rayni
 		{
 			std::lock_guard<std::recursive_mutex> lock(mutex_);
 
-			epoll.modify(fd, flags);
+			epoll_.modify(fd, flags);
 			map_[fd] = Data{std::move(callback)};
 		}
 
@@ -68,14 +68,14 @@ namespace Rayni
 			if (i == map_.cend())
 				return;
 
-			epoll.remove(fd);
+			epoll_.remove(fd);
 			map_.erase(i);
 		}
 
 		void dispatch()
 		{
 			std::array<Epoll::Event, 4> events;
-			Epoll::EventCount num_events = epoll.wait(events);
+			Epoll::EventCount num_events = epoll_.wait(events);
 			std::lock_guard<std::recursive_mutex> lock(mutex_);
 
 			for (Epoll::EventCount i = 0; i < num_events; i++)
@@ -87,13 +87,18 @@ namespace Rayni
 			}
 		}
 
-		Epoll epoll;
+		int needs_dispatch_fd() const
+		{
+			return epoll_.fd();
+		}
 
 	private:
 		struct Data
 		{
 			std::function<void(FDFlags)> callback;
 		};
+
+		Epoll epoll_;
 
 		std::recursive_mutex mutex_;
 		std::unordered_map<int, Data> map_;
@@ -126,7 +131,7 @@ namespace Rayni
 
 			map_[id] = Data{expiration, interval, std::move(callback)};
 
-			changed_event_fd.write(1);
+			changed_event_fd_.write(1);
 
 			return id;
 		}
@@ -141,7 +146,7 @@ namespace Rayni
 
 			map_.erase(i);
 
-			changed_event_fd.write(1);
+			changed_event_fd_.write(1);
 		}
 
 		std::optional<clock::time_point> earliest_expiration()
@@ -180,7 +185,15 @@ namespace Rayni
 			}
 		}
 
-		EventFD changed_event_fd;
+		int changed_fd() const
+		{
+			return changed_event_fd_.fd();
+		}
+
+		void changed_fd_read() const
+		{
+			changed_event_fd_.read();
+		}
 
 	private:
 		class Data
@@ -221,6 +234,8 @@ namespace Rayni
 			return id;
 		}
 
+		EventFD changed_event_fd_;
+
 		std::recursive_mutex mutex_;
 		std::map<TimerId, Data> map_;
 	};
@@ -230,8 +245,8 @@ namespace Rayni
 		epoll_.add(exit_event_fd_.fd(), Epoll::Flag::IN);
 		epoll_.add(run_in_event_fd_.fd(), Epoll::Flag::IN);
 		epoll_.add(timer_fd_.fd(), Epoll::Flag::IN);
-		epoll_.add(timer_data_->changed_event_fd.fd(), Epoll::Flag::IN);
-		epoll_.add(fd_data_->epoll.fd(), Epoll::Flag::IN);
+		epoll_.add(timer_data_->changed_fd(), Epoll::Flag::IN);
+		epoll_.add(fd_data_->needs_dispatch_fd(), Epoll::Flag::IN);
 	}
 
 	int MainLoop::loop()
@@ -290,12 +305,12 @@ namespace Rayni
 				timer_data_->dispatch();
 				set_timer_fd_from_timer_data();
 			}
-			else if (event.fd() == timer_data_->changed_event_fd.fd())
+			else if (event.fd() == timer_data_->changed_fd())
 			{
-				timer_data_->changed_event_fd.read();
+				timer_data_->changed_fd_read();
 				set_timer_fd_from_timer_data();
 			}
-			else if (event.fd() == fd_data_->epoll.fd())
+			else if (event.fd() == fd_data_->needs_dispatch_fd())
 			{
 				fd_data_->dispatch();
 			}

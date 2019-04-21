@@ -86,7 +86,8 @@ namespace Rayni
 		constexpr unsigned int NUM_THREADS = 20;
 		ThreadPool thread_pool(NUM_THREADS);
 		Barrier barrier(NUM_THREADS + 1);
-		std::atomic<unsigned int> counter1{0}, counter2{0};
+		std::atomic<unsigned int> counter1{0};
+		std::atomic<unsigned int> counter2{0};
 
 		for (unsigned int i = 0; i < NUM_THREADS; i++)
 			thread_pool.add_task([&] {

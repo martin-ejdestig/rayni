@@ -65,7 +65,8 @@ namespace Rayni
 	{
 		Epoll epoll;
 		std::array<Epoll::Event, 2> events;
-		EventFD event_fd1, event_fd2;
+		EventFD event_fd1;
+		EventFD event_fd2;
 
 		epoll.add(event_fd1.fd(), Epoll::Flag::IN);
 		epoll.add(event_fd2.fd(), Epoll::Flag::IN | Epoll::Flag::OUT);
@@ -116,7 +117,8 @@ namespace Rayni
 	{
 		Epoll epoll;
 		std::array<Epoll::Event, 1> events;
-		EventFD event_fd1, event_fd2;
+		EventFD event_fd1;
+		EventFD event_fd2;
 
 		epoll.add(event_fd1.fd(), Epoll::Flag::OUT, &event_fd1);
 		epoll.add(event_fd2.fd(), Epoll::Flag::IN, &event_fd2);
@@ -207,7 +209,8 @@ namespace Rayni
 	{
 		Epoll epoll;
 		std::array<Epoll::Event, 2> events;
-		EventFD event_fd1, event_fd2;
+		EventFD event_fd1;
+		EventFD event_fd2;
 
 		epoll.add(event_fd1.fd(), Epoll::Flag::OUT);
 		epoll.add(event_fd2.fd(), Epoll::Flag::OUT);
@@ -244,7 +247,8 @@ namespace Rayni
 
 	TEST(Epoll, Nest)
 	{
-		Epoll epoll1, epoll2;
+		Epoll epoll1;
+		Epoll epoll2;
 		std::array<Epoll::Event, 1> events;
 		EventFD event_fd;
 

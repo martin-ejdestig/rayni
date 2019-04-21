@@ -27,7 +27,10 @@ namespace Rayni
 {
 	TEST(Hash, CombineFor)
 	{
-		float x(1), y(2), z(3), w(4);
+		float x(1);
+		float y(2);
+		float z(3);
+		float w(4);
 		std::size_t expected_hash =
 		        hash_combine(std::hash<float>()(x),
 		                     hash_combine(std::hash<float>()(y),

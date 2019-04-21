@@ -59,7 +59,8 @@ namespace Rayni
 	TEST(ListenerList, AddNotifyBasic)
 	{
 		ListenerList<Listener> listeners;
-		BazListener listener1, listener2;
+		BazListener listener1;
+		BazListener listener2;
 
 		listeners.add(listener1);
 
@@ -96,7 +97,8 @@ namespace Rayni
 
 	TEST(ListenerList, AddAlreadyAddedOtherList)
 	{
-		ListenerList<Listener> listeners1, listeners2;
+		ListenerList<Listener> listeners1;
+		ListenerList<Listener> listeners2;
 		BazListener listener;
 
 		listeners1.add(listener);
@@ -112,7 +114,9 @@ namespace Rayni
 	TEST(ListenerList, Remove)
 	{
 		ListenerList<Listener> listeners;
-		BazListener listener1, listener2, listener3;
+		BazListener listener1;
+		BazListener listener2;
+		BazListener listener3;
 
 		listeners.add(listener1);
 		listeners.add(listener2);
@@ -186,7 +190,8 @@ namespace Rayni
 	TEST(ListenerList, MoveConstructor)
 	{
 		ListenerList<Listener> listeners1;
-		BazListener listener1, listener2;
+		BazListener listener1;
+		BazListener listener2;
 
 		listeners1.add(listener1);
 		listeners1.add(listener2);
@@ -206,8 +211,10 @@ namespace Rayni
 
 	TEST(ListenerList, MoveAssignment)
 	{
-		ListenerList<Listener> listeners1, listeners2;
-		BazListener listener1, listener2;
+		ListenerList<Listener> listeners1;
+		ListenerList<Listener> listeners2;
+		BazListener listener1;
+		BazListener listener2;
 
 		listeners1.add(listener1);
 		listeners1.add(listener2);
@@ -228,7 +235,8 @@ namespace Rayni
 	TEST(ListenerList, ListenerMoveAssignment)
 	{
 		ListenerList<Listener> listeners;
-		BazListener listener1, listener2;
+		BazListener listener1;
+		BazListener listener2;
 
 		listeners.add(listener1);
 
@@ -243,7 +251,8 @@ namespace Rayni
 	TEST(ListenerList, ListenerMoveAssignmentAlreadyAddedSameList)
 	{
 		ListenerList<Listener> listeners;
-		BazListener listener1, listener2;
+		BazListener listener1;
+		BazListener listener2;
 
 		listeners.add(listener1);
 		listeners.add(listener2);
@@ -258,8 +267,10 @@ namespace Rayni
 
 	TEST(ListenerList, ListenerMoveAssignmentAlreadyAddedOtherList)
 	{
-		ListenerList<Listener> listeners1, listeners2;
-		BazListener listener1, listener2;
+		ListenerList<Listener> listeners1;
+		ListenerList<Listener> listeners2;
+		BazListener listener1;
+		BazListener listener2;
 
 		listeners1.add(listener1);
 		listeners2.add(listener2);
@@ -276,7 +287,8 @@ namespace Rayni
 	TEST(ListenerList, ListenerMoveAssignmentRemovedWhenOtherNotAdded)
 	{
 		ListenerList<Listener> listeners;
-		BazListener listener1, listener2;
+		BazListener listener1;
+		BazListener listener2;
 
 		listeners.add(listener2);
 

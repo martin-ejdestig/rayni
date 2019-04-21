@@ -161,7 +161,8 @@ namespace Rayni
 
 		Quaternion rotation() const
 		{
-			real_t xyz[3], w;
+			real_t xyz[3];
+			real_t w;
 			real_t t = trace();
 
 			if (t > 0)

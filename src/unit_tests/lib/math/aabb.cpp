@@ -68,7 +68,8 @@ namespace Rayni
 
 		for (const Ray &ray : hit_rays)
 		{
-			real_t t_min = 0, t_max = 0;
+			real_t t_min = 0;
+			real_t t_max = 0;
 			EXPECT_TRUE(aabb.intersects(ray, t_min, t_max));
 			EXPECT_NEAR(4, t_min, 1e-100);
 			EXPECT_NEAR(6, t_max, 1e-100);
@@ -88,7 +89,8 @@ namespace Rayni
 
 		for (const Ray &ray : inside_rays)
 		{
-			real_t t_min = 1, t_max = 0;
+			real_t t_min = 1;
+			real_t t_max = 0;
 			EXPECT_TRUE(aabb.intersects(ray, t_min, t_max));
 			EXPECT_NEAR(0, t_min, 1e-100);
 			EXPECT_NEAR(0.5, t_max, 1e-100);
@@ -120,7 +122,8 @@ namespace Rayni
 
 		for (const Ray &ray : miss_rays)
 		{
-			real_t t_min = 12345, t_max = 67890;
+			real_t t_min = 12345;
+			real_t t_max = 67890;
 			EXPECT_FALSE(aabb.intersects(ray, t_min, t_max));
 			EXPECT_NEAR(12345, t_min, 1e-100);
 			EXPECT_NEAR(67890, t_max, 1e-100);

@@ -101,7 +101,8 @@ namespace Rayni
 	{
 		assert(pos >= minimum()[axis] && pos <= maximum()[axis]);
 
-		AABB left = *this, right = *this;
+		AABB left = *this;
+		AABB right = *this;
 		left.maximum_[axis] = pos;
 		right.minimum_[axis] = pos;
 

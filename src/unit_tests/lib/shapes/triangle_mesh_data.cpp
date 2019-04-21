@@ -76,7 +76,10 @@ namespace Rayni
 			TriangleMeshData::Index index = normal_axis * 6;
 			unsigned int axis1 = (normal_axis + 1) % 3;
 			unsigned int axis2 = (normal_axis + 2) % 3;
-			Vector3 n, p1, p2, p3;
+			Vector3 n;
+			Vector3 p1;
+			Vector3 p2;
+			Vector3 p3;
 
 			n[normal_axis] = 1;
 			p1[axis1] = 1;

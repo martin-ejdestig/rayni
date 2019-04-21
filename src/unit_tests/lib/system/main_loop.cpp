@@ -122,7 +122,8 @@ namespace Rayni
 	{
 		MainLoop main_loop;
 		int counter = 0;
-		int count1 = 0, count2 = 0;
+		int count1 = 0;
+		int count2 = 0;
 
 		main_loop.run_in([&] { count1 = ++counter; });
 		main_loop.run_in([&] { count2 = ++counter; });
@@ -173,9 +174,18 @@ namespace Rayni
 	TEST(MainLoop, FDMonitorStart)
 	{
 		MainLoop main_loop;
-		EventFD event_fd1, event_fd2, event_fd3, event_fd4;
-		MainLoop::FDMonitor fd_monitor1, fd_monitor2, fd_monitor3, fd_monitor4;
-		MainLoop::FDFlags flags1, flags2, flags3, flags4;
+		EventFD event_fd1;
+		EventFD event_fd2;
+		EventFD event_fd3;
+		EventFD event_fd4;
+		MainLoop::FDMonitor fd_monitor1;
+		MainLoop::FDMonitor fd_monitor2;
+		MainLoop::FDMonitor fd_monitor3;
+		MainLoop::FDMonitor fd_monitor4;
+		MainLoop::FDFlags flags1;
+		MainLoop::FDFlags flags2;
+		MainLoop::FDFlags flags3;
+		MainLoop::FDFlags flags4;
 
 		auto exit_if_all_flags_set = [&] {
 			if (!flags1.empty() && !flags2.empty() && !flags3.empty() && !flags4.empty())
@@ -221,7 +231,8 @@ namespace Rayni
 		MainLoop main_loop;
 		EventFD event_fd;
 		MainLoop::FDMonitor fd_monitor;
-		MainLoop::FDFlags flags1, flags2;
+		MainLoop::FDFlags flags1;
+		MainLoop::FDFlags flags2;
 
 		fd_monitor.start(main_loop, event_fd.fd(), MainLoop::FDFlag::IN, [&](auto flags) { flags1 = flags; });
 		fd_monitor.start(main_loop, event_fd.fd(), MainLoop::FDFlag::OUT, [&](auto flags) {
@@ -238,9 +249,11 @@ namespace Rayni
 	TEST(MainLoop, FDMonitorStartAlreadyStartedOtherFD)
 	{
 		MainLoop main_loop;
-		EventFD event_fd1, event_fd2;
+		EventFD event_fd1;
+		EventFD event_fd2;
 		MainLoop::FDMonitor fd_monitor;
-		MainLoop::FDFlags flags1, flags2;
+		MainLoop::FDFlags flags1;
+		MainLoop::FDFlags flags2;
 
 		fd_monitor.start(main_loop, event_fd1.fd(), MainLoop::FDFlag::IN, [&](auto flags) { flags1 = flags; });
 		fd_monitor.start(main_loop, event_fd2.fd(), MainLoop::FDFlag::OUT, [&](auto flags) {
@@ -256,10 +269,12 @@ namespace Rayni
 
 	TEST(MainLoop, FDMonitorStartAlreadyStartedOtherMainLoop)
 	{
-		MainLoop main_loop1, main_loop2;
+		MainLoop main_loop1;
+		MainLoop main_loop2;
 		EventFD event_fd;
 		MainLoop::FDMonitor fd_monitor;
-		bool called1 = false, called2 = false;
+		bool called1 = false;
+		bool called2 = false;
 
 		fd_monitor.start(main_loop1, event_fd.fd(), MainLoop::FDFlag::OUT, [&](auto /*flags*/) {
 			called1 = true;
@@ -284,8 +299,10 @@ namespace Rayni
 	{
 		MainLoop main_loop;
 		EventFD event_fd;
-		MainLoop::FDMonitor fd_monitor1, fd_monitor2;
-		MainLoop::FDFlags flags1, flags2;
+		MainLoop::FDMonitor fd_monitor1;
+		MainLoop::FDMonitor fd_monitor2;
+		MainLoop::FDFlags flags1;
+		MainLoop::FDFlags flags2;
 
 		fd_monitor1.start(main_loop, event_fd.fd(), MainLoop::FDFlag::OUT, [&](auto flags) {
 			flags1 = flags;
@@ -363,7 +380,8 @@ namespace Rayni
 	{
 		MainLoop main_loop;
 		EventFD event_fd;
-		MainLoop::FDMonitor fd_monitor1, fd_monitor2;
+		MainLoop::FDMonitor fd_monitor1;
+		MainLoop::FDMonitor fd_monitor2;
 		bool called = false;
 
 		fd_monitor1.start(main_loop, event_fd.fd(), MainLoop::FDFlag::IN, [&](auto /*flags*/) {
@@ -423,7 +441,9 @@ namespace Rayni
 	{
 		MainLoop main_loop;
 		EventFD event_fd;
-		MainLoop::FDMonitor fd_monitor1, fd_monitor2, fd_monitor3;
+		MainLoop::FDMonitor fd_monitor1;
+		MainLoop::FDMonitor fd_monitor2;
+		MainLoop::FDMonitor fd_monitor3;
 		int count = 0;
 
 		fd_monitor1.start(main_loop, event_fd.fd(), MainLoop::FDFlag::OUT, [&](auto /*flags*/) {
@@ -484,8 +504,13 @@ namespace Rayni
 	TEST(MainLoop, Timer)
 	{
 		MainLoop main_loop;
-		MainLoop::Timer timer1, timer2, timer3, timer4;
-		bool called1 = false, called2 = false, called3 = false;
+		MainLoop::Timer timer1;
+		MainLoop::Timer timer2;
+		MainLoop::Timer timer3;
+		MainLoop::Timer timer4;
+		bool called1 = false;
+		bool called2 = false;
+		bool called3 = false;
 
 		timer1.start(main_loop, 1ns, [&] { called1 = true; });
 		timer2.start(main_loop, MainLoop::clock::now() + 1ns, [&] { called2 = true; });
@@ -502,8 +527,11 @@ namespace Rayni
 	TEST(MainLoop, TimerRepeat)
 	{
 		MainLoop main_loop;
-		MainLoop::Timer timer1, timer2, timer3;
-		unsigned int count1 = 0, count2 = 0;
+		MainLoop::Timer timer1;
+		MainLoop::Timer timer2;
+		MainLoop::Timer timer3;
+		unsigned int count1 = 0;
+		unsigned int count2 = 0;
 
 		timer1.start_repeat(main_loop, 2ns, [&] { count1++; });
 		timer2.start_repeat(main_loop, 4ns, [&] { count2++; });
@@ -519,8 +547,11 @@ namespace Rayni
 	TEST(MainLoop, TimerRepeatFirstExpiration)
 	{
 		MainLoop main_loop;
-		MainLoop::Timer timer1, timer2, timer3;
-		unsigned int count1 = 0, count2 = 0;
+		MainLoop::Timer timer1;
+		MainLoop::Timer timer2;
+		MainLoop::Timer timer3;
+		unsigned int count1 = 0;
+		unsigned int count2 = 0;
 		auto now = MainLoop::clock::now();
 
 		timer1.start_repeat(main_loop, now + 2ns, 2ns, [&] { count1++; });
@@ -559,8 +590,10 @@ namespace Rayni
 	TEST(MainLoop, TimerStartAlreadyStarted)
 	{
 		MainLoop main_loop;
-		MainLoop::Timer timer, delay_timer;
-		bool called1 = false, called2 = false;
+		MainLoop::Timer timer;
+		MainLoop::Timer delay_timer;
+		bool called1 = false;
+		bool called2 = false;
 
 		timer.start(main_loop, 1min, [&] {
 			called1 = true;
@@ -582,9 +615,11 @@ namespace Rayni
 
 	TEST(MainLoop, TimerStartAlreadyStartedOtherMainLoop)
 	{
-		MainLoop main_loop1, main_loop2;
+		MainLoop main_loop1;
+		MainLoop main_loop2;
 		MainLoop::Timer timer;
-		bool called1 = false, called2 = false;
+		bool called1 = false;
+		bool called2 = false;
 
 		timer.start(main_loop1, 1ns, [&] {
 			called1 = true;
@@ -608,7 +643,8 @@ namespace Rayni
 	TEST(MainLoop, TimerStop)
 	{
 		MainLoop main_loop;
-		MainLoop::Timer timer1, timer2;
+		MainLoop::Timer timer1;
+		MainLoop::Timer timer2;
 		bool called = false;
 
 		timer1.start(main_loop, 1ns, [&] { called = true; });
@@ -623,7 +659,9 @@ namespace Rayni
 	TEST(MainLoop, TimerStopAlreadyStoppedOrNeverStarted)
 	{
 		MainLoop main_loop;
-		MainLoop::Timer timer1, timer2, timer3;
+		MainLoop::Timer timer1;
+		MainLoop::Timer timer2;
+		MainLoop::Timer timer3;
 		bool called = false;
 
 		timer1.start(main_loop, 1ns, [&] { called = true; });
@@ -658,7 +696,9 @@ namespace Rayni
 	TEST(MainLoop, TimerMove)
 	{
 		MainLoop main_loop;
-		MainLoop::Timer timer1, timer2, timer3;
+		MainLoop::Timer timer1;
+		MainLoop::Timer timer2;
+		MainLoop::Timer timer3;
 		int count = 0;
 
 		timer1.start_repeat(main_loop, 1ns, [&] {
@@ -701,7 +741,8 @@ namespace Rayni
 
 	TEST(MainLoop, TimerUsedAndDestroyedAfterMainLoop)
 	{
-		MainLoop::Timer timer1, timer2;
+		MainLoop::Timer timer1;
+		MainLoop::Timer timer2;
 		bool called = false;
 
 		{

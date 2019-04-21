@@ -41,7 +41,8 @@ namespace Rayni
 		std::vector<std::uint8_t> file_data((std::istreambuf_iterator<char>(file)),
 		                                    std::istreambuf_iterator<char>());
 
-		int width, height;
+		int width;
+		int height;
 		if (!WebPGetInfo(file_data.data(), file_data.size(), &width, &height))
 			throw Exception(file_name, "failed to determine size of WebP image");
 

@@ -19,8 +19,37 @@
 #   broad. It also seems like the C++ community has swung around a bit on this
 #   in later years. See for instance Effective Modern C++ by Scott Meyers.
 #
+# - modernize-avoid-c-arrays is disabled because it is not practical to replace
+#   every use of a C array with std::array. Not even possible in some cases (e.g.
+#   string constants and external API that has certain callback signatures).
+#
 # - modernize-raw-string-literal is disabled because it is too agressive. See
 #   https://llvm.org/bugs/show_bug.cgi?id=30964
+#
+# - modernize-use-nodiscard is disabled because it is too agressive. It warns in
+#   many cases where it does not matter (simple getters) and/or where the
+#   compiler might as well emit a warning. Littering almost every code with
+#   [[nodiscard]] is not useful. Better to use [[nodiscard]] judiciously where
+#   it really does matter if the return value is unused (e.g. critical OS
+#   operations that can fail at runtime and exception is not suitable, for
+#   handles/ids where it is an almost critical programming error if return value
+#   is not used, etc.). Perhaps reevaluate in future if check behaves more
+#   reasonable by default or if it is made more configurable.
+#
+# - readability-magic-numbers is disabled because it is too agressive. E.g. it
+#   warns for numbers in data "arrays" (e.g. each byte(!) in image data of image
+#   reader tests) and there is no way to turn it off locally (have to NOLINT
+#   each line (!)). It also warns for common literals like 2^x (there is an
+#   option to ignore this), 2^x - 1, 0.5 etc. Adding constants instead of
+#   literals in many of these cases does not help with readability. It will also
+#   warn for tests like this:
+#
+#   EXPECT_EQ(123, string_to_int("123"));
+#
+#   Adding a constant here does not improve readability. It is possible to list
+#   numbers to ignore. But the check should be smarter by default and/or needs to
+#   have better configuration options (e.g. some way to ignore literals in lists
+#   with more than x elements, EXPECT_EQ, etc.) for it to be usable.
 #
 # - readability-misleading-indentation is broken with "if constexpr". See
 #   https://bugs.llvm.org/show_bug.cgi?id=32204 .
@@ -38,10 +67,13 @@ google-global-names-in-headers,\
 google-readability-casting,\
 misc-*,\
 modernize-*,\
+-modernize-avoid-c-arrays,\
 -modernize-pass-by-value,\
 -modernize-raw-string-literal,\
+-modernize-use-nodiscard,\
 performance-*,\
 readability-*,\
+-readability-magic-numbers,\
 -readability-misleading-indentation,\
 "
 

@@ -160,7 +160,7 @@ namespace Rayni
 
 	TEST(JSONReader, Nested)
 	{
-		Variant root = JSONReader().read_string("{\"a\": [[1], [2, 3], {\"aa\": 4, \"ab\": {\"abc\": 5 }}]}");
+		Variant root = JSONReader().read_string(R"({"a": [[1], [2, 3], {"aa": 4, "ab": {"abc": 5 }}]})");
 
 		EXPECT_NEAR(1, root.get("a").get(0).get(0).as_double(), 1e-100);
 		EXPECT_NEAR(2, root.get("a").get(1).get(0).as_double(), 1e-100);

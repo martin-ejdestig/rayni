@@ -24,9 +24,6 @@
 #   every use of a C array with std::array. Not even possible in some cases (e.g.
 #   string constants and external API that has certain callback signatures).
 #
-# - modernize-raw-string-literal is disabled because it is too agressive. See
-#   https://llvm.org/bugs/show_bug.cgi?id=30964
-#
 # - modernize-use-nodiscard is disabled because it is too agressive. It warns in
 #   many cases where it does not matter (simple getters) and/or where the
 #   compiler might as well emit a warning. Littering almost every code with
@@ -70,7 +67,6 @@ misc-*,\
 modernize-*,\
 -modernize-avoid-c-arrays,\
 -modernize-pass-by-value,\
--modernize-raw-string-literal,\
 -modernize-use-nodiscard,\
 performance-*,\
 readability-*,\

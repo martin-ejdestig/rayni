@@ -181,7 +181,7 @@ namespace Rayni
 		read_bytes(magic);
 
 		if (magic != expected_magic)
-			throw Exception(position(), "header must start with \"ply\\n\"");
+			throw Exception(position(), R"(header must start with "ply\n")");
 	}
 
 	void PLYReader::read_format()

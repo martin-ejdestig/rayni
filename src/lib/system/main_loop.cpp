@@ -155,7 +155,7 @@ namespace Rayni
 			clock::time_point expiration = clock::time_point::max();
 
 			for (const auto &[key, data] : map_)
-				if (data.active())
+				if (active(data))
 					expiration = std::min(expiration, data.expiration);
 
 			if (expiration == clock::time_point::max())
@@ -176,10 +176,16 @@ namespace Rayni
 
 				for (auto &[key, data] : map_)
 				{
-					if (data.expired(now))
+					if (expired(data, now))
 					{
-						data.dispatch();
-						dispatch_needed |= data.expired(now);
+						if (data.interval.count() > 0)
+							data.expiration += data.interval;
+						else
+							data.expiration = CLOCK_EPOCH;
+
+						data.callback();
+
+						dispatch_needed |= expired(data, now);
 					}
 				}
 			}
@@ -196,33 +202,22 @@ namespace Rayni
 		}
 
 	private:
-		class Data
+		struct Data
 		{
-		public:
-			bool active() const
-			{
-				return expiration > CLOCK_EPOCH;
-			}
-
-			bool expired(clock::time_point now) const
-			{
-				return active() && expiration <= now;
-			}
-
-			void dispatch()
-			{
-				if (interval.count() > 0)
-					expiration += interval;
-				else
-					expiration = CLOCK_EPOCH;
-
-				callback();
-			}
-
 			clock::time_point expiration;
 			std::chrono::nanoseconds interval{0};
 			std::function<void()> callback;
 		};
+
+		static bool active(const Data &data)
+		{
+			return data.expiration > CLOCK_EPOCH;
+		}
+
+		static bool expired(const Data &data, clock::time_point now)
+		{
+			return active(data) && data.expiration <= now;
+		}
 
 		TimerId generate_id(const Timer *timer) const
 		{

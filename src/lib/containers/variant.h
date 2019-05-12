@@ -299,12 +299,9 @@ namespace Rayni
 	template <typename T>
 	auto Variant::to() const
 	{
-		// TODO: All statements are not valid for all T so must have "else" after "return".
-		//       Can remove the NOLINT(readability-else-after-return) below when
-		//       https://bugs.llvm.org/show_bug.cgi?id=32197 is fixed?
 		if constexpr (std::is_same_v<T, bool>)
 			return to_bool();
-		else if constexpr (std::is_same_v<T, int>) // NOLINT(readability-else-after-return)
+		else if constexpr (std::is_same_v<T, int>)
 			return to_int();
 		else if constexpr (std::is_same_v<T, unsigned int>)
 			return to_unsigned_int();

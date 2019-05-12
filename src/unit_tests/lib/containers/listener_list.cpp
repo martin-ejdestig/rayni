@@ -44,15 +44,21 @@ namespace Rayni
 		public:
 			void foo_happened() override
 			{
-				data += "foo";
+				data_ += "foo";
 			}
 
 			void bar_occurred(int number, const std::string &string) override
 			{
-				data += "bar" + std::to_string(number) + string;
+				data_ += "bar" + std::to_string(number) + string;
 			}
 
-			std::string data;
+			const std::string &data() const
+			{
+				return data_;
+			}
+
+		private:
+			std::string data_;
 		};
 	}
 
@@ -65,17 +71,17 @@ namespace Rayni
 		listeners.add(listener1);
 
 		listeners.notify(&Listener::foo_happened);
-		EXPECT_EQ("foo", listener1.data);
+		EXPECT_EQ("foo", listener1.data());
 
 		listeners.add(listener2);
 
 		listeners.notify(&Listener::bar_occurred, 12, "ab");
-		EXPECT_EQ("foobar12ab", listener1.data);
-		EXPECT_EQ("bar12ab", listener2.data);
+		EXPECT_EQ("foobar12ab", listener1.data());
+		EXPECT_EQ("bar12ab", listener2.data());
 
 		listeners.notify(&Listener::foo_happened);
-		EXPECT_EQ("foobar12abfoo", listener1.data);
-		EXPECT_EQ("bar12abfoo", listener2.data);
+		EXPECT_EQ("foobar12abfoo", listener1.data());
+		EXPECT_EQ("bar12abfoo", listener2.data());
 	}
 
 	TEST(ListenerList, AddAlreadyAdded)
@@ -87,12 +93,12 @@ namespace Rayni
 		listeners.add(listener);
 
 		listeners.notify(&Listener::foo_happened);
-		EXPECT_EQ("foo", listener.data);
+		EXPECT_EQ("foo", listener.data());
 
 		listeners.add(listener);
 
 		listeners.notify(&Listener::bar_occurred, 12, "ab");
-		EXPECT_EQ("foobar12ab", listener.data);
+		EXPECT_EQ("foobar12ab", listener.data());
 	}
 
 	TEST(ListenerList, AddAlreadyAddedOtherList)
@@ -105,10 +111,10 @@ namespace Rayni
 		listeners2.add(listener);
 
 		listeners1.notify(&Listener::foo_happened);
-		EXPECT_EQ("", listener.data);
+		EXPECT_EQ("", listener.data());
 
 		listeners2.notify(&Listener::foo_happened);
-		EXPECT_EQ("foo", listener.data);
+		EXPECT_EQ("foo", listener.data());
 	}
 
 	TEST(ListenerList, Remove)
@@ -122,27 +128,27 @@ namespace Rayni
 		listeners.add(listener2);
 		listeners.add(listener3);
 		listeners.notify(&Listener::foo_happened);
-		EXPECT_EQ("foo", listener1.data);
-		EXPECT_EQ("foo", listener2.data);
-		EXPECT_EQ("foo", listener3.data);
+		EXPECT_EQ("foo", listener1.data());
+		EXPECT_EQ("foo", listener2.data());
+		EXPECT_EQ("foo", listener3.data());
 
 		listeners.remove(listener2);
 		listeners.notify(&Listener::foo_happened);
-		EXPECT_EQ("foofoo", listener1.data);
-		EXPECT_EQ("foo", listener2.data);
-		EXPECT_EQ("foofoo", listener3.data);
+		EXPECT_EQ("foofoo", listener1.data());
+		EXPECT_EQ("foo", listener2.data());
+		EXPECT_EQ("foofoo", listener3.data());
 
 		listeners.remove(listener3);
 		listeners.notify(&Listener::foo_happened);
-		EXPECT_EQ("foofoofoo", listener1.data);
-		EXPECT_EQ("foo", listener2.data);
-		EXPECT_EQ("foofoo", listener3.data);
+		EXPECT_EQ("foofoofoo", listener1.data());
+		EXPECT_EQ("foo", listener2.data());
+		EXPECT_EQ("foofoo", listener3.data());
 
 		listeners.remove(listener1);
 		listeners.notify(&Listener::foo_happened);
-		EXPECT_EQ("foofoofoo", listener1.data);
-		EXPECT_EQ("foo", listener2.data);
-		EXPECT_EQ("foofoo", listener3.data);
+		EXPECT_EQ("foofoofoo", listener1.data());
+		EXPECT_EQ("foo", listener2.data());
+		EXPECT_EQ("foofoo", listener3.data());
 	}
 
 	TEST(ListenerList, RemoveNotAdded)
@@ -152,7 +158,7 @@ namespace Rayni
 
 		listeners.remove(listener);
 		listeners.notify(&Listener::foo_happened);
-		EXPECT_EQ("", listener.data);
+		EXPECT_EQ("", listener.data());
 	}
 
 	TEST(ListenerList, ListDestroyedBeforeListeners)
@@ -166,8 +172,8 @@ namespace Rayni
 			listeners.notify(&Listener::foo_happened);
 		}
 
-		EXPECT_EQ("foo", listener1.data);
-		EXPECT_EQ("foo", listener2.data);
+		EXPECT_EQ("foo", listener1.data());
+		EXPECT_EQ("foo", listener2.data());
 	}
 
 	TEST(ListenerList, ListenersDestroyedBeforeList)
@@ -184,7 +190,7 @@ namespace Rayni
 		}
 		listeners.notify(&Listener::bar_occurred, 12, "ab");
 
-		EXPECT_EQ("foobar12ab", listener1.data);
+		EXPECT_EQ("foobar12ab", listener1.data());
 	}
 
 	TEST(ListenerList, MoveConstructor)
@@ -200,13 +206,13 @@ namespace Rayni
 
 		listeners1.notify(&Listener::foo_happened); // NOLINT(bugprone-use-after-move) Tests move.
 
-		EXPECT_EQ("", listener1.data);
-		EXPECT_EQ("", listener2.data);
+		EXPECT_EQ("", listener1.data());
+		EXPECT_EQ("", listener2.data());
 
 		listeners2.notify(&Listener::foo_happened);
 
-		EXPECT_EQ("foo", listener1.data);
-		EXPECT_EQ("foo", listener2.data);
+		EXPECT_EQ("foo", listener1.data());
+		EXPECT_EQ("foo", listener2.data());
 	}
 
 	TEST(ListenerList, MoveAssignment)
@@ -223,13 +229,13 @@ namespace Rayni
 
 		listeners1.notify(&Listener::foo_happened); // NOLINT(bugprone-use-after-move) Tests move.
 
-		EXPECT_EQ("", listener1.data);
-		EXPECT_EQ("", listener2.data);
+		EXPECT_EQ("", listener1.data());
+		EXPECT_EQ("", listener2.data());
 
 		listeners2.notify(&Listener::foo_happened);
 
-		EXPECT_EQ("foo", listener1.data);
-		EXPECT_EQ("foo", listener2.data);
+		EXPECT_EQ("foo", listener1.data());
+		EXPECT_EQ("foo", listener2.data());
 	}
 
 	TEST(ListenerList, ListenerMoveAssignment)
@@ -244,8 +250,8 @@ namespace Rayni
 
 		listeners.notify(&Listener::foo_happened);
 
-		EXPECT_EQ("", listener1.data); // NOLINT(bugprone-use-after-move) Tests move.
-		EXPECT_EQ("foo", listener2.data);
+		EXPECT_EQ("", listener1.data()); // NOLINT(bugprone-use-after-move) Tests move.
+		EXPECT_EQ("foo", listener2.data());
 	}
 
 	TEST(ListenerList, ListenerMoveAssignmentAlreadyAddedSameList)
@@ -261,8 +267,8 @@ namespace Rayni
 
 		listeners.notify(&Listener::foo_happened);
 
-		EXPECT_EQ("", listener1.data); // NOLINT(bugprone-use-after-move) Tests move.
-		EXPECT_EQ("foo", listener2.data);
+		EXPECT_EQ("", listener1.data()); // NOLINT(bugprone-use-after-move) Tests move.
+		EXPECT_EQ("foo", listener2.data());
 	}
 
 	TEST(ListenerList, ListenerMoveAssignmentAlreadyAddedOtherList)
@@ -280,8 +286,8 @@ namespace Rayni
 		listeners1.notify(&Listener::foo_happened);
 		listeners2.notify(&Listener::bar_occurred, 12, "ab");
 
-		EXPECT_EQ("", listener1.data); // NOLINT(bugprone-use-after-move) Tests move.
-		EXPECT_EQ("foo", listener2.data);
+		EXPECT_EQ("", listener1.data()); // NOLINT(bugprone-use-after-move) Tests move.
+		EXPECT_EQ("foo", listener2.data());
 	}
 
 	TEST(ListenerList, ListenerMoveAssignmentRemovedWhenOtherNotAdded)
@@ -296,7 +302,7 @@ namespace Rayni
 
 		listeners.notify(&Listener::foo_happened);
 
-		EXPECT_EQ("", listener1.data); // NOLINT(bugprone-use-after-move) Tests move.
-		EXPECT_EQ("", listener2.data);
+		EXPECT_EQ("", listener1.data()); // NOLINT(bugprone-use-after-move) Tests move.
+		EXPECT_EQ("", listener2.data());
 	}
 }

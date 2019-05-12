@@ -86,9 +86,9 @@ namespace Rayni
 
 		using Count = std::uint32_t;
 
-		bool has_property(Property::Name property_name) const
+		static bool has_property(const Element &element, Property::Name property_name)
 		{
-			for (auto &p : properties)
+			for (auto &p : element.properties)
 				if (p.name == property_name)
 					return true;
 			return false;
@@ -144,7 +144,8 @@ namespace Rayni
 				Element &element = elements.back();
 				Property property = read_property(element);
 
-				if (property.name != Property::Name::UNKNOWN && element.has_property(property.name))
+				if (property.name != Property::Name::UNKNOWN &&
+				    Element::has_property(element, property.name))
 					throw Exception(position(), "duplicate property for element");
 
 				element.properties.emplace_back(property);
@@ -338,11 +339,11 @@ namespace Rayni
 
 	void PLYReader::read_vertex_data(const Element &element, TriangleMeshData &data)
 	{
-		bool has_uvs = element.has_property(Property::Name::VERTEX_U) ||
-		               element.has_property(Property::Name::VERTEX_V);
-		bool has_normals = element.has_property(Property::Name::VERTEX_NORMAL_X) ||
-		                   element.has_property(Property::Name::VERTEX_NORMAL_Y) ||
-		                   element.has_property(Property::Name::VERTEX_NORMAL_Z);
+		bool has_uvs = Element::has_property(element, Property::Name::VERTEX_U) ||
+		               Element::has_property(element, Property::Name::VERTEX_V);
+		bool has_normals = Element::has_property(element, Property::Name::VERTEX_NORMAL_X) ||
+		                   Element::has_property(element, Property::Name::VERTEX_NORMAL_Y) ||
+		                   Element::has_property(element, Property::Name::VERTEX_NORMAL_Z);
 		Vector3 point;
 		Vector3 normal;
 		TriangleMeshData::UV uv;

@@ -27,9 +27,9 @@ namespace Rayni
 {
 	TEST(PolarDecomposition, Calculate)
 	{
-		PolarDecomposition<Matrix3x3> pd(Matrix3x3({0.936293, -0.579258, 0.596007},
-		                                           {0.312992, 1.88941, -0.29353},
-		                                           {-0.159345, 0.307584, 2.92551}));
+		auto pd = PolarDecomposition<Matrix3x3>::calculate({{0.936293, -0.579258, 0.596007},
+		                                                    {0.312992, 1.88941, -0.29353},
+		                                                    {-0.159345, 0.307584, 2.92551}});
 
 		EXPECT_NEAR(0.936293, pd.rotation(0, 0), 1e-4);
 		EXPECT_NEAR(-0.289629, pd.rotation(0, 1), 1e-4);

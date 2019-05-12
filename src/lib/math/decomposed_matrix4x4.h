@@ -37,7 +37,7 @@ namespace Rayni
 
 		explicit DecomposedMatrix4x4(const Matrix4x4 &matrix)
 		{
-			PolarDecomposition<Matrix3x3> pd(matrix.upper3x3());
+			auto pd = PolarDecomposition<Matrix3x3>::calculate(matrix.upper3x3());
 
 			rotation_ = pd.rotation.rotation();
 			scale_ = pd.scale;

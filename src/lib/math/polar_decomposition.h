@@ -38,10 +38,10 @@ namespace Rayni
 	template <typename Matrix>
 	struct PolarDecomposition
 	{
-		explicit PolarDecomposition(const Matrix &matrix)
+		static PolarDecomposition calculate(const Matrix &matrix)
 		{
 			static constexpr unsigned int MAX_STEPS = 100;
-			rotation = matrix;
+			Matrix rotation = matrix;
 
 			for (unsigned int i = 0; i < MAX_STEPS; i++)
 			{
@@ -57,7 +57,9 @@ namespace Rayni
 			if (!rotation.preserves_orientation_of_basis())
 				rotation = rotation * Matrix::scale(-1);
 
-			scale = rotation.inverse() * matrix;
+			Matrix scale = rotation.inverse() * matrix;
+
+			return {rotation, scale};
 		}
 
 		Matrix rotation;

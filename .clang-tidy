@@ -17,7 +17,8 @@
 # - modernize-pass-by-value is disabled because it causes many "false" warnings
 #   and I have never really liked the recommendation in general. It is too
 #   broad. It also seems like the C++ community has swung around a bit on this
-#   in later years. See for instance Effective Modern C++ by Scott Meyers.
+#   in later years. See for instance Effective Modern C++ by Scott Meyers and
+#   parameter passing section in the C++ Core Guidelines.
 #
 # - modernize-avoid-c-arrays is disabled because it is not practical to replace
 #   every use of a C array with std::array. Not even possible in some cases (e.g.

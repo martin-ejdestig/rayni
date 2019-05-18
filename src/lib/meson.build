@@ -86,6 +86,8 @@ lib_sources = [
     'system/linux/timer_fd.h',
     'system/main_loop.cpp',
     'system/main_loop.h',
+    'system/memory_mapped_file.cpp',
+    'system/memory_mapped_file.h',
     'system/scoped_temp_dir.cpp',
     'system/scoped_temp_dir.h',
     'system/unique_fd.h',

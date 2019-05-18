@@ -50,6 +50,7 @@ lib_unit_tests_sources = [
     'system/linux/pipe.cpp',
     'system/linux/timer_fd.cpp',
     'system/main_loop.cpp',
+    'system/memory_mapped_file.cpp',
     'system/scoped_temp_dir.cpp',
     'system/unique_fd.cpp',
     'time/duration_formatter.cpp',

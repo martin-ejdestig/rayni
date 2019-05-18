@@ -3,11 +3,6 @@ option('double_precision',
        value : false,
        description : 'Build with double (instead of single) precision.')
 
-option('extra_warnings',
-       type : 'boolean',
-       value : true,
-       description : 'Enable extra compiler warnings.')
-
 option('libcxx',
        type : 'boolean',
        value : false,

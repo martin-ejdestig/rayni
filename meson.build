@@ -14,19 +14,17 @@ cpp = meson.get_compiler('cpp')
 cpp_args = []
 cpp_link_args = []
 
-if get_option('extra_warnings')
-    extra_warnings_cpp_args = [
-        '-Wdouble-promotion',
-        '-Wformat=2',
-        '-Wold-style-cast',
-        '-Woverloaded-virtual',
-        '-Wshadow',
-        '-Wsign-conversion',
-        '-Wsuggest-override',
-        '-Wzero-as-null-pointer-constant'
-    ]
-    cpp_args += cpp.get_supported_arguments(extra_warnings_cpp_args)
-endif
+extra_warnings_cpp_args = [
+    '-Wdouble-promotion',
+    '-Wformat=2',
+    '-Wold-style-cast',
+    '-Woverloaded-virtual',
+    '-Wshadow',
+    '-Wsign-conversion',
+    '-Wsuggest-override',
+    '-Wzero-as-null-pointer-constant'
+]
+cpp_args += cpp.get_supported_arguments(extra_warnings_cpp_args)
 
 if get_option('libcxx')
     cpp_args += ['-stdlib=libc++']

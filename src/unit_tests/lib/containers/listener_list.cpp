@@ -204,7 +204,8 @@ namespace Rayni
 
 		ListenerList<Listener> listeners2(std::move(listeners1));
 
-		listeners1.notify(&Listener::foo_happened); // NOLINT(bugprone-use-after-move) Tests move.
+		// NOLINTNEXTLINE(bugprone-use-after-move, clang-analyzer-cplusplus.Move) Tests move.
+		listeners1.notify(&Listener::foo_happened);
 
 		EXPECT_EQ("", listener1.data());
 		EXPECT_EQ("", listener2.data());
@@ -227,7 +228,8 @@ namespace Rayni
 
 		listeners2 = std::move(listeners1);
 
-		listeners1.notify(&Listener::foo_happened); // NOLINT(bugprone-use-after-move) Tests move.
+		// NOLINTNEXTLINE(bugprone-use-after-move, clang-analyzer-cplusplus.Move) Tests move.
+		listeners1.notify(&Listener::foo_happened);
 
 		EXPECT_EQ("", listener1.data());
 		EXPECT_EQ("", listener2.data());
@@ -250,7 +252,8 @@ namespace Rayni
 
 		listeners.notify(&Listener::foo_happened);
 
-		EXPECT_EQ("", listener1.data()); // NOLINT(bugprone-use-after-move) Tests move.
+		// NOLINTNEXTLINE(bugprone-use-after-move, clang-analyzer-cplusplus.Move) Tests move.
+		EXPECT_EQ("", listener1.data());
 		EXPECT_EQ("foo", listener2.data());
 	}
 
@@ -267,7 +270,8 @@ namespace Rayni
 
 		listeners.notify(&Listener::foo_happened);
 
-		EXPECT_EQ("", listener1.data()); // NOLINT(bugprone-use-after-move) Tests move.
+		// NOLINTNEXTLINE(bugprone-use-after-move, clang-analyzer-cplusplus.Move) Tests move.
+		EXPECT_EQ("", listener1.data());
 		EXPECT_EQ("foo", listener2.data());
 	}
 
@@ -286,7 +290,8 @@ namespace Rayni
 		listeners1.notify(&Listener::foo_happened);
 		listeners2.notify(&Listener::bar_occurred, 12, "ab");
 
-		EXPECT_EQ("", listener1.data()); // NOLINT(bugprone-use-after-move) Tests move.
+		// NOLINTNEXTLINE(bugprone-use-after-move, clang-analyzer-cplusplus.Move) Tests move.
+		EXPECT_EQ("", listener1.data());
 		EXPECT_EQ("foo", listener2.data());
 	}
 
@@ -302,7 +307,8 @@ namespace Rayni
 
 		listeners.notify(&Listener::foo_happened);
 
-		EXPECT_EQ("", listener1.data()); // NOLINT(bugprone-use-after-move) Tests move.
+		// NOLINTNEXTLINE(bugprone-use-after-move, clang-analyzer-cplusplus.Move) Tests move.
+		EXPECT_EQ("", listener1.data());
 		EXPECT_EQ("", listener2.data());
 	}
 }

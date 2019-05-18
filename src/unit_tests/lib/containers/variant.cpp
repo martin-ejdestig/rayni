@@ -57,11 +57,15 @@ namespace Rayni
 		EXPECT_TRUE(v1.is_bool());
 
 		Variant v2(std::move(v1));
-		EXPECT_TRUE(v1.is_none()); // NOLINT(bugprone-use-after-move) Tests move.
+
+		// NOLINTNEXTLINE(bugprone-use-after-move, clang-analyzer-cplusplus.Move) Tests move.
+		EXPECT_TRUE(v1.is_none());
 		EXPECT_TRUE(v2.is_bool());
 
 		Variant v3 = std::move(v2);
-		EXPECT_TRUE(v2.is_none()); // NOLINT(bugprone-use-after-move) Tests move.
+
+		// NOLINTNEXTLINE(bugprone-use-after-move, clang-analyzer-cplusplus.Move) Tests move.
+		EXPECT_TRUE(v2.is_none());
 		EXPECT_TRUE(v3.is_bool());
 	}
 

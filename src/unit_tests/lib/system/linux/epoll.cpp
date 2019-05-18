@@ -236,8 +236,8 @@ namespace Rayni
 		std::array<Epoll::Event, 1> events;
 		EventFD event_fd;
 
-		EXPECT_THROW(epoll1.add(event_fd.fd(), Epoll::Flag::IN), // NOLINT(bugprone-use-after-move) Tests move.
-		             std::system_error);
+		// NOLINTNEXTLINE(bugprone-use-after-move, clang-analyzer-cplusplus.Move) Tests move.
+		EXPECT_THROW(epoll1.add(event_fd.fd(), Epoll::Flag::IN), std::system_error);
 		EXPECT_THROW(epoll1.add(event_fd.fd(), Epoll::Flag::IN, &event_fd), std::system_error);
 		EXPECT_THROW(epoll1.modify(event_fd.fd(), Epoll::Flag::IN), std::system_error);
 		EXPECT_THROW(epoll1.modify(event_fd.fd(), Epoll::Flag::IN, &event_fd), std::system_error);

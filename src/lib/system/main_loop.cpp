@@ -341,6 +341,7 @@ namespace Rayni
 		{
 			std::lock_guard<std::mutex> lock(mutex_);
 			functions_to_dispatch = std::move(functions_);
+			functions_ = std::vector<std::function<void()>>();
 		}
 
 		for (auto &function : functions_to_dispatch)

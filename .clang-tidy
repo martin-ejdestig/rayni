@@ -1,4 +1,3 @@
----
 # - bugprone-exception-escape is disabled because it causes too many false
 #   positives. E.g. if a function marked noexcept needs to take a mutex lock
 #   and that throws a std::system_error, what other reasonable thing is there
@@ -140,5 +139,3 @@ CheckOptions:
     value: '1'
   - key:   readability-implicit-bool-conversion.AllowPointerConditions
     value: '1'
-...
-

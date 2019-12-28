@@ -31,6 +31,9 @@
 #   is not used, etc.). Perhaps reevaluate in future if check behaves more
 #   reasonable by default or if it is made more configurable.
 #
+# - modernize-use-trailing-return-type is disabled because... it does not make
+#   any sense whatsoever.
+#
 # - readability-magic-numbers is disabled because it is too agressive. E.g. it
 #   warns for numbers in data "arrays" (e.g. each byte(!) in image data of image
 #   reader tests) and there is no way to turn it off locally (have to NOLINT
@@ -64,6 +67,7 @@ modernize-*,\
 -modernize-avoid-c-arrays,\
 -modernize-pass-by-value,\
 -modernize-use-nodiscard,\
+-modernize-use-trailing-return-type,\
 performance-*,\
 readability-*,\
 -readability-magic-numbers,\

@@ -300,6 +300,7 @@ namespace Rayni
 	auto Variant::to() const
 	{
 		if constexpr (std::is_same_v<T, bool>)
+			// NOLINTNEXTLINE(bugprone-branch-clone) https://bugs.llvm.org/show_bug.cgi?id=44229
 			return to_bool();
 		else if constexpr (std::is_same_v<T, int>)
 			return to_int();

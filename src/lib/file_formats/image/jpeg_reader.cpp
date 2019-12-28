@@ -125,6 +125,8 @@ namespace Rayni
 		}
 	}
 
+	// TODO: Result<Image> jpeg_read_file(const std::string &file_name) => no longer a member function.
+	// NOLINTNEXTLINE(readability-convert-member-functions-to-static)
 	Image JPEGReader::read_file(const std::string &file_name)
 	{
 		std::unique_ptr<std::FILE, decltype(&std::fclose)> file(std::fopen(file_name.c_str(), "rb"),

@@ -30,6 +30,8 @@
 
 namespace Rayni
 {
+	// TODO: Result<Image> image_read_file(const std::string &file_name) => no longer a member function.
+	// NOLINTNEXTLINE(readability-convert-member-functions-to-static)
 	Image ImageReader::read_file(const std::string &file_name)
 	{
 		ImageFormat format = image_format_from_file(file_name);

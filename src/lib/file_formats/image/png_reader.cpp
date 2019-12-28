@@ -30,6 +30,8 @@
 
 namespace Rayni
 {
+	// TODO: Result<Image> png_read_file(const std::string &file_name) => no longer a member function.
+	// NOLINTNEXTLINE(readability-convert-member-functions-to-static)
 	Image PNGReader::read_file(const std::string &file_name)
 	{
 		png_image pngimage;

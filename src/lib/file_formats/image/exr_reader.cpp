@@ -56,6 +56,8 @@
 
 namespace Rayni
 {
+	// TODO: Result<Image> exr_read_file(const std::string &file_name) => no longer a member function.
+	// NOLINTNEXTLINE(readability-convert-member-functions-to-static)
 	Image EXRReader::read_file(const std::string &file_name)
 	{
 		Image image;

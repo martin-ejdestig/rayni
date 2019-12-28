@@ -28,6 +28,8 @@
 
 namespace Rayni
 {
+	// TODO: Result png_write_file(const std::string &file_name) => no longer a member function.
+	// NOLINTNEXTLINE(readability-convert-member-functions-to-static)
 	void PNGWriter::write_file(const std::string &file_name, const Image &image)
 	{
 		png_image pngimage;

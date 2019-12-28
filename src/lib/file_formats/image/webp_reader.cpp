@@ -32,6 +32,8 @@
 
 namespace Rayni
 {
+	// TODO: Result<Image> wepb_read_file(const std::string &file_name) => no longer a member function.
+	// NOLINTNEXTLINE(readability-convert-member-functions-to-static)
 	Image WebPReader::read_file(const std::string &file_name)
 	{
 		std::ifstream file(file_name, std::ios::binary);

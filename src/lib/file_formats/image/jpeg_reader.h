@@ -20,7 +20,6 @@
 #ifndef RAYNI_LIB_FILE_FORMATS_IMAGE_JPEG_READER_H
 #define RAYNI_LIB_FILE_FORMATS_IMAGE_JPEG_READER_H
 
-#include <cstdio>
 #include <string>
 
 #include "lib/graphics/image.h"
@@ -34,12 +33,6 @@ namespace Rayni
 		using Exception = IOException;
 
 		Image read_file(const std::string &file_name);
-
-	private:
-		struct Callbacks;
-		struct ErrorManager;
-
-		bool decode_file_to_image(std::FILE &file, Image &image) const;
 	};
 }
 

@@ -71,8 +71,8 @@ namespace Rayni
 			real_t t_min = 0;
 			real_t t_max = 0;
 			EXPECT_TRUE(aabb.intersects(ray, t_min, t_max));
-			EXPECT_NEAR(4, t_min, 1e-100);
-			EXPECT_NEAR(6, t_max, 1e-100);
+			EXPECT_NEAR(4, t_min, 2e-6);
+			EXPECT_NEAR(6, t_max, 2e-6);
 		}
 	}
 
@@ -92,8 +92,8 @@ namespace Rayni
 			real_t t_min = 1;
 			real_t t_max = 0;
 			EXPECT_TRUE(aabb.intersects(ray, t_min, t_max));
-			EXPECT_NEAR(0, t_min, 1e-100);
-			EXPECT_NEAR(0.5, t_max, 1e-100);
+			EXPECT_NEAR(0, t_min, 2e-7);
+			EXPECT_NEAR(0.5, t_max, 2e-7);
 		}
 	}
 

@@ -21,6 +21,7 @@
 #define RAYNI_LIB_MATH_MATH_H
 
 #include <cmath>
+#include <limits>
 
 #include "config.h"
 
@@ -47,6 +48,15 @@ namespace Rayni
 	static constexpr inline real_t radians_from_degrees(real_t degrees)
 	{
 		return degrees * PI / 180;
+	}
+
+	// See Pharr, M, Jakob, W, and Humphreys, G 2016. Physically Based Rendering. 3rd ed.
+	// Chapter 3.9, Managing Rounding Error, p. 206-236.
+	static constexpr inline real_t error_bound_gamma(unsigned int n)
+	{
+		constexpr real_t MACHINE_EPSILON = std::numeric_limits<real_t>::epsilon() / 2;
+
+		return (real_t(n) * MACHINE_EPSILON) / (1 - real_t(n) * MACHINE_EPSILON);
 	}
 }
 

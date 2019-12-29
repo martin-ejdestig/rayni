@@ -77,6 +77,8 @@ namespace Rayni
 				if (t_far < t_near)
 					std::swap(t_near, t_far);
 
+				t_far *= 1 + 2 * error_bound_gamma(3);
+
 				t_min = std::max(t_min, t_near);
 				t_max = std::min(t_max, t_far);
 

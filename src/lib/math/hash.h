@@ -25,19 +25,19 @@
 
 namespace Rayni
 {
-	static inline std::size_t hash_combine(std::size_t hash1, std::size_t hash2)
+	static constexpr inline std::size_t hash_combine(std::size_t hash1, std::size_t hash2)
 	{
 		return hash1 ^ (hash2 + 0x9e3779b9 + (hash1 << 6) + (hash1 >> 2));
 	}
 
 	template <typename T1, typename T2>
-	static inline std::size_t hash_combine_for(const T1 &value1, const T2 &value2)
+	static constexpr inline std::size_t hash_combine_for(const T1 &value1, const T2 &value2)
 	{
 		return hash_combine(std::hash<T1>()(value1), std::hash<T2>()(value2));
 	}
 
 	template <typename T1, typename T2, typename... Args>
-	static inline std::size_t hash_combine_for(const T1 &value1, const T2 &value2, const Args &... args)
+	static constexpr inline std::size_t hash_combine_for(const T1 &value1, const T2 &value2, const Args &... args)
 	{
 		return hash_combine(std::hash<T1>()(value1), hash_combine_for(value2, args...));
 	}

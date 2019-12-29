@@ -34,17 +34,17 @@ namespace Rayni
 
 	static constexpr real_t PI = real_t(3.14159265358979323846);
 
-	static inline real_t frac(real_t x)
+	static constexpr inline real_t frac(real_t x)
 	{
 		return x - std::floor(x);
 	}
 
-	static inline int ifloor(real_t x)
+	static constexpr inline int ifloor(real_t x)
 	{
 		return static_cast<int>(std::floor(x));
 	}
 
-	static inline real_t radians_from_degrees(real_t degrees)
+	static constexpr inline real_t radians_from_degrees(real_t degrees)
 	{
 		return degrees * PI / 180;
 	}

@@ -28,19 +28,19 @@
 namespace Rayni
 {
 	template <typename T>
-	static inline T lerp(real_t t, const T &x0, const T &x1)
+	static constexpr inline T lerp(real_t t, const T &x0, const T &x1)
 	{
 		return x0 + t * (x1 - x0);
 	}
 
 	template <typename T>
-	static inline T blerp(real_t tx, real_t ty, const T &x00, const T &x10, const T &x01, const T &x11)
+	static constexpr inline T blerp(real_t tx, real_t ty, const T &x00, const T &x10, const T &x01, const T &x11)
 	{
 		return lerp(ty, lerp(tx, x00, x10), lerp(tx, x01, x11));
 	}
 
 	template <typename T>
-	static inline T slerp(real_t t, const T &x0, const T &x1)
+	static constexpr inline T slerp(real_t t, const T &x0, const T &x1)
 	{
 		real_t dot = x0.dot(x1);
 

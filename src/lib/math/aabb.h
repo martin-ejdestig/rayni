@@ -21,7 +21,6 @@
 #define RAYNI_LIB_MATH_AABB_H
 
 #include <cassert>
-#include <iostream>
 
 #include "lib/math/math.h"
 #include "lib/math/ray.h"

@@ -41,10 +41,16 @@ namespace Rayni
 			size_++;
 		}
 
-		void pop()
+		Type pop()
 		{
 			assert(!is_empty());
 			size_--;
+			return std::move(array_[size_]);
+		}
+
+		Type pop_or(Type &&value)
+		{
+			return is_empty() ? std::move(value) : pop();
 		}
 
 		Type &top()

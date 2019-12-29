@@ -47,6 +47,42 @@ namespace Rayni
 		EXPECT_TRUE(stack.is_empty());
 	}
 
+	TEST(FixedSizeStack, PopReturnValue)
+	{
+		FixedSizeStack<Element, 2> stack;
+		Element element;
+
+		stack.push({12, 34});
+		stack.push({56, 78});
+
+		element = stack.pop();
+		EXPECT_EQ(56, element.value1);
+		EXPECT_EQ(78, element.value2);
+
+		element = stack.pop();
+		EXPECT_EQ(12, element.value1);
+		EXPECT_EQ(34, element.value2);
+	}
+
+	TEST(FixedSizeStack, PopOr)
+	{
+		FixedSizeStack<Element, 2> stack;
+		Element element;
+
+		element = stack.pop_or({1, 2});
+		EXPECT_EQ(1, element.value1);
+		EXPECT_EQ(2, element.value2);
+
+		stack.push({3, 4});
+		element = stack.pop_or({5, 6});
+		EXPECT_EQ(3, element.value1);
+		EXPECT_EQ(4, element.value2);
+
+		element = stack.pop_or({7, 8});
+		EXPECT_EQ(7, element.value1);
+		EXPECT_EQ(8, element.value2);
+	}
+
 	TEST(FixedSizeStack, Top)
 	{
 		FixedSizeStack<Element, 2> stack;

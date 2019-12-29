@@ -61,11 +61,6 @@ namespace Rayni
 			return merge(AABB(point, point));
 		}
 
-		// TODO: Want to return an optional struct with t_min and t_max as members. But
-		//       both GCC (5.3.0 with libstdc++) and Clang (3.7.1 with libc++) generate
-		//       worse code in KdTree and BVH intersection methods if this is done, even
-		//       though there really is no reason for it. Continue using out arguments
-		//       for now since the intersection methods are so performance critical,
 		bool intersects(const Ray &ray, real_t &t_min_out, real_t &t_max_out) const;
 
 		AABB intersection(const AABB &aabb) const

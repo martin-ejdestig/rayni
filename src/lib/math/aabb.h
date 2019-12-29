@@ -20,7 +20,9 @@
 #ifndef RAYNI_LIB_MATH_AABB_H
 #define RAYNI_LIB_MATH_AABB_H
 
+#include <algorithm>
 #include <cassert>
+#include <limits>
 
 #include "lib/math/math.h"
 #include "lib/math/ray.h"
@@ -61,7 +63,32 @@ namespace Rayni
 			return merge(AABB(point, point));
 		}
 
-		bool intersects(const Ray &ray, real_t &t_min_out, real_t &t_max_out) const;
+		bool intersects(const Ray &ray, real_t &t_min_out, real_t &t_max_out) const
+		{
+			real_t t_min = 0;
+			real_t t_max = std::numeric_limits<real_t>::infinity();
+
+			for (unsigned int i = 0; i < 3; i++)
+			{
+				real_t inv_ray_dir = 1 / ray.direction[i];
+				real_t t_near = (minimum()[i] - ray.origin[i]) * inv_ray_dir;
+				real_t t_far = (maximum()[i] - ray.origin[i]) * inv_ray_dir;
+
+				if (t_far < t_near)
+					std::swap(t_near, t_far);
+
+				t_min = std::max(t_min, t_near);
+				t_max = std::min(t_max, t_far);
+
+				if (t_min > t_max)
+					return false;
+			}
+
+			t_min_out = t_min;
+			t_max_out = t_max;
+
+			return true;
+		}
 
 		AABB intersection(const AABB &aabb) const
 		{

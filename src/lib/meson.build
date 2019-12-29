@@ -49,7 +49,6 @@ lib_sources = [
     'io/text_reader.cpp',
     'io/text_reader.h',
     'io/text_type_reader.h',
-    'math/aabb.cpp',
     'math/aabb.h',
     'math/animated_transform.cpp',
     'math/animated_transform.h',

@@ -92,6 +92,47 @@ namespace Rayni
 			return true;
 		}
 
+		bool intersects(const Ray &ray,
+		                const Vector3 &inv_dir,
+		                real_t ray_t_max = std::numeric_limits<real_t>::infinity()) const
+		{
+			real_t t_min = (minimum().x() - ray.origin.x()) * inv_dir.x();
+			real_t t_max = (maximum().x() - ray.origin.x()) * inv_dir.x();
+			if (inv_dir.x() < 0)
+				std::swap(t_min, t_max);
+
+			real_t ty_min = (minimum().y() - ray.origin.y()) * inv_dir.y();
+			real_t ty_max = (maximum().y() - ray.origin.y()) * inv_dir.y();
+			if (inv_dir.y() < 0)
+				std::swap(ty_min, ty_max);
+
+			t_max *= 1 + 2 * error_bound_gamma(3);
+			ty_max *= 1 + 2 * error_bound_gamma(3);
+
+			if (t_min > ty_max || ty_min > t_max)
+				return false;
+			if (ty_min > t_min)
+				t_min = ty_min;
+			if (ty_max < t_max)
+				t_max = ty_max;
+
+			real_t tz_min = (minimum().z() - ray.origin.z()) * inv_dir.z();
+			real_t tz_max = (maximum().z() - ray.origin.z()) * inv_dir.z();
+			if (inv_dir.z() < 0)
+				std::swap(tz_min, tz_max);
+
+			tz_max *= 1 + 2 * error_bound_gamma(3);
+
+			if (t_min > tz_max || tz_min > t_max)
+				return false;
+			if (tz_min > t_min)
+				t_min = tz_min;
+			if (tz_max < t_max)
+				t_max = tz_max;
+
+			return t_min < ray_t_max && t_max > 0;
+		}
+
 		AABB intersection(const AABB &aabb) const
 		{
 			return {Vector3::max(minimum(), aabb.minimum()), Vector3::min(maximum(), aabb.maximum())};
@@ -108,6 +149,24 @@ namespace Rayni
 		bool is_planar(unsigned int axis) const
 		{
 			return minimum()[axis] == maximum()[axis];
+		}
+
+		Vector3 centroid() const
+		{
+			return (minimum() + maximum()) * real_t(0.5);
+		}
+
+		unsigned int max_extent_axis() const
+		{
+			Vector3 d = maximum() - minimum();
+
+			if (d.x() >= d.y() && d.x() >= d.z())
+				return 0;
+
+			if (d.y() >= d.z())
+				return 1;
+
+			return 2;
 		}
 
 	private:

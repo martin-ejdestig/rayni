@@ -70,9 +70,14 @@ namespace Rayni
 		{
 			real_t t_min = 0;
 			real_t t_max = 0;
+
 			EXPECT_TRUE(aabb.intersects(ray, t_min, t_max));
 			EXPECT_NEAR(4, t_min, 2e-6);
 			EXPECT_NEAR(6, t_max, 2e-6);
+
+			Vector3 inv_dir(1 / ray.direction.x(), 1 / ray.direction.y(), 1 / ray.direction.z());
+			EXPECT_TRUE(aabb.intersects(ray, inv_dir));
+			EXPECT_FALSE(aabb.intersects(ray, inv_dir, 3)); // ray_t_max too small should miss.
 		}
 	}
 
@@ -91,9 +96,13 @@ namespace Rayni
 		{
 			real_t t_min = 1;
 			real_t t_max = 0;
+
 			EXPECT_TRUE(aabb.intersects(ray, t_min, t_max));
 			EXPECT_NEAR(0, t_min, 2e-7);
 			EXPECT_NEAR(0.5, t_max, 2e-7);
+
+			Vector3 inv_dir(1 / ray.direction.x(), 1 / ray.direction.y(), 1 / ray.direction.z());
+			EXPECT_TRUE(aabb.intersects(ray, inv_dir)); // Only test ray_t_max inf, inside so 0 t hits.
 		}
 	}
 
@@ -127,6 +136,10 @@ namespace Rayni
 			EXPECT_FALSE(aabb.intersects(ray, t_min, t_max));
 			EXPECT_NEAR(12345, t_min, 1e-100);
 			EXPECT_NEAR(67890, t_max, 1e-100);
+
+			Vector3 inv_dir(1 / ray.direction.x(), 1 / ray.direction.y(), 1 / ray.direction.z());
+			EXPECT_FALSE(aabb.intersects(ray, inv_dir));
+			EXPECT_FALSE(aabb.intersects(ray, inv_dir, 3)); // ray_t_max != inf should still miss.
 		}
 	}
 
@@ -219,5 +232,58 @@ namespace Rayni
 		EXPECT_FALSE(AABB({1, 1, 1}, {2, 2, 1}).is_planar(0));
 		EXPECT_FALSE(AABB({1, 1, 1}, {2, 2, 1}).is_planar(1));
 		EXPECT_TRUE(AABB({1, 1, 1}, {2, 2, 1}).is_planar(2));
+	}
+
+	TEST(AABB, Centroid)
+	{
+		EXPECT_NEAR(0, AABB({-1, -1, -1}, {1, 1, 1}).centroid().x(), 1e-100);
+		EXPECT_NEAR(0, AABB({-1, -1, -1}, {1, 1, 1}).centroid().y(), 1e-100);
+		EXPECT_NEAR(0, AABB({-1, -1, -1}, {1, 1, 1}).centroid().z(), 1e-100);
+
+		EXPECT_NEAR(1, AABB({-1, -1, -1}, {3, 3, 3}).centroid().x(), 1e-100);
+		EXPECT_NEAR(1, AABB({-1, -1, -1}, {3, 3, 3}).centroid().y(), 1e-100);
+		EXPECT_NEAR(1, AABB({-1, -1, -1}, {3, 3, 3}).centroid().z(), 1e-100);
+
+		EXPECT_NEAR(-1, AABB({-3, -3, -3}, {1, 1, 1}).centroid().x(), 1e-100);
+		EXPECT_NEAR(-1, AABB({-3, -3, -3}, {1, 1, 1}).centroid().y(), 1e-100);
+		EXPECT_NEAR(-1, AABB({-3, -3, -3}, {1, 1, 1}).centroid().z(), 1e-100);
+
+		EXPECT_NEAR(1, AABB({-1, -1, -1}, {3, 1, 1}).centroid().x(), 1e-100);
+		EXPECT_NEAR(0, AABB({-1, -1, -1}, {3, 1, 1}).centroid().y(), 1e-100);
+		EXPECT_NEAR(0, AABB({-1, -1, -1}, {3, 1, 1}).centroid().z(), 1e-100);
+
+		EXPECT_NEAR(0, AABB({-1, -1, -1}, {1, 3, 1}).centroid().x(), 1e-100);
+		EXPECT_NEAR(1, AABB({-1, -1, -1}, {1, 3, 1}).centroid().y(), 1e-100);
+		EXPECT_NEAR(0, AABB({-1, -1, -1}, {1, 3, 1}).centroid().z(), 1e-100);
+
+		EXPECT_NEAR(0, AABB({-1, -1, -1}, {1, 1, 3}).centroid().x(), 1e-100);
+		EXPECT_NEAR(0, AABB({-1, -1, -1}, {1, 1, 3}).centroid().y(), 1e-100);
+		EXPECT_NEAR(1, AABB({-1, -1, -1}, {1, 1, 3}).centroid().z(), 1e-100);
+
+		EXPECT_NEAR(-1, AABB({-3, -1, -1}, {1, 1, 1}).centroid().x(), 1e-100);
+		EXPECT_NEAR(0, AABB({-3, -1, -1}, {1, 1, 1}).centroid().y(), 1e-100);
+		EXPECT_NEAR(0, AABB({-3, -1, -1}, {1, 1, 1}).centroid().z(), 1e-100);
+
+		EXPECT_NEAR(0, AABB({-1, -3, -1}, {1, 1, 1}).centroid().x(), 1e-100);
+		EXPECT_NEAR(-1, AABB({-1, -3, -1}, {1, 1, 1}).centroid().y(), 1e-100);
+		EXPECT_NEAR(0, AABB({-1, -3, -1}, {1, 1, 1}).centroid().z(), 1e-100);
+
+		EXPECT_NEAR(0, AABB({-1, -1, -3}, {1, 1, 1}).centroid().x(), 1e-100);
+		EXPECT_NEAR(0, AABB({-1, -1, -3}, {1, 1, 1}).centroid().y(), 1e-100);
+		EXPECT_NEAR(-1, AABB({-1, -1, -3}, {1, 1, 1}).centroid().z(), 1e-100);
+	}
+
+	TEST(AABB, MaxExtentAxis)
+	{
+		EXPECT_EQ(0, AABB({-1, -1, -1}, {1, 1, 1}).max_extent_axis());
+
+		EXPECT_EQ(0, AABB({-1, -1, -1}, {2, 1, 1}).max_extent_axis());
+		EXPECT_EQ(0, AABB({-2, -1, -1}, {1, 1, 1}).max_extent_axis());
+
+		EXPECT_EQ(1, AABB({-1, -1, -1}, {1, 2, 1}).max_extent_axis());
+		EXPECT_EQ(1, AABB({-1, -2, -1}, {1, 1, 1}).max_extent_axis());
+
+		EXPECT_EQ(2, AABB({-1, -1, -1}, {1, 1, 2}).max_extent_axis());
+		EXPECT_EQ(2, AABB({-1, -1, -2}, {1, 1, 1}).max_extent_axis());
 	}
 }

@@ -20,6 +20,7 @@
 #ifndef RAYNI_LIB_TIME_STOPWATCH_H
 #define RAYNI_LIB_TIME_STOPWATCH_H
 
+#include <cassert>
 #include <chrono>
 #include <string>
 
@@ -37,20 +38,34 @@ namespace Rayni
 			start(clock::now());
 		}
 
+		void start(clock::time_point time_point)
+		{
+			started_ = true;
+			time_start_ = time_point;
+			time_end_ = time_start_;
+		}
+
 		void stop()
 		{
 			stop(clock::now());
 		}
 
-		void start(clock::time_point time_point);
-		void stop(clock::time_point time_point);
+		void stop(clock::time_point time_point)
+		{
+			assert(started_ && time_start_ <= time_point);
+			started_ = false;
+			time_end_ = time_point;
+		}
 
 		bool is_started() const
 		{
 			return started_;
 		}
 
-		clock::duration duration() const;
+		clock::duration duration() const
+		{
+			return (started_ ? clock::now() : time_end_) - time_start_;
+		}
 
 	private:
 		bool started_ = false;

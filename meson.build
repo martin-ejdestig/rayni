@@ -5,7 +5,7 @@ project('rayni-staging',
         default_options : [
             'b_ndebug=if-release',
             'buildtype=release',
-            'cpp_std=c++17',
+            'cpp_std=c++2a',
             'warning_level=3',
             'werror=true'
         ])

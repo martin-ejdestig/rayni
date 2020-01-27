@@ -53,7 +53,7 @@ lib_unit_tests_sources = [
     'system/memory_mapped_file.cpp',
     'system/scoped_temp_dir.cpp',
     'system/unique_fd.cpp',
-    'time/duration_formatter.cpp',
+    'time/duration_format.cpp',
     'time/scoped_stopwatch.cpp',
     'time/stopwatch.cpp',
     'version_info.cpp'

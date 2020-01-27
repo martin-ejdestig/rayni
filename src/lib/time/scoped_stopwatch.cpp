@@ -21,13 +21,13 @@
 
 #include <ostream>
 
-#include "lib/time/duration_formatter.h"
+#include "lib/time/duration_format.h"
 
 namespace Rayni
 {
 	void ScopedStopwatch::print_result() const
 	{
-		std::string duration = DurationFormatter().set_seconds_precision(6).format(stopwatch_.duration());
+		std::string duration = duration_format(stopwatch_.duration(), {.seconds_precision = 6});
 		ostream_ << prefix_ << ": " << duration << '\n';
 	}
 }

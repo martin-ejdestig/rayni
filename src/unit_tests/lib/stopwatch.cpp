@@ -59,4 +59,13 @@ namespace Rayni
 		stopwatch.stop(time_point2);
 		EXPECT_EQ((time_point2 - time_point1).count(), stopwatch.duration().count());
 	}
+
+	TEST(Stopwatch, String)
+	{
+		auto start = Stopwatch::clock::now();
+		auto stopwatch = Stopwatch().start(start);
+		stopwatch.stop(start + std::chrono::milliseconds(1234));
+
+		EXPECT_EQ("1.234", stopwatch.string());
+	}
 }

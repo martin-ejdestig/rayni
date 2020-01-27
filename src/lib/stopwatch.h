@@ -24,6 +24,8 @@
 #include <chrono>
 #include <string>
 
+#include "lib/string/duration_format.h"
+
 namespace Rayni
 {
 	class Stopwatch
@@ -67,6 +69,11 @@ namespace Rayni
 		clock::duration duration() const
 		{
 			return (started_ ? clock::now() : time_end_) - time_start_;
+		}
+
+		std::string string(const DurationFormatOptions &options = {.seconds_precision = 3}) const
+		{
+			return duration_format(duration(), options);
 		}
 
 	private:

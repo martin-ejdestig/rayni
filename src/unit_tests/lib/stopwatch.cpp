@@ -17,7 +17,7 @@
 //
 // SPDX-License-Identifier: GPL-3.0-or-later
 
-#include "lib/time/stopwatch.h"
+#include "lib/stopwatch.h"
 
 #include <gtest/gtest.h>
 

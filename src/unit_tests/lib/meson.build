@@ -41,7 +41,9 @@ lib_unit_tests_sources = [
     'math/vector3.cpp',
     'math/vector4.cpp',
     'shapes/triangle_mesh_data.cpp',
+    'stopwatch.cpp',
     'string/base85.cpp',
+    'string/duration_format.cpp',
     'string/split.cpp',
     'string/string.cpp',
     'system/command.cpp',
@@ -53,8 +55,6 @@ lib_unit_tests_sources = [
     'system/memory_mapped_file.cpp',
     'system/scoped_temp_dir.cpp',
     'system/unique_fd.cpp',
-    'time/duration_format.cpp',
-    'time/stopwatch.cpp',
     'version_info.cpp'
 ]
 

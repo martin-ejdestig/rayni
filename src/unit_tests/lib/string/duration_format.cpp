@@ -17,7 +17,7 @@
 //
 // SPDX-License-Identifier: GPL-3.0-or-later
 
-#include "lib/time/duration_format.h"
+#include "lib/string/duration_format.h"
 
 #include <gtest/gtest.h>
 

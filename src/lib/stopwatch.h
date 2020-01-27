@@ -17,8 +17,8 @@
 //
 // SPDX-License-Identifier: GPL-3.0-or-later
 
-#ifndef RAYNI_LIB_TIME_STOPWATCH_H
-#define RAYNI_LIB_TIME_STOPWATCH_H
+#ifndef RAYNI_LIB_STOPWATCH_H
+#define RAYNI_LIB_STOPWATCH_H
 
 #include <cassert>
 #include <chrono>
@@ -76,4 +76,4 @@ namespace Rayni
 	};
 }
 
-#endif // RAYNI_LIB_TIME_STOPWATCH_H
+#endif // RAYNI_LIB_STOPWATCH_H

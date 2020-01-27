@@ -17,33 +17,36 @@
 //
 // SPDX-License-Identifier: GPL-3.0-or-later
 
-#include "lib/time/duration_format.h"
+#ifndef RAYNI_LIB_STRING_DURATION_FORMAT_H
+#define RAYNI_LIB_STRING_DURATION_FORMAT_H
 
-#include <cmath>
-#include <iomanip>
-#include <sstream>
+#include <chrono>
+#include <cstdint>
+#include <string>
 
 namespace Rayni
 {
+	struct DurationFormatOptions
+	{
+		std::uint8_t seconds_precision = 0;
+		bool floor_seconds = false;
+	};
+
 	std::string duration_format(std::chrono::hours::rep hh,
 	                            std::chrono::minutes::rep mm,
 	                            float ss,
-	                            const DurationFormatOptions &options)
+	                            const DurationFormatOptions &options = {});
+
+	template <typename Duration>
+	std::string duration_format(Duration duration, const DurationFormatOptions &options = {})
 	{
-		std::ostringstream stream;
+		using namespace std::chrono_literals;
+		auto hh = std::chrono::duration_cast<std::chrono::hours>(duration).count();
+		auto mm = std::chrono::duration_cast<std::chrono::minutes>(duration % 1h).count();
+		auto ss = std::chrono::duration_cast<std::chrono::duration<float>>(duration % 1min).count();
 
-		if (hh > 0)
-			stream << hh << ":";
-
-		if (hh > 0 || mm > 0)
-			stream << std::setw(2) << std::setfill('0') << mm << ":";
-
-		bool seconds_has_dot = options.seconds_precision > 0;
-		int seconds_width = 2 + (seconds_has_dot ? 1 : 0) + options.seconds_precision;
-
-		stream << std::setw(seconds_width) << std::setfill('0') << std::fixed
-		       << std::setprecision(options.seconds_precision) << (options.floor_seconds ? std::floor(ss) : ss);
-
-		return stream.str();
+		return duration_format(hh, mm, ss, options);
 	}
 }
+
+#endif // RAYNI_LIB_STRING_DURATION_FORMAT_H

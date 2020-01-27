@@ -19,27 +19,30 @@
 
 #include "lib/string/duration_format.h"
 
+#include <chrono>
 #include <cmath>
 #include <iomanip>
 #include <sstream>
 
 namespace Rayni
 {
-	std::string duration_format(std::chrono::hours::rep hh,
-	                            std::chrono::minutes::rep mm,
-	                            float ss,
-	                            const DurationFormatOptions &options)
+	std::string duration_format(std::chrono::nanoseconds ns, const DurationFormatOptions &options)
 	{
+		using namespace std::chrono_literals;
+
+		auto hh = std::chrono::duration_cast<std::chrono::hours>(ns).count();
+		auto mm = std::chrono::duration_cast<std::chrono::minutes>(ns % 1h).count();
+		auto ss = std::chrono::duration_cast<std::chrono::duration<double>>(ns % 1min).count();
 		std::ostringstream stream;
 
-		if (hh > 0)
+		if (ns >= 1h)
 			stream << hh << ":";
 
-		if (hh > 0 || mm > 0)
+		if (ns >= 1min)
 			stream << std::setw(2) << std::setfill('0') << mm << ":";
 
 		int seconds_width = 1;
-		if (hh > 0 || mm > 0 || ss >= 10)
+		if (ns >= 10s)
 			seconds_width++;
 		if (options.seconds_precision > 0)
 			seconds_width++;

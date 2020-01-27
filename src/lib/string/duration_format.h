@@ -32,20 +32,12 @@ namespace Rayni
 		bool floor_seconds = false;
 	};
 
-	std::string duration_format(std::chrono::hours::rep hh,
-	                            std::chrono::minutes::rep mm,
-	                            float ss,
-	                            const DurationFormatOptions &options = {});
+	std::string duration_format(std::chrono::nanoseconds ns, const DurationFormatOptions &options = {});
 
 	template <typename Duration>
 	std::string duration_format(Duration duration, const DurationFormatOptions &options = {})
 	{
-		using namespace std::chrono_literals;
-		auto hh = std::chrono::duration_cast<std::chrono::hours>(duration).count();
-		auto mm = std::chrono::duration_cast<std::chrono::minutes>(duration % 1h).count();
-		auto ss = std::chrono::duration_cast<std::chrono::duration<float>>(duration % 1min).count();
-
-		return duration_format(hh, mm, ss, options);
+		return duration_format(std::chrono::duration_cast<std::chrono::nanoseconds>(duration), options);
 	}
 }
 

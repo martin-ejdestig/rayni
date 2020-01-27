@@ -92,8 +92,6 @@ lib_sources = [
     'system/unique_fd.h',
     'time/duration_format.cpp',
     'time/duration_format.h',
-    'time/scoped_stopwatch.cpp',
-    'time/scoped_stopwatch.h',
     'time/stopwatch.cpp',
     'time/stopwatch.h',
     'version_info.cpp',

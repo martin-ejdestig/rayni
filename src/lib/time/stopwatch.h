@@ -59,7 +59,7 @@ namespace Rayni
 			return *this;
 		}
 
-		bool is_started() const
+		bool started() const
 		{
 			return started_;
 		}

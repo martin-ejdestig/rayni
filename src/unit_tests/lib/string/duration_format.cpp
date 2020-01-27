@@ -32,8 +32,8 @@ namespace Rayni
 {
 	TEST(DurationFormat, Default)
 	{
-		EXPECT_EQ("00", duration_format(0s));
-		EXPECT_EQ("01", duration_format(1s));
+		EXPECT_EQ("0", duration_format(0s));
+		EXPECT_EQ("1", duration_format(1s));
 		EXPECT_EQ("01:00", duration_format(1min));
 		EXPECT_EQ("1:00:00", duration_format(1h));
 		EXPECT_EQ("12:34:56", duration_format(12h + 34min + 56s));
@@ -41,11 +41,11 @@ namespace Rayni
 
 	TEST(DurationFormat, SecondsPrecision)
 	{
-		EXPECT_EQ("00.00", duration_format(0s, {.seconds_precision = 2}));
-		EXPECT_EQ("00.09", duration_format(90ms, {.seconds_precision = 2}));
-		EXPECT_EQ("00.10", duration_format(99ms, {.seconds_precision = 2}));
-		EXPECT_EQ("00.12", duration_format(123ms, {.seconds_precision = 2}));
-		EXPECT_EQ("05.00", duration_format(5s, {.seconds_precision = 2}));
+		EXPECT_EQ("0.00", duration_format(0s, {.seconds_precision = 2}));
+		EXPECT_EQ("0.09", duration_format(90ms, {.seconds_precision = 2}));
+		EXPECT_EQ("0.10", duration_format(99ms, {.seconds_precision = 2}));
+		EXPECT_EQ("0.12", duration_format(123ms, {.seconds_precision = 2}));
+		EXPECT_EQ("5.00", duration_format(5s, {.seconds_precision = 2}));
 		EXPECT_EQ("20.00", duration_format(20s, {.seconds_precision = 2}));
 		EXPECT_EQ("34.50", duration_format(34s + 499ms, {.seconds_precision = 2}));
 		EXPECT_EQ("34.50", duration_format(34s + 500ms, {.seconds_precision = 2}));
@@ -53,12 +53,14 @@ namespace Rayni
 		EXPECT_EQ("34.51", duration_format(34s + 505ms, {.seconds_precision = 2}));
 		EXPECT_EQ("35.00", duration_format(34s + 999ms, {.seconds_precision = 2}));
 		EXPECT_EQ("35.00", duration_format(34s + 1001ms, {.seconds_precision = 2}));
+		EXPECT_EQ("01:35.00", duration_format(1min + 34s + 999ms, {.seconds_precision = 2}));
+		EXPECT_EQ("01:35.00", duration_format(1min + 34s + 1001ms, {.seconds_precision = 2}));
 
-		EXPECT_EQ("00.000", duration_format(0s, {.seconds_precision = 3}));
-		EXPECT_EQ("00.090", duration_format(90ms, {.seconds_precision = 3}));
-		EXPECT_EQ("00.099", duration_format(99ms, {.seconds_precision = 3}));
-		EXPECT_EQ("00.123", duration_format(123ms, {.seconds_precision = 3}));
-		EXPECT_EQ("05.000", duration_format(5s, {.seconds_precision = 3}));
+		EXPECT_EQ("0.000", duration_format(0s, {.seconds_precision = 3}));
+		EXPECT_EQ("0.090", duration_format(90ms, {.seconds_precision = 3}));
+		EXPECT_EQ("0.099", duration_format(99ms, {.seconds_precision = 3}));
+		EXPECT_EQ("0.123", duration_format(123ms, {.seconds_precision = 3}));
+		EXPECT_EQ("5.000", duration_format(5s, {.seconds_precision = 3}));
 		EXPECT_EQ("20.000", duration_format(20s, {.seconds_precision = 3}));
 		EXPECT_EQ("34.499", duration_format(34s + 499ms, {.seconds_precision = 3}));
 		EXPECT_EQ("34.500", duration_format(34s + 500ms, {.seconds_precision = 3}));
@@ -66,14 +68,16 @@ namespace Rayni
 		EXPECT_EQ("34.505", duration_format(34s + 505ms, {.seconds_precision = 3}));
 		EXPECT_EQ("34.999", duration_format(34s + 999ms, {.seconds_precision = 3}));
 		EXPECT_EQ("35.001", duration_format(34s + 1001ms, {.seconds_precision = 3}));
+		EXPECT_EQ("01:34.999", duration_format(1min + 34s + 999ms, {.seconds_precision = 3}));
+		EXPECT_EQ("01:35.001", duration_format(1min + 34s + 1001ms, {.seconds_precision = 3}));
 	}
 
 	TEST(DurationFormat, FloorSeconds)
 	{
-		EXPECT_EQ("00.00", duration_format(0s, {.seconds_precision = 2, .floor_seconds = true}));
-		EXPECT_EQ("00.00", duration_format(999ms, {.seconds_precision = 2, .floor_seconds = true}));
-		EXPECT_EQ("01.00", duration_format(1s + 499ms, {.seconds_precision = 2, .floor_seconds = true}));
-		EXPECT_EQ("01.00", duration_format(1s + 999ms, {.seconds_precision = 2, .floor_seconds = true}));
-		EXPECT_EQ("02.00", duration_format(1s + 1001ms, {.seconds_precision = 2, .floor_seconds = true}));
+		EXPECT_EQ("0.00", duration_format(0s, {.seconds_precision = 2, .floor_seconds = true}));
+		EXPECT_EQ("0.00", duration_format(999ms, {.seconds_precision = 2, .floor_seconds = true}));
+		EXPECT_EQ("1.00", duration_format(1s + 499ms, {.seconds_precision = 2, .floor_seconds = true}));
+		EXPECT_EQ("1.00", duration_format(1s + 999ms, {.seconds_precision = 2, .floor_seconds = true}));
+		EXPECT_EQ("2.00", duration_format(1s + 1001ms, {.seconds_precision = 2, .floor_seconds = true}));
 	}
 }

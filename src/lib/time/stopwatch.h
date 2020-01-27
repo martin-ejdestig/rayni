@@ -33,28 +33,30 @@ namespace Rayni
 
 		static_assert(clock::is_steady, "Stopwatch clock must be steady");
 
-		void start()
+		Stopwatch &start()
 		{
-			start(clock::now());
+			return start(clock::now());
 		}
 
-		void start(clock::time_point time_point)
+		Stopwatch &start(clock::time_point time_point)
 		{
 			started_ = true;
 			time_start_ = time_point;
 			time_end_ = time_start_;
+			return *this;
 		}
 
-		void stop()
+		Stopwatch &stop()
 		{
-			stop(clock::now());
+			return stop(clock::now());
 		}
 
-		void stop(clock::time_point time_point)
+		Stopwatch &stop(clock::time_point time_point)
 		{
 			assert(started_ && time_start_ <= time_point);
 			started_ = false;
 			time_end_ = time_point;
+			return *this;
 		}
 
 		bool is_started() const

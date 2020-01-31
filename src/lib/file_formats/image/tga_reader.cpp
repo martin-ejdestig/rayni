@@ -26,7 +26,6 @@
 
 #include "lib/graphics/color.h"
 #include "lib/graphics/image.h"
-#include "lib/math/enum.h"
 
 namespace Rayni
 {
@@ -197,21 +196,25 @@ namespace Rayni
 
 	TGAReader::ColorMapType TGAReader::byte_to_color_map_type(std::uint8_t byte) const
 	{
-		auto e = enum_from_value({ColorMapType::ABSCENT, ColorMapType::PRESENT}, byte);
+		if (byte == static_cast<std::uint8_t>(ColorMapType::ABSCENT))
+			return ColorMapType::ABSCENT;
+		if (byte == static_cast<std::uint8_t>(ColorMapType::PRESENT))
+			return ColorMapType::PRESENT;
 
-		if (!e.has_value())
-			throw Exception(position(), "unknown color map type field in TGA header");
-
-		return e.value();
+		throw Exception(position(), "unknown color map type field in TGA header");
 	}
 
 	TGAReader::ImageType TGAReader::byte_to_image_type(std::uint8_t byte) const
 	{
-		auto e = enum_from_value({ImageType::NONE, ImageType::COLOR_MAPPED, ImageType::RGB, ImageType::MONO},
-		                         byte);
-		if (!e.has_value())
-			throw Exception(position(), "unknown image type field in TGA header");
+		if (byte == static_cast<std::uint8_t>(ImageType::NONE))
+			return ImageType::NONE;
+		if (byte == static_cast<std::uint8_t>(ImageType::COLOR_MAPPED))
+			return ImageType::COLOR_MAPPED;
+		if (byte == static_cast<std::uint8_t>(ImageType::RGB))
+			return ImageType::RGB;
+		if (byte == static_cast<std::uint8_t>(ImageType::MONO))
+			return ImageType::MONO;
 
-		return e.value();
+		throw Exception(position(), "unknown image type field in TGA header");
 	}
 }

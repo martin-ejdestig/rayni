@@ -28,7 +28,6 @@ lib_unit_tests_sources = [
     'math/animated_transform.cpp',
     'math/bitmask.cpp',
     'math/decomposed_matrix4x4.cpp',
-    'math/enum.cpp',
     'math/hash.cpp',
     'math/lerp.cpp',
     'math/math.cpp',

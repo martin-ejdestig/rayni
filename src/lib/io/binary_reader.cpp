@@ -22,11 +22,7 @@
 #include <algorithm>
 #include <array>
 #include <cstdint>
-#include <fstream>
-#include <ios>
-#include <istream>
-#include <limits>
-#include <sstream>
+#include <cstring>
 #include <string>
 #include <utility>
 
@@ -34,43 +30,42 @@ namespace Rayni
 {
 	void BinaryReader::open_file(const std::string &file_name)
 	{
-		auto file = std::make_unique<std::ifstream>(file_name);
+		close();
 
-		if (!file->is_open())
-			throw Exception(file_name, "failed to open file");
+		if (auto result = mmap_file_.map(file_name); !result)
+			throw Exception(result.error().message());
 
-		reset(std::move(file), file_name);
+		buffer_ = static_cast<const std::uint8_t *>(mmap_file_.data());
+		buffer_size_ = mmap_file_.size();
+		buffer_position_ = 0;
+
+		position_prefix_ = file_name;
 	}
 
 	void BinaryReader::set_data(std::vector<std::uint8_t> &&data, const std::string &position_prefix)
 	{
-		// TODO: Copying data (twice), misuse of std::istringstream and ugly sign conversion.
-		//
-		// Complexity of implementing an std::istream/std::streambuf that reads from a
-		// memory area is not worth it. (Two classes and ugly const casting for
-		// std::streambuf::setg. tellg() and seekg() requires overriding at least
-		// std::streambuf::seekoff() and handling all permutations of arguments etc.)
-		//
-		// If performance is really important it is probably better to remove use of
-		// std::istream all together and just read memory directly. Reading from file would
-		// probably benefit performance wise as well by use of mmap(). Have testing use of
-		// MemoryMappedFile when reading large object and image files on the TODO list.
-		std::vector<std::uint8_t> data_to_free = std::move(data);
-		const void *ptr = data_to_free.data();
-		std::string string(static_cast<const char *>(ptr), data_to_free.size());
+		close();
 
-		reset(std::make_unique<std::istringstream>(std::move(string)), position_prefix);
-	}
+		data_ = std::move(data);
 
-	void BinaryReader::reset(std::unique_ptr<std::istream> &&istream, const std::string &position_prefix)
-	{
-		istream_ = std::move(istream);
+		buffer_ = data_.data();
+		buffer_size_ = data_.size();
+		buffer_position_ = 0;
+
 		position_prefix_ = position_prefix;
 	}
 
 	void BinaryReader::close()
 	{
-		istream_.reset();
+		if (mmap_file_.data())
+			mmap_file_.unmap();
+		else
+			data_ = std::vector<std::uint8_t>();
+
+		buffer_ = nullptr;
+		buffer_size_ = 0;
+		buffer_position_ = 0;
+
 		position_prefix_ = "";
 	}
 
@@ -81,26 +76,19 @@ namespace Rayni
 			                "invalid offset (size: " + std::to_string(dest_size) +
 			                        ", offset: " + std::to_string(dest_offset) + ")");
 
-		std::size_t max_num_bytes =
-		        std::min(dest_size - dest_offset, std::size_t(std::numeric_limits<std::streamsize>::max()));
+		std::size_t max_num_bytes = dest_size - dest_offset;
 
 		if (num_bytes > max_num_bytes)
 			throw Exception(position(),
 			                "byte count too large (byte count: " + std::to_string(num_bytes) +
 			                        ", max: " + std::to_string(max_num_bytes) + ")");
 
-		static_assert(sizeof(std::istream::char_type) == 1);
+		if (buffer_position_ + num_bytes > buffer_size_)
+			throw Exception(position(), "unexpected end of stream");
 
-		istream_->read(static_cast<std::istream::char_type *>(dest) + dest_offset,
-		               static_cast<std::streamsize>(num_bytes));
+		std::memcpy(static_cast<std::uint8_t *>(dest) + dest_offset, buffer_ + buffer_position_, num_bytes);
 
-		if (!istream_->good())
-		{
-			if (istream_->eof())
-				throw Exception(position(), "unexpected end of stream");
-
-			throw Exception(position(), "read error");
-		}
+		buffer_position_ += num_bytes;
 	}
 
 	std::uint8_t BinaryReader::read_uint8()
@@ -165,28 +153,23 @@ namespace Rayni
 		if (num_bytes == 0)
 			return;
 
-		istream_->seekg(static_cast<std::istream::off_type>(num_bytes), std::ios::cur);
-
-		if (!istream_->good())
+		if (buffer_position_ + num_bytes > buffer_size_)
 			throw Exception(position(), "failed to skip " + std::to_string(num_bytes) + " bytes");
+
+		buffer_position_ += num_bytes;
 	}
 
 	std::optional<std::int8_t> BinaryReader::peek_int8()
 	{
-		auto c = istream_->peek();
-
-		if (istream_->eof())
+		if (buffer_position_ >= buffer_size_)
 			return std::nullopt;
 
-		if (!istream_->good())
-			throw Exception(position(), "failed to peek");
-
-		return c;
+		return buffer_[buffer_position_];
 	}
 
 	std::string BinaryReader::position() const
 	{
-		if (!istream_)
+		if (!buffer_)
 			return "";
 
 		std::string str;
@@ -194,12 +177,11 @@ namespace Rayni
 		if (!position_prefix_.empty())
 			str += position_prefix_;
 
-		std::istream::pos_type pos = istream_->tellg();
-		if (pos != std::istream::pos_type(-1))
+		if (buffer_position_ <= buffer_size_)
 		{
 			if (!str.empty())
 				str += ":";
-			str += "<offset " + std::to_string(pos) + ">";
+			str += "<offset " + std::to_string(buffer_position_) + ">";
 		}
 
 		return str;

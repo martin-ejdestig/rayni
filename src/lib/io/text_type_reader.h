@@ -21,6 +21,7 @@
 #define RAYNI_LIB_IO_TEXT_TYPE_READER_H
 
 #include <string>
+#include <utility>
 
 #include "lib/function/scope_exit.h"
 #include "lib/io/text_reader.h"
@@ -44,15 +45,15 @@ namespace Rayni
 			return read();
 		}
 
-		T read_string(const std::string &string)
+		T read_string(std::string &&string)
 		{
-			return read_string(string, "");
+			return read_string(std::move(string), "");
 		}
 
-		T read_string(const std::string &string, const std::string &position_prefix)
+		T read_string(std::string &&string, const std::string &position_prefix)
 		{
 			auto closer = scope_exit([&] { close(); });
-			set_string(string, position_prefix);
+			set_string(std::move(string), position_prefix);
 			return read();
 		}
 

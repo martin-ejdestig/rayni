@@ -19,10 +19,7 @@
 
 #include "lib/io/text_reader.h"
 
-#include <cassert>
-#include <fstream>
-#include <istream>
-#include <sstream>
+#include <cstring>
 #include <string>
 #include <utility>
 
@@ -30,72 +27,81 @@ namespace Rayni
 {
 	void TextReader::open_file(const std::string &file_name)
 	{
-		auto file = std::make_unique<std::ifstream>(file_name);
-		if (!file->is_open())
-			throw Exception(file_name, "failed to open file");
-		reset(std::move(file), file_name);
+		close();
+
+		if (auto result = mmap_file_.map(file_name); !result)
+			throw Exception(result.error().message());
+
+		buffer_ = static_cast<const char *>(mmap_file_.data());
+		buffer_size_ = mmap_file_.size();
+		buffer_position_ = 0;
+
+		position_ = Position(file_name);
+		position_.next_line();
 	}
 
-	void TextReader::set_string(const std::string &string, const std::string &position_prefix)
+	void TextReader::set_string(std::string &&string, const std::string &position_prefix)
 	{
-		reset(std::make_unique<std::istringstream>(string), position_prefix);
-	}
+		close();
 
-	void TextReader::reset(std::unique_ptr<std::istream> &&istream, const std::string &position_prefix)
-	{
-		istream_ = std::move(istream);
-		line_ = "";
+		string_ = std::move(string);
+
+		buffer_ = string_.data();
+		buffer_size_ = string_.length();
+		buffer_position_ = 0;
+
 		position_ = Position(position_prefix);
-		getline();
+		position_.next_line();
 	}
 
 	void TextReader::close()
 	{
-		istream_.reset();
-		line_ = "";
+		if (mmap_file_.data())
+			mmap_file_.unmap();
+		else
+			string_ = std::string();
+
+		buffer_ = string_.data();
+		buffer_size_ = 0;
+		buffer_position_ = 0;
+
 		position_ = Position();
+	}
+
+	void TextReader::next()
+	{
+		if (at_eof())
+			throw EOFException(position_, "end of stream");
+
+		if (at_newline())
+		{
+			buffer_position_++;
+			position_.next_line();
+		}
+		else
+		{
+			buffer_position_++;
+			position_.next_column();
+		}
 	}
 
 	bool TextReader::skip_string(const std::string &str)
 	{
-		if (str.length() > line_.length() - position_.line_index())
+		if (str.length() > buffer_size_ - buffer_position_)
 			return false;
 
-		if (line_.compare(position_.line_index(), str.length(), str) != 0)
+		if (std::memcmp(buffer_ + buffer_position_, str.data(), str.length()) != 0)
 			return false;
 
+		buffer_position_ += str.length();
 		position_.next_columns(str.length());
 
 		return true;
 	}
 
-	void TextReader::getline()
-	{
-		if (!istream_)
-			throw Exception("no file or string stream to read from");
-
-		if (!std::getline(*istream_, line_))
-		{
-			if (istream_->eof())
-				throw EOFException(position_, "end of stream");
-
-			throw Exception(position_, "read error");
-		}
-
-		// NOTE: std::getline() strips '\n'. There is no way to detect if '\n' was in
-		//       stream or not when end is reached. Also have to peek for istream->eof()
-		//       to be set if at last line and input ends with a '\n'. If this is not done
-		//       at_eof() will not work correctly as it is currently implemented. Remove use
-		//       of std::getline() to get rid of these quirks?
-		line_ += '\n';
-		istream_->peek();
-
-		position_.next_line();
-	}
-
 	std::string TextReader::Position::to_string() const
 	{
-		if (!is_set())
+		if (line_ == 0)
 			return prefix_;
 
 		std::string str;

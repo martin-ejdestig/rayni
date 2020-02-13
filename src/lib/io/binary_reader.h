@@ -22,9 +22,7 @@
 
 #include <cstddef>
 #include <cstdint>
-#include <istream>
 #include <limits>
-#include <memory>
 #include <optional>
 #include <string>
 #include <type_traits>
@@ -32,6 +30,7 @@
 #include <vector>
 
 #include "lib/io/io_exception.h"
+#include "lib/system/memory_mapped_file.h"
 
 namespace Rayni
 {
@@ -144,8 +143,6 @@ namespace Rayni
 		std::string position() const;
 
 	private:
-		void reset(std::unique_ptr<std::istream> &&istream, const std::string &position_prefix);
-
 		void read_bytes(void *dest, std::size_t dest_size, std::size_t dest_offset, std::size_t num_bytes);
 
 		template <typename F, typename I>
@@ -162,7 +159,13 @@ namespace Rayni
 			return u.f;
 		}
 
-		std::unique_ptr<std::istream> istream_;
+		MemoryMappedFile mmap_file_;
+		std::vector<std::uint8_t> data_;
+
+		const std::uint8_t *buffer_ = nullptr;
+		std::size_t buffer_size_ = 0;
+		std::size_t buffer_position_ = 0;
+
 		std::string position_prefix_;
 	};
 

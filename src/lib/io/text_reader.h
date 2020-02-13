@@ -21,11 +21,11 @@
 #define RAYNI_LIB_IO_TEXT_READER_H
 
 #include <cstddef>
-#include <istream>
-#include <memory>
 #include <string>
+#include <utility>
 
 #include "lib/io/io_exception.h"
+#include "lib/system/memory_mapped_file.h"
 
 namespace Rayni
 {
@@ -47,7 +47,6 @@ namespace Rayni
 
 			std::size_t line() const;
 			std::size_t column() const;
-			std::size_t line_index() const;
 
 			std::string to_string() const;
 
@@ -55,43 +54,37 @@ namespace Rayni
 			bool is_set() const;
 
 			std::size_t line_ = 0;
-			std::size_t line_index_ = 0;
+			std::size_t column_ = 0;
 			std::string prefix_;
 		};
 
 		void open_file(const std::string &file_name);
 
-		void set_string(const std::string &string, const std::string &position_prefix);
-		void set_string(const std::string &string)
+		void set_string(std::string &&string, const std::string &position_prefix);
+		void set_string(std::string &&string)
 		{
-			set_string(string, "");
+			set_string(std::move(string), "");
 		}
 
 		void close();
 
-		void next()
-		{
-			if (at_newline())
-				getline();
-			else
-				position_.next_column();
-		}
+		void next();
 
 		char next_get()
 		{
-			char c = line_[position_.line_index()];
+			char c = buffer_[buffer_position_];
 			next();
 			return c;
 		}
 
 		bool at(char c) const
 		{
-			return line_[position_.line_index()] == c;
+			return buffer_[buffer_position_] == c;
 		}
 
 		bool at_digit() const
 		{
-			char c = line_[position_.line_index()];
+			char c = buffer_[buffer_position_];
 			return c >= '0' && c <= '9';
 		}
 
@@ -107,10 +100,7 @@ namespace Rayni
 
 		bool at_eof() const
 		{
-			if (line_.empty())
-				return true;
-
-			return line_.size() - 1 == position_.line_index() && istream_->eof();
+			return buffer_position_ >= buffer_size_;
 		}
 
 		bool skip_char(char c)
@@ -147,12 +137,13 @@ namespace Rayni
 		}
 
 	private:
-		void reset(std::unique_ptr<std::istream> &&istream, const std::string &position_prefix);
+		MemoryMappedFile mmap_file_;
+		std::string string_;
 
-		void getline();
+		const char *buffer_ = string_.data();
+		std::size_t buffer_size_ = 0;
+		std::size_t buffer_position_ = 0;
 
-		std::unique_ptr<std::istream> istream_;
-		std::string line_;
 		Position position_;
 	};
 
@@ -176,25 +167,20 @@ namespace Rayni
 	{
 	}
 
-	inline bool TextReader::Position::is_set() const
-	{
-		return line() > 0;
-	}
-
 	inline void TextReader::Position::next_line()
 	{
 		line_++;
-		line_index_ = 0;
+		column_ = 1;
 	}
 
 	inline void TextReader::Position::next_column()
 	{
-		line_index_++;
+		column_++;
 	}
 
 	inline void TextReader::Position::next_columns(std::size_t num_columns)
 	{
-		line_index_ += num_columns;
+		column_ += num_columns;
 	}
 
 	inline std::size_t TextReader::Position::line() const
@@ -204,12 +190,7 @@ namespace Rayni
 
 	inline std::size_t TextReader::Position::column() const
 	{
-		return is_set() ? line_index_ + 1 : 0;
-	}
-
-	inline std::size_t TextReader::Position::line_index() const
-	{
-		return line_index_;
+		return column_;
 	}
 }
 

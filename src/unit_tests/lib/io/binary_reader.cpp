@@ -769,12 +769,12 @@ namespace Rayni
 		EXPECT_EQ(0, reader.read_int8());
 		EXPECT_EQ(position(1), reader.position());
 		EXPECT_THROW(reader.read_int8(), BinaryReader::Exception);
-		EXPECT_EQ("", reader.position());
+		EXPECT_EQ(position(1), reader.position());
 
 		reader.set_data({0}, "prefix");
 		EXPECT_EQ(0, reader.read_int8());
 		EXPECT_EQ(position("prefix", 1), reader.position());
 		EXPECT_THROW(reader.read_int8(), BinaryReader::Exception);
-		EXPECT_EQ("prefix", reader.position());
+		EXPECT_EQ(position("prefix", 1), reader.position());
 	}
 }

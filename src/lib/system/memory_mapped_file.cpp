@@ -30,36 +30,36 @@
 
 namespace Rayni
 {
-	MemoryMappedFile::MemoryMappedFile(const std::string &file_name)
-	{
-		map(file_name);
-	}
-
 	MemoryMappedFile::~MemoryMappedFile()
 	{
 		unmap();
 	}
 
-	void MemoryMappedFile::map(const std::string &file_name)
+	Result<void> MemoryMappedFile::map(const std::string &file_name)
 	{
 		unmap();
 
 		UniqueFD fd(open(file_name.c_str(), O_RDONLY));
 		if (fd.get() == -1)
-			throw std::system_error(errno, std::system_category(), file_name + ": failed to open file");
+			return Error(file_name + ": failed to open file",
+			             std::error_code(errno, std::system_category()));
 
 		struct stat stat;
 		if (fstat(fd.get(), &stat) != 0)
-			throw std::system_error(errno, std::system_category(), file_name + ": failed to stat file");
+			return Error(file_name + ": failed to stat file",
+			             std::error_code(errno, std::system_category()));
 
 		auto size = static_cast<std::size_t>(stat.st_size);
 
 		void *ptr = mmap(nullptr, size, PROT_READ, MAP_PRIVATE, fd.get(), 0);
 		if (ptr == MAP_FAILED)
-			throw std::system_error(errno, std::system_category(), file_name + ": failed to map file");
+			return Error(file_name + ": failed to map file",
+			             std::error_code(errno, std::system_category()));
 
 		data_ = ptr;
 		size_ = size;
+
+		return {};
 	}
 
 	void MemoryMappedFile::unmap() noexcept

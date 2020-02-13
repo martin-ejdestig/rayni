@@ -24,6 +24,7 @@
 #include <string>
 #include <utility>
 
+#include "lib/function/result.h"
 #include "lib/system/unique_fd.h"
 
 namespace Rayni
@@ -32,8 +33,6 @@ namespace Rayni
 	{
 	public:
 		MemoryMappedFile() = default;
-
-		explicit MemoryMappedFile(const std::string &file_name);
 
 		MemoryMappedFile(const MemoryMappedFile &other) = delete;
 
@@ -57,7 +56,7 @@ namespace Rayni
 			return *this;
 		}
 
-		void map(const std::string &file_name);
+		Result<void> map(const std::string &file_name);
 		void unmap() noexcept;
 
 		const void *data() const

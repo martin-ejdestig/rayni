@@ -24,7 +24,6 @@
 #include <cstdint>
 #include <cstring>
 #include <string>
-#include <system_error>
 #include <utility>
 #include <vector>
 
@@ -41,20 +40,7 @@ namespace Rayni
 		file_write(file_name, bytes);
 
 		MemoryMappedFile file;
-		file.map(file_name);
-
-		ASSERT_EQ(bytes.size(), file.size());
-		EXPECT_EQ(0, std::memcmp(bytes.data(), file.data(), bytes.size()));
-	}
-
-	TEST(MemoryMappedFile, MapConstructor)
-	{
-		ScopedTempDir temp_dir;
-		const std::string file_name = temp_dir.path() / "file";
-		const std::vector<std::uint8_t> bytes = {0x3c, 0x53, 0xb7, 0x20};
-		file_write(file_name, bytes);
-
-		MemoryMappedFile file(file_name);
+		ASSERT_TRUE(file.map(file_name));
 
 		ASSERT_EQ(bytes.size(), file.size());
 		EXPECT_EQ(0, std::memcmp(bytes.data(), file.data(), bytes.size()));
@@ -72,11 +58,11 @@ namespace Rayni
 
 		MemoryMappedFile file;
 
-		file.map(file_name1);
+		ASSERT_TRUE(file.map(file_name1));
 		ASSERT_EQ(bytes1.size(), file.size());
 		EXPECT_EQ(0, std::memcmp(bytes1.data(), file.data(), bytes1.size()));
 
-		file.map(file_name2);
+		ASSERT_TRUE(file.map(file_name2));
 		ASSERT_EQ(2U, file.size());
 		EXPECT_EQ(0, std::memcmp(bytes2.data(), file.data(), bytes2.size()));
 	}
@@ -87,7 +73,7 @@ namespace Rayni
 		const std::string file_name = temp_dir.path() / "does_not_exist";
 
 		MemoryMappedFile file;
-		EXPECT_THROW(file.map(file_name), std::system_error);
+		EXPECT_FALSE(file.map(file_name));
 	}
 
 	TEST(MemoryMappedFile, MapZeroBytesFile)
@@ -98,7 +84,7 @@ namespace Rayni
 		file_write(file_name, bytes);
 
 		MemoryMappedFile file;
-		EXPECT_THROW(file.map(file_name), std::system_error);
+		EXPECT_FALSE(file.map(file_name));
 	}
 
 	TEST(MemoryMappedFile, UnmapResetsDataAndSize)
@@ -112,7 +98,7 @@ namespace Rayni
 		EXPECT_EQ(nullptr, file.data());
 		EXPECT_EQ(0, file.size());
 
-		file.map(file_name);
+		ASSERT_TRUE(file.map(file_name));
 		EXPECT_NE(nullptr, file.data());
 		EXPECT_NE(0, file.size());
 
@@ -139,7 +125,9 @@ namespace Rayni
 		const std::vector<std::uint8_t> bytes = {0x12};
 		file_write(file_name, bytes);
 
-		MemoryMappedFile file1(file_name);
+		MemoryMappedFile file1;
+		ASSERT_TRUE(file1.map(file_name));
+
 		MemoryMappedFile file2(std::move(file1));
 
 		// NOLINTNEXTLINE(bugprone-use-after-move, clang-analyzer-cplusplus.Move) Tests move.
@@ -156,9 +144,10 @@ namespace Rayni
 		const std::vector<std::uint8_t> bytes = {0x12};
 		file_write(file_name, bytes);
 
-		MemoryMappedFile file1(file_name);
-		MemoryMappedFile file2;
+		MemoryMappedFile file1;
+		ASSERT_TRUE(file1.map(file_name));
 
+		MemoryMappedFile file2;
 		file2 = std::move(file1);
 
 		// NOLINTNEXTLINE(bugprone-use-after-move, clang-analyzer-cplusplus.Move) Tests move.

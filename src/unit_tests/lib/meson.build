@@ -16,6 +16,7 @@ lib_unit_tests_sources = [
     'file_formats/image_reader.cpp',
     'file_formats/json_reader.cpp',
     'file_formats/object/ply_reader.cpp',
+    'function/result.cpp',
     'function/scope_exit.cpp',
     'graphics/color.cpp',
     'graphics/image.cpp',

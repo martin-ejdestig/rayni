@@ -35,6 +35,7 @@ lib_sources = [
     'file_formats/json_reader.h',
     'file_formats/object/ply_reader.cpp',
     'file_formats/object/ply_reader.h',
+    'function/result.h',
     'function/scope_exit.h',
     'graphics/color.cpp',
     'graphics/color.h',

@@ -22,12 +22,11 @@
 #include <algorithm>
 #include <cstdint>
 #include <filesystem>
-#include <fstream>
-#include <istream>
 #include <string>
 #include <vector>
 
 #include "lib/string/string.h"
+#include "lib/system/memory_mapped_file.h"
 
 namespace Rayni
 {
@@ -35,16 +34,18 @@ namespace Rayni
 	{
 		ImageFormat image_format_from_magic(const std::string &file_name)
 		{
-			std::ifstream stream(file_name, std::ios::binary);
-			if (!stream.is_open())
+			MemoryMappedFile file;
+			if (!file.map(file_name))
 				return ImageFormat::UNDETERMINED;
 
-			auto magic_matches = [&](std::istream::pos_type offset,
-			                         const std::vector<std::uint8_t> &magic) {
-				stream.seekg(offset);
+			auto magic_matches = [&](std::uint64_t offset, const std::vector<std::uint8_t> &magic) {
+				if (offset + magic.size() > file.size())
+					return false;
+
+				auto p = static_cast<const std::uint8_t *>(file.data()) + offset;
 
 				for (auto &byte : magic)
-					if (stream.get() != byte)
+					if (byte != *p++)
 						return false;
 
 				return true;

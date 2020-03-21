@@ -84,7 +84,9 @@ namespace Rayni
 		file_write(file_name, bytes);
 
 		MemoryMappedFile file;
-		EXPECT_FALSE(file.map(file_name));
+		ASSERT_TRUE(file.map(file_name));
+		EXPECT_EQ(nullptr, file.data());
+		EXPECT_EQ(0, file.size());
 	}
 
 	TEST(MemoryMappedFile, UnmapResetsDataAndSize)

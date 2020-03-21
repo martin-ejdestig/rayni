@@ -50,11 +50,15 @@ namespace Rayni
 			             std::error_code(errno, std::system_category()));
 
 		auto size = static_cast<std::size_t>(stat.st_size);
+		void *ptr = nullptr;
 
-		void *ptr = mmap(nullptr, size, PROT_READ, MAP_PRIVATE, fd.get(), 0);
-		if (ptr == MAP_FAILED)
-			return Error(file_name + ": failed to map file",
-			             std::error_code(errno, std::system_category()));
+		if (size != 0)
+		{
+			ptr = mmap(nullptr, size, PROT_READ, MAP_PRIVATE, fd.get(), 0);
+			if (ptr == MAP_FAILED)
+				return Error(file_name + ": failed to map file",
+				             std::error_code(errno, std::system_category()));
+		}
 
 		data_ = ptr;
 		size_ = size;

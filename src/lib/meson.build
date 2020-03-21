@@ -5,6 +5,10 @@ lib_deps = [
     dependency('OpenEXR', version : '>=2.3.0')
 ]
 
+version_info_header = vcs_tag(input : 'version_info.h.in',
+                              output : 'version_info.h',
+                              command : ['git', 'describe', '--always', '--first-parent', '--dirty'])
+
 lib_sources = [
     'concurrency/barrier.h',
     'concurrency/cancellable.h',
@@ -93,10 +97,8 @@ lib_sources = [
     'system/scoped_temp_dir.cpp',
     'system/scoped_temp_dir.h',
     'system/unique_fd.h',
-    'version_info.cpp',
-    'version_info.h',
     config_header,
-    git_describe_version_header
+    version_info_header
 ]
 
 lib = static_library('rayni',
@@ -106,4 +108,5 @@ lib = static_library('rayni',
                      pic : false)
 
 lib_dep = declare_dependency(include_directories : src_incdir,
-                             link_with : lib)
+                             link_with : lib,
+                             sources : [config_header, version_info_header])

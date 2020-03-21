@@ -1,6 +1,6 @@
 // This file is part of Rayni.
 //
-// Copyright (C) 2014-2020 Martin Ejdestig <marejde@gmail.com>
+// Copyright (C) 2013-2020 Martin Ejdestig <marejde@gmail.com>
 //
 // Rayni is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -20,18 +20,13 @@
 #ifndef RAYNI_LIB_VERSION_INFO_H
 #define RAYNI_LIB_VERSION_INFO_H
 
-#include <string>
-#include <vector>
+#include <array>
 
 namespace Rayni
 {
-	class VersionInfo
-	{
-	public:
-		static std::vector<std::string> authors();
-		static std::string copyright();
-		static std::string version();
-	};
+	static constexpr char VERSION_INFO_VERSION[] = "@VCS_TAG@";
+	static constexpr char VERSION_INFO_COPYRIGHT[] = R"(Copyright © 2013-2020 Martin Ejdestig)";
+	static constexpr std::array<const char *, 1> VERSION_INFO_AUTHORS = {"Martin Ejdestig"};
 }
 
 #endif // RAYNI_LIB_VERSION_INFO_H

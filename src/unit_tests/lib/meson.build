@@ -54,8 +54,7 @@ lib_unit_tests_sources = [
     'system/main_loop.cpp',
     'system/memory_mapped_file.cpp',
     'system/scoped_temp_dir.cpp',
-    'system/unique_fd.cpp',
-    'version_info.cpp'
+    'system/unique_fd.cpp'
 ]
 
 lib_unit_tests = executable('librayni-unit_tests',

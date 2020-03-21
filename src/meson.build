@@ -9,9 +9,5 @@ config_header = configure_file(input : 'config.h.in',
                                output : 'config.h',
                                configuration : config_data)
 
-git_describe_version_header = vcs_tag(input : 'git_describe_version.h.in',
-                                      output : 'git_describe_version.h',
-                                      command : ['git', 'describe', '--always', '--first-parent', '--dirty'])
-
 subdir('lib')
 subdir('unit_tests')

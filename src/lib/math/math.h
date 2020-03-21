@@ -27,7 +27,7 @@
 
 namespace Rayni
 {
-#ifdef RAYNI_DOUBLE_PRECISION
+#if RAYNI_DOUBLE_PRECISION
 	using real_t = double;
 #else
 	using real_t = float;

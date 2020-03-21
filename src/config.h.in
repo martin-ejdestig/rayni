@@ -20,15 +20,15 @@
 #ifndef RAYNI_CONFIG_H
 #define RAYNI_CONFIG_H
 
-#mesondefine RAYNI_DOUBLE_PRECISION
-
 // clang-format can not handle Meson's @ (extra space is added before end @).
 // Turn it off. No complicated formatting should be done in this section anyway.
 // clang-format off
 
+#define RAYNI_DOUBLE_PRECISION @double_precision@
+
 #define RAYNI_RAY_TRIANGLE_INTERSECTION_MOLLER_TRUMBORE 1
 #define RAYNI_RAY_TRIANGLE_INTERSECTION_WATERTIGHT 2
-#define RAYNI_RAY_TRIANGLE_INTERSECTION @RAYNI_RAY_TRIANGLE_INTERSECTION@
+#define RAYNI_RAY_TRIANGLE_INTERSECTION RAYNI_RAY_TRIANGLE_INTERSECTION_@ray_triangle_intersection@
 
 // clang-format on
 

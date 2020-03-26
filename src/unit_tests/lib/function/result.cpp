@@ -103,7 +103,7 @@ namespace Rayni
 		EXPECT_TRUE(add_positive(-1, -2).is_error());
 
 		Result<int> r = add_positive(1, 2);
-		const Result<int> r_const = r;
+		const Result<int> r_const = add_positive(1, 2);
 
 		EXPECT_EQ(3, r.value()); // &
 		EXPECT_EQ(3, r_const.value()); // const &
@@ -117,7 +117,7 @@ namespace Rayni
 		EXPECT_TRUE(create_image(0, 0).is_error());
 
 		Result<Image> r = create_image(2, 2);
-		const Result<Image> r_const = r;
+		const Result<Image> r_const = create_image(2, 2);
 
 		EXPECT_EQ(2, r.value().width); // &
 		EXPECT_EQ(2, r_const.value().width); // const &
@@ -153,7 +153,7 @@ namespace Rayni
 		Result<int> r = add_positive(1, 2);
 		EXPECT_EQ(3, *r);
 
-		const Result<int> r_const = r;
+		const Result<int> r_const = add_positive(1, 2);
 		EXPECT_EQ(3, *r_const);
 	}
 
@@ -162,7 +162,7 @@ namespace Rayni
 		Result<Image> r = create_image(2, 2);
 		EXPECT_EQ(2, r->width);
 
-		const Result<Image> r_const = r;
+		const Result<Image> r_const = create_image(2, 2);
 		EXPECT_EQ(2, r_const->width);
 	}
 

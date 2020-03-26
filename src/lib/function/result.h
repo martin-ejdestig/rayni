@@ -21,6 +21,7 @@
 #define RAYNI_LIB_FUNCTION_RESULT_H
 
 #include <cassert>
+#include <memory>
 #include <string>
 #include <system_error>
 #include <utility>
@@ -35,9 +36,18 @@ namespace Rayni
 {
 	// Result allows for returning a value (or void) or an error.
 	//
-	// TODO: What is the status of std::expected? It did not make it into
-	//       C++20. Check in > C++20 if something useful has been added to
-	//       the standard that can replace Result or be used in it.
+	// Since Result can be used quite a lot an effort has been made to keep the size overhead
+	// of Result as small as possible. Goal is to have a maximum size overhead of sizeof(void *).
+	// To accomplish this Error is stored as a pointer. This reduces cache locality but only in
+	// the case of an Error and most common case by far should be to return success.
+	//
+	// TODO: Perform more performance measurements to see if reasoning about size is justified.
+	//       Code generated for returning error will be larger with separate allocation which in
+	//       turn puts higher preassure on instruction cache.
+	//
+	// TODO: What is the status of std::expected? It did not make it into C++20. Check in >C++20
+	//       if something useful has been added to the standard that can replace Result or be
+	//       used in it.
 
 	class Error
 	{
@@ -61,9 +71,24 @@ namespace Rayni
 	};
 
 	template <typename T>
-	class ResultBase
+	class [[nodiscard]] Result final
 	{
 	public:
+		// NOLINTNEXTLINE(google-explicit-constructor) Want implicit conversion for less verbosity.
+		Result(T &&value) : value_or_error_(std::move(value))
+		{
+		}
+
+		// NOLINTNEXTLINE(google-explicit-constructor) Want implicit conversion for less verbosity.
+		Result(Error &&error) : value_or_error_(std::make_unique<Error>(std::move(error)))
+		{
+		}
+
+		// NOLINTNEXTLINE(google-explicit-constructor) Want implicit conversion for less verbosity.
+		Result(const Error &error) : value_or_error_(std::make_unique<Error>(error))
+		{
+		}
+
 		explicit operator bool() const
 		{
 			return !is_error();
@@ -71,59 +96,13 @@ namespace Rayni
 
 		bool is_error() const
 		{
-			return std::holds_alternative<Error>(value_or_error_);
+			return std::holds_alternative<std::unique_ptr<Error>>(value_or_error_);
 		}
 
 		const Error &error() const
 		{
 			assert(is_error());
-			return std::get<Error>(value_or_error_);
-		}
-
-	protected:
-		explicit ResultBase(T &&value) : value_or_error_(std::move(value))
-		{
-		}
-
-		explicit ResultBase(Error &&error) : value_or_error_(std::move(error))
-		{
-		}
-
-		explicit ResultBase(const Error &error) : value_or_error_(error)
-		{
-		}
-
-		std::variant<T, Error> &value_or_error()
-		{
-			return value_or_error_;
-		}
-
-		const std::variant<T, Error> &value_or_error() const
-		{
-			return value_or_error_;
-		}
-
-	private:
-		std::variant<T, Error> value_or_error_;
-	};
-
-	template <typename T>
-	class [[nodiscard]] Result final : public ResultBase<T>
-	{
-	public:
-		// NOLINTNEXTLINE(google-explicit-constructor) Want implicit conversion for less verbosity.
-		Result(T &&value) : ResultBase<T>(std::move(value))
-		{
-		}
-
-		// NOLINTNEXTLINE(google-explicit-constructor) Want implicit conversion for less verbosity.
-		Result(Error &&error) : ResultBase<T>(std::move(error))
-		{
-		}
-
-		// NOLINTNEXTLINE(google-explicit-constructor) Want implicit conversion for less verbosity.
-		Result(const Error &error) : ResultBase<T>(error)
-		{
+			return *std::get<std::unique_ptr<Error>>(value_or_error_);
 		}
 
 		T &operator*() &
@@ -158,31 +137,31 @@ namespace Rayni
 
 		T &value() &
 		{
-			assert(!this->is_error());
-			return std::get<T>(this->value_or_error());
+			assert(!is_error());
+			return std::get<T>(value_or_error_);
 		}
 
 		const T &value() const &
 		{
-			assert(!this->is_error());
-			return std::get<T>(this->value_or_error());
+			assert(!is_error());
+			return std::get<T>(value_or_error_);
 		}
 
 		T &&value() &&
 		{
-			assert(!this->is_error());
-			return std::move(std::get<T>(this->value_or_error()));
+			assert(!is_error());
+			return std::move(std::get<T>(value_or_error_));
 		}
 
 		const T &&value() const &&
 		{
-			assert(!this->is_error());
-			return std::move(std::get<T>(this->value_or_error()));
+			assert(!is_error());
+			return std::move(std::get<T>(value_or_error_));
 		}
 
 		T value_or(T &&default_value) const &
 		{
-			if (this->is_error())
+			if (is_error())
 				return std::forward<T>(default_value);
 
 			return value();
@@ -190,31 +169,57 @@ namespace Rayni
 
 		T value_or(T &&default_value) &&
 		{
-			if (this->is_error())
+			if (is_error())
 				return std::forward<T>(default_value);
 
 			return std::move(value());
 		}
+
+	private:
+		// TODO: Consider removing use of std::variant. Generates unnecessary code with exceptions.
+		std::variant<T, std::unique_ptr<Error>> value_or_error_;
 	};
 
 	template <>
-	class [[nodiscard]] Result<void> final : public ResultBase<std::monostate>
+	class [[nodiscard]] Result<void> final
 	{
 	public:
-		Result() : ResultBase<std::monostate>(std::monostate())
+		Result() = default;
+
+		// NOLINTNEXTLINE(google-explicit-constructor) Want implicit conversion for less verbosity.
+		Result(Error &&error) : error_(std::make_unique<Error>(std::move(error)))
 		{
 		}
 
 		// NOLINTNEXTLINE(google-explicit-constructor) Want implicit conversion for less verbosity.
-		Result(Error &&error) : ResultBase<std::monostate>(std::move(error))
+		Result(const Error &error) : error_(std::make_unique<Error>(error))
 		{
 		}
 
-		// NOLINTNEXTLINE(google-explicit-constructor) Want implicit conversion for less verbosity.
-		Result(const Error &error) : ResultBase<std::monostate>(error)
+		explicit operator bool() const
 		{
+			return !is_error();
 		}
+
+		bool is_error() const
+		{
+			return error_ != nullptr;
+		}
+
+		const Error &error() const
+		{
+			assert(is_error());
+			return *error_;
+		}
+
+	private:
+		std::unique_ptr<Error> error_;
 	};
+
+	// See resoning about size at top of this file.
+	static_assert(sizeof(Result<void>) <= sizeof(void *));
+	static_assert(sizeof(Result<char>) <= sizeof(void *) * 2);
+	static_assert(sizeof(Result<int>) <= sizeof(void *) * 2);
 }
 
 // TODO: Remove once clang-format bug is fixed. See above.

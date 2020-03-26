@@ -33,8 +33,7 @@
 
 namespace Rayni
 {
-	// Result allows for returning a value (or void) or an error. The error
-	// contains a message string and an optional std::error_code.
+	// Result allows for returning a value (or void) or an error.
 	//
 	// TODO: What is the status of std::expected? It did not make it into
 	//       C++20. Check in > C++20 if something useful has been added to
@@ -48,24 +47,17 @@ namespace Rayni
 		}
 
 		Error(const std::string &message, std::error_code error_code) :
-		        message_(message),
-		        error_code_(error_code)
+		        message_(message + ": " + error_code.message())
 		{
 		}
 
-		std::string message() const
+		const std::string &message() const
 		{
-			std::string ret = message_;
-
-			if (error_code_)
-				ret += ": " + error_code_.message();
-
-			return ret;
+			return message_;
 		}
 
 	private:
 		std::string message_;
-		std::error_code error_code_;
 	};
 
 	template <typename T>

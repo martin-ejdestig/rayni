@@ -43,7 +43,7 @@ namespace Rayni
 	class Error
 	{
 	public:
-		explicit Error(const std::string &message) : message_(message)
+		explicit Error(std::string &&message) : message_(std::move(message))
 		{
 		}
 

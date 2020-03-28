@@ -89,6 +89,11 @@ namespace Rayni
 		{
 		}
 
+		Result(const Result &) = delete;
+		Result(Result &&) noexcept = default;
+		Result &operator=(const Result &) = delete;
+		Result &operator=(Result &&) noexcept = default;
+
 		explicit operator bool() const
 		{
 			return !is_error();
@@ -195,6 +200,11 @@ namespace Rayni
 		Result(const Error &error) : error_(std::make_unique<Error>(error))
 		{
 		}
+
+		Result(const Result &) = delete;
+		Result(Result &&) noexcept = default;
+		Result &operator=(Result &&) = default;
+		Result &operator=(const Result &) noexcept = delete;
 
 		explicit operator bool() const
 		{

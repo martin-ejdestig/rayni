@@ -388,6 +388,8 @@ namespace Rayni
 
 	void PLYReader::read_face_data(const Element &element, TriangleMeshData &data)
 	{
+		std::vector<TriangleMeshData::Index> indices;
+
 		data.indices.reserve(element.count);
 
 		for (Element::Count i = 0; i < element.count; i++)
@@ -396,8 +398,7 @@ namespace Rayni
 			{
 				if (property.name == Property::Name::VERTEX_INDICES)
 				{
-					std::vector<TriangleMeshData::Index> indices =
-					        read_list_value<TriangleMeshData::Index>(property.type);
+					read_list_value<TriangleMeshData::Index>(property.type, indices);
 
 					if (indices.size() < 3)
 						throw Exception(position(),
@@ -439,19 +440,17 @@ namespace Rayni
 	}
 
 	template <typename T>
-	std::vector<T> PLYReader::read_list_value(const Type &type)
+	void PLYReader::read_list_value(const Type &type, std::vector<T> &dest)
 	{
 		if (!type.is_list)
 			throw Exception(position(), "unexpected scalar value, expected list");
 
 		std::size_t count = read_value<std::uint32_t>(type.list_size_type);
-		std::vector<T> v;
-		v.reserve(count);
+		dest.clear(); // Assume capacity() is left unchanged and memory is reused.
+		dest.reserve(count);
 
 		for (std::size_t i = 0; i < count; i++)
-			v.emplace_back(read_value<T>(type.basic_type));
-
-		return v;
+			dest.emplace_back(read_value<T>(type.basic_type));
 	}
 
 	template <typename T>

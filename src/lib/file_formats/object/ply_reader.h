@@ -64,7 +64,7 @@ namespace Rayni
 		T read_value(const Type &type);
 
 		template <typename T>
-		std::vector<T> read_list_value(const Type &type);
+		void read_list_value(const Type &type, std::vector<T> &dest);
 
 		template <typename T>
 		T read_value(BasicType basic_type);

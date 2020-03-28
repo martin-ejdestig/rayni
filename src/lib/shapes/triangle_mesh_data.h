@@ -42,6 +42,13 @@ namespace Rayni
 
 		static constexpr Index MAX_INDEX = std::numeric_limits<Index>::max();
 
+		TriangleMeshData() = default;
+		TriangleMeshData(const TriangleMeshData &) = delete;
+		TriangleMeshData(TriangleMeshData &&) noexcept = default;
+
+		TriangleMeshData &operator=(const TriangleMeshData &) = delete;
+		TriangleMeshData &operator=(TriangleMeshData &&) noexcept = default;
+
 		static TriangleMeshData from_variant(const Variant &v);
 
 		static void calculate_normals(TriangleMeshData &data);

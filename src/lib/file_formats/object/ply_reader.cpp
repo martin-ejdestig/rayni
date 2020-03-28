@@ -348,6 +348,12 @@ namespace Rayni
 		Vector3 normal;
 		TriangleMeshData::UV uv;
 
+		data.points.reserve(element.count);
+		if (has_normals)
+			data.normals.reserve(element.count);
+		if (has_uvs)
+			data.uvs.reserve(element.count);
+
 		for (Element::Count i = 0; i < element.count; i++)
 		{
 			for (const Property &property : element.properties)
@@ -382,6 +388,7 @@ namespace Rayni
 
 	void PLYReader::read_face_data(const Element &element, TriangleMeshData &data)
 	{
+		data.indices.reserve(element.count);
 
 		for (Element::Count i = 0; i < element.count; i++)
 		{

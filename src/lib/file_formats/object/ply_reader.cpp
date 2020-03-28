@@ -382,32 +382,35 @@ namespace Rayni
 
 	void PLYReader::read_face_data(const Element &element, TriangleMeshData &data)
 	{
-		auto read_indices = [&](const Type &type) {
-			std::vector<TriangleMeshData::Index> indices = read_list_value<TriangleMeshData::Index>(type);
-
-			if (indices.size() < 3)
-				throw Exception(position(), "face element must have at least 3 indices");
-
-			TriangleMeshData::Index i1 = indices[0];
-			TriangleMeshData::Index i2 = 0;
-			TriangleMeshData::Index i3 = indices[1];
-
-			for (std::size_t i = 2; i < indices.size(); i++)
-			{
-				i2 = i3;
-				i3 = indices[i];
-				data.indices.emplace_back(i1, i2, i3);
-			}
-		};
 
 		for (Element::Count i = 0; i < element.count; i++)
 		{
 			for (const Property &property : element.properties)
 			{
 				if (property.name == Property::Name::VERTEX_INDICES)
-					read_indices(property.type);
+				{
+					std::vector<TriangleMeshData::Index> indices =
+					        read_list_value<TriangleMeshData::Index>(property.type);
+
+					if (indices.size() < 3)
+						throw Exception(position(),
+						                "face element must have at least 3 indices");
+
+					TriangleMeshData::Index i1 = indices[0];
+					TriangleMeshData::Index i2 = 0;
+					TriangleMeshData::Index i3 = indices[1];
+
+					for (std::size_t j = 2; j < indices.size(); j++)
+					{
+						i2 = i3;
+						i3 = indices[j];
+						data.indices.emplace_back(i1, i2, i3);
+					}
+				}
 				else
+				{
 					skip_value(property.type);
+				}
 			}
 		}
 	}

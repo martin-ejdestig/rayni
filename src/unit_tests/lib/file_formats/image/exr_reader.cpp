@@ -88,7 +88,7 @@ namespace Rayni
 		ScopedTempDir temp_dir;
 
 		const std::string valid_path = temp_dir.path() / "valid.exr";
-		file_write(valid_path, exr_data());
+		ASSERT_TRUE(file_write(valid_path, exr_data()));
 		Image image = EXRReader().read_file(valid_path);
 
 		ASSERT_EQ(VALID_WIDTH, image.width());
@@ -108,11 +108,11 @@ namespace Rayni
 		}
 
 		const std::string corrupt_path = temp_dir.path() / "corrupt.exr";
-		file_write(corrupt_path, corrupt_exr_data());
+		ASSERT_TRUE(file_write(corrupt_path, corrupt_exr_data()));
 		EXPECT_THROW(EXRReader().read_file(corrupt_path), EXRReader::Exception);
 
 		const std::string short_path = temp_dir.path() / "short.exr";
-		file_write(short_path, short_exr_data());
+		ASSERT_TRUE(file_write(short_path, short_exr_data()));
 		EXPECT_THROW(EXRReader().read_file(short_path), EXRReader::Exception);
 
 		EXPECT_THROW(EXRReader().read_file(temp_dir.path() / "does_not_exist.exr"), EXRReader::Exception);

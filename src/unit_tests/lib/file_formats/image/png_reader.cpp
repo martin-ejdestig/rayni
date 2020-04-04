@@ -72,7 +72,7 @@ namespace Rayni
 		ScopedTempDir temp_dir;
 
 		const std::string valid_path = temp_dir.path() / "valid.png";
-		file_write(valid_path, png_data());
+		ASSERT_TRUE(file_write(valid_path, png_data()));
 		Image image = PNGReader().read_file(valid_path);
 
 		ASSERT_EQ(VALID_WIDTH, image.width());
@@ -92,11 +92,11 @@ namespace Rayni
 		}
 
 		const std::string corrupt_path = temp_dir.path() / "corrupt.png";
-		file_write(corrupt_path, corrupt_png_data());
+		ASSERT_TRUE(file_write(corrupt_path, corrupt_png_data()));
 		EXPECT_THROW(PNGReader().read_file(corrupt_path), PNGReader::Exception);
 
 		const std::string short_path = temp_dir.path() / "short.png";
-		file_write(short_path, short_png_data());
+		ASSERT_TRUE(file_write(short_path, short_png_data()));
 		EXPECT_THROW(PNGReader().read_file(short_path), PNGReader::Exception);
 
 		EXPECT_THROW(PNGReader().read_file(temp_dir.path() / "does_not_exist.png"), PNGReader::Exception);

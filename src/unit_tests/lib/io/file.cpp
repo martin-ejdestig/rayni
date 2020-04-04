@@ -26,7 +26,6 @@
 #include <string>
 #include <vector>
 
-#include "lib/io/io_exception.h"
 #include "lib/system/scoped_temp_dir.h"
 
 namespace Rayni
@@ -37,7 +36,7 @@ namespace Rayni
 		const std::string path = temp_dir.path() / "foo";
 		const std::vector<std::uint8_t> write_data = {0x12, 0x34};
 
-		file_write(path, write_data);
+		EXPECT_TRUE(file_write(path, write_data));
 
 		std::ifstream file(path, std::ios::binary);
 		std::vector<std::uint8_t> read_data((std::istreambuf_iterator<char>(file)),
@@ -45,6 +44,6 @@ namespace Rayni
 
 		EXPECT_EQ(write_data, read_data);
 
-		EXPECT_THROW(file_write(temp_dir.path() / "dir_that_does_not_exist" / "bar", write_data), IOException);
+		EXPECT_FALSE(file_write(temp_dir.path() / "dir_that_does_not_exist" / "bar", write_data));
 	}
 }

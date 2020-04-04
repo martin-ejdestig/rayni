@@ -23,17 +23,19 @@
 #include <fstream>
 #include <iterator>
 
-#include "lib/io/io_exception.h"
+#include "lib/function/result.h"
 
 namespace Rayni
 {
-	void file_write(const std::string &path, const std::vector<std::uint8_t> &data)
+	Result<void> file_write(const std::string &path, const std::vector<std::uint8_t> &data)
 	{
 		std::ofstream file(path, std::ios_base::binary);
 
 		std::copy(data.begin(), data.end(), std::ostream_iterator<std::uint8_t>(file));
 
 		if (!file.good())
-			throw IOException(path, "failed to write to file");
+			return Error(path + ": failed to write to file");
+
+		return {};
 	}
 }

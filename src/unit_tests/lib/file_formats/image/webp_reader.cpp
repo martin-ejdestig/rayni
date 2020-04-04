@@ -65,7 +65,7 @@ namespace Rayni
 		ScopedTempDir temp_dir;
 
 		const std::string valid_path = temp_dir.path() / "valid.webp";
-		file_write(valid_path, webp_data());
+		ASSERT_TRUE(file_write(valid_path, webp_data()));
 		Image image = WebPReader().read_file(valid_path);
 
 		ASSERT_EQ(VALID_WIDTH, image.width());
@@ -83,11 +83,11 @@ namespace Rayni
 		}
 
 		const std::string corrupt_path = temp_dir.path() / "corrupt.webp";
-		file_write(corrupt_path, corrupt_webp_data());
+		ASSERT_TRUE(file_write(corrupt_path, corrupt_webp_data()));
 		EXPECT_THROW(WebPReader().read_file(corrupt_path), WebPReader::Exception);
 
 		const std::string short_path = temp_dir.path() / "short.webp";
-		file_write(short_path, short_webp_data());
+		ASSERT_TRUE(file_write(short_path, short_webp_data()));
 		EXPECT_THROW(WebPReader().read_file(short_path), WebPReader::Exception);
 
 		EXPECT_THROW(WebPReader().read_file(temp_dir.path() / "does_not_exist.webp"), WebPReader::Exception);

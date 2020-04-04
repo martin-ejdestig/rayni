@@ -59,8 +59,8 @@ namespace Rayni
 		const std::string bad_path = temp_dir.path() / "bad.bin";
 		const std::string does_not_exist_path = temp_dir.path() / "does_not_exist.bin";
 
-		file_write(good_path, {0x12, 0x34, 0x56, 0x78});
-		file_write(bad_path, {0x12, 0x34, 0x56});
+		ASSERT_TRUE(file_write(good_path, {0x12, 0x34, 0x56, 0x78}));
+		ASSERT_TRUE(file_write(bad_path, {0x12, 0x34, 0x56}));
 
 		FooReader reader;
 

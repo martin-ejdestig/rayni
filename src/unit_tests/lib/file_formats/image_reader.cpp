@@ -108,8 +108,8 @@ namespace Rayni
 			const std::string read_success_path = temp_dir.path() / ("valid." + suffix);
 			const std::string type_determinable_read_fail_path = temp_dir.path() / ("empty." + suffix);
 
-			file_write(read_success_path, valid_data_1x1);
-			file_write(type_determinable_read_fail_path, {});
+			ASSERT_TRUE(file_write(read_success_path, valid_data_1x1));
+			ASSERT_TRUE(file_write(type_determinable_read_fail_path, {}));
 
 			Image image = ImageReader().read_file(read_success_path);
 			EXPECT_EQ(1U, image.width()) << suffix;

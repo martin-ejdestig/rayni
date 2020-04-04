@@ -64,7 +64,7 @@ namespace Rayni
 		ScopedTempDir temp_dir;
 
 		const std::string valid_path = temp_dir.path() / "valid.tga";
-		file_write(valid_path, tga_data());
+		ASSERT_TRUE(file_write(valid_path, tga_data()));
 		Image image = TGAReader().read_file(valid_path);
 
 		ASSERT_EQ(VALID_WIDTH, image.width());
@@ -84,11 +84,11 @@ namespace Rayni
 		}
 
 		const std::string corrupt_path = temp_dir.path() / "corrupt.tga";
-		file_write(corrupt_path, corrupt_tga_data());
+		ASSERT_TRUE(file_write(corrupt_path, corrupt_tga_data()));
 		EXPECT_THROW(TGAReader().read_file(corrupt_path), TGAReader::Exception);
 
 		const std::string short_path = temp_dir.path() / "short.tga";
-		file_write(short_path, short_tga_data());
+		ASSERT_TRUE(file_write(short_path, short_tga_data()));
 		EXPECT_THROW(TGAReader().read_file(short_path), TGAReader::Exception);
 
 		EXPECT_THROW(TGAReader().read_file(temp_dir.path() / "does_not_exist.tga"), TGAReader::Exception);

@@ -54,8 +54,8 @@ namespace Rayni
 		const std::string exists2_path = temp_dir.path() / "exists2";
 		const std::string does_not_exist_path = temp_dir.path() / "does_not_exist";
 
-		file_write(exists1_path, {0});
-		file_write(exists2_path, {0});
+		ASSERT_TRUE(file_write(exists1_path, {0}));
+		ASSERT_TRUE(file_write(exists2_path, {0}));
 
 		BinaryReader reader;
 		EXPECT_EQ("", reader.position());

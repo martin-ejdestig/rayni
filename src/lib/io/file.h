@@ -24,9 +24,11 @@
 #include <string>
 #include <vector>
 
+#include "lib/function/result.h"
+
 namespace Rayni
 {
-	void file_write(const std::string &path, const std::vector<std::uint8_t> &data);
+	Result<void> file_write(const std::string &path, const std::vector<std::uint8_t> &data);
 }
 
 #endif // RAYNI_LIB_IO_FILE_H

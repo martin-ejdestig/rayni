@@ -37,7 +37,7 @@ namespace Rayni
 		ScopedTempDir temp_dir;
 		const std::string file_name = temp_dir.path() / "file";
 		const std::vector<std::uint8_t> bytes = {0x12, 0x98, 0x34, 0x76};
-		file_write(file_name, bytes);
+		ASSERT_TRUE(file_write(file_name, bytes));
 
 		MemoryMappedFile file;
 		ASSERT_TRUE(file.map(file_name));
@@ -53,8 +53,8 @@ namespace Rayni
 		const std::string file_name2 = temp_dir.path() / "file2";
 		const std::vector<std::uint8_t> bytes1 = {0xa1, 0xE7, 0x6d, 0x83};
 		const std::vector<std::uint8_t> bytes2 = {0xff, 0x6b};
-		file_write(file_name1, bytes1);
-		file_write(file_name2, bytes2);
+		ASSERT_TRUE(file_write(file_name1, bytes1));
+		ASSERT_TRUE(file_write(file_name2, bytes2));
 
 		MemoryMappedFile file;
 
@@ -81,7 +81,7 @@ namespace Rayni
 		ScopedTempDir temp_dir;
 		const std::string file_name = temp_dir.path() / "empty_file";
 		const std::vector<std::uint8_t> bytes = {};
-		file_write(file_name, bytes);
+		ASSERT_TRUE(file_write(file_name, bytes));
 
 		MemoryMappedFile file;
 		ASSERT_TRUE(file.map(file_name));
@@ -94,7 +94,7 @@ namespace Rayni
 		ScopedTempDir temp_dir;
 		const std::string file_name = temp_dir.path() / "file";
 		const std::vector<std::uint8_t> bytes = {0x12, 0x98, 0x34, 0x76};
-		file_write(file_name, bytes);
+		ASSERT_TRUE(file_write(file_name, bytes));
 
 		MemoryMappedFile file;
 		EXPECT_EQ(nullptr, file.data());
@@ -125,7 +125,7 @@ namespace Rayni
 		ScopedTempDir temp_dir;
 		const std::string file_name = temp_dir.path() / "file";
 		const std::vector<std::uint8_t> bytes = {0x12};
-		file_write(file_name, bytes);
+		ASSERT_TRUE(file_write(file_name, bytes));
 
 		MemoryMappedFile file1;
 		ASSERT_TRUE(file1.map(file_name));
@@ -144,7 +144,7 @@ namespace Rayni
 		ScopedTempDir temp_dir;
 		const std::string file_name = temp_dir.path() / "file";
 		const std::vector<std::uint8_t> bytes = {0x12};
-		file_write(file_name, bytes);
+		ASSERT_TRUE(file_write(file_name, bytes));
 
 		MemoryMappedFile file1;
 		ASSERT_TRUE(file1.map(file_name));

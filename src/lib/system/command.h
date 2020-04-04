@@ -20,20 +20,21 @@
 #ifndef RAYNI_LIB_SYSTEM_COMMAND_H
 #define RAYNI_LIB_SYSTEM_COMMAND_H
 
-#include <optional>
 #include <string>
 #include <vector>
 
+#include "lib/function/result.h"
+
 namespace Rayni
 {
-	struct CommandResult
+	struct CommandOutput
 	{
 		std::string stdout;
 		std::string stderr;
 		int exit_code = 0;
 	};
 
-	std::optional<CommandResult> command_run(std::vector<std::string> &&args);
+	Result<CommandOutput> command_run(std::vector<std::string> &&args);
 }
 
 #endif // RAYNI_LIB_SYSTEM_COMMAND_H

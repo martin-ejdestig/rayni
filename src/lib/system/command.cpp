@@ -28,8 +28,10 @@
 #include <array>
 #include <cerrno>
 #include <cstdlib>
+#include <system_error>
 #include <utility>
 
+#include "lib/function/result.h"
 #include "lib/system/linux/pipe.h"
 
 namespace Rayni
@@ -68,7 +70,10 @@ namespace Rayni
 			std::_Exit(CHILD_SETUP_FAILURE_EXIT_CODE);
 		}
 
-		bool read_pipes(Pipe &stdout_pipe, Pipe &stderr_pipe, std::string &stdout_str, std::string &stderr_str)
+		Result<void> read_pipes(Pipe &stdout_pipe,
+		                        Pipe &stderr_pipe,
+		                        std::string &stdout_str,
+		                        std::string &stderr_str)
 		{
 			static constexpr short int PIPE_READ_EVENTS = POLLIN | POLLHUP;
 
@@ -81,8 +86,11 @@ namespace Rayni
 			while (poll_fds[0].fd >= 0 || poll_fds[1].fd >= 0)
 			{
 				while (poll(poll_fds.data(), poll_fds.size(), -1) == -1)
+				{
 					if (errno != EINTR)
-						return false;
+						return Error("poll() for child pipes failed",
+						             std::error_code(errno, std::system_category()));
+				}
 
 				try
 				{
@@ -94,90 +102,66 @@ namespace Rayni
 						if (stderr_pipe.read_append_to_string(stderr_str) == 0)
 							poll_fds[1].fd = -1;
 				}
-				catch (const std::exception &)
+				catch (const std::exception &e)
 				{
-					return false;
+					return Error("failed to read child pipes: " + std::string(e.what()));
 				}
 			}
 
-			return true;
+			return {};
 		}
 
-		class ChildProcess
+		Result<int> child_wait(pid_t child_pid)
 		{
-		public:
-			explicit ChildProcess(pid_t pid) : pid_(pid)
+			int status = 0;
+
+			while (waitpid(child_pid, &status, 0) == -1)
 			{
+				if (errno != EINTR)
+					return Error("waitpid() for pid " + std::to_string(child_pid) + " failed",
+					             std::error_code(errno, std::system_category()));
 			}
 
-			ChildProcess(const ChildProcess &other) = delete;
-			ChildProcess(ChildProcess &&other) = delete;
+			if (!WIFEXITED(status))
+				return Error("pid " + std::to_string(child_pid) + " exited abnormally");
 
-			~ChildProcess()
-			{
-				if (pid_ != -1)
-					wait();
-			}
+			if (WEXITSTATUS(status) == CHILD_SETUP_FAILURE_EXIT_CODE)
+				return Error("pid " + std::to_string(child_pid) + " setup failure");
 
-			ChildProcess &operator=(const ChildProcess &other) = delete;
-			ChildProcess &operator=(ChildProcess &&other) = delete;
-
-			bool wait()
-			{
-				pid_t pid = std::exchange(pid_, -1);
-
-				while (waitpid(pid, &status_, 0) == -1)
-					if (errno != EINTR)
-						return false;
-
-				return WIFEXITED(status_) && WEXITSTATUS(status_) != CHILD_SETUP_FAILURE_EXIT_CODE;
-			}
-
-			pid_t pid()
-			{
-				return pid_;
-			}
-
-			int exit_code() const
-			{
-				return WEXITSTATUS(status_);
-			}
-
-		private:
-			pid_t pid_ = -1;
-			int status_ = 0;
-		};
+			return WEXITSTATUS(status);
+		}
 	}
 
-	std::optional<CommandResult> command_run(std::vector<std::string> &&args)
+	Result<CommandOutput> command_run(std::vector<std::string> &&args)
 	{
 		Pipe stdout_pipe(O_CLOEXEC);
 		Pipe stderr_pipe(O_CLOEXEC);
 
-		ChildProcess child_process(fork());
-		if (child_process.pid() == -1)
-			return std::nullopt;
+		pid_t child_pid = fork();
+		if (child_pid == -1)
+			return Error("fork() failed", std::error_code(errno, std::system_category()));
 
-		if (child_process.pid() == 0)
+		if (child_pid == 0)
 			child_exec(std::move(args), stdout_pipe, stderr_pipe);
 
 		stdout_pipe.close_write_fd();
 		stderr_pipe.close_write_fd();
 
-		CommandResult result;
-		bool read_success = read_pipes(stdout_pipe, stderr_pipe, result.stdout, result.stderr);
+		CommandOutput output;
+		Result<void> pipe_read_result = read_pipes(stdout_pipe, stderr_pipe, output.stdout, output.stderr);
 
 		stdout_pipe.close_read_fd();
 		stderr_pipe.close_read_fd();
 
-		if (!child_process.wait())
-			return std::nullopt;
+		Result<int> wait_result = child_wait(child_pid);
+		if (!wait_result)
+			return wait_result.error();
 
-		result.exit_code = child_process.exit_code();
+		if (!pipe_read_result)
+			return pipe_read_result.error();
 
-		if (!read_success)
-			return std::nullopt;
+		output.exit_code = *wait_result;
 
-		return result;
+		return output;
 	}
 }

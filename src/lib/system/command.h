@@ -22,32 +22,18 @@
 
 #include <optional>
 #include <string>
-#include <utility>
 #include <vector>
 
 namespace Rayni
 {
-	class Command
-	{
-	public:
-		struct Result;
-
-		explicit Command(std::vector<std::string> &&args) : args_(std::move(args))
-		{
-		}
-
-		std::optional<Result> run() const;
-
-	private:
-		const std::vector<std::string> args_;
-	};
-
-	struct Command::Result
+	struct CommandResult
 	{
 		std::string stdout;
 		std::string stderr;
 		int exit_code = 0;
 	};
+
+	std::optional<CommandResult> command_run(std::vector<std::string> &&args);
 }
 
 #endif // RAYNI_LIB_SYSTEM_COMMAND_H

@@ -46,7 +46,7 @@ namespace Rayni
 			return true;
 		}
 
-		[[noreturn]] void child_exec(const std::vector<std::string> &args,
+		[[noreturn]] void child_exec(std::vector<std::string> &&args_in,
 		                             Pipe &stdout_pipe,
 		                             Pipe &stderr_pipe) noexcept
 		{
@@ -57,6 +57,7 @@ namespace Rayni
 			stdout_pipe.close_fds();
 			stderr_pipe.close_fds();
 
+			std::vector<std::string> args = std::move(args_in);
 			std::vector<const char *> argv;
 			argv.reserve(args.size() + 1);
 			for (const std::string &arg : args)
@@ -148,7 +149,7 @@ namespace Rayni
 		};
 	}
 
-	std::optional<Command::Result> Command::run() const
+	std::optional<CommandResult> command_run(std::vector<std::string> &&args)
 	{
 		Pipe stdout_pipe(O_CLOEXEC);
 		Pipe stderr_pipe(O_CLOEXEC);
@@ -158,12 +159,12 @@ namespace Rayni
 			return std::nullopt;
 
 		if (child_process.pid() == 0)
-			child_exec(args_, stdout_pipe, stderr_pipe);
+			child_exec(std::move(args), stdout_pipe, stderr_pipe);
 
 		stdout_pipe.close_write_fd();
 		stderr_pipe.close_write_fd();
 
-		Result result;
+		CommandResult result;
 		bool read_success = read_pipes(stdout_pipe, stderr_pipe, result.stdout, result.stderr);
 
 		stdout_pipe.close_read_fd();

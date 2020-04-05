@@ -17,23 +17,17 @@
 //
 // SPDX-License-Identifier: GPL-3.0-or-later
 
-#ifndef RAYNI_LIB_FILE_FORMATS_WEBP_READER_H
-#define RAYNI_LIB_FILE_FORMATS_WEBP_READER_H
+#ifndef RAYNI_LIB_FILE_FORMATS_WEBP_H
+#define RAYNI_LIB_FILE_FORMATS_WEBP_H
 
 #include <string>
 
+#include "lib/function/result.h"
 #include "lib/graphics/image.h"
-#include "lib/io/io_exception.h"
 
 namespace Rayni
 {
-	class WebPReader
-	{
-	public:
-		using Exception = IOException;
-
-		Image read_file(const std::string &file_name);
-	};
+	Result<Image> webp_read_file(const std::string &file_name);
 }
 
-#endif // RAYNI_LIB_FILE_FORMATS_WEBP_READER_H
+#endif // RAYNI_LIB_FILE_FORMATS_WEBP_H

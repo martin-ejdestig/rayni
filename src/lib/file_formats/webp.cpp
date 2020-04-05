@@ -17,7 +17,7 @@
 //
 // SPDX-License-Identifier: GPL-3.0-or-later
 
-#include "lib/file_formats/webp_reader.h"
+#include "lib/file_formats/webp.h"
 
 #include <webp/decode.h>
 
@@ -28,17 +28,16 @@
 #include <string>
 #include <vector>
 
+#include "lib/function/result.h"
 #include "lib/graphics/image.h"
 
 namespace Rayni
 {
-	// TODO: Result<Image> wepb_read_file(const std::string &file_name) => no longer a member function.
-	// NOLINTNEXTLINE(readability-convert-member-functions-to-static)
-	Image WebPReader::read_file(const std::string &file_name)
+	Result<Image> webp_read_file(const std::string &file_name)
 	{
 		std::ifstream file(file_name, std::ios::binary);
 		if (!file.is_open())
-			throw Exception(file_name, "failed to open WebP image");
+			return Error(file_name + ": failed to open WebP image");
 
 		std::vector<std::uint8_t> file_data((std::istreambuf_iterator<char>(file)),
 		                                    std::istreambuf_iterator<char>());
@@ -46,7 +45,7 @@ namespace Rayni
 		int width;
 		int height;
 		if (!WebPGetInfo(file_data.data(), file_data.size(), &width, &height))
-			throw Exception(file_name, "failed to determine size of WebP image");
+			return Error(file_name + ": failed to determine size of WebP image");
 
 		Image image(static_cast<unsigned int>(width), static_cast<unsigned int>(height));
 
@@ -55,7 +54,7 @@ namespace Rayni
 		                       image.buffer().data(),
 		                       image.buffer().size(),
 		                       static_cast<int>(image.stride())))
-			throw Exception(file_name, "failed to decode WebP image");
+			return Error(file_name + ": failed to decode WebP image");
 
 		return image;
 	}

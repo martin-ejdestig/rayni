@@ -14,7 +14,7 @@ lib_unit_tests_sources = [
     'file_formats/png_reader.cpp',
     'file_formats/png_writer.cpp',
     'file_formats/tga_reader.cpp',
-    'file_formats/webp_reader.cpp',
+    'file_formats/webp.cpp',
     'function/result.cpp',
     'function/scope_exit.cpp',
     'graphics/color.cpp',

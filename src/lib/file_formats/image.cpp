@@ -29,7 +29,7 @@
 #include "lib/file_formats/jpeg_reader.h"
 #include "lib/file_formats/png_reader.h"
 #include "lib/file_formats/tga_reader.h"
-#include "lib/file_formats/webp_reader.h"
+#include "lib/file_formats/webp.h"
 #include "lib/function/result.h"
 #include "lib/string/string.h"
 #include "lib/system/memory_mapped_file.h"
@@ -137,7 +137,7 @@ namespace Rayni
 			return reader_helper<TGAReader>(file_name);
 
 		case ImageFormat::WEBP:
-			return reader_helper<WebPReader>(file_name);
+			return webp_read_file(file_name);
 
 		case ImageFormat::UNDETERMINED:
 			break;

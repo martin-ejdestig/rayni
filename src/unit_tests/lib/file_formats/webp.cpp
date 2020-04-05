@@ -17,7 +17,7 @@
 //
 // SPDX-License-Identifier: GPL-3.0-or-later
 
-#include "lib/file_formats/webp_reader.h"
+#include "lib/file_formats/webp.h"
 
 #include <gtest/gtest.h>
 
@@ -56,7 +56,7 @@ namespace Rayni
 		}
 	}
 
-	TEST(WebPReader, ReadFile)
+	TEST(WebPReadFile, Valid)
 	{
 		static constexpr unsigned int VALID_WIDTH = 2;
 		static constexpr unsigned int VALID_HEIGHT = 2;
@@ -64,9 +64,9 @@ namespace Rayni
 		                                                                  {Color::green(), Color::blue()}};
 		ScopedTempDir temp_dir;
 
-		const std::string valid_path = temp_dir.path() / "valid.webp";
-		ASSERT_TRUE(file_write(valid_path, webp_data()));
-		Image image = WebPReader().read_file(valid_path);
+		const std::string path = temp_dir.path() / "valid.webp";
+		ASSERT_TRUE(file_write(path, webp_data()));
+		Image image = webp_read_file(path).value_or(Image());
 
 		ASSERT_EQ(VALID_WIDTH, image.width());
 		ASSERT_EQ(VALID_HEIGHT, image.height());
@@ -81,15 +81,31 @@ namespace Rayni
 				EXPECT_NEAR(VALID_COLORS[y][x].b(), color.b(), 1e-100);
 			}
 		}
+	}
 
-		const std::string corrupt_path = temp_dir.path() / "corrupt.webp";
-		ASSERT_TRUE(file_write(corrupt_path, corrupt_webp_data()));
-		EXPECT_THROW(WebPReader().read_file(corrupt_path), WebPReader::Exception);
+	TEST(WebPReadFile, Corrupt)
+	{
+		ScopedTempDir temp_dir;
+		const std::string path = temp_dir.path() / "corrupt.webp";
+		ASSERT_TRUE(file_write(path, corrupt_webp_data()));
 
-		const std::string short_path = temp_dir.path() / "short.webp";
-		ASSERT_TRUE(file_write(short_path, short_webp_data()));
-		EXPECT_THROW(WebPReader().read_file(short_path), WebPReader::Exception);
+		EXPECT_FALSE(webp_read_file(path));
+	}
 
-		EXPECT_THROW(WebPReader().read_file(temp_dir.path() / "does_not_exist.webp"), WebPReader::Exception);
+	TEST(WebPReadFile, Short)
+	{
+		ScopedTempDir temp_dir;
+		const std::string path = temp_dir.path() / "short.webp";
+		ASSERT_TRUE(file_write(path, short_webp_data()));
+
+		EXPECT_FALSE(webp_read_file(path));
+	}
+
+	TEST(WebPReadFile, DoesNotExist)
+	{
+		ScopedTempDir temp_dir;
+		const std::string path = temp_dir.path() / "dir_that_does_not_exist" / "bar.webp";
+
+		EXPECT_FALSE(webp_read_file(path));
 	}
 }

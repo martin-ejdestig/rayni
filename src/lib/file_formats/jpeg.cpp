@@ -17,7 +17,7 @@
 //
 // SPDX-License-Identifier: GPL-3.0-or-later
 
-#include "lib/file_formats/jpeg_reader.h"
+#include "lib/file_formats/jpeg.h"
 
 #include <jpeglib.h>
 
@@ -26,6 +26,7 @@
 #include <memory>
 #include <string>
 
+#include "lib/function/result.h"
 #include "lib/graphics/image.h"
 
 namespace Rayni
@@ -125,19 +126,17 @@ namespace Rayni
 		}
 	}
 
-	// TODO: Result<Image> jpeg_read_file(const std::string &file_name) => no longer a member function.
-	// NOLINTNEXTLINE(readability-convert-member-functions-to-static)
-	Image JPEGReader::read_file(const std::string &file_name)
+	Result<Image> jpeg_read_file(const std::string &file_name)
 	{
 		std::unique_ptr<std::FILE, decltype(&std::fclose)> file(std::fopen(file_name.c_str(), "rb"),
 		                                                        std::fclose);
 		if (!file)
-			throw Exception(file_name, "failed to open JPEG image");
+			return Error(file_name + ": failed to open JPEG image");
 
 		Image image;
 
 		if (!decode_file_to_image(*file, image))
-			throw Exception(file_name, "failed to decode JPEG image");
+			return Error(file_name + ": failed to decode JPEG image");
 
 		return image;
 	}

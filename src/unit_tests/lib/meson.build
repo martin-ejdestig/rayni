@@ -8,7 +8,7 @@ lib_unit_tests_sources = [
     'containers/variant.cpp',
     'file_formats/exr_reader.cpp',
     'file_formats/image.cpp',
-    'file_formats/jpeg_reader.cpp',
+    'file_formats/jpeg.cpp',
     'file_formats/json_reader.cpp',
     'file_formats/ply_reader.cpp',
     'file_formats/png.cpp',

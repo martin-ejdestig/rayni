@@ -17,7 +17,7 @@
 //
 // SPDX-License-Identifier: GPL-3.0-or-later
 
-#include "lib/file_formats/jpeg_reader.h"
+#include "lib/file_formats/jpeg.h"
 
 #include <gtest/gtest.h>
 
@@ -87,17 +87,16 @@ namespace Rayni
 		}
 	}
 
-	TEST(JPEGReader, ReadFile)
+	TEST(JPEGReadFile, Valid)
 	{
 		static constexpr unsigned int VALID_WIDTH = 2;
 		static constexpr unsigned int VALID_HEIGHT = 2;
 		static constexpr Color VALID_COLORS[VALID_HEIGHT][VALID_WIDTH] = {{Color::red(), Color::yellow()},
 		                                                                  {Color::green(), Color::blue()}};
 		ScopedTempDir temp_dir;
-
-		const std::string valid_path = temp_dir.path() / "valid.jpg";
-		ASSERT_TRUE(file_write(valid_path, jpeg_data()));
-		Image image = JPEGReader().read_file(valid_path);
+		const std::string path = temp_dir.path() / "valid.jpg";
+		ASSERT_TRUE(file_write(path, jpeg_data()));
+		Image image = jpeg_read_file(path).value_or(Image());
 
 		ASSERT_EQ(VALID_WIDTH, image.width());
 		ASSERT_EQ(VALID_HEIGHT, image.height());
@@ -114,15 +113,31 @@ namespace Rayni
 				EXPECT_NEAR(valid_color.b(), color.b(), 8e-3);
 			}
 		}
+	}
 
-		const std::string corrupt_path = temp_dir.path() / "corrupt.jpg";
-		ASSERT_TRUE(file_write(corrupt_path, corrupt_jpeg_data()));
-		EXPECT_THROW(JPEGReader().read_file(corrupt_path), JPEGReader::Exception);
+	TEST(JPEGReadFile, Corrupt)
+	{
+		ScopedTempDir temp_dir;
+		const std::string path = temp_dir.path() / "corrupt.jpg";
+		ASSERT_TRUE(file_write(path, corrupt_jpeg_data()));
 
-		const std::string short_path = temp_dir.path() / "short.jpg";
-		ASSERT_TRUE(file_write(short_path, short_jpeg_data()));
-		EXPECT_THROW(JPEGReader().read_file(short_path), JPEGReader::Exception);
+		EXPECT_FALSE(jpeg_read_file(path));
+	}
 
-		EXPECT_THROW(JPEGReader().read_file(temp_dir.path() / "does_not_exist.jpg"), JPEGReader::Exception);
+	TEST(JPEGReadFile, Short)
+	{
+		ScopedTempDir temp_dir;
+		const std::string path = temp_dir.path() / "short.jpg";
+		ASSERT_TRUE(file_write(path, short_jpeg_data()));
+
+		EXPECT_FALSE(jpeg_read_file(path));
+	}
+
+	TEST(JPEGReadFile, DoesNotExist)
+	{
+		ScopedTempDir temp_dir;
+		const std::string path = temp_dir.path() / "does_not_exist.jpg";
+
+		EXPECT_FALSE(jpeg_read_file(path));
 	}
 }

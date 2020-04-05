@@ -26,7 +26,7 @@
 #include <string>
 
 #include "lib/file_formats/exr_reader.h"
-#include "lib/file_formats/jpeg_reader.h"
+#include "lib/file_formats/jpeg.h"
 #include "lib/file_formats/png.h"
 #include "lib/file_formats/tga.h"
 #include "lib/file_formats/webp.h"
@@ -128,7 +128,7 @@ namespace Rayni
 			return reader_helper<EXRReader>(file_name);
 
 		case ImageFormat::JPEG:
-			return reader_helper<JPEGReader>(file_name);
+			return jpeg_read_file(file_name);
 
 		case ImageFormat::PNG:
 			return png_read_file(file_name);

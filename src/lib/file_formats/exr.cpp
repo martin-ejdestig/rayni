@@ -17,7 +17,7 @@
 //
 // SPDX-License-Identifier: GPL-3.0-or-later
 
-#include "lib/file_formats/exr_reader.h"
+#include "lib/file_formats/exr.h"
 
 #if defined __clang__
 #	pragma clang diagnostic push
@@ -51,14 +51,13 @@
 #include <string>
 #include <vector>
 
+#include "lib/function/result.h"
 #include "lib/graphics/color.h"
 #include "lib/graphics/image.h"
 
 namespace Rayni
 {
-	// TODO: Result<Image> exr_read_file(const std::string &file_name) => no longer a member function.
-	// NOLINTNEXTLINE(readability-convert-member-functions-to-static)
-	Image EXRReader::read_file(const std::string &file_name)
+	Result<Image> exr_read_file(const std::string &file_name)
 	{
 		Image image;
 		std::vector<Imf::Rgba> pixels;
@@ -71,9 +70,8 @@ namespace Rayni
 			int height = data_window.max.y - data_window.min.y + 1;
 
 			if (width <= 0 || height <= 0)
-				throw Exception(file_name,
-				                "invalid size (" + std::to_string(width) + "," +
-				                        std::to_string(height) + ") in EXR image");
+				return Error(file_name + ": invalid size (" + std::to_string(width) + "," +
+				             std::to_string(height) + ") in EXR image");
 
 			image = Image(static_cast<unsigned int>(width), static_cast<unsigned int>(height));
 			pixels.resize(static_cast<std::size_t>(width) * static_cast<std::size_t>(height));
@@ -85,7 +83,7 @@ namespace Rayni
 		}
 		catch (const Iex::BaseExc &e)
 		{
-			throw Exception(file_name, std::string("failed to read EXR image (") + e.what() + ")");
+			return Error(file_name + ": failed to read EXR image (" + e.what() + ")");
 		}
 
 		for (unsigned int y = 0; y < image.height(); y++)

@@ -25,7 +25,7 @@
 #include <initializer_list>
 #include <string>
 
-#include "lib/file_formats/exr_reader.h"
+#include "lib/file_formats/exr.h"
 #include "lib/file_formats/jpeg.h"
 #include "lib/file_formats/png.h"
 #include "lib/file_formats/tga.h"
@@ -98,24 +98,6 @@ namespace Rayni
 
 			return ImageFormat::UNDETERMINED;
 		}
-
-		// TODO: Remove once all image *Reader:s have been removed.
-		template <typename Reader>
-		Result<Image> reader_helper(const std::string &file_name)
-		{
-			Image image;
-
-			try
-			{
-				image = Reader().read_file(file_name);
-			}
-			catch (typename Reader::Exception &e)
-			{
-				return Error(e.what());
-			}
-
-			return image;
-		}
 	}
 
 	Result<Image> image_read_file(const std::string &file_name)
@@ -125,7 +107,7 @@ namespace Rayni
 		switch (format)
 		{
 		case ImageFormat::EXR:
-			return reader_helper<EXRReader>(file_name);
+			return exr_read_file(file_name);
 
 		case ImageFormat::JPEG:
 			return jpeg_read_file(file_name);

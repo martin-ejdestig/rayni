@@ -6,7 +6,7 @@ lib_unit_tests_sources = [
     'containers/fixed_size_stack.cpp',
     'containers/listener_list.cpp',
     'containers/variant.cpp',
-    'file_formats/exr_reader.cpp',
+    'file_formats/exr.cpp',
     'file_formats/image.cpp',
     'file_formats/jpeg.cpp',
     'file_formats/json_reader.cpp',

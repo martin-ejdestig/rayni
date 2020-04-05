@@ -17,11 +17,11 @@
 //
 // SPDX-License-Identifier: GPL-3.0-or-later
 
-#include "lib/file_formats/image/png_writer.h"
+#include "lib/file_formats/png_writer.h"
 
 #include <gtest/gtest.h>
 
-#include "lib/file_formats/image/png_reader.h"
+#include "lib/file_formats/png_reader.h"
 #include "lib/graphics/color.h"
 #include "lib/graphics/image.h"
 #include "lib/system/scoped_temp_dir.h"

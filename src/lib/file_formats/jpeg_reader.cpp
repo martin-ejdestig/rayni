@@ -17,7 +17,7 @@
 //
 // SPDX-License-Identifier: GPL-3.0-or-later
 
-#include "lib/file_formats/image/jpeg_reader.h"
+#include "lib/file_formats/jpeg_reader.h"
 
 #include <jpeglib.h>
 

@@ -21,12 +21,12 @@
 
 #include <string>
 
-#include "lib/file_formats/image/exr_reader.h"
-#include "lib/file_formats/image/image_format.h"
-#include "lib/file_formats/image/jpeg_reader.h"
-#include "lib/file_formats/image/png_reader.h"
-#include "lib/file_formats/image/tga_reader.h"
-#include "lib/file_formats/image/webp_reader.h"
+#include "lib/file_formats/exr_reader.h"
+#include "lib/file_formats/image_format.h"
+#include "lib/file_formats/jpeg_reader.h"
+#include "lib/file_formats/png_reader.h"
+#include "lib/file_formats/tga_reader.h"
+#include "lib/file_formats/webp_reader.h"
 
 namespace Rayni
 {

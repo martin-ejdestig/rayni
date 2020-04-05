@@ -17,7 +17,7 @@
 //
 // SPDX-License-Identifier: GPL-3.0-or-later
 
-#include "lib/file_formats/image/image_format.h"
+#include "lib/file_formats/image_format.h"
 
 #include <algorithm>
 #include <cstdint>

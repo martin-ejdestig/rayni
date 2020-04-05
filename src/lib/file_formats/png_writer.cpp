@@ -17,41 +17,35 @@
 //
 // SPDX-License-Identifier: GPL-3.0-or-later
 
-#include "lib/file_formats/image/png_reader.h"
+#include "lib/file_formats/png_writer.h"
 
 #include <png.h>
 
 #include <cstring>
 #include <string>
-#include <vector>
 
-#include "lib/function/scope_exit.h"
 #include "lib/graphics/image.h"
 
 namespace Rayni
 {
-	// TODO: Result<Image> png_read_file(const std::string &file_name) => no longer a member function.
+	// TODO: Result png_write_file(const std::string &file_name) => no longer a member function.
 	// NOLINTNEXTLINE(readability-convert-member-functions-to-static)
-	Image PNGReader::read_file(const std::string &file_name)
+	void PNGWriter::write_file(const std::string &file_name, const Image &image)
 	{
 		png_image pngimage;
+
 		std::memset(&pngimage, 0, sizeof pngimage);
 		pngimage.version = PNG_IMAGE_VERSION;
-		auto pngimage_freer = scope_exit([&] { png_image_free(&pngimage); });
-
-		if (!png_image_begin_read_from_file(&pngimage, file_name.c_str()))
-			throw Exception(file_name, pngimage.message);
-
+		pngimage.width = image.width();
+		pngimage.height = image.height();
 		pngimage.format = PNG_FORMAT_RGB;
-		Image image(pngimage.width, pngimage.height);
 
-		if (!png_image_finish_read(&pngimage,
-		                           nullptr,
-		                           image.buffer().data(),
-		                           static_cast<png_int_32>(image.stride()),
-		                           nullptr))
+		if (!png_image_write_to_file(&pngimage,
+		                             file_name.c_str(),
+		                             0,
+		                             image.buffer().data(),
+		                             static_cast<png_int_32>(image.stride()),
+		                             nullptr))
 			throw Exception(file_name, pngimage.message);
-
-		return image;
 	}
 }

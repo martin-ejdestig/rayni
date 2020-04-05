@@ -17,8 +17,8 @@
 //
 // SPDX-License-Identifier: GPL-3.0-or-later
 
-#ifndef RAYNI_LIB_FILE_FORMATS_IMAGE_TGA_READER_H
-#define RAYNI_LIB_FILE_FORMATS_IMAGE_TGA_READER_H
+#ifndef RAYNI_LIB_FILE_FORMATS_TGA_READER_H
+#define RAYNI_LIB_FILE_FORMATS_TGA_READER_H
 
 #include <array>
 #include <cstdint>
@@ -97,4 +97,4 @@ namespace Rayni
 	};
 }
 
-#endif // RAYNI_LIB_FILE_FORMATS_IMAGE_TGA_READER_H
+#endif // RAYNI_LIB_FILE_FORMATS_TGA_READER_H

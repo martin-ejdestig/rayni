@@ -17,8 +17,8 @@
 //
 // SPDX-License-Identifier: GPL-3.0-or-later
 
-#ifndef RAYNI_LIB_FILE_FORMATS_IMAGE_PNG_WRITER_H
-#define RAYNI_LIB_FILE_FORMATS_IMAGE_PNG_WRITER_H
+#ifndef RAYNI_LIB_FILE_FORMATS_PNG_READER_H
+#define RAYNI_LIB_FILE_FORMATS_PNG_READER_H
 
 #include <string>
 
@@ -27,13 +27,13 @@
 
 namespace Rayni
 {
-	class PNGWriter
+	class PNGReader
 	{
 	public:
 		using Exception = IOException;
 
-		void write_file(const std::string &file_name, const Image &image);
+		Image read_file(const std::string &file_name);
 	};
 }
 
-#endif // RAYNI_LIB_FILE_FORMATS_IMAGE_PNG_WRITER_H
+#endif // RAYNI_LIB_FILE_FORMATS_PNG_READER_H

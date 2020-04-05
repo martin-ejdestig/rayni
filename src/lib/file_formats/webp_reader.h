@@ -17,25 +17,23 @@
 //
 // SPDX-License-Identifier: GPL-3.0-or-later
 
-#ifndef RAYNI_LIB_FILE_FORMATS_IMAGE_IMAGE_FORMAT_H
-#define RAYNI_LIB_FILE_FORMATS_IMAGE_IMAGE_FORMAT_H
+#ifndef RAYNI_LIB_FILE_FORMATS_WEBP_READER_H
+#define RAYNI_LIB_FILE_FORMATS_WEBP_READER_H
 
 #include <string>
 
+#include "lib/graphics/image.h"
+#include "lib/io/io_exception.h"
+
 namespace Rayni
 {
-	enum class ImageFormat
+	class WebPReader
 	{
-		UNDETERMINED,
+	public:
+		using Exception = IOException;
 
-		EXR,
-		JPEG,
-		PNG,
-		TGA,
-		WEBP
+		Image read_file(const std::string &file_name);
 	};
-
-	ImageFormat image_format_from_file(const std::string &file_name);
 }
 
-#endif // RAYNI_LIB_FILE_FORMATS_IMAGE_IMAGE_FORMAT_H
+#endif // RAYNI_LIB_FILE_FORMATS_WEBP_READER_H

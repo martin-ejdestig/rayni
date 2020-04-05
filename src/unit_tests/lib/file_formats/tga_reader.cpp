@@ -17,7 +17,7 @@
 //
 // SPDX-License-Identifier: GPL-3.0-or-later
 
-#include "lib/file_formats/image/tga_reader.h"
+#include "lib/file_formats/tga_reader.h"
 
 #include <gtest/gtest.h>
 

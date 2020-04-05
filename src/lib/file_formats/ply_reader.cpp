@@ -17,7 +17,7 @@
 //
 // SPDX-License-Identifier: GPL-3.0-or-later
 
-#include "lib/file_formats/object/ply_reader.h"
+#include "lib/file_formats/ply_reader.h"
 
 #include <array>
 #include <cstdint>

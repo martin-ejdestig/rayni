@@ -17,7 +17,7 @@
 //
 // SPDX-License-Identifier: GPL-3.0-or-later
 
-#include "lib/file_formats/image/webp_reader.h"
+#include "lib/file_formats/webp_reader.h"
 
 #include <webp/decode.h>
 

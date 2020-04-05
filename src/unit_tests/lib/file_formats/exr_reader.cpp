@@ -17,7 +17,7 @@
 //
 // SPDX-License-Identifier: GPL-3.0-or-later
 
-#include "lib/file_formats/image/exr_reader.h"
+#include "lib/file_formats/exr_reader.h"
 
 #include <gtest/gtest.h>
 

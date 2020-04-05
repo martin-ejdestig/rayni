@@ -17,8 +17,8 @@
 //
 // SPDX-License-Identifier: GPL-3.0-or-later
 
-#ifndef RAYNI_LIB_FILE_FORMATS_OBJECT_PLY_READER_H
-#define RAYNI_LIB_FILE_FORMATS_OBJECT_PLY_READER_H
+#ifndef RAYNI_LIB_FILE_FORMATS_PLY_READER_H
+#define RAYNI_LIB_FILE_FORMATS_PLY_READER_H
 
 #include <string>
 #include <vector>
@@ -85,4 +85,4 @@ namespace Rayni
 	};
 }
 
-#endif // RAYNI_LIB_FILE_FORMATS_OBJECT_PLY_READER_H
+#endif // RAYNI_LIB_FILE_FORMATS_PLY_READER_H

@@ -17,8 +17,8 @@
 //
 // SPDX-License-Identifier: GPL-3.0-or-later
 
-#ifndef RAYNI_LIB_FILE_FORMATS_IMAGE_WEBP_READER_H
-#define RAYNI_LIB_FILE_FORMATS_IMAGE_WEBP_READER_H
+#ifndef RAYNI_LIB_FILE_FORMATS_EXR_READER_H
+#define RAYNI_LIB_FILE_FORMATS_EXR_READER_H
 
 #include <string>
 
@@ -27,7 +27,7 @@
 
 namespace Rayni
 {
-	class WebPReader
+	class EXRReader
 	{
 	public:
 		using Exception = IOException;
@@ -36,4 +36,4 @@ namespace Rayni
 	};
 }
 
-#endif // RAYNI_LIB_FILE_FORMATS_IMAGE_WEBP_READER_H
+#endif // RAYNI_LIB_FILE_FORMATS_EXR_READER_H

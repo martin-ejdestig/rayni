@@ -17,23 +17,18 @@
 //
 // SPDX-License-Identifier: GPL-3.0-or-later
 
-#ifndef RAYNI_LIB_FILE_FORMATS_PNG_READER_H
-#define RAYNI_LIB_FILE_FORMATS_PNG_READER_H
+#ifndef RAYNI_LIB_FILE_FORMATS_PNG_H
+#define RAYNI_LIB_FILE_FORMATS_PNG_H
 
 #include <string>
 
+#include "lib/function/result.h"
 #include "lib/graphics/image.h"
-#include "lib/io/io_exception.h"
 
 namespace Rayni
 {
-	class PNGReader
-	{
-	public:
-		using Exception = IOException;
-
-		Image read_file(const std::string &file_name);
-	};
+	Result<Image> png_read_file(const std::string &file_name);
+	Result<void> png_write_file(const std::string &file_name, const Image &image);
 }
 
-#endif // RAYNI_LIB_FILE_FORMATS_PNG_READER_H
+#endif // RAYNI_LIB_FILE_FORMATS_PNG_H

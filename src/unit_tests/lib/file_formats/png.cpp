@@ -17,7 +17,7 @@
 //
 // SPDX-License-Identifier: GPL-3.0-or-later
 
-#include "lib/file_formats/png_reader.h"
+#include "lib/file_formats/png.h"
 
 #include <gtest/gtest.h>
 
@@ -25,6 +25,7 @@
 #include <string>
 #include <vector>
 
+#include "lib/graphics/color.h"
 #include "lib/graphics/image.h"
 #include "lib/io/file.h"
 #include "lib/system/scoped_temp_dir.h"
@@ -63,17 +64,16 @@ namespace Rayni
 		}
 	}
 
-	TEST(PNGReader, ReadFile)
+	TEST(PNGReadFile, Valid)
 	{
 		static constexpr unsigned int VALID_WIDTH = 2;
 		static constexpr unsigned int VALID_HEIGHT = 2;
 		static constexpr Color VALID_COLORS[VALID_HEIGHT][VALID_WIDTH] = {{Color::red(), Color::yellow()},
 		                                                                  {Color::green(), Color::blue()}};
 		ScopedTempDir temp_dir;
-
-		const std::string valid_path = temp_dir.path() / "valid.png";
-		ASSERT_TRUE(file_write(valid_path, png_data()));
-		Image image = PNGReader().read_file(valid_path);
+		const std::string path = temp_dir.path() / "valid.png";
+		ASSERT_TRUE(file_write(path, png_data()));
+		Image image = png_read_file(path).value_or(Image());
 
 		ASSERT_EQ(VALID_WIDTH, image.width());
 		ASSERT_EQ(VALID_HEIGHT, image.height());
@@ -90,15 +90,73 @@ namespace Rayni
 				EXPECT_NEAR(valid_color.b(), color.b(), 1e-100);
 			}
 		}
+	}
 
-		const std::string corrupt_path = temp_dir.path() / "corrupt.png";
-		ASSERT_TRUE(file_write(corrupt_path, corrupt_png_data()));
-		EXPECT_THROW(PNGReader().read_file(corrupt_path), PNGReader::Exception);
+	TEST(PNGReadFile, Corrupt)
+	{
+		ScopedTempDir temp_dir;
+		const std::string path = temp_dir.path() / "corrupt.png";
+		ASSERT_TRUE(file_write(path, corrupt_png_data()));
 
-		const std::string short_path = temp_dir.path() / "short.png";
-		ASSERT_TRUE(file_write(short_path, short_png_data()));
-		EXPECT_THROW(PNGReader().read_file(short_path), PNGReader::Exception);
+		EXPECT_FALSE(png_read_file(path));
+	}
 
-		EXPECT_THROW(PNGReader().read_file(temp_dir.path() / "does_not_exist.png"), PNGReader::Exception);
+	TEST(PNGReadFile, Short)
+	{
+		ScopedTempDir temp_dir;
+		const std::string path = temp_dir.path() / "short.png";
+		ASSERT_TRUE(file_write(path, short_png_data()));
+
+		EXPECT_FALSE(png_read_file(path));
+	}
+
+	TEST(PNGReadFile, DoesNotExist)
+	{
+		ScopedTempDir temp_dir;
+		const std::string path = temp_dir.path() / "does_not_exist.png";
+
+		EXPECT_FALSE(png_read_file(path));
+	}
+
+	TEST(PNGWriteFile, Valid)
+	{
+		static constexpr unsigned int WIDTH = 2;
+		static constexpr unsigned int HEIGHT = 2;
+		static constexpr Color COLORS[HEIGHT][WIDTH] = {{Color::red(), Color::yellow()},
+		                                                {Color::green(), Color::blue()}};
+		ScopedTempDir temp_dir;
+		const std::string path = temp_dir.path() / "foo.png";
+
+		Image image(WIDTH, HEIGHT);
+		for (unsigned int y = 0; y < HEIGHT; y++)
+			for (unsigned int x = 0; x < WIDTH; x++)
+				image.write_pixel(x, y, COLORS[y][x]);
+
+		ASSERT_TRUE(png_write_file(path, image));
+		Image read_image = png_read_file(path).value_or(Image());
+
+		ASSERT_EQ(WIDTH, read_image.width());
+		ASSERT_EQ(HEIGHT, read_image.height());
+
+		for (unsigned int y = 0; y < HEIGHT; y++)
+		{
+			for (unsigned int x = 0; x < WIDTH; x++)
+			{
+				Color expected_color = COLORS[y][x];
+				Color color = read_image.read_pixel(x, y);
+
+				EXPECT_NEAR(expected_color.r(), color.r(), 1e-100);
+				EXPECT_NEAR(expected_color.g(), color.g(), 1e-100);
+				EXPECT_NEAR(expected_color.b(), color.b(), 1e-100);
+			}
+		}
+	}
+
+	TEST(PNGWriteFile, DirDoesNotExist)
+	{
+		ScopedTempDir temp_dir;
+		const std::string path = temp_dir.path() / "dir_that_does_not_exist" / "bar.png";
+
+		EXPECT_FALSE(png_write_file(path, Image(2, 2)));
 	}
 }

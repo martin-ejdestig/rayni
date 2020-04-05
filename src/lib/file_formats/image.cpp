@@ -27,7 +27,7 @@
 
 #include "lib/file_formats/exr_reader.h"
 #include "lib/file_formats/jpeg_reader.h"
-#include "lib/file_formats/png_reader.h"
+#include "lib/file_formats/png.h"
 #include "lib/file_formats/tga.h"
 #include "lib/file_formats/webp.h"
 #include "lib/function/result.h"
@@ -131,7 +131,7 @@ namespace Rayni
 			return reader_helper<JPEGReader>(file_name);
 
 		case ImageFormat::PNG:
-			return reader_helper<PNGReader>(file_name);
+			return png_read_file(file_name);
 
 		case ImageFormat::TGA:
 			return tga_read_file(file_name);

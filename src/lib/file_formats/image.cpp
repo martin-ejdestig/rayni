@@ -30,6 +30,7 @@
 #include "lib/file_formats/png_reader.h"
 #include "lib/file_formats/tga_reader.h"
 #include "lib/file_formats/webp_reader.h"
+#include "lib/function/result.h"
 #include "lib/string/string.h"
 #include "lib/system/memory_mapped_file.h"
 
@@ -97,36 +98,52 @@ namespace Rayni
 
 			return ImageFormat::UNDETERMINED;
 		}
+
+		// TODO: Remove once all image *Reader:s have been removed.
+		template <typename Reader>
+		Result<Image> reader_helper(const std::string &file_name)
+		{
+			Image image;
+
+			try
+			{
+				image = Reader().read_file(file_name);
+			}
+			catch (typename Reader::Exception &e)
+			{
+				return Error(e.what());
+			}
+
+			return image;
+		}
 	}
 
-	// TODO: Result<Image> image_read_file(const std::string &file_name) => no longer a member function.
-	// NOLINTNEXTLINE(readability-convert-member-functions-to-static)
-	Image ImageReader::read_file(const std::string &file_name)
+	Result<Image> image_read_file(const std::string &file_name)
 	{
 		ImageFormat format = image_format_from_file(file_name);
 
 		switch (format)
 		{
 		case ImageFormat::EXR:
-			return EXRReader().read_file(file_name);
+			return reader_helper<EXRReader>(file_name);
 
 		case ImageFormat::JPEG:
-			return JPEGReader().read_file(file_name);
+			return reader_helper<JPEGReader>(file_name);
 
 		case ImageFormat::PNG:
-			return PNGReader().read_file(file_name);
+			return reader_helper<PNGReader>(file_name);
 
 		case ImageFormat::TGA:
-			return TGAReader().read_file(file_name);
+			return reader_helper<TGAReader>(file_name);
 
 		case ImageFormat::WEBP:
-			return WebPReader().read_file(file_name);
+			return reader_helper<WebPReader>(file_name);
 
 		case ImageFormat::UNDETERMINED:
 			break;
 		}
 
-		throw Exception(file_name, "unable to determine image format");
+		return Error(file_name + ": unable to determine image format");
 	}
 
 	ImageFormat image_format_from_file(const std::string &file_name)

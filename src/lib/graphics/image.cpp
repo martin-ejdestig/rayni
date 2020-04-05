@@ -26,6 +26,7 @@
 #include <utility>
 
 #include "lib/file_formats/image.h"
+#include "lib/function/result.h"
 #include "lib/graphics/color.h"
 
 namespace Rayni
@@ -48,14 +49,12 @@ namespace Rayni
 
 	Image Image::from_variant(const Variant &v)
 	{
-		try
-		{
-			return ImageReader().read_file(v.get<std::string>("path"));
-		}
-		catch (const ImageReader::Exception &e)
-		{
-			throw Variant::Exception(v, e.what());
-		}
+		Result<Image> result = image_read_file(v.get<std::string>("path"));
+
+		if (!result)
+			throw Variant::Exception(v, result.error().message());
+
+		return std::move(*result);
 	}
 
 	Image &Image::operator=(Image &&other) noexcept

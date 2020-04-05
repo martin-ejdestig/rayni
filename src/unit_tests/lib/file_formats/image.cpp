@@ -26,6 +26,7 @@
 #include <string>
 #include <vector>
 
+#include "lib/function/result.h"
 #include "lib/graphics/image.h"
 #include "lib/io/file.h"
 #include "lib/system/scoped_temp_dir.h"
@@ -132,12 +133,11 @@ namespace Rayni
 			ASSERT_TRUE(file_write(read_success_path, valid_data_1x1));
 			ASSERT_TRUE(file_write(type_determinable_read_fail_path, {}));
 
-			Image image = ImageReader().read_file(read_success_path);
+			Image image = image_read_file(read_success_path).value_or(Image());
 			EXPECT_EQ(1U, image.width()) << suffix;
 			EXPECT_EQ(1U, image.height()) << suffix;
 
-			EXPECT_THROW(ImageReader().read_file(type_determinable_read_fail_path), ImageReader::Exception)
-			        << suffix;
+			EXPECT_FALSE(image_read_file(type_determinable_read_fail_path)) << suffix;
 		}
 	}
 
@@ -276,27 +276,27 @@ namespace Rayni
 		          image_format_from_file(temp_dir.path() / "does_noe_exist_and_known_extension.jpg"));
 	}
 
-	TEST(ImageReader, ReadEXRFile)
+	TEST(ImageReadFile, EXR)
 	{
 		test_read_file("exr", exr_data_1x1());
 	}
 
-	TEST(ImageReader, ReadJPEGFile)
+	TEST(ImageReadFile, JPEG)
 	{
 		test_read_file("jpeg", jpeg_data_1x1());
 	}
 
-	TEST(ImageReader, ReadPNGFile)
+	TEST(ImageReadFile, PNG)
 	{
 		test_read_file("png", png_data_1x1());
 	}
 
-	TEST(ImageReader, ReadTGAFile)
+	TEST(ImageReadFile, TGA)
 	{
 		test_read_file("tga", tga_data_1x1());
 	}
 
-	TEST(ImageReader, ReadWebPFile)
+	TEST(ImageReadFile, WebP)
 	{
 		test_read_file("webp", webp_data_1x1());
 	}

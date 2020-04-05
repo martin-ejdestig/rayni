@@ -22,8 +22,8 @@
 
 #include <string>
 
+#include "lib/function/result.h"
 #include "lib/graphics/image.h"
-#include "lib/io/io_exception.h"
 
 namespace Rayni
 {
@@ -38,13 +38,7 @@ namespace Rayni
 		WEBP
 	};
 
-	class ImageReader
-	{
-	public:
-		using Exception = IOException;
-
-		Image read_file(const std::string &file_name);
-	};
+	Result<Image> image_read_file(const std::string &file_name);
 
 	ImageFormat image_format_from_file(const std::string &file_name);
 }

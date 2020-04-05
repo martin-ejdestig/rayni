@@ -17,8 +17,8 @@
 //
 // SPDX-License-Identifier: GPL-3.0-or-later
 
-#ifndef RAYNI_LIB_FILE_FORMATS_IMAGE_READER_H
-#define RAYNI_LIB_FILE_FORMATS_IMAGE_READER_H
+#ifndef RAYNI_LIB_FILE_FORMATS_IMAGE_H
+#define RAYNI_LIB_FILE_FORMATS_IMAGE_H
 
 #include <string>
 
@@ -27,6 +27,17 @@
 
 namespace Rayni
 {
+	enum class ImageFormat
+	{
+		UNDETERMINED,
+
+		EXR,
+		JPEG,
+		PNG,
+		TGA,
+		WEBP
+	};
+
 	class ImageReader
 	{
 	public:
@@ -34,6 +45,8 @@ namespace Rayni
 
 		Image read_file(const std::string &file_name);
 	};
+
+	ImageFormat image_format_from_file(const std::string &file_name);
 }
 
-#endif // RAYNI_LIB_FILE_FORMATS_IMAGE_READER_H
+#endif // RAYNI_LIB_FILE_FORMATS_IMAGE_H

@@ -1,6 +1,6 @@
 // This file is part of Rayni.
 //
-// Copyright (C) 2016-2020 Martin Ejdestig <marejde@gmail.com>
+// Copyright (C) 2015-2020 Martin Ejdestig <marejde@gmail.com>
 //
 // Rayni is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -17,11 +17,12 @@
 //
 // SPDX-License-Identifier: GPL-3.0-or-later
 
-#include "lib/file_formats/image_reader.h"
+#include "lib/file_formats/image.h"
 
 #include <gtest/gtest.h>
 
 #include <cstdint>
+#include <filesystem>
 #include <string>
 #include <vector>
 
@@ -33,6 +34,11 @@ namespace Rayni
 {
 	namespace
 	{
+		std::vector<std::uint8_t> exr_magic()
+		{
+			return {0x76, 0x2f, 0x31, 0x01};
+		}
+
 		std::vector<std::uint8_t> exr_data_1x1()
 		{
 			return {0x76, 0x2f, 0x31, 0x01, 0x02, 0x00, 0x00, 0x00, 0x63, 0x68, 0x61, 0x6e, 0x6e, 0x65,
@@ -61,6 +67,11 @@ namespace Rayni
 			        0x00, 0x00, 0x00, 0x06, 0x00, 0x00, 0x00, 0x00, 0x3c, 0x00, 0x3c, 0x00, 0x3c};
 		}
 
+		std::vector<std::uint8_t> jpeg_magic()
+		{
+			return {0xff, 0xd8, 0xff};
+		}
+
 		std::vector<std::uint8_t> jpeg_data_1x1()
 		{
 			return {0xff, 0xd8, 0xff, 0xe0, 0x00, 0x10, 0x4a, 0x46, 0x49, 0x46, 0x00, 0x01, 0x01, 0x02,
@@ -75,6 +86,11 @@ namespace Rayni
 			        0x00, 0x14, 0x10, 0x01, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
 			        0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0xff, 0xda, 0x00, 0x08, 0x01, 0x01, 0x00, 0x00,
 			        0x3f, 0x00, 0x7f, 0x1f, 0xff, 0xd9};
+		}
+
+		std::vector<std::uint8_t> png_magic()
+		{
+			return {0x89, 'P', 'N', 'G'};
 		}
 
 		std::vector<std::uint8_t> png_data_1x1()
@@ -92,6 +108,11 @@ namespace Rayni
 		{
 			return {0x00, 0x00, 0x02, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
 			        0x00, 0x01, 0x00, 0x01, 0x00, 0x18, 0x00, 0xff, 0xff, 0xff};
+		}
+
+		std::vector<std::uint8_t> webp_magic()
+		{
+			return {'R', 'I', 'F', 'F', 0xfe, 0xdc, 0xba, 0x98, 'W', 'E', 'B', 'P'}; // 4-7 irrelevant
 		}
 
 		std::vector<std::uint8_t> webp_data_1x1()
@@ -118,6 +139,130 @@ namespace Rayni
 			EXPECT_THROW(ImageReader().read_file(type_determinable_read_fail_path), ImageReader::Exception)
 			        << suffix;
 		}
+	}
+
+	TEST(ImageFormat, Magic)
+	{
+		ScopedTempDir temp_dir;
+
+		ASSERT_TRUE(file_write(temp_dir.path() / "exr_magic.bin", exr_magic()));
+		EXPECT_EQ(ImageFormat::EXR, image_format_from_file(temp_dir.path() / "exr_magic.bin"));
+
+		ASSERT_TRUE(file_write(temp_dir.path() / "jpeg_magic.bin", jpeg_magic()));
+		EXPECT_EQ(ImageFormat::JPEG, image_format_from_file(temp_dir.path() / "jpeg_magic.bin"));
+
+		ASSERT_TRUE(file_write(temp_dir.path() / "png_magic.bin", png_magic()));
+		EXPECT_EQ(ImageFormat::PNG, image_format_from_file(temp_dir.path() / "png_magic.bin"));
+
+		ASSERT_TRUE(file_write(temp_dir.path() / "webp_magic.bin", webp_magic()));
+		EXPECT_EQ(ImageFormat::WEBP, image_format_from_file(temp_dir.path() / "webp_magic.bin"));
+	}
+
+	TEST(ImageFormat, ShortMagic)
+	{
+		ScopedTempDir temp_dir;
+
+		auto shorten = [](auto magic) {
+			magic.pop_back();
+			return magic;
+		};
+
+		ASSERT_TRUE(file_write(temp_dir.path() / "exr_short_magic.bin", shorten(exr_magic())));
+		EXPECT_EQ(ImageFormat::UNDETERMINED, image_format_from_file(temp_dir.path() / "exr_short_magic.bin"));
+
+		ASSERT_TRUE(file_write(temp_dir.path() / "jpeg_short_magic.bin", shorten(jpeg_magic())));
+		EXPECT_EQ(ImageFormat::UNDETERMINED, image_format_from_file(temp_dir.path() / "jpeg_short_magic.bin"));
+
+		ASSERT_TRUE(file_write(temp_dir.path() / "png_short_magic.bin", shorten(png_magic())));
+		EXPECT_EQ(ImageFormat::UNDETERMINED, image_format_from_file(temp_dir.path() / "png_short_magic.bin"));
+
+		ASSERT_TRUE(file_write(temp_dir.path() / "webp_short_magic.bin", shorten(webp_magic())));
+		EXPECT_EQ(ImageFormat::UNDETERMINED, image_format_from_file(temp_dir.path() / "webp_short_magic.bin"));
+
+		ASSERT_TRUE(file_write(temp_dir.path() / "empty_short_magic.bin", {}));
+		EXPECT_EQ(ImageFormat::UNDETERMINED, image_format_from_file(temp_dir.path() / "empty_magic.bin"));
+	}
+
+	TEST(ImageFormat, CorruptMagic)
+	{
+		ScopedTempDir temp_dir;
+
+		auto corrupt = [](auto magic) {
+			magic.back() ^= 0x10;
+			return magic;
+		};
+
+		ASSERT_TRUE(file_write(temp_dir.path() / "exr_corrupt_magic.bin", corrupt(exr_magic())));
+		EXPECT_EQ(ImageFormat::UNDETERMINED, image_format_from_file(temp_dir.path() / "exr_corrupt_magic.bin"));
+
+		ASSERT_TRUE(file_write(temp_dir.path() / "jpeg_corrupt_magic.bin", corrupt(jpeg_magic())));
+		EXPECT_EQ(ImageFormat::UNDETERMINED,
+		          image_format_from_file(temp_dir.path() / "jpeg_corrupt_magic.bin"));
+
+		ASSERT_TRUE(file_write(temp_dir.path() / "png_corrupt_magic.bin", corrupt(png_magic())));
+		EXPECT_EQ(ImageFormat::UNDETERMINED, image_format_from_file(temp_dir.path() / "png_corrupt_magic.bin"));
+
+		ASSERT_TRUE(file_write(temp_dir.path() / "webp_corrupt_magic.bin", corrupt(webp_magic())));
+		EXPECT_EQ(ImageFormat::UNDETERMINED,
+		          image_format_from_file(temp_dir.path() / "webp_corrupt_magic.bin"));
+	}
+
+	TEST(ImageFormat, ExtensionOnly)
+	{
+		ScopedTempDir temp_dir;
+
+		ASSERT_TRUE(file_write(temp_dir.path() / "extension_only.exr", {}));
+		EXPECT_EQ(ImageFormat::EXR, image_format_from_file(temp_dir.path() / "extension_only.exr"));
+
+		ASSERT_TRUE(file_write(temp_dir.path() / "extension_only.jpg", {}));
+		EXPECT_EQ(ImageFormat::JPEG, image_format_from_file(temp_dir.path() / "extension_only.jpg"));
+		ASSERT_TRUE(file_write(temp_dir.path() / "extension_only.jpeg", {}));
+		EXPECT_EQ(ImageFormat::JPEG, image_format_from_file(temp_dir.path() / "extension_only.jpeg"));
+		ASSERT_TRUE(file_write(temp_dir.path() / "extension_only.jpe", {}));
+		EXPECT_EQ(ImageFormat::JPEG, image_format_from_file(temp_dir.path() / "extension_only.jpe"));
+
+		ASSERT_TRUE(file_write(temp_dir.path() / "extension_only.png", {}));
+		EXPECT_EQ(ImageFormat::PNG, image_format_from_file(temp_dir.path() / "extension_only.png"));
+
+		ASSERT_TRUE(file_write(temp_dir.path() / "extension_only.icb", {}));
+		EXPECT_EQ(ImageFormat::TGA, image_format_from_file(temp_dir.path() / "extension_only.icb"));
+		ASSERT_TRUE(file_write(temp_dir.path() / "extension_only.targa", {}));
+		EXPECT_EQ(ImageFormat::TGA, image_format_from_file(temp_dir.path() / "extension_only.targa"));
+		ASSERT_TRUE(file_write(temp_dir.path() / "extension_only.tga", {}));
+		EXPECT_EQ(ImageFormat::TGA, image_format_from_file(temp_dir.path() / "extension_only.tga"));
+		ASSERT_TRUE(file_write(temp_dir.path() / "extension_only.tpic", {}));
+		EXPECT_EQ(ImageFormat::TGA, image_format_from_file(temp_dir.path() / "extension_only.tpic"));
+		ASSERT_TRUE(file_write(temp_dir.path() / "extension_only.vda", {}));
+		EXPECT_EQ(ImageFormat::TGA, image_format_from_file(temp_dir.path() / "extension_only.vda"));
+		ASSERT_TRUE(file_write(temp_dir.path() / "extension_only.vst", {}));
+		EXPECT_EQ(ImageFormat::TGA, image_format_from_file(temp_dir.path() / "extension_only.vst"));
+
+		ASSERT_TRUE(file_write(temp_dir.path() / "extension_only.webp", {}));
+		EXPECT_EQ(ImageFormat::WEBP, image_format_from_file(temp_dir.path() / "extension_only.webp"));
+
+		ASSERT_TRUE(file_write(temp_dir.path() / "extension_only_mixed_case.jPeG", {}));
+		EXPECT_EQ(ImageFormat::JPEG,
+		          image_format_from_file(temp_dir.path() / "extension_only_mixed_case.jPeG"));
+
+		ASSERT_TRUE(file_write(temp_dir.path() / "extension_only_mixed_case.PnG", {}));
+		EXPECT_EQ(ImageFormat::PNG, image_format_from_file(temp_dir.path() / "extension_only_mixed_case.PnG"));
+	}
+
+	TEST(ImageFormat, WrongExtension)
+	{
+		ScopedTempDir temp_dir;
+
+		ASSERT_TRUE(file_write(temp_dir.path() / "exr_wrong_extension.tga", exr_magic()));
+		EXPECT_EQ(ImageFormat::EXR, image_format_from_file(temp_dir.path() / "exr_wrong_extension.tga"));
+
+		ASSERT_TRUE(file_write(temp_dir.path() / "jpeg_wrong_extension.tga", jpeg_magic()));
+		EXPECT_EQ(ImageFormat::JPEG, image_format_from_file(temp_dir.path() / "jpeg_wrong_extension.tga"));
+
+		ASSERT_TRUE(file_write(temp_dir.path() / "png_wrong_extension.tga", png_magic()));
+		EXPECT_EQ(ImageFormat::PNG, image_format_from_file(temp_dir.path() / "png_wrong_extension.tga"));
+
+		ASSERT_TRUE(file_write(temp_dir.path() / "wepb_wrong_extension.tga", webp_magic()));
+		EXPECT_EQ(ImageFormat::WEBP, image_format_from_file(temp_dir.path() / "wepb_wrong_extension.tga"));
 	}
 
 	TEST(ImageReader, ReadEXRFile)

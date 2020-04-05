@@ -1,6 +1,6 @@
 // This file is part of Rayni.
 //
-// Copyright (C) 2015-2020 Martin Ejdestig <marejde@gmail.com>
+// Copyright (C) 2014-2020 Martin Ejdestig <marejde@gmail.com>
 //
 // Rayni is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -17,7 +17,7 @@
 //
 // SPDX-License-Identifier: GPL-3.0-or-later
 
-#include "lib/file_formats/image_format.h"
+#include "lib/file_formats/image.h"
 
 #include <algorithm>
 #include <cstdint>
@@ -25,6 +25,11 @@
 #include <string>
 #include <vector>
 
+#include "lib/file_formats/exr_reader.h"
+#include "lib/file_formats/jpeg_reader.h"
+#include "lib/file_formats/png_reader.h"
+#include "lib/file_formats/tga_reader.h"
+#include "lib/file_formats/webp_reader.h"
 #include "lib/string/string.h"
 #include "lib/system/memory_mapped_file.h"
 
@@ -91,6 +96,36 @@ namespace Rayni
 
 			return ImageFormat::UNDETERMINED;
 		}
+	}
+
+	// TODO: Result<Image> image_read_file(const std::string &file_name) => no longer a member function.
+	// NOLINTNEXTLINE(readability-convert-member-functions-to-static)
+	Image ImageReader::read_file(const std::string &file_name)
+	{
+		ImageFormat format = image_format_from_file(file_name);
+
+		switch (format)
+		{
+		case ImageFormat::EXR:
+			return EXRReader().read_file(file_name);
+
+		case ImageFormat::JPEG:
+			return JPEGReader().read_file(file_name);
+
+		case ImageFormat::PNG:
+			return PNGReader().read_file(file_name);
+
+		case ImageFormat::TGA:
+			return TGAReader().read_file(file_name);
+
+		case ImageFormat::WEBP:
+			return WebPReader().read_file(file_name);
+
+		case ImageFormat::UNDETERMINED:
+			break;
+		}
+
+		throw Exception(file_name, "unable to determine image format");
 	}
 
 	ImageFormat image_format_from_file(const std::string &file_name)

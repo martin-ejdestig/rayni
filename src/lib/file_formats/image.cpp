@@ -22,8 +22,8 @@
 #include <algorithm>
 #include <cstdint>
 #include <filesystem>
+#include <initializer_list>
 #include <string>
-#include <vector>
 
 #include "lib/file_formats/exr_reader.h"
 #include "lib/file_formats/jpeg_reader.h"
@@ -43,7 +43,8 @@ namespace Rayni
 			if (!file.map(file_name))
 				return ImageFormat::UNDETERMINED;
 
-			auto magic_matches = [&](std::uint64_t offset, const std::vector<std::uint8_t> &magic) {
+			auto magic_matches = [&](std::uint64_t offset,
+			                         const std::initializer_list<std::uint8_t> &magic) {
 				if (offset + magic.size() > file.size())
 					return false;
 
@@ -75,7 +76,7 @@ namespace Rayni
 		{
 			const std::string extension = string_to_lower(std::filesystem::path(file_name).extension());
 
-			auto extension_is_any_of = [&](const std::vector<std::string> &strs) {
+			auto extension_is_any_of = [&](const std::initializer_list<const char *> &strs) {
 				return std::find(strs.begin(), strs.end(), extension) != strs.end();
 			};
 

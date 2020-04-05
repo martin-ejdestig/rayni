@@ -265,6 +265,17 @@ namespace Rayni
 		EXPECT_EQ(ImageFormat::WEBP, image_format_from_file(temp_dir.path() / "wepb_wrong_extension.tga"));
 	}
 
+	TEST(ImageFormat, FileDoesNotExist)
+	{
+		ScopedTempDir temp_dir;
+
+		EXPECT_EQ(ImageFormat::UNDETERMINED,
+		          image_format_from_file(temp_dir.path() / "does_not_exist_and_unknown_extension.foo"));
+
+		EXPECT_EQ(ImageFormat::JPEG,
+		          image_format_from_file(temp_dir.path() / "does_noe_exist_and_known_extension.jpg"));
+	}
+
 	TEST(ImageReader, ReadEXRFile)
 	{
 		test_read_file("exr", exr_data_1x1());

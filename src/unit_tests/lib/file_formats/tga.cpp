@@ -17,7 +17,7 @@
 //
 // SPDX-License-Identifier: GPL-3.0-or-later
 
-#include "lib/file_formats/tga_reader.h"
+#include "lib/file_formats/tga.h"
 
 #include <gtest/gtest.h>
 
@@ -55,17 +55,16 @@ namespace Rayni
 		}
 	}
 
-	TEST(TGAReader, ReadFile)
+	TEST(TGAReadFile, Valid)
 	{
 		static constexpr unsigned int VALID_WIDTH = 2;
 		static constexpr unsigned int VALID_HEIGHT = 2;
 		static constexpr Color VALID_COLORS[VALID_HEIGHT][VALID_WIDTH] = {{Color::red(), Color::yellow()},
 		                                                                  {Color::green(), Color::blue()}};
 		ScopedTempDir temp_dir;
-
-		const std::string valid_path = temp_dir.path() / "valid.tga";
-		ASSERT_TRUE(file_write(valid_path, tga_data()));
-		Image image = TGAReader().read_file(valid_path);
+		const std::string path = temp_dir.path() / "valid.tga";
+		ASSERT_TRUE(file_write(path, tga_data()));
+		Image image = tga_read_file(path).value_or(Image());
 
 		ASSERT_EQ(VALID_WIDTH, image.width());
 		ASSERT_EQ(VALID_HEIGHT, image.height());
@@ -82,53 +81,69 @@ namespace Rayni
 				EXPECT_NEAR(valid_color.b(), color.b(), 1e-100);
 			}
 		}
+	}
 
-		const std::string corrupt_path = temp_dir.path() / "corrupt.tga";
-		ASSERT_TRUE(file_write(corrupt_path, corrupt_tga_data()));
-		EXPECT_THROW(TGAReader().read_file(corrupt_path), TGAReader::Exception);
+	TEST(TGAReadFile, Corrupt)
+	{
+		ScopedTempDir temp_dir;
+		const std::string path = temp_dir.path() / "corrupt.tga";
+		ASSERT_TRUE(file_write(path, corrupt_tga_data()));
 
-		const std::string short_path = temp_dir.path() / "short.tga";
-		ASSERT_TRUE(file_write(short_path, short_tga_data()));
-		EXPECT_THROW(TGAReader().read_file(short_path), TGAReader::Exception);
+		EXPECT_FALSE(tga_read_file(path));
+	}
 
-		EXPECT_THROW(TGAReader().read_file(temp_dir.path() / "does_not_exist.tga"), TGAReader::Exception);
+	TEST(TGAReadFile, Short)
+	{
+		ScopedTempDir temp_dir;
+		const std::string path = temp_dir.path() / "short.tga";
+		ASSERT_TRUE(file_write(path, short_tga_data()));
+
+		EXPECT_FALSE(tga_read_file(path));
+	}
+
+	TEST(TGAReadFile, DoesNotExist)
+	{
+		ScopedTempDir temp_dir;
+		const std::string path = temp_dir.path() / "does_not_exist.tga";
+
+		EXPECT_FALSE(tga_read_file(path));
 	}
 
 #if 0
 	// TODO: Test more.
-	TEST(TGAReader, HeaderShort)
+	TEST(TGAReadFile, HeaderShort)
 	{
 	}
 
-	TEST(TGAReader, HeaderInvalidColorMap)
+	TEST(TGAReadFile, HeaderInvalidColorMap)
 	{
 	}
 
-	TEST(TGAReader, HeaderInvalidImageType)
+	TEST(TGAReadFile, HeaderInvalidImageType)
 	{
 	}
 
-	TEST(TGAReader, HeaderMissingColorMap)
+	TEST(TGAReadFile, HeaderMissingColorMap)
 	{
 	}
 
-	TEST(TGAReader, HeaderColorMapPresentWhenItShouldNotBe)
+	TEST(TGAReadFile, HeaderColorMapPresentWhenItShouldNotBe)
 	{
 	}
 
-	TEST(TGAReader, HeaderInvalidDimension)
+	TEST(TGAReadFile, HeaderInvalidDimension)
 	{
 	}
 
-	TEST(TGAReader, HeaderInvalidPixelSize)
+	TEST(TGAReadFile, HeaderInvalidPixelSize)
 	{
 	}
 
-	TEST(TGAReader, ImageData)
+	TEST(TGAReadFile, ImageData)
 	{
 	}
 
-	TEST(TGAReader, ImageDataRLE)
+	TEST(TGAReadFile, ImageDataRLE)
 	{
 	}
 #endif

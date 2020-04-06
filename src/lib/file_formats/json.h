@@ -17,28 +17,18 @@
 //
 // SPDX-License-Identifier: GPL-3.0-or-later
 
-#ifndef RAYNI_LIB_FILE_FORMATS_JSON_READER_H
-#define RAYNI_LIB_FILE_FORMATS_JSON_READER_H
+#ifndef RAYNI_LIB_FILE_FORMATS_JSON_H
+#define RAYNI_LIB_FILE_FORMATS_JSON_H
+
+#include <string>
 
 #include "lib/containers/variant.h"
-#include "lib/io/text_type_reader.h"
+#include "lib/function/result.h"
 
 namespace Rayni
 {
-	class JSONReader : public TextTypeReader<Variant>
-	{
-	public:
-		using TextTypeReader<Variant>::read_string;
-
-	private:
-		Variant read() override;
-
-		Variant read_value();
-		Variant read_object();
-		Variant read_array();
-		Variant read_string();
-		Variant read_number();
-	};
+	Result<Variant> json_read_file(const std::string &file_name);
+	Result<Variant> json_read_string(std::string &&string);
 }
 
-#endif // RAYNI_LIB_FILE_FORMATS_JSON_READER_H
+#endif // RAYNI_LIB_FILE_FORMATS_JSON_H

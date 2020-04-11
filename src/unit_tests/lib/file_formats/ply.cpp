@@ -17,22 +17,21 @@
 //
 // SPDX-License-Identifier: GPL-3.0-or-later
 
-#include "lib/file_formats/ply_reader.h"
+#include "lib/file_formats/ply.h"
 
 #include <gtest/gtest.h>
 
 #include <cstdint>
 #include <initializer_list>
 #include <string>
-#include <utility>
 #include <vector>
 
 #include "lib/shapes/triangle_mesh_data.h"
 
 // TODO: Test much more.
 // - Test that corrupt header and data is handled gracefully (Hit every error
-//   condition in ply_reader.cpp at least once, leave out element and property
-//   names, negative element count etc.).
+//   condition in ply.cpp at least once, leave out element and property names,
+//   negative element count etc.).
 // - Make sure that many more different types (int*, float* and list) and format
 //   (ASCII and binary) combinations are handled.
 // - Verify that unknown elements and properties are skipped when reading data.
@@ -75,14 +74,9 @@ namespace Rayni
 
 			return header;
 		}
-
-		TriangleMeshData read(PLYData &&data)
-		{
-			return PLYReader().read_data(std::move(data));
-		}
 	}
 
-	TEST(PLYReader, BasicASCII)
+	TEST(PLY, BasicASCII)
 	{
 		PLYData data = basic_header("ascii", 3, 1);
 		append(data, "1 2 3\n");
@@ -90,7 +84,7 @@ namespace Rayni
 		append(data, "7 8 9\n");
 		append(data, "3 0 1 2\n");
 
-		auto mesh_data = read(std::move(data));
+		auto mesh_data = ply_read_data(std::move(data)).value_or(TriangleMeshData());
 
 		ASSERT_EQ(3, mesh_data.points.size());
 		EXPECT_NEAR(1, mesh_data.points[0].x(), 1e-7);
@@ -109,7 +103,7 @@ namespace Rayni
 		EXPECT_EQ(2, mesh_data.indices[0].index3);
 	}
 
-	TEST(PLYReader, BasicBinaryBigEndian)
+	TEST(PLY, BasicBinaryBigEndian)
 	{
 		PLYData data = basic_header("binary_big_endian", 3, 1);
 		append(data, {0x3f, 0x80, 0x00, 0x00, 0x40, 0x00, 0x00, 0x00, 0x40, 0x40, 0x00, 0x00});
@@ -117,7 +111,7 @@ namespace Rayni
 		append(data, {0x40, 0xe0, 0x00, 0x00, 0x41, 0x00, 0x00, 0x00, 0x41, 0x10, 0x00, 0x00});
 		append(data, {0x03, 0x00, 0x01, 0x02});
 
-		auto mesh_data = read(std::move(data));
+		auto mesh_data = ply_read_data(std::move(data)).value_or(TriangleMeshData());
 
 		ASSERT_EQ(3, mesh_data.points.size());
 		EXPECT_NEAR(1, mesh_data.points[0].x(), 1e-7);
@@ -144,7 +138,7 @@ namespace Rayni
 		append(data, {0x00, 0x00, 0xe0, 0x40, 0x00, 0x00, 0x00, 0x41, 0x00, 0x00, 0x10, 0x41});
 		append(data, {0x03, 0x00, 0x01, 0x02});
 
-		auto mesh_data = read(std::move(data));
+		auto mesh_data = ply_read_data(std::move(data)).value_or(TriangleMeshData());
 
 		ASSERT_EQ(3, mesh_data.points.size());
 		EXPECT_NEAR(1, mesh_data.points[0].x(), 1e-7);
@@ -163,7 +157,7 @@ namespace Rayni
 		EXPECT_EQ(2, mesh_data.indices[0].index3);
 	}
 
-	TEST(PLYReader, MagicMismatch)
+	TEST(PLY, MagicMismatch)
 	{
 		PLYData data = basic_header("ascii", 3, 1);
 		data[0] = 'x'; // Corrupt first byte in magic.
@@ -172,10 +166,10 @@ namespace Rayni
 		append(data, "0 0 0\n");
 		append(data, "3 0 1 2\n");
 
-		EXPECT_THROW(read(std::move(data)), PLYReader::Exception);
+		EXPECT_FALSE(ply_read_data(std::move(data)));
 	}
 
-	TEST(PLYReader, UnknownFormat)
+	TEST(PLY, UnknownFormat)
 	{
 		PLYData data = basic_header("ascii_garbage", 3, 1);
 		append(data, "0 0 0\n");
@@ -183,6 +177,6 @@ namespace Rayni
 		append(data, "0 0 0\n");
 		append(data, "3 0 1 2\n");
 
-		EXPECT_THROW(read(std::move(data)), PLYReader::Exception);
+		EXPECT_FALSE(ply_read_data(std::move(data)));
 	}
 }

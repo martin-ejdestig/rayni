@@ -10,7 +10,7 @@ lib_unit_tests_sources = [
     'file_formats/image.cpp',
     'file_formats/jpeg.cpp',
     'file_formats/json.cpp',
-    'file_formats/ply_reader.cpp',
+    'file_formats/ply.cpp',
     'file_formats/png.cpp',
     'file_formats/tga.cpp',
     'file_formats/webp.cpp',

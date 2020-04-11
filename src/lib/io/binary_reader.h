@@ -24,12 +24,12 @@
 #include <cstdint>
 #include <limits>
 #include <optional>
+#include <stdexcept>
 #include <string>
 #include <type_traits>
 #include <utility>
 #include <vector>
 
-#include "lib/io/io_exception.h"
 #include "lib/system/memory_mapped_file.h"
 
 namespace Rayni
@@ -169,10 +169,15 @@ namespace Rayni
 		std::string position_prefix_;
 	};
 
-	class BinaryReader::Exception : public IOException
+	class BinaryReader::Exception : public std::runtime_error
 	{
 	public:
-		using IOException::IOException;
+		using std::runtime_error::runtime_error;
+
+		Exception(const std::string &prefix, const std::string &str) :
+		        std::runtime_error(prefix.empty() ? str : prefix + ": " + str)
+		{
+		}
 	};
 
 	template <typename T>

@@ -21,10 +21,10 @@
 #define RAYNI_LIB_IO_TEXT_READER_H
 
 #include <cstddef>
+#include <stdexcept>
 #include <string>
 #include <utility>
 
-#include "lib/io/io_exception.h"
 #include "lib/system/memory_mapped_file.h"
 
 namespace Rayni
@@ -147,12 +147,17 @@ namespace Rayni
 		Position position_;
 	};
 
-	class TextReader::Exception : public IOException
+	class TextReader::Exception : public std::runtime_error
 	{
 	public:
-		using IOException::IOException;
+		using std::runtime_error::runtime_error;
 
-		Exception(const Position &position, const std::string &str) : IOException(position.to_string(), str)
+		Exception(const Position &position, const std::string &str) : Exception(position.to_string(), str)
+		{
+		}
+
+		Exception(const std::string &prefix, const std::string &str) :
+		        Exception(prefix.empty() ? str : prefix + ": " + str)
 		{
 		}
 	};

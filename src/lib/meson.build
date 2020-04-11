@@ -46,7 +46,6 @@ lib_sources = [
     'io/binary_type_reader.h',
     'io/file.cpp',
     'io/file.h',
-    'io/io_exception.h',
     'io/text_reader.cpp',
     'io/text_reader.h',
     'io/text_type_reader.h',

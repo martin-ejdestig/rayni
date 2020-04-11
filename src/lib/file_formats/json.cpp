@@ -23,21 +23,19 @@
 #include <utility>
 
 #include "lib/containers/variant.h"
-#include "lib/io/text_type_reader.h"
+#include "lib/io/text_reader.h"
 #include "lib/string/string.h"
 
 namespace Rayni
 {
 	namespace
 	{
-		class JSONReader : public TextTypeReader<Variant>
+		class JSONReader : public TextReader
 		{
 		public:
-			using TextTypeReader<Variant>::read_string;
+			Variant read();
 
 		private:
-			Variant read() override;
-
 			Variant read_value();
 			Variant read_object();
 			Variant read_array();
@@ -250,7 +248,9 @@ namespace Rayni
 
 		try
 		{
-			variant = JSONReader().read_file(file_name);
+			JSONReader reader;
+			reader.open_file(file_name);
+			variant = reader.read();
 		}
 		catch (const JSONReader::Exception &e)
 		{
@@ -266,7 +266,9 @@ namespace Rayni
 
 		try
 		{
-			variant = JSONReader().read_string(std::move(string));
+			JSONReader reader;
+			reader.set_string(std::move(string));
+			variant = reader.read();
 		}
 		catch (const JSONReader::Exception &e)
 		{

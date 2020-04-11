@@ -27,7 +27,7 @@
 #include <utility>
 #include <vector>
 
-#include "lib/io/binary_type_reader.h"
+#include "lib/io/binary_reader.h"
 #include "lib/math/math.h"
 #include "lib/math/numeric_cast.h"
 #include "lib/math/vector3.h"
@@ -46,8 +46,11 @@ namespace Rayni
 	//       soon. Better code generated with an anon ns then?
 	namespace RemoveMe
 	{
-		class PLYReader : public BinaryTypeReader<TriangleMeshData>
+		class PLYReader : public BinaryReader
 		{
+		public:
+			TriangleMeshData read();
+
 		private:
 			enum class Format
 			{
@@ -61,8 +64,6 @@ namespace Rayni
 			struct Type;
 			struct Property;
 			struct Element;
-
-			TriangleMeshData read() override;
 
 			std::vector<Element> read_header();
 			void read_magic();
@@ -675,7 +676,9 @@ namespace Rayni
 
 		try
 		{
-			mesh_data = PLYReader().read_file(file_name);
+			PLYReader reader;
+			reader.open_file(file_name);
+			mesh_data = reader.read();
 		}
 		catch (const PLYReader::Exception &e)
 		{
@@ -692,7 +695,9 @@ namespace Rayni
 
 		try
 		{
-			mesh_data = PLYReader().read_data(std::move(data));
+			PLYReader reader;
+			reader.set_data(std::move(data));
+			mesh_data = reader.read();
 		}
 		catch (const PLYReader::Exception &e)
 		{

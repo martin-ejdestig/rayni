@@ -29,14 +29,17 @@
 #include "lib/function/result.h"
 #include "lib/graphics/color.h"
 #include "lib/graphics/image.h"
-#include "lib/io/binary_type_reader.h"
+#include "lib/io/binary_reader.h"
 
 namespace Rayni
 {
 	namespace
 	{
-		class TGAReader : public BinaryTypeReader<Image>
+		class TGAReader : public BinaryReader
 		{
+		public:
+			Image read();
+
 		private:
 			enum class ColorMapType : std::uint8_t
 			{
@@ -51,8 +54,6 @@ namespace Rayni
 				RGB = 2,
 				MONO = 3
 			};
-
-			Image read() override;
 
 			void read_header();
 			void read_color_map();
@@ -299,7 +300,9 @@ namespace Rayni
 
 		try
 		{
-			image = TGAReader().read_file(file_name);
+			TGAReader reader;
+			reader.open_file(file_name);
+			image = reader.read();
 		}
 		catch (const TGAReader::Exception &e)
 		{

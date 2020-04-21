@@ -95,7 +95,7 @@ namespace Rayni
 			return static_cast<std::size_t>(bytes_read);
 		}
 
-		std::size_t read_append_to_string(std::string &str)
+		std::size_t read_append_to_string(std::string &str) const
 		{
 			std::array<char, PIPE_BUF> buffer;
 			std::size_t bytes_read = read(buffer);

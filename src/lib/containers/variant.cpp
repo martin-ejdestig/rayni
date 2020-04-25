@@ -303,7 +303,7 @@ namespace Rayni
 		if (!parent_)
 			return "";
 
-		const std::string parent_path = parent_->path();
+		std::string parent_path = parent_->path();
 
 		if (parent_->is_map())
 			return parent_path + "['" + key_in_parent() + "']";

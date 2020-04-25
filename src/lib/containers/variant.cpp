@@ -56,70 +56,70 @@ namespace Rayni
 
 	Variant::Map &Variant::as_map()
 	{
-		if (auto v = std::get_if<Map>(&value_); v)
+		if (auto *v = std::get_if<Map>(&value_); v)
 			return *v;
 		throw Exception(*this, "expected map");
 	}
 
 	const Variant::Map &Variant::as_map() const
 	{
-		if (auto v = std::get_if<Map>(&value_); v)
+		if (const auto *v = std::get_if<Map>(&value_); v)
 			return *v;
 		throw Exception(*this, "expected map");
 	}
 
 	Variant::Vector &Variant::as_vector()
 	{
-		if (auto v = std::get_if<Vector>(&value_); v)
+		if (auto *v = std::get_if<Vector>(&value_); v)
 			return *v;
 		throw Exception(*this, "expected vector");
 	}
 
 	const Variant::Vector &Variant::as_vector() const
 	{
-		if (auto v = std::get_if<Vector>(&value_); v)
+		if (const auto *v = std::get_if<Vector>(&value_); v)
 			return *v;
 		throw Exception(*this, "expected vector");
 	}
 
 	const bool &Variant::as_bool() const
 	{
-		if (auto v = std::get_if<bool>(&value_); v)
+		if (const auto *v = std::get_if<bool>(&value_); v)
 			return *v;
 		throw Exception(*this, "expected bool");
 	}
 
 	const int &Variant::as_int() const
 	{
-		if (auto v = std::get_if<int>(&value_); v)
+		if (const auto *v = std::get_if<int>(&value_); v)
 			return *v;
 		throw Exception(*this, "expected int");
 	}
 
 	const unsigned int &Variant::as_unsigned_int() const
 	{
-		if (auto v = std::get_if<unsigned int>(&value_); v)
+		if (const auto *v = std::get_if<unsigned int>(&value_); v)
 			return *v;
 		throw Exception(*this, "expected unsigned int");
 	}
 
 	const float &Variant::as_float() const
 	{
-		if (auto v = std::get_if<float>(&value_); v)
+		if (const auto *v = std::get_if<float>(&value_); v)
 			return *v;
 		throw Exception(*this, "expected float");
 	}
 
 	const double &Variant::as_double() const
 	{
-		if (auto v = std::get_if<double>(&value_); v)
+		if (const auto *v = std::get_if<double>(&value_); v)
 			return *v;
 		throw Exception(*this, "expected double");
 	}
 
 	const std::string &Variant::as_string() const
 	{
-		if (auto v = std::get_if<std::string>(&value_); v)
+		if (const auto *v = std::get_if<std::string>(&value_); v)
 			return *v;
 		throw Exception(*this, "expected string");
 	}
@@ -263,7 +263,7 @@ namespace Rayni
 		std::string delimiter;
 		std::string str = "{ ";
 
-		for (auto &[key, value] : map)
+		for (const auto &[key, value] : map)
 		{
 			if (delimiter.empty())
 				delimiter = ", ";
@@ -283,7 +283,7 @@ namespace Rayni
 		std::string delimiter;
 		std::string str = "[ ";
 
-		for (auto &v : vector)
+		for (const auto &v : vector)
 		{
 			if (delimiter.empty())
 				delimiter = ", ";
@@ -318,7 +318,7 @@ namespace Rayni
 	{
 		assert(parent_ && parent_->is_map());
 
-		for (auto &[key, value] : parent_->as_map())
+		for (const auto &[key, value] : parent_->as_map())
 			if (&value == this)
 				return key;
 

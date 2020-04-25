@@ -79,7 +79,7 @@ namespace Rayni
 
 		void write_pixels(Image &image, const std::vector<Pixel> &pixels)
 		{
-			for (auto &pixel : pixels)
+			for (const auto &pixel : pixels)
 				image.write_pixel(pixel.x, pixel.y, pixel.color);
 		}
 

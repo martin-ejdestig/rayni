@@ -88,7 +88,7 @@ namespace Rayni
 
 		~ListenerList()
 		{
-			for (auto listener : listeners_)
+			for (auto *listener : listeners_)
 				listener->list_ = nullptr;
 		}
 
@@ -126,14 +126,14 @@ namespace Rayni
 		template <typename Method, typename... Args>
 		void notify(Method method, const Args &... args)
 		{
-			for (auto listener : listeners_)
+			for (auto *listener : listeners_)
 				(listener->*method)(args...);
 		}
 
 	private:
 		void update_listeners()
 		{
-			for (auto listener : listeners_)
+			for (auto *listener : listeners_)
 				listener->list_ = this;
 		}
 

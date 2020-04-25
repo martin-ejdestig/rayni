@@ -53,7 +53,7 @@ namespace Rayni
 
 	Transform Transform::from_variant_map(const Variant &v)
 	{
-		auto &map = v.as_map();
+		const auto &map = v.as_map();
 
 		if (map.size() != 1)
 			throw Variant::Exception(v, "transform map must contain a single key value pair");

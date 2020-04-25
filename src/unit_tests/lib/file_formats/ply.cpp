@@ -54,7 +54,7 @@ namespace Rayni
 
 		void append(PLYData &data, std::initializer_list<std::uint8_t> data_to_append)
 		{
-			for (auto &byte : data_to_append)
+			for (const auto &byte : data_to_append)
 				data.push_back(byte);
 		}
 

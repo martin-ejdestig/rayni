@@ -157,7 +157,7 @@ namespace Rayni
 
 			static bool has_property(const Element &element, Property::Name property_name)
 			{
-				for (auto &p : element.properties)
+				for (const auto &p : element.properties)
 					if (p.name == property_name)
 						return true;
 				return false;

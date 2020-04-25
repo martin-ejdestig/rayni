@@ -49,9 +49,9 @@ namespace Rayni
 				if (offset + magic.size() > file.size())
 					return false;
 
-				auto p = static_cast<const std::uint8_t *>(file.data()) + offset;
+				const auto *p = static_cast<const std::uint8_t *>(file.data()) + offset;
 
-				for (auto &byte : magic)
+				for (const auto &byte : magic)
 					if (byte != *p++)
 						return false;
 

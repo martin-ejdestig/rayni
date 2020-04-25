@@ -45,7 +45,7 @@ namespace Rayni
 
 		void error_exit(j_common_ptr jpeg_common)
 		{
-			auto error_manager = static_cast<ErrorManager *>(jpeg_common->err);
+			auto *error_manager = static_cast<ErrorManager *>(jpeg_common->err);
 
 			(*error_manager->output_message)(jpeg_common);
 

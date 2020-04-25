@@ -153,7 +153,7 @@ namespace Rayni
 		{
 			real_t norm = 0;
 
-			for (auto &row : rows_)
+			for (const auto &row : rows_)
 				norm = std::max(norm, std::abs(row.x()) + std::abs(row.y()) + std::abs(row.z()));
 
 			return norm;

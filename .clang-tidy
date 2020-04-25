@@ -8,9 +8,6 @@
 #   are called in a function marked noexcept. Unclear if the bug is in
 #   clang-tidy or libstdc++. TODO: Fixed? File bug(s)?
 #
-# - bugprone-suspicious-semicolon is broken with "if constexpr" in templates. See
-#   https://bugs.llvm.org/show_bug.cgi?id=35824 .
-#
 # - modernize-pass-by-value is disabled because it causes many "false" warnings
 #   and I have never really liked the recommendation in general. It is too
 #   broad. It also seems like the C++ community has swung around a bit on this
@@ -55,7 +52,6 @@
 Checks: "\
 bugprone-*,\
 -bugprone-exception-escape,\
--bugprone-suspicious-semicolon,\
 google-build-namespaces,\
 google-build-using-namespace,\
 google-default-arguments,\

@@ -30,215 +30,213 @@ namespace Rayni
 {
 	namespace
 	{
-		class JSONReader : public TextReader
+		using Exception = TextReader::Exception;
+
+		Variant read_value(TextReader &reader);
+
+		Variant read_string(TextReader &reader)
 		{
-		public:
-			Variant read();
+			if (!reader.skip_char('"'))
+				throw Exception(reader.position(), "expected start of string");
 
-		private:
-			Variant read_value();
-			Variant read_object();
-			Variant read_array();
-			Variant read_string();
-			Variant read_number();
-		};
+			std::string string;
 
-		Variant JSONReader::read()
-		{
-			Variant value = read_value();
-
-			while (!at_eof())
+			while (!reader.skip_char('\"'))
 			{
-				if (!at_space())
-					throw Exception(position(), "expected space or end of document");
+				if (reader.at_newline())
+					throw Exception(reader.position(), "missing string termination");
 
-				next();
+				if (reader.skip_char('\\'))
+				{
+					if (reader.skip_char('b'))
+						string += '\b';
+					else if (reader.skip_char('t'))
+						string += '\t';
+					else if (reader.skip_char('n'))
+						string += '\n';
+					else if (reader.skip_char('f'))
+						string += '\f';
+					else if (reader.skip_char('r'))
+						string += '\r';
+					else if (reader.skip_char('\"'))
+						string += '\"';
+					else if (reader.skip_char('/'))
+						string += '/';
+					else if (reader.skip_char('\\'))
+						string += '\\';
+					else if (reader.skip_char('u'))
+						throw Exception(reader.position(),
+						                "escaped code points currently not supported");
+					else
+						throw Exception(reader.position(), "invalid escape char");
+				}
+				else
+					string += reader.next_get();
 			}
 
-			return value;
+			return Variant(std::move(string));
 		}
 
-		Variant JSONReader::read_value()
+		Variant read_number(TextReader &reader)
 		{
-			skip_space();
+			if (!reader.at_digit() && !reader.at('-'))
+				throw Exception(reader.position(), "expected digit or -");
 
-			if (at('{'))
-				return read_object();
-			if (at('['))
-				return read_array();
-			if (at('"'))
-				return read_string();
-			if (at_digit() || at('-'))
-				return read_number();
-			if (skip_string("true"))
-				return Variant(true);
-			if (skip_string("false"))
-				return Variant(false);
-			if (skip_string("null"))
-				return Variant();
+			std::string number;
 
-			throw Exception(position(), "invalid value");
-		}
+			if (reader.at('-'))
+				number += reader.next_get();
 
-		Variant JSONReader::read_object()
-		{
-			if (!skip_char('{'))
-				throw Exception(position(), "expected start of object");
-
-			Variant::Map map;
-
-			skip_space();
-
-			while (!skip_char('}'))
+			if (reader.skip_char('0'))
 			{
-				Variant key = read_string();
+				number += '0';
+				if (reader.at_digit())
+					throw Exception(reader.position(), "number may not start with 0");
+			}
+			else if (!reader.at_digit())
+				throw Exception(reader.position(), "expected digit between 1-9");
 
-				if (map.find(key.as_string()) != map.cend())
-					throw Exception(position(), "duplicate key");
+			while (reader.at_digit())
+				number += reader.next_get();
 
-				skip_space();
-				if (!skip_char(':'))
-					throw Exception(position(), "expected :");
-
-				map.emplace(key.as_string(), read_value());
-
-				skip_space();
-
-				if (skip_char(','))
-				{
-					skip_space();
-					if (at('}'))
-						throw Exception(position(), "expected key instead of } after ,");
-				}
-				else if (!at('}'))
-				{
-					throw Exception(position(), "expected , or }");
-				}
+			if (reader.at('.'))
+			{
+				number += reader.next_get();
+				if (!reader.at_digit())
+					throw Exception(reader.position(), "expected digit");
+				while (reader.at_digit())
+					number += reader.next_get();
 			}
 
-			return Variant(std::move(map));
+			if (reader.at('e'))
+			{
+				number += reader.next_get();
+				if (reader.at('-') || reader.at('+'))
+					number += reader.next_get();
+				if (!reader.at_digit())
+					throw Exception(reader.position(), "expected digit");
+				while (reader.at_digit())
+					number += reader.next_get();
+			}
+
+			auto d = string_to_number<double>(number);
+			if (!d.has_value())
+				throw Exception(reader.position(), "number conversion failed");
+
+			return Variant(d.value());
 		}
 
-		Variant JSONReader::read_array()
+		Variant read_array(TextReader &reader)
 		{
-			if (!skip_char('['))
-				throw Exception(position(), "expected start of array");
+			if (!reader.skip_char('['))
+				throw Exception(reader.position(), "expected start of array");
 
 			Variant::Vector vector;
 
-			skip_space();
+			reader.skip_space();
 
-			while (!skip_char(']'))
+			while (!reader.skip_char(']'))
 			{
-				vector.emplace_back(read_value());
+				vector.emplace_back(read_value(reader));
 
-				skip_space();
+				reader.skip_space();
 
-				if (skip_char(','))
+				if (reader.skip_char(','))
 				{
-					skip_space();
-					if (at(']'))
-						throw Exception(position(), "expected value instead of ] after ,");
+					reader.skip_space();
+					if (reader.at(']'))
+						throw Exception(reader.position(),
+						                "expected value instead of ] after ,");
 				}
-				else if (!at(']'))
+				else if (!reader.at(']'))
 				{
-					throw Exception(position(), "expected , or ]");
+					throw Exception(reader.position(), "expected , or ]");
 				}
 			}
 
 			return Variant(std::move(vector));
 		}
 
-		Variant JSONReader::read_string()
+		Variant read_object(TextReader &reader)
 		{
-			if (!skip_char('"'))
-				throw Exception(position(), "expected start of string");
+			if (!reader.skip_char('{'))
+				throw Exception(reader.position(), "expected start of object");
 
-			std::string string;
+			Variant::Map map;
 
-			while (!skip_char('\"'))
+			reader.skip_space();
+
+			while (!reader.skip_char('}'))
 			{
-				if (at_newline())
-					throw Exception(position(), "missing string termination");
+				Variant key = read_string(reader);
 
-				if (skip_char('\\'))
+				if (map.find(key.as_string()) != map.cend())
+					throw Exception(reader.position(), "duplicate key");
+
+				reader.skip_space();
+				if (!reader.skip_char(':'))
+					throw Exception(reader.position(), "expected :");
+
+				map.emplace(key.as_string(), read_value(reader));
+
+				reader.skip_space();
+
+				if (reader.skip_char(','))
 				{
-					if (skip_char('b'))
-						string += '\b';
-					else if (skip_char('t'))
-						string += '\t';
-					else if (skip_char('n'))
-						string += '\n';
-					else if (skip_char('f'))
-						string += '\f';
-					else if (skip_char('r'))
-						string += '\r';
-					else if (skip_char('\"'))
-						string += '\"';
-					else if (skip_char('/'))
-						string += '/';
-					else if (skip_char('\\'))
-						string += '\\';
-					else if (skip_char('u'))
-						throw Exception(position(),
-						                "escaped code points currently not supported");
-					else
-						throw Exception(position(), "invalid escape char");
+					reader.skip_space();
+					if (reader.at('}'))
+						throw Exception(reader.position(), "expected key instead of } after ,");
 				}
-				else
-					string += next_get();
+				else if (!reader.at('}'))
+				{
+					throw Exception(reader.position(), "expected , or }");
+				}
 			}
 
-			return Variant(std::move(string));
+			return Variant(std::move(map));
 		}
 
-		Variant JSONReader::read_number()
+		Variant read_value(TextReader &reader)
 		{
-			if (!at_digit() && !at('-'))
-				throw Exception(position(), "expected digit or -");
+			reader.skip_space();
 
-			std::string number;
+			if (reader.at('{'))
+				return read_object(reader);
 
-			if (at('-'))
-				number += next_get();
+			if (reader.at('['))
+				return read_array(reader);
 
-			if (skip_char('0'))
+			if (reader.at('"'))
+				return read_string(reader);
+
+			if (reader.at_digit() || reader.at('-'))
+				return read_number(reader);
+
+			if (reader.skip_string("true"))
+				return Variant(true);
+
+			if (reader.skip_string("false"))
+				return Variant(false);
+
+			if (reader.skip_string("null"))
+				return Variant();
+
+			throw Exception(reader.position(), "invalid value");
+		}
+
+		Variant read_document(TextReader &reader)
+		{
+			Variant value = read_value(reader);
+
+			while (!reader.at_eof())
 			{
-				number += '0';
-				if (at_digit())
-					throw Exception(position(), "number may not start with 0");
-			}
-			else if (!at_digit())
-				throw Exception(position(), "expected digit between 1-9");
+				if (!reader.at_space())
+					throw Exception(reader.position(), "expected space or end of document");
 
-			while (at_digit())
-				number += next_get();
-
-			if (at('.'))
-			{
-				number += next_get();
-				if (!at_digit())
-					throw Exception(position(), "expected digit");
-				while (at_digit())
-					number += next_get();
-			}
-
-			if (at('e'))
-			{
-				number += next_get();
-				if (at('-') || at('+'))
-					number += next_get();
-				if (!at_digit())
-					throw Exception(position(), "expected digit");
-				while (at_digit())
-					number += next_get();
+				reader.next();
 			}
 
-			auto d = string_to_number<double>(number);
-			if (!d.has_value())
-				throw Exception(position(), "number conversion failed");
-
-			return Variant(d.value());
+			return value;
 		}
 	}
 
@@ -248,11 +246,11 @@ namespace Rayni
 
 		try
 		{
-			JSONReader reader;
+			TextReader reader;
 			reader.open_file(file_name);
-			variant = reader.read();
+			variant = read_document(reader);
 		}
-		catch (const JSONReader::Exception &e)
+		catch (const TextReader::Exception &e)
 		{
 			return Error(e.what());
 		}
@@ -266,11 +264,11 @@ namespace Rayni
 
 		try
 		{
-			JSONReader reader;
+			TextReader reader;
 			reader.set_string(std::move(string));
-			variant = reader.read();
+			variant = read_document(reader);
 		}
-		catch (const JSONReader::Exception &e)
+		catch (const TextReader::Exception &e)
 		{
 			return Error(e.what());
 		}

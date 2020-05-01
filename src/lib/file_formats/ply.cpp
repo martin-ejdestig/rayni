@@ -35,75 +35,26 @@
 
 namespace Rayni
 {
-	// TODO: Loading Lucy with PLYReader in anon ns takes ~2.78s while it
-	//       only takes ~2.38s when commenting out the anon ns (same as
+	// TODO: Loading Lucy with PLYReader in anon ns takes ~2.91s while it
+	//       only takes ~2.34s when commenting out the anon ns (same as
 	//       when PLYReader was in .h and the public facing API) or just
 	//       giving the ns a name. Why?!?!? Why is so much slower code
 	//       generated. More inlining that hits instruction cache in a bad
 	//       way? Something else? What is GCC doing here? *sigh* Need to
 	//       add some method annotations or change some compiler flags?
-	//       Better in GCC 10 (soon to be released)? Will remove PLYReader
-	//       soon. Better code generated with an anon ns then?
+	//       Better in GCC 10 (soon to be released)?
 	namespace RemoveMe
 	{
-		class PLYReader : public BinaryReader
+		using Exception = BinaryReader::Exception;
+
+		enum class Format
 		{
-		public:
-			TriangleMeshData read();
-
-		private:
-			enum class Format
-			{
-				ASCII,
-				BINARY_BIG_ENDIAN,
-				BINARY_LITTLE_ENDIAN
-			};
-
-			enum class BasicType;
-
-			struct Type;
-			struct Property;
-			struct Element;
-
-			std::vector<Element> read_header();
-			void read_magic();
-			void read_format();
-			void skip_comment();
-
-			Element read_element();
-			Property read_property(const Element &element);
-			Type read_type();
-
-			TriangleMeshData read_mesh_data(const std::vector<Element> &elements);
-			void read_vertex_data(const Element &element, TriangleMeshData &data);
-			void read_face_data(const Element &element, TriangleMeshData &data);
-			void skip_unknown_data(const Element &element);
-
-			template <typename T>
-			T read_value(const Type &type);
-
-			template <typename T>
-			void read_list_value(const Type &type, std::vector<T> &dest);
-
-			template <typename T>
-			T read_value(BasicType basic_type);
-
-			void skip_value(const Type &type);
-
-			template <typename T>
-			T read_number();
-
-			template <typename T>
-			T read_ascii_number();
-
-			std::string read_word();
-			void skip_word();
-			void skip_space();
-
-			Format format_ = Format::ASCII;
+			ASCII,
+			BINARY_BIG_ENDIAN,
+			BINARY_LITTLE_ENDIAN
 		};
 
-		enum class PLYReader::BasicType
+		enum class BasicType
 		{
 			INT8,
 			UINT8,
@@ -115,14 +66,14 @@ namespace Rayni
 			FLOAT64
 		};
 
-		struct PLYReader::Type
+		struct Type
 		{
 			BasicType basic_type = BasicType::INT8;
 			BasicType list_size_type = BasicType::INT8;
 			bool is_list = false;
 		};
 
-		struct PLYReader::Property
+		struct Property
 		{
 			enum class Name
 			{
@@ -144,7 +95,7 @@ namespace Rayni
 			Name name = Name::UNKNOWN;
 		};
 
-		struct PLYReader::Element
+		struct Element
 		{
 			enum class Name
 			{
@@ -168,173 +119,72 @@ namespace Rayni
 			std::vector<Property> properties;
 		};
 
-		TriangleMeshData PLYReader::read()
+		struct Header
 		{
-			std::vector<Element> elements = read_header();
-
-			return read_mesh_data(elements);
-		}
-
-		std::vector<PLYReader::Element> PLYReader::read_header()
-		{
-			read_magic();
-			read_format();
-
-			std::vector<Element> elements;
-			auto elements_has = [&](Element::Name name) {
-				for (const auto &e : elements)
+			static bool has_element(const Header &header, Element::Name name)
+			{
+				for (const auto &e : header.elements)
 					if (e.name == name)
 						return true;
 				return false;
-			};
-
-			while (true)
-			{
-				std::string keyword = read_word();
-
-				if (keyword == "comment")
-				{
-					skip_comment();
-				}
-				else if (keyword == "element")
-				{
-					Element element = read_element();
-
-					if (element.name != Element::Name::UNKNOWN && elements_has(element.name))
-						throw Exception(position(), "duplicate element in header");
-
-					elements.emplace_back(element);
-				}
-				else if (keyword == "property")
-				{
-					if (elements.empty())
-						throw Exception(position(),
-						                "property found in header before any element");
-
-					Element &element = elements.back();
-					Property property = read_property(element);
-
-					if (property.name != Property::Name::UNKNOWN &&
-					    Element::has_property(element, property.name))
-						throw Exception(position(), "duplicate property for element");
-
-					element.properties.emplace_back(property);
-				}
-				else if (keyword == "end_header")
-				{
-					break;
-				}
-				else
-				{
-					throw Exception(position(), "unknown header keyword: \"" + keyword + "\"");
-				}
 			}
 
-			if (!elements_has(Element::Name::VERTEX))
-				throw Exception(position(), "missing vertex element in header");
+			Format format = Format::ASCII;
+			std::vector<Element> elements;
+		};
 
-			if (!elements_has(Element::Name::FACE))
-				throw Exception(position(), "missing face element in header");
+		void skip_space(BinaryReader &reader)
+		{
+			while (true)
+			{
+				std::optional<std::int8_t> c = reader.peek_int8();
 
-			for (const auto &element : elements)
-				if (element.properties.empty())
-					throw Exception(position(), "element without properties in header");
+				if (!c.has_value() || (c.value() != ' ' && c.value() != '\n'))
+					break;
 
-			return elements;
+				reader.read_int8();
+			}
 		}
 
-		void PLYReader::read_magic()
+		void skip_comment(BinaryReader &reader)
 		{
-			const std::array<std::uint8_t, 4> expected_magic = {'p', 'l', 'y', '\n'};
-			std::array<std::uint8_t, 4> magic;
-
-			read_bytes(magic);
-
-			if (magic != expected_magic)
-				throw Exception(position(), R"(header must start with "ply\n")");
-		}
-
-		void PLYReader::read_format()
-		{
-			if (read_word() != "format")
-				throw Exception(position(), "expected \"format\"");
-
-			std::string format_str = read_word();
-
-			if (format_str == "ascii")
-				format_ = Format::ASCII;
-			else if (format_str == "binary_big_endian")
-				format_ = Format::BINARY_BIG_ENDIAN;
-			else if (format_str == "binary_little_endian")
-				format_ = Format::BINARY_LITTLE_ENDIAN;
-			else
-				throw Exception(position(), "unknown format type: \"" + format_str + "\"");
-
-			std::string version = read_word();
-
-			if (version != "1.0")
-				throw Exception(position(), "unknown version: \"" + version + "\"");
-		}
-
-		void PLYReader::skip_comment()
-		{
-			while (read_int8() != '\n')
+			while (reader.read_int8() != '\n')
 				;
 		}
 
-		PLYReader::Element PLYReader::read_element()
+		void skip_word(BinaryReader &reader)
 		{
-			Element element;
+			skip_space(reader);
 
-			std::string name = read_word();
-			if (name == "vertex")
-				element.name = Element::Name::VERTEX;
-			else if (name == "face")
-				element.name = Element::Name::FACE;
+			while (true)
+			{
+				std::int8_t c = reader.read_int8();
 
-			element.count = read_ascii_number<Element::Count>();
-
-			return element;
+				if (c == ' ' || c == '\n')
+					break;
+			}
 		}
 
-		PLYReader::Property PLYReader::read_property(const Element &element)
+		std::string read_word(BinaryReader &reader)
 		{
-			Property property;
+			std::string word;
 
-			property.type = read_type();
-			std::string name = read_word();
+			skip_space(reader);
 
-			if (element.name == Element::Name::VERTEX)
+			while (true)
 			{
-				// Only x, y, z is mentioned in original spec. Have seen all others below
-				// in .ply files though. Annoying with different names for same properties.
-				if (name == "x")
-					property.name = Property::Name::VERTEX_X;
-				else if (name == "y")
-					property.name = Property::Name::VERTEX_Y;
-				else if (name == "z")
-					property.name = Property::Name::VERTEX_Z;
-				else if (name == "nx")
-					property.name = Property::Name::VERTEX_NORMAL_X;
-				else if (name == "ny")
-					property.name = Property::Name::VERTEX_NORMAL_Y;
-				else if (name == "nz")
-					property.name = Property::Name::VERTEX_NORMAL_Z;
-				else if (name == "u" || name == "s" || name == "texture_u" || name == "texture_s")
-					property.name = Property::Name::VERTEX_U;
-				else if (name == "v" || name == "t" || name == "texture_v" || name == "texture_t")
-					property.name = Property::Name::VERTEX_V;
-			}
-			else if (element.name == Element::Name::FACE)
-			{
-				if (name == "vertex_indices")
-					property.name = Property::Name::VERTEX_INDICES;
+				std::int8_t c = reader.read_int8();
+
+				if (c == ' ' || c == '\n')
+					break;
+
+				word += c;
 			}
 
-			return property;
+			return word;
 		}
 
-		PLYReader::Type PLYReader::read_type()
+		Type read_type(BinaryReader &reader)
 		{
 			auto str_to_basic_type = [&](const std::string &str) {
 				if (str == "int8" || str == "char")
@@ -354,10 +204,10 @@ namespace Rayni
 				if (str == "float64" || str == "double")
 					return BasicType::FLOAT64;
 
-				throw Exception(position(), "unknown type \"" + str + "\"");
+				throw Exception(reader.position(), "unknown type \"" + str + "\"");
 			};
 
-			std::string str = read_word();
+			std::string str = read_word(reader);
 			Type type;
 
 			if (str != "list")
@@ -366,214 +216,108 @@ namespace Rayni
 			}
 			else
 			{
-				type.list_size_type = str_to_basic_type(read_word());
-				type.basic_type = str_to_basic_type(read_word());
+				type.list_size_type = str_to_basic_type(read_word(reader));
+				type.basic_type = str_to_basic_type(read_word(reader));
 				type.is_list = true;
 			}
 
 			return type;
 		}
 
-		TriangleMeshData PLYReader::read_mesh_data(const std::vector<Element> &elements)
+		template <typename T>
+		T read_ascii_number(BinaryReader &reader)
 		{
-			TriangleMeshData data;
+			auto v = string_to_number<T>(read_word(reader));
 
-			for (const Element &element : elements)
-			{
-				if (element.name == Element::Name::VERTEX)
-					read_vertex_data(element, data);
-				else if (element.name == Element::Name::FACE)
-					read_face_data(element, data);
-				else
-					skip_unknown_data(element);
-			}
+			if (!v.has_value())
+				throw Exception(reader.position(), "failed to convert string to number");
 
-			if (data.points.size() < 3)
-				throw Exception(position(), "number of vertices must be at least 3");
-
-			if (data.indices.empty())
-				throw Exception(position(), "missing indices");
-
-			auto max_index = data.points.size() - 1;
-
-			for (auto &indices : data.indices)
-				if (indices.index1 > max_index || indices.index2 > max_index ||
-				    indices.index3 > max_index)
-					throw Exception(position(),
-					                "invalid indices (" + std::to_string(indices.index1) + ", " +
-					                        std::to_string(indices.index2) + ", " +
-					                        std::to_string(indices.index3) + ")" +
-					                        ", max allowed: " + std::to_string(max_index));
-
-			return data;
-		}
-
-		void PLYReader::read_vertex_data(const Element &element, TriangleMeshData &data)
-		{
-			bool has_uvs = Element::has_property(element, Property::Name::VERTEX_U) ||
-			               Element::has_property(element, Property::Name::VERTEX_V);
-			bool has_normals = Element::has_property(element, Property::Name::VERTEX_NORMAL_X) ||
-			                   Element::has_property(element, Property::Name::VERTEX_NORMAL_Y) ||
-			                   Element::has_property(element, Property::Name::VERTEX_NORMAL_Z);
-			Vector3 point;
-			Vector3 normal;
-			TriangleMeshData::UV uv;
-
-			data.points.reserve(element.count);
-			if (has_normals)
-				data.normals.reserve(element.count);
-			if (has_uvs)
-				data.uvs.reserve(element.count);
-
-			for (Element::Count i = 0; i < element.count; i++)
-			{
-				for (const Property &property : element.properties)
-				{
-					if (property.name == Property::Name::VERTEX_X)
-						point.x() = read_value<real_t>(property.type);
-					else if (property.name == Property::Name::VERTEX_Y)
-						point.y() = read_value<real_t>(property.type);
-					else if (property.name == Property::Name::VERTEX_Z)
-						point.z() = read_value<real_t>(property.type);
-					else if (property.name == Property::Name::VERTEX_NORMAL_X)
-						normal.x() = read_value<real_t>(property.type);
-					else if (property.name == Property::Name::VERTEX_NORMAL_Y)
-						normal.y() = read_value<real_t>(property.type);
-					else if (property.name == Property::Name::VERTEX_NORMAL_Z)
-						normal.z() = read_value<real_t>(property.type);
-					else if (property.name == Property::Name::VERTEX_U)
-						uv.u = read_value<real_t>(property.type);
-					else if (property.name == Property::Name::VERTEX_V)
-						uv.v = read_value<real_t>(property.type);
-					else
-						skip_value(property.type);
-				}
-
-				data.points.emplace_back(point);
-				if (has_normals)
-					data.normals.emplace_back(normal);
-				if (has_uvs)
-					data.uvs.emplace_back(uv);
-			}
-		}
-
-		void PLYReader::read_face_data(const Element &element, TriangleMeshData &data)
-		{
-			std::vector<TriangleMeshData::Index> indices;
-
-			data.indices.reserve(element.count);
-
-			for (Element::Count i = 0; i < element.count; i++)
-			{
-				for (const Property &property : element.properties)
-				{
-					if (property.name == Property::Name::VERTEX_INDICES)
-					{
-						read_list_value<TriangleMeshData::Index>(property.type, indices);
-
-						if (indices.size() < 3)
-							throw Exception(position(),
-							                "face element must have at least 3 indices");
-
-						TriangleMeshData::Index i1 = indices[0];
-						TriangleMeshData::Index i2 = 0;
-						TriangleMeshData::Index i3 = indices[1];
-
-						for (std::size_t j = 2; j < indices.size(); j++)
-						{
-							i2 = i3;
-							i3 = indices[j];
-							data.indices.emplace_back(i1, i2, i3);
-						}
-					}
-					else
-					{
-						skip_value(property.type);
-					}
-				}
-			}
-		}
-
-		void PLYReader::skip_unknown_data(const Element &element)
-		{
-			for (Element::Count i = 0; i < element.count; i++)
-				for (const Property &property : element.properties)
-					skip_value(property.type);
+			return v.value();
 		}
 
 		template <typename T>
-		T PLYReader::read_value(const Type &type)
+		T read_number(BinaryReader &reader, const Header &header)
 		{
-			if (type.is_list)
-				throw Exception(position(), "unexpected list value, expected scalar");
+			if (header.format == Format::ASCII)
+				return read_ascii_number<T>(reader);
 
-			return read_value<T>(type.basic_type);
+			return header.format == Format::BINARY_BIG_ENDIAN ? reader.read_big_endian<T>() :
+			                                                    reader.read_little_endian<T>();
 		}
 
 		template <typename T>
-		void PLYReader::read_list_value(const Type &type, std::vector<T> &dest)
-		{
-			if (!type.is_list)
-				throw Exception(position(), "unexpected scalar value, expected list");
-
-			std::size_t count = read_value<std::uint32_t>(type.list_size_type);
-			dest.clear(); // Assume capacity() is left unchanged and memory is reused.
-			dest.reserve(count);
-
-			for (std::size_t i = 0; i < count; i++)
-				dest.emplace_back(read_value<T>(type.basic_type));
-		}
-
-		template <typename T>
-		T PLYReader::read_value(BasicType basic_type)
+		T read_number(BinaryReader &reader, const Header &header, BasicType basic_type)
 		{
 			std::optional<T> value = 0;
 
 			switch (basic_type)
 			{
 			case BasicType::INT8:
-				value = numeric_cast<T>(read_number<std::int8_t>());
+				value = numeric_cast<T>(read_number<std::int8_t>(reader, header));
 				break;
 			case BasicType::UINT8:
-				value = numeric_cast<T>(read_number<std::uint8_t>());
+				value = numeric_cast<T>(read_number<std::uint8_t>(reader, header));
 				break;
 			case BasicType::INT16:
-				value = numeric_cast<T>(read_number<std::int16_t>());
+				value = numeric_cast<T>(read_number<std::int16_t>(reader, header));
 				break;
 			case BasicType::UINT16:
-				value = numeric_cast<T>(read_number<std::uint16_t>());
+				value = numeric_cast<T>(read_number<std::uint16_t>(reader, header));
 				break;
 			case BasicType::INT32:
-				value = numeric_cast<T>(read_number<std::int32_t>());
+				value = numeric_cast<T>(read_number<std::int32_t>(reader, header));
 				break;
 			case BasicType::UINT32:
-				value = numeric_cast<T>(read_number<std::uint32_t>());
+				value = numeric_cast<T>(read_number<std::uint32_t>(reader, header));
 				break;
 			case BasicType::FLOAT32:
-				value = numeric_cast<T>(read_number<float>());
+				value = numeric_cast<T>(read_number<float>(reader, header));
 				break;
 			case BasicType::FLOAT64:
-				value = numeric_cast<T>(read_number<double>());
+				value = numeric_cast<T>(read_number<double>(reader, header));
 				break;
 			}
 
 			if (!value)
-				throw Exception(position(), "value out of range");
+				throw Exception(reader.position(), "value out of range");
 
 			return *value;
 		}
 
-		void PLYReader::skip_value(const Type &type)
+		template <typename T>
+		T read_number(BinaryReader &reader, const Header &header, const Type &type)
+		{
+			if (type.is_list)
+				throw Exception(reader.position(), "unexpected list value, expected scalar");
+
+			return read_number<T>(reader, header, type.basic_type);
+		}
+
+		template <typename T>
+		void read_list(BinaryReader &reader, const Header &header, const Type &type, std::vector<T> &dest)
+		{
+			if (!type.is_list)
+				throw Exception(reader.position(), "unexpected scalar value, expected list");
+
+			std::size_t count = read_number<std::uint32_t>(reader, header, type.list_size_type);
+			dest.clear(); // Assume capacity() is left unchanged and memory is reused.
+			dest.reserve(count);
+
+			for (std::size_t i = 0; i < count; i++)
+				dest.emplace_back(read_number<T>(reader, header, type.basic_type));
+		}
+
+		void skip_value(BinaryReader &reader, const Header &header, const Type &type)
 		{
 			std::size_t count = 1;
 
 			if (type.is_list)
-				count = read_value<std::uint32_t>(type.list_size_type);
+				count = read_number<std::uint32_t>(reader, header, type.list_size_type);
 
-			if (format_ == Format::ASCII)
+			if (header.format == Format::ASCII)
 			{
 				for (std::size_t i = 0; i < count; i++)
-					skip_word();
+					skip_word(reader);
 			}
 			else
 			{
@@ -599,73 +343,303 @@ namespace Rayni
 					break;
 				}
 
-				skip_bytes(basic_type_size * count);
+				reader.skip_bytes(basic_type_size * count);
 			}
 		}
 
-		template <typename T>
-		T PLYReader::read_number()
+		void read_magic(BinaryReader &reader)
 		{
-			if (format_ == Format::ASCII)
-				return read_ascii_number<T>();
+			const std::array<std::uint8_t, 4> expected_magic = {'p', 'l', 'y', '\n'};
+			std::array<std::uint8_t, 4> magic;
 
-			return format_ == Format::BINARY_BIG_ENDIAN ? read_big_endian<T>() : read_little_endian<T>();
+			reader.read_bytes(magic);
+
+			if (magic != expected_magic)
+				throw Exception(reader.position(), R"(header must start with "ply\n")");
 		}
 
-		template <typename T>
-		T PLYReader::read_ascii_number()
+		Format read_format(BinaryReader &reader)
 		{
-			auto v = string_to_number<T>(read_word());
+			if (read_word(reader) != "format")
+				throw Exception(reader.position(), "expected \"format\"");
 
-			if (!v.has_value())
-				throw Exception(position(), "failed to convert string to number");
+			std::string format_str = read_word(reader);
+			Format format;
 
-			return v.value();
+			if (format_str == "ascii")
+				format = Format::ASCII;
+			else if (format_str == "binary_big_endian")
+				format = Format::BINARY_BIG_ENDIAN;
+			else if (format_str == "binary_little_endian")
+				format = Format::BINARY_LITTLE_ENDIAN;
+			else
+				throw Exception(reader.position(), "unknown format type: \"" + format_str + "\"");
+
+			std::string version = read_word(reader);
+
+			if (version != "1.0")
+				throw Exception(reader.position(), "unknown version: \"" + version + "\"");
+
+			return format;
 		}
 
-		std::string PLYReader::read_word()
+		Element read_element(BinaryReader &reader)
 		{
-			std::string word;
+			Element element;
 
-			skip_space();
+			std::string name = read_word(reader);
+			if (name == "vertex")
+				element.name = Element::Name::VERTEX;
+			else if (name == "face")
+				element.name = Element::Name::FACE;
+
+			element.count = read_ascii_number<Element::Count>(reader);
+
+			return element;
+		}
+
+		Property read_property(BinaryReader &reader, Element::Name element_name)
+		{
+			Property property;
+
+			property.type = read_type(reader);
+			std::string name = read_word(reader);
+
+			if (element_name == Element::Name::VERTEX)
+			{
+				// Only x, y, z is mentioned in original spec. Have seen all others below
+				// in .ply files though. Annoying with different names for same properties.
+				if (name == "x")
+					property.name = Property::Name::VERTEX_X;
+				else if (name == "y")
+					property.name = Property::Name::VERTEX_Y;
+				else if (name == "z")
+					property.name = Property::Name::VERTEX_Z;
+				else if (name == "nx")
+					property.name = Property::Name::VERTEX_NORMAL_X;
+				else if (name == "ny")
+					property.name = Property::Name::VERTEX_NORMAL_Y;
+				else if (name == "nz")
+					property.name = Property::Name::VERTEX_NORMAL_Z;
+				else if (name == "u" || name == "s" || name == "texture_u" || name == "texture_s")
+					property.name = Property::Name::VERTEX_U;
+				else if (name == "v" || name == "t" || name == "texture_v" || name == "texture_t")
+					property.name = Property::Name::VERTEX_V;
+			}
+			else if (element_name == Element::Name::FACE)
+			{
+				if (name == "vertex_indices")
+					property.name = Property::Name::VERTEX_INDICES;
+			}
+
+			return property;
+		}
+
+		Header read_header(BinaryReader &reader)
+		{
+			Header header;
+
+			read_magic(reader);
+			header.format = read_format(reader);
 
 			while (true)
 			{
-				std::int8_t c = read_int8();
+				std::string keyword = read_word(reader);
 
-				if (c == ' ' || c == '\n')
+				if (keyword == "comment")
+				{
+					skip_comment(reader);
+				}
+				else if (keyword == "element")
+				{
+					Element element = read_element(reader);
+
+					if (element.name != Element::Name::UNKNOWN &&
+					    Header::has_element(header, element.name))
+						throw Exception(reader.position(), "duplicate element in header");
+
+					header.elements.emplace_back(element);
+				}
+				else if (keyword == "property")
+				{
+					if (header.elements.empty())
+						throw Exception(reader.position(),
+						                "property found in header before any element");
+
+					Element &element = header.elements.back();
+					Property property = read_property(reader, element.name);
+
+					if (property.name != Property::Name::UNKNOWN &&
+					    Element::has_property(element, property.name))
+						throw Exception(reader.position(), "duplicate property for element");
+
+					element.properties.emplace_back(property);
+				}
+				else if (keyword == "end_header")
+				{
 					break;
-
-				word += c;
+				}
+				else
+				{
+					throw Exception(reader.position(),
+					                "unknown header keyword: \"" + keyword + "\"");
+				}
 			}
 
-			return word;
+			if (!Header::has_element(header, Element::Name::VERTEX))
+				throw Exception(reader.position(), "missing vertex element in header");
+
+			if (!Header::has_element(header, Element::Name::FACE))
+				throw Exception(reader.position(), "missing face element in header");
+
+			for (const auto &element : header.elements)
+				if (element.properties.empty())
+					throw Exception(reader.position(), "element without properties in header");
+
+			return header;
 		}
 
-		void PLYReader::skip_word()
+		void read_vertex_data(BinaryReader &reader,
+		                      const Header &header,
+		                      const Element &element,
+		                      TriangleMeshData &data)
 		{
-			skip_space();
+			bool has_uvs = Element::has_property(element, Property::Name::VERTEX_U) ||
+			               Element::has_property(element, Property::Name::VERTEX_V);
+			bool has_normals = Element::has_property(element, Property::Name::VERTEX_NORMAL_X) ||
+			                   Element::has_property(element, Property::Name::VERTEX_NORMAL_Y) ||
+			                   Element::has_property(element, Property::Name::VERTEX_NORMAL_Z);
+			Vector3 point;
+			Vector3 normal;
+			TriangleMeshData::UV uv;
 
-			while (true)
+			data.points.reserve(element.count);
+			if (has_normals)
+				data.normals.reserve(element.count);
+			if (has_uvs)
+				data.uvs.reserve(element.count);
+
+			for (Element::Count i = 0; i < element.count; i++)
 			{
-				std::int8_t c = read_int8();
+				for (const Property &property : element.properties)
+				{
+					if (property.name == Property::Name::VERTEX_X)
+						point.x() = read_number<real_t>(reader, header, property.type);
+					else if (property.name == Property::Name::VERTEX_Y)
+						point.y() = read_number<real_t>(reader, header, property.type);
+					else if (property.name == Property::Name::VERTEX_Z)
+						point.z() = read_number<real_t>(reader, header, property.type);
+					else if (property.name == Property::Name::VERTEX_NORMAL_X)
+						normal.x() = read_number<real_t>(reader, header, property.type);
+					else if (property.name == Property::Name::VERTEX_NORMAL_Y)
+						normal.y() = read_number<real_t>(reader, header, property.type);
+					else if (property.name == Property::Name::VERTEX_NORMAL_Z)
+						normal.z() = read_number<real_t>(reader, header, property.type);
+					else if (property.name == Property::Name::VERTEX_U)
+						uv.u = read_number<real_t>(reader, header, property.type);
+					else if (property.name == Property::Name::VERTEX_V)
+						uv.v = read_number<real_t>(reader, header, property.type);
+					else
+						skip_value(reader, header, property.type);
+				}
 
-				if (c == ' ' || c == '\n')
-					break;
+				data.points.emplace_back(point);
+				if (has_normals)
+					data.normals.emplace_back(normal);
+				if (has_uvs)
+					data.uvs.emplace_back(uv);
 			}
 		}
 
-		void PLYReader::skip_space()
+		void read_face_data(BinaryReader &reader,
+		                    const Header &header,
+		                    const Element &element,
+		                    TriangleMeshData &data)
 		{
-			while (true)
+			std::vector<TriangleMeshData::Index> indices;
+
+			data.indices.reserve(element.count);
+
+			for (Element::Count i = 0; i < element.count; i++)
 			{
-				std::optional<std::int8_t> c = peek_int8();
+				for (const Property &property : element.properties)
+				{
+					if (property.name == Property::Name::VERTEX_INDICES)
+					{
+						read_list<TriangleMeshData::Index>(reader,
+						                                   header,
+						                                   property.type,
+						                                   indices);
+						if (indices.size() < 3)
+							throw Exception(reader.position(),
+							                "face element must have at least 3 indices");
 
-				if (!c.has_value() || (c.value() != ' ' && c.value() != '\n'))
-					break;
+						TriangleMeshData::Index i1 = indices[0];
+						TriangleMeshData::Index i2 = 0;
+						TriangleMeshData::Index i3 = indices[1];
 
-				read_int8();
+						for (std::size_t j = 2; j < indices.size(); j++)
+						{
+							i2 = i3;
+							i3 = indices[j];
+							data.indices.emplace_back(i1, i2, i3);
+						}
+					}
+					else
+					{
+						skip_value(reader, header, property.type);
+					}
+				}
 			}
+		}
+
+		TriangleMeshData read_mesh_data(BinaryReader &reader, const Header &header)
+		{
+			TriangleMeshData data;
+
+			for (const Element &element : header.elements)
+			{
+				if (element.name == Element::Name::VERTEX)
+				{
+					read_vertex_data(reader, header, element, data);
+				}
+				else if (element.name == Element::Name::FACE)
+				{
+					read_face_data(reader, header, element, data);
+				}
+				else
+				{
+					for (Element::Count i = 0; i < element.count; i++)
+						for (const Property &property : element.properties)
+							skip_value(reader, header, property.type);
+				}
+			}
+
+			if (data.points.size() < 3)
+				throw Exception(reader.position(), "number of vertices must be at least 3");
+
+			if (data.indices.empty())
+				throw Exception(reader.position(), "missing indices");
+
+			auto max_index = data.points.size() - 1;
+
+			for (auto &indices : data.indices)
+				if (indices.index1 > max_index || indices.index2 > max_index ||
+				    indices.index3 > max_index)
+					throw Exception(reader.position(),
+					                "invalid indices (" + std::to_string(indices.index1) + ", " +
+					                        std::to_string(indices.index2) + ", " +
+					                        std::to_string(indices.index3) + ")" +
+					                        ", max allowed: " + std::to_string(max_index));
+
+			return data;
+		}
+
+		TriangleMeshData read_ply(BinaryReader &reader)
+		{
+			Header header = read_header(reader);
+
+			return read_mesh_data(reader, header);
 		}
 	}
 
@@ -676,11 +650,11 @@ namespace Rayni
 
 		try
 		{
-			PLYReader reader;
+			BinaryReader reader;
 			reader.open_file(file_name);
-			mesh_data = reader.read();
+			mesh_data = read_ply(reader);
 		}
-		catch (const PLYReader::Exception &e)
+		catch (const BinaryReader::Exception &e)
 		{
 			return Error(e.what());
 		}
@@ -695,11 +669,11 @@ namespace Rayni
 
 		try
 		{
-			PLYReader reader;
+			BinaryReader reader;
 			reader.set_data(std::move(data));
-			mesh_data = reader.read();
+			mesh_data = read_ply(reader);
 		}
-		catch (const PLYReader::Exception &e)
+		catch (const BinaryReader::Exception &e)
 		{
 			return Error(e.what());
 		}

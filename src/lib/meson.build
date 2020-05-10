@@ -47,6 +47,8 @@ lib_sources = [
     'io/file.h',
     'io/text_reader.cpp',
     'io/text_reader.h',
+    'log.cpp',
+    'log.h',
     'math/aabb.h',
     'math/animated_transform.cpp',
     'math/animated_transform.h',

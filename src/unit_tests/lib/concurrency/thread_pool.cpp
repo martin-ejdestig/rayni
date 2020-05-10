@@ -23,7 +23,6 @@
 
 #include <array>
 #include <atomic>
-#include <exception>
 #include <functional>
 #include <future>
 #include <utility>
@@ -42,11 +41,6 @@ namespace Rayni
 	TEST(ThreadPool, DefaultSizeGreaterThanZero)
 	{
 		EXPECT_GT(ThreadPool::default_size(), 0);
-	}
-
-	TEST(ThreadPool, ZeroSizeNotAllowed)
-	{
-		EXPECT_THROW(ThreadPool(0), std::invalid_argument);
 	}
 
 	TEST(ThreadPool, AddTaskAndWait)

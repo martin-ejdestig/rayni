@@ -19,10 +19,11 @@
 
 #include "lib/concurrency/thread_pool.h"
 
-#include <exception>
 #include <iterator>
 #include <thread>
 #include <utility>
+
+#include "lib/log.h"
 
 namespace Rayni
 {
@@ -33,7 +34,10 @@ namespace Rayni
 	ThreadPool::ThreadPool(unsigned int size)
 	{
 		if (size < 1)
-			throw std::invalid_argument("Number of threads in thread pool must be at least 1.");
+		{
+			size = default_size();
+			log_warning("Number of threads in thread pool too small (<1), using default (%u)", size);
+		}
 
 		for (unsigned int i = 0; i < size; i++)
 			threads_.emplace_back(&ThreadPool::work, this);
@@ -55,7 +59,10 @@ namespace Rayni
 		unsigned int size = std::thread::hardware_concurrency();
 
 		if (size == 0)
-			throw std::runtime_error("Unable to determine number of default threads to use in thread pool");
+		{
+			size = 8;
+			log_error("Failed to determine number of threads to use in thread pool, using %u", size);
+		}
 
 		return size;
 	}

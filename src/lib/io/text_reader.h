@@ -34,8 +34,6 @@ namespace Rayni
 	class TextReader
 	{
 	public:
-		class Exception;
-
 		class Position
 		{
 		public:
@@ -59,6 +57,22 @@ namespace Rayni
 			std::string prefix_;
 		};
 
+		class Exception : public std::runtime_error
+		{
+		public:
+			using std::runtime_error::runtime_error;
+
+			Exception(const Position &position, const std::string &str) :
+			        Exception(position.to_string(), str)
+			{
+			}
+
+			Exception(const std::string &prefix, const std::string &str) :
+			        Exception(prefix.empty() ? str : prefix + ": " + str)
+			{
+			}
+		};
+
 		void open_file(const std::string &file_name);
 
 		void set_string(std::string &&string, const std::string &position_prefix);
@@ -69,7 +83,22 @@ namespace Rayni
 
 		void close();
 
-		void next();
+		void next()
+		{
+			if (at_eof())
+				throw Exception(position_, "end of stream");
+
+			if (at_newline())
+			{
+				buffer_position_++;
+				position_.next_line();
+			}
+			else
+			{
+				buffer_position_++;
+				position_.next_column();
+			}
+		}
 
 		char next_get()
 		{
@@ -146,21 +175,6 @@ namespace Rayni
 		std::size_t buffer_position_ = 0;
 
 		Position position_;
-	};
-
-	class TextReader::Exception : public std::runtime_error
-	{
-	public:
-		using std::runtime_error::runtime_error;
-
-		Exception(const Position &position, const std::string &str) : Exception(position.to_string(), str)
-		{
-		}
-
-		Exception(const std::string &prefix, const std::string &str) :
-		        Exception(prefix.empty() ? str : prefix + ": " + str)
-		{
-		}
 	};
 
 	inline TextReader::Position::Position(const std::string &prefix) : prefix_(prefix)

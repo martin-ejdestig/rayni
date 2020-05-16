@@ -68,23 +68,6 @@ namespace Rayni
 		position_ = Position();
 	}
 
-	void TextReader::next()
-	{
-		if (at_eof())
-			throw Exception(position_, "end of stream");
-
-		if (at_newline())
-		{
-			buffer_position_++;
-			position_.next_line();
-		}
-		else
-		{
-			buffer_position_++;
-			position_.next_column();
-		}
-	}
-
 	bool TextReader::skip_string(std::string_view str)
 	{
 		if (str.length() > buffer_size_ - buffer_position_)

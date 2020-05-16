@@ -22,9 +22,10 @@
 #include <cerrno>
 #include <cstdlib>
 #include <filesystem>
-#include <iostream>
 #include <system_error>
 #include <vector>
+
+#include "lib/log.h"
 
 namespace
 {
@@ -62,6 +63,6 @@ namespace Rayni
 
 		std::filesystem::remove_all(path(), error_code); // noexcept, safe in destructor
 		if (error_code)
-			std::cerr << "Failed to remove " << path() << ": " << error_code.message() << '\n';
+			log_error("Failed to remove %s: %s", path().c_str(), error_code.message().c_str());
 	}
 }

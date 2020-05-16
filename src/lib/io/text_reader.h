@@ -20,6 +20,7 @@
 #ifndef RAYNI_LIB_IO_TEXT_READER_H
 #define RAYNI_LIB_IO_TEXT_READER_H
 
+#include <cassert>
 #include <cstddef>
 #include <stdexcept>
 #include <string>
@@ -116,6 +117,19 @@ namespace Rayni
 		{
 			while (at_space())
 				next();
+		}
+
+		std::string_view view(std::size_t start, std::size_t end) const
+		{
+			assert(start < buffer_position);
+			assert(end <= buffer_position);
+			assert(start <= end);
+			return std::string_view(buffer_ + start, end - start);
+		}
+
+		std::size_t buffer_position() const
+		{
+			return buffer_position_;
 		}
 
 		const Position &position() const

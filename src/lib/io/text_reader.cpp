@@ -61,7 +61,7 @@ namespace Rayni
 		else
 			string_ = std::string();
 
-		buffer_ = string_.data();
+		buffer_ = nullptr;
 		buffer_size_ = 0;
 		buffer_position_ = 0;
 
@@ -71,7 +71,7 @@ namespace Rayni
 	void TextReader::next()
 	{
 		if (at_eof())
-			throw EOFException(position_, "end of stream");
+			throw Exception(position_, "end of stream");
 
 		if (at_newline())
 		{

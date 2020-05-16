@@ -33,7 +33,6 @@ namespace Rayni
 	{
 	public:
 		class Exception;
-		class EOFException;
 
 		class Position
 		{
@@ -72,20 +71,19 @@ namespace Rayni
 
 		char next_get()
 		{
-			char c = buffer_[buffer_position_];
+			std::size_t pos = buffer_position_;
 			next();
-			return c;
+			return buffer_[pos];
 		}
 
 		bool at(char c) const
 		{
-			return buffer_[buffer_position_] == c;
+			return !at_eof() && buffer_[buffer_position_] == c;
 		}
 
 		bool at_digit() const
 		{
-			char c = buffer_[buffer_position_];
-			return c >= '0' && c <= '9';
+			return !at_eof() && buffer_[buffer_position_] >= '0' && buffer_[buffer_position_] <= '9';
 		}
 
 		bool at_space() const
@@ -140,7 +138,7 @@ namespace Rayni
 		MemoryMappedFile mmap_file_;
 		std::string string_;
 
-		const char *buffer_ = string_.data();
+		const char *buffer_ = nullptr;
 		std::size_t buffer_size_ = 0;
 		std::size_t buffer_position_ = 0;
 
@@ -160,12 +158,6 @@ namespace Rayni
 		        Exception(prefix.empty() ? str : prefix + ": " + str)
 		{
 		}
-	};
-
-	class TextReader::EOFException : public Exception
-	{
-	public:
-		using Exception::Exception;
 	};
 
 	inline TextReader::Position::Position(const std::string &prefix) : prefix_(prefix)

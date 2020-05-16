@@ -165,10 +165,12 @@ namespace Rayni
 		EXPECT_EQ('f', reader.next_get());
 		EXPECT_EQ("2:4", reader.position().to_string());
 
-		EXPECT_THROW(reader.next(), TextReader::EOFException);
+		EXPECT_TRUE(reader.at_eof());
+		EXPECT_THROW(reader.next(), TextReader::Exception);
 		EXPECT_EQ("2:4", reader.position().to_string());
 
-		EXPECT_THROW(reader.next_get(), TextReader::EOFException);
+		EXPECT_TRUE(reader.at_eof());
+		EXPECT_THROW(reader.next_get(), TextReader::Exception);
 		EXPECT_EQ("2:4", reader.position().to_string());
 	}
 
@@ -220,6 +222,11 @@ namespace Rayni
 		reader.next();
 		EXPECT_FALSE(reader.at('e'));
 		EXPECT_TRUE(reader.at_eof());
+
+		EXPECT_FALSE(reader.at('a'));
+		EXPECT_FALSE(reader.at_digit());
+		EXPECT_FALSE(reader.at_space());
+		EXPECT_FALSE(reader.at_newline());
 	}
 
 	TEST(TextReader, Skip)

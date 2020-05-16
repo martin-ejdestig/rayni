@@ -189,8 +189,6 @@ namespace Rayni
 		          (string_split_to_array<std::string, 5>("abc def ghi", ' ')));
 	}
 
-#if !defined __clang__
-	// TODO: Does currently not compile with latest Clang. Fixed yet?
 	TEST(StringSplit, ToArrayConstexpr)
 	{
 		static constexpr std::array<std::string_view, 4> SPLITS =
@@ -200,5 +198,4 @@ namespace Rayni
 
 		EXPECT_EQ(EXPECTED_SPLITS, SPLITS);
 	}
-#endif
 }

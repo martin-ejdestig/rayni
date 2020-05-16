@@ -85,7 +85,7 @@ namespace Rayni
 		}
 	}
 
-	bool TextReader::skip_string(const std::string &str)
+	bool TextReader::skip_string(std::string_view str)
 	{
 		if (str.length() > buffer_size_ - buffer_position_)
 			return false;

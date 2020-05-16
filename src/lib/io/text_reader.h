@@ -23,6 +23,7 @@
 #include <cstddef>
 #include <stdexcept>
 #include <string>
+#include <string_view>
 #include <utility>
 
 #include "lib/system/memory_mapped_file.h"
@@ -109,7 +110,7 @@ namespace Rayni
 			return true;
 		}
 
-		bool skip_string(const std::string &str);
+		bool skip_string(std::string_view str);
 
 		void skip_space()
 		{

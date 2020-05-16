@@ -117,18 +117,6 @@ namespace Rayni
 				next();
 		}
 
-		void skip_space_on_line()
-		{
-			while (at_space() && !at_newline())
-				next();
-		}
-
-		void skip_to_end_of_line()
-		{
-			while (!at_newline())
-				next();
-		}
-
 		const Position &position() const
 		{
 			return position_;

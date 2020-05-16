@@ -232,7 +232,7 @@ namespace Rayni
 	TEST(TextReader, Skip)
 	{
 		TextReader reader;
-		reader.set_string("abcdef \t\r\n  gh  i  \njklmno p\nq");
+		reader.set_string("abcdef \t\r\n  gh  i  \nj");
 
 		EXPECT_EQ("1:1", reader.position().to_string());
 		EXPECT_TRUE(reader.skip_char('a'));
@@ -259,22 +259,13 @@ namespace Rayni
 		EXPECT_TRUE(reader.skip_char('h'));
 		EXPECT_EQ("2:5", reader.position().to_string());
 
-		reader.skip_space_on_line();
+		reader.skip_space();
 		EXPECT_EQ("2:7", reader.position().to_string());
 		EXPECT_TRUE(reader.skip_char('i'));
 		EXPECT_EQ("2:8", reader.position().to_string());
-		reader.skip_space_on_line();
-		EXPECT_EQ("2:10", reader.position().to_string());
-		EXPECT_TRUE(reader.skip_char('\n'));
+		reader.skip_space();
 		EXPECT_EQ("3:1", reader.position().to_string());
 		EXPECT_TRUE(reader.skip_char('j'));
 		EXPECT_EQ("3:2", reader.position().to_string());
-
-		reader.skip_to_end_of_line();
-		EXPECT_EQ("3:9", reader.position().to_string());
-		EXPECT_TRUE(reader.skip_char('\n'));
-		EXPECT_EQ("4:1", reader.position().to_string());
-		EXPECT_TRUE(reader.skip_char('q'));
-		EXPECT_EQ("4:2", reader.position().to_string());
 	}
 }

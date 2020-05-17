@@ -173,14 +173,14 @@ namespace Rayni
 
 	TEST(Transform, Inverse)
 	{
-		EXPECT_PRED_FORMAT2(verify_inverse, Transform::identity(), 1e-100);
+		EXPECT_PRED_FORMAT2(verify_inverse, Transform::identity(), 1e-7);
 
-		EXPECT_PRED_FORMAT2(verify_inverse, Transform::translate(1, 2, 3), 1e-100);
-		EXPECT_PRED_FORMAT2(verify_inverse, Transform::translate({-1, -2, -3}), 1e-100);
+		EXPECT_PRED_FORMAT2(verify_inverse, Transform::translate(1, 2, 3), 1e-6);
+		EXPECT_PRED_FORMAT2(verify_inverse, Transform::translate({-1, -2, -3}), 1e-6);
 
-		EXPECT_PRED_FORMAT2(verify_inverse, Transform::scale(10, 20, 30), 1e-100);
-		EXPECT_PRED_FORMAT2(verify_inverse, Transform::scale(-10, -20, -30), 1e-100);
-		EXPECT_PRED_FORMAT2(verify_inverse, Transform::scale(5), 1e-100);
+		EXPECT_PRED_FORMAT2(verify_inverse, Transform::scale(10, 20, 30), 1e-7);
+		EXPECT_PRED_FORMAT2(verify_inverse, Transform::scale(-10, -20, -30), 1e-7);
+		EXPECT_PRED_FORMAT2(verify_inverse, Transform::scale(5), 1e-7);
 
 		EXPECT_PRED_FORMAT2(verify_inverse, Transform::rotate_x(1), 1e-6);
 		EXPECT_PRED_FORMAT2(verify_inverse, Transform::rotate_y(1), 1e-6);

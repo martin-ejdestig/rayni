@@ -38,6 +38,55 @@ namespace Rayni
 		Vector3 direction;
 		real_t time;
 	};
+
+	// Generate ray from origin taking error used to calculate origin into account to avoid
+	// self-intersection.
+	//
+	// See Pharr, M, Jakob, W, and Humphreys, G 2016. Physically Based Rendering. 3rd ed.
+	// Chapter 3.9.5, Robust Spawned Ray Origins, p. 230-233.
+	//
+	// TODO: d += 0.0001 should not be needed (e.g. PBRT does not add fixed offset). But
+	// currently, without this, many rays intersect when spawned from intersection even though
+	// they should not. An example of this can be seen in Boing Ball scene at pixel x=463,y=208
+	// when rendered in 1280x720. A black dot occurrs at plane that has y=0 in world space.
+	// Normal (0, 1, 0) and origin_error is (ex, 0, ey) (see TriangleMesh::Triangle::intersect()).
+	// d in this case becomes (0, 1, 0) * (ex, 0, ey) = 0 so origin will not be offset. Rays
+	// towards light sources will thus intersect with the plane (point is in shadow). Probably
+	// not a problem in PBRT since when checking if ray t > 0, error bounds for calculation of t
+	// is taken into account (see 3.9.6 Avoiding Intersections Behind Ray/ Origins). Should
+	// probably do the same in Rayni so this hardcoded offset can be removed.
+	//
+	// TODO: What do other renderers do to handle this? Is there a cheaper way than taking error
+	// bounds into account everywhere that still gives good results? Only having a hardcoded
+	// offset along normal is what Rayni has done since day one. That proved to be insufficient
+	// though. There were a lot of black dots in Stanford Lucy and Sponza Outside scenes before
+	// taking origin error bounds into account when offsetting ray.
+	static inline Ray ray_with_offset_origin(const Vector3 &origin,
+	                                         const Vector3 &origin_error,
+	                                         const Vector3 &direction,
+	                                         const Vector3 &normal,
+	                                         real_t time)
+	{
+		real_t d = normal.abs().dot(origin_error);
+		d += real_t(0.0001); // Remove, see TODO above.
+
+		Vector3 offset = d * normal;
+
+		if (direction.dot(normal) < 0)
+			offset = -offset;
+
+		Vector3 offset_origin = origin + offset;
+
+		for (unsigned int i = 0; i < 3; ++i)
+		{
+			if (offset[i] > 0)
+				offset_origin[i] = real_next_up(offset_origin[i]);
+			else if (offset[i] < 0)
+				offset_origin[i] = real_next_down(offset_origin[i]);
+		}
+
+		return {offset_origin, direction, time};
+	}
 }
 
 #endif // RAYNI_LIB_MATH_RAY_H

@@ -41,9 +41,9 @@ namespace Rayni
 		{
 			auto transform_at_time = animated_transform.interpolate(time);
 			auto m1 = transform_at_time.matrix();
-			auto m1_inv = transform_at_time.inverse_matrix();
+			auto m1_inv = transform_at_time.inverse().matrix();
 			auto m2 = transform.matrix();
-			auto m2_inv = transform.inverse_matrix();
+			auto m2_inv = transform.inverse().matrix();
 
 			for (unsigned int i = 0; i < 4; i++)
 			{

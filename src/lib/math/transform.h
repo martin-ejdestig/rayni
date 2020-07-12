@@ -124,11 +124,6 @@ namespace Rayni
 			return matrix_;
 		}
 
-		const Matrix4x4 &inverse_matrix() const
-		{
-			return inverse_matrix_;
-		}
-
 		// Transform a point represented by a Vector3.
 		//
 		// When using a Vector3 to represent a homogeneous point, the weight is implicitly

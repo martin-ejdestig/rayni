@@ -150,8 +150,8 @@ namespace Rayni
 
 		std::string_view view(std::size_t start, std::size_t end) const
 		{
-			assert(start < buffer_position);
-			assert(end <= buffer_position);
+			assert(start < buffer_position_);
+			assert(end <= buffer_position_);
 			assert(start <= end);
 			return std::string_view(buffer_ + start, end - start);
 		}

@@ -21,8 +21,25 @@
 
 #include <gtest/gtest.h>
 
+#include <cmath>
+
 namespace Rayni
 {
+	namespace
+	{
+		constexpr real_t REAL_INFINITY = std::numeric_limits<real_t>::infinity();
+
+		void test_next_up(real_t r)
+		{
+			EXPECT_EQ(real_next_up(r), std::nextafter(r, REAL_INFINITY)) << "r = " << r;
+		}
+
+		void test_next_down(real_t r)
+		{
+			EXPECT_EQ(real_next_down(r), std::nextafter(r, -REAL_INFINITY)) << "r = " << r;
+		}
+	}
+
 	TEST(Math, Frac)
 	{
 		EXPECT_NEAR(0.1, frac(-1.9), 1e-7);
@@ -47,5 +64,45 @@ namespace Rayni
 	{
 		for (int i = -8; i <= 8; i++)
 			EXPECT_NEAR(2 * PI * i / 8, radians_from_degrees(real_t(360) * i / 8), 1e-6) << "i: " << i;
+	}
+
+	TEST(Math, RealNextUp)
+	{
+		test_next_up(0);
+		test_next_up(-0);
+
+		test_next_up(1);
+		test_next_up(-1);
+
+		real_t two_plus_ulp = std::nextafter(real_t(2), REAL_INFINITY);
+		test_next_up(two_plus_ulp);
+		test_next_up(-two_plus_ulp);
+
+		real_t two_minus_ulp = std::nextafter(real_t(2), -REAL_INFINITY);
+		test_next_up(two_minus_ulp);
+		test_next_up(-two_minus_ulp);
+
+		test_next_up(REAL_INFINITY);
+		test_next_up(-REAL_INFINITY);
+	}
+
+	TEST(Math, RealNextDown)
+	{
+		test_next_down(0);
+		test_next_down(-0);
+
+		test_next_down(1);
+		test_next_down(-1);
+
+		real_t two_plus_ulp = std::nextafter(real_t(2), REAL_INFINITY);
+		test_next_down(two_plus_ulp);
+		test_next_down(-two_plus_ulp);
+
+		real_t two_minus_ulp = std::nextafter(real_t(2), -REAL_INFINITY);
+		test_next_down(two_minus_ulp);
+		test_next_down(-two_minus_ulp);
+
+		test_next_down(REAL_INFINITY);
+		test_next_down(-REAL_INFINITY);
 	}
 }

@@ -21,6 +21,7 @@
 #define RAYNI_LIB_MATH_MATH_H
 
 #include <cmath>
+#include <cstdint>
 #include <limits>
 
 #include "config.h"
@@ -29,9 +30,13 @@ namespace Rayni
 {
 #if RAYNI_DOUBLE_PRECISION
 	using real_t = double;
+	using real_uint_t = std::uint64_t;
 #else
 	using real_t = float;
+	using real_uint_t = std::uint32_t;
 #endif
+	static_assert(sizeof(real_t) == sizeof(real_uint_t));
+	static_assert(std::numeric_limits<real_t>::is_iec559, "real_t is not a IEEE 754 float");
 
 	static constexpr real_t PI = real_t(3.14159265358979323846);
 
@@ -48,6 +53,83 @@ namespace Rayni
 	static constexpr inline real_t radians_from_degrees(real_t degrees)
 	{
 		return degrees * PI / 180;
+	}
+
+	static constexpr inline real_uint_t real_to_uint(real_t r)
+	{
+		union
+		{
+			real_t r;
+			real_uint_t i;
+		} u;
+		u.r = r;
+		return u.i;
+	}
+
+	static constexpr inline real_t real_from_uint(real_uint_t i)
+	{
+		union
+		{
+			real_t r;
+			real_uint_t i;
+		} u;
+		u.i = i;
+		return u.r;
+	}
+
+	// Next number > r.
+	//
+	// Same as std::nextafter(r, infinity) but simpler and inlined (std::nextafter is not
+	// inlined with GCC/libstdc++/glibc at least).
+	//
+	// If r is positive or 0 increase mantissa else decrease it. Since IEEE 754 is assumed,
+	// exponent will be increased/decreased accordingly on mantissa over/underflow. If r is
+	// maximum value it will also result in infinity (e.g. float max: 0x7f7fffff,
+	// infinity: 0x7f800000, that is all bits in mantissa cleared and all bits in exponent set).
+	static constexpr inline real_t real_next_up(real_t r)
+	{
+		if (r > std::numeric_limits<real_t>::max())
+			return r; // +infinity. Detect with > max() since std::isinf() is a NOP with -ffast-math.
+
+		if (r == -real_t(0))
+			r = 0; // +0 and -0 bit patterns are not adjacent, -0 => +0
+
+		real_uint_t i = real_to_uint(r);
+
+		if (r >= 0)
+			++i;
+		else
+			--i;
+
+		return real_from_uint(i);
+	}
+
+	// Next number < r.
+	//
+	// Same as std::nextafter(r, -infinity) but simpler and inlined (std::nextafter is not
+	// inlined with GCC/libstdc++/glibc at least).
+	//
+	// If r is positive decrease mantissa else increase it. Since IEEE 754 is assumed,
+	// exponent will be increased/decreased accordingly on mantissa over/underflow. If r is
+	// lowest value it will also result in -infinity (e.g. float min: 0xff7fffff,
+	// -infinity: 0xff800000, that is all bits in mantissa cleared, all bits in exponent set
+	// and sign bit set).
+	static constexpr inline real_t real_next_down(real_t r)
+	{
+		if (r < std::numeric_limits<real_t>::lowest())
+			return r; // -infinity. Detect with < lowest() since std::isinf() is a NOP with -ffast-math.
+
+		if (r == 0)
+			r = -real_t(0); // -0 and +0 bit patterns are not adjacent, +0 => -0
+
+		real_uint_t i = real_to_uint(r);
+
+		if (r > 0)
+			--i;
+		else
+			++i;
+
+		return real_from_uint(i);
 	}
 
 	// See Pharr, M, Jakob, W, and Humphreys, G 2016. Physically Based Rendering. 3rd ed.

@@ -61,27 +61,25 @@ namespace Rayni
 			// the library.)
 		}
 
-		/**
-		 * NOTE: Do not use any objects with destructors on the stack in this method.
-		 *
-		 * It exists solely to isolate libjpeg(-turbo)'s use of setjmp and longjmp from code that
-		 * has objects with destructors on the stack. From 18.10 "Other runtime support" in the C++
-		 * standard:
-		 *
-		 * "A setjmp/longjmp call pair has undefined behavior if replacing the setjmp and longjmp
-		 * by catch and throw would invoke any non-trivial destructors for any automatic objects."
-		 *
-		 * A bit unclear if this only applies when unwinding or also for objects on the local stack.
-		 * Have seen a few open source projects (e.g. Chromium) that call cleanup methods manually
-		 * in the setjmp if-block to work with as many compilers as possible. Better to assume
-		 * nothing and avoid destructors all together.
-		 *
-		 * Also note that the return value of various libjpeg(-turbo) functions are ignored below
-		 * since they can only return false when a suspending input source is used according to the
-		 * API documentation. Take advantage of this to limit calls to jpeg_destroy_decompress().
-		 * See libjpeg.txt and example.c in the libjpeg-turbo source root directory for more
-		 * information.
-		 */
+		// NOTE: Do not use any objects with destructors on the stack in this method.
+		//
+		// It exists solely to isolate libjpeg(-turbo)'s use of setjmp and longjmp from code that
+		// has objects with destructors on the stack. From 18.10 "Other runtime support" in the C++
+		// standard:
+		//
+		// "A setjmp/longjmp call pair has undefined behavior if replacing the setjmp and longjmp
+		// by catch and throw would invoke any non-trivial destructors for any automatic objects."
+		//
+		// A bit unclear if this only applies when unwinding or also for objects on the local stack.
+		// Have seen a few open source projects (e.g. Chromium) that call cleanup methods manually
+		// in the setjmp if-block to work with as many compilers as possible. Better to assume
+		// nothing and avoid destructors all together.
+		//
+		// Also note that the return value of various libjpeg(-turbo) functions are ignored below
+		// since they can only return false when a suspending input source is used according to the
+		// API documentation. Take advantage of this to limit calls to jpeg_destroy_decompress().
+		// See libjpeg.txt and example.c in the libjpeg-turbo source root directory for more
+		// information.
 		bool decode_file_to_image(std::FILE &file, Image &image)
 		{
 			jpeg_decompress_struct jpeg_decompress;

@@ -28,24 +28,22 @@
 
 namespace
 {
-	/**
-	 * Thread local instance of std::istringstream with classic "C" locale.
-	 *
-	 * Used when parsing e.g. file formats where decimal point is a dot. The current locale,
-	 * used by std::stof et al. and std::istringstream by default, may use a comma which will
-	 * cause parsing to fail.
-	 *
-	 * Caching the instance has shown to be worthwhile since reading large object files may
-	 * involve converting a lot of strings to floating point numbers. The time measurements
-	 * below are from when loading a scene with the Stanford Buddah, Bunny and Dragon containing
-	 * ~6 million number strings. Compiled with -Ofast -march=native, GCC 5.2.0,
-	 * libstdc++5 3.3.6-5 and glibc 2.22-3.
-	 *
-	 * 3.3s - std::strtod (with system locale)
-	 * 6.5s - std::istringstream (with system locale)
-	 * 8.0s - std::istringstream + imbue
-	 * 4.5s - std::istringstream + imbue + thread local reuse
-	 */
+	// Thread local instance of std::istringstream with classic "C" locale.
+	//
+	// Used when parsing e.g. file formats where decimal point is a dot. The current locale,
+	// used by std::stof et al. and std::istringstream by default, may use a comma which will
+	// cause parsing to fail.
+	//
+	// Caching the instance has shown to be worthwhile since reading large object files may
+	// involve converting a lot of strings to floating point numbers. The time measurements
+	// below are from when loading a scene with the Stanford Buddah, Bunny and Dragon containing
+	// ~6 million number strings. Compiled with -Ofast -march=native, GCC 5.2.0,
+	// libstdc++5 3.3.6-5 and glibc 2.22-3.
+	//
+	// 3.3s - std::strtod (with system locale)
+	// 6.5s - std::istringstream (with system locale)
+	// 8.0s - std::istringstream + imbue
+	// 4.5s - std::istringstream + imbue + thread local reuse
 	std::istringstream &classic_locale_istringstream_get_with_string(std::string_view str)
 	{
 		static thread_local std::istringstream stream = [] {

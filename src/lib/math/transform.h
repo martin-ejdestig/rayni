@@ -129,20 +129,15 @@ namespace Rayni
 			return inverse_matrix_;
 		}
 
-		/**
-		 * Transform a point represented by a Vector3.
-		 *
-		 * When using a Vector3 to represent a homogeneous point, the weight is implicitly
-		 * set to 1.
-		 *
-		 * Assumes that the matrix is affine. If it is not, the new x, y and z should be
-		 * divided by the new weight. But since this assumption is mostly true, calculating
-		 * and dividing by w would result in extra needless calculations.
-		 * TODO: Mention perspective transform method in the section above.
-		 *
-		 * Rely on the compiler to optimize away unnecessary multiplications due to weight
-		 * being 1.
-		 */
+		// Transform a point represented by a Vector3.
+		//
+		// When using a Vector3 to represent a homogeneous point, the weight is implicitly
+		// set to 1.
+		//
+		// Assumes that the matrix is affine. If it is not, the new x, y and z should be
+		// divided by the new weight. But since this assumption is mostly true, calculating
+		// and dividing by w would result in extra needless calculations.
+		// TODO: Mention perspective transform method in the section above.
 		Vector3 transform_point(const Vector3 &v) const
 		{
 			Vector4 p(v.x(), v.y(), v.z(), 1);
@@ -159,15 +154,10 @@ namespace Rayni
 			return points;
 		}
 
-		/**
-		 * Transform a direction/vector represented by a Vector3.
-		 *
-		 * When using a Vector3 to represent a homogeneous vector, the weight is implicitly
-		 * set to 0.
-		 *
-		 * Rely on the compiler to optimize away unnecessary multiplications and additions
-		 * due to weight being 0.
-		 */
+		// Transform a direction/vector represented by a Vector3.
+		//
+		// When using a Vector3 to represent a homogeneous vector, the weight is implicitly
+		// set to 0.
 		Vector3 transform_direction(const Vector3 &v) const
 		{
 			Vector4 d(v.x(), v.y(), v.z(), 0);
@@ -177,24 +167,19 @@ namespace Rayni
 			return {x, y, z};
 		}
 
-		/**
-		 * Transform a normal represented by a Vector3.
-		 *
-		 * When using a Vector3 to represent a homogeneous vector, the weight is implicitly
-		 * set to 0. A normal should be transformed with the transpose of the inverse of the
-		 * transformation matrix.
-		 *
-		 * n   = normal          n' = transformed normal   S = normal transformation matrix
-		 * t   = tangent         t' = transformed tangent  M = transformation matrix
-		 * x^T = x transposed  x^-1 = inverse of x
-		 *
-		 *       0 = (n')^T * t' = (S * n)^T * M * t = n^T * S^T * M * t  =>
-		 * S^T * M = I                                                    =>
-		 *       S = (M^-1)^T
-		 *
-		 * Rely on the compiler to optimize away unnecessary multiplications and additions
-		 * due to weight being 0 and the unnecessary elements of the transpose.
-		 */
+		// Transform a normal represented by a Vector3.
+		//
+		// When using a Vector3 to represent a homogeneous vector, the weight is implicitly
+		// set to 0. A normal should be transformed with the transpose of the inverse of the
+		// transformation matrix.
+		//
+		// n   = normal          n' = transformed normal   S = normal transformation matrix
+		// t   = tangent         t' = transformed tangent  M = transformation matrix
+		// x^T = x transposed  x^-1 = inverse of x
+		//
+		//       0 = (n')^T * t' = (S * n)^T * M * t = n^T * S^T * M * t  =>
+		// S^T * M = I                                                    =>
+		//       S = (M^-1)^T
 		Vector3 transform_normal(const Vector3 &v) const
 		{
 			Vector4 n(v.x(), v.y(), v.z(), 0);
@@ -212,38 +197,36 @@ namespace Rayni
 			return normals;
 		}
 
-		/**
-		 * Transform an axis-aligned bounding box.
-		 *
-		 * And create a new axis-aligned bounding box that encompasses all the transformed
-		 * points.
-		 *
-		 * Takes advantage of the symmetry in the AABB to reduce the number of calculations.
-		 * See Arvo, J. (1995). Transforming Axis-Aligned Bounding Boxes. In A. S. Glassner,
-		 * Graphics Gems (pp. 548-550).
-		 *
-		 * This version, unlike the version in the book, does not use any loop or if
-		 * statements. This allows for the compiler to generate more efficient code. (E.g.
-		 * on X86 no branch instructions are needed to implement the component wise minimum
-		 * and maximum of a vector.)
-		 *
-		 * M       = transformation matrix        M|x     = column x of transformation matrix
-		 * min(v)  = component minimum of vector  max(v)  = component maximum of vector
-		 * c       = center                       r       = vector from center to +++ corner
-		 *
-		 * |c.x +/- r.x|
-		 * |c.y +/- r.y| = c +/- r = component +/- of vector used to represent all corners
-		 * |c.z +/- r.z|
-		 * |     1     |
-		 *
-		 * minimum = c - r = min(c +/- r) (here min() applies to all corners)
-		 *
-		 * transformed minimum = min(M * (c +/- r)) =
-		 * min(M|1 * (c.x +/- r.x) + M|2 * (c.y +/- r.y) + M|3 * (c.z +/- r.z) + M|4) =
-		 * min(M|1 * (c.x +/- r.x)) + min(M|2 * (c.y +/- r.y)) + min(M|3 * (c.z +/- r.z)) + M|4
-		 *
-		 * The same applies for maximum with min() replaced with max().
-		 */
+		// Transform an axis-aligned bounding box.
+		//
+		// And create a new axis-aligned bounding box that encompasses all the transformed
+		// points.
+		//
+		// Takes advantage of the symmetry in the AABB to reduce the number of calculations.
+		// See Arvo, J. (1995). Transforming Axis-Aligned Bounding Boxes. In A. S. Glassner,
+		// Graphics Gems (pp. 548-550).
+		//
+		// This version, unlike the version in the book, does not use any loop or if
+		// statements. This allows for the compiler to generate more efficient code. (E.g.
+		// on X86 no branch instructions are needed to implement the component wise minimum
+		// and maximum of a vector.)
+		//
+		// M       = transformation matrix        M|x     = column x of transformation matrix
+		// min(v)  = component minimum of vector  max(v)  = component maximum of vector
+		// c       = center                       r       = vector from center to +++ corner
+		//
+		// |c.x +/- r.x|
+		// |c.y +/- r.y| = c +/- r = component +/- of vector used to represent all corners
+		// |c.z +/- r.z|
+		// |     1     |
+		//
+		// minimum = c - r = min(c +/- r) (here min() applies to all corners)
+		//
+		// transformed minimum = min(M * (c +/- r)) =
+		// min(M|1 * (c.x +/- r.x) + M|2 * (c.y +/- r.y) + M|3 * (c.z +/- r.z) + M|4) =
+		// min(M|1 * (c.x +/- r.x)) + min(M|2 * (c.y +/- r.y)) + min(M|3 * (c.z +/- r.z)) + M|4
+		//
+		// The same applies for maximum with min() replaced with max().
 		AABB transform_aabb(const AABB &aabb) const
 		{
 			Vector3 x1 = matrix().x_axis() * aabb.minimum().x();

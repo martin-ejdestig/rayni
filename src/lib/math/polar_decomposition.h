@@ -24,17 +24,15 @@
 
 namespace Rayni
 {
-	/**
-	 * Polar decomposition of matrix. Repeatedly calculates (where x^T = x transposed,
-	 * x^-1 = inverse of x):
-	 *
-	 * M = (M + (M^T)^-1) * 0.5
-	 *
-	 * until convergence. If M is a pure rotation matrix, averaging it with the inverse of its
-	 * transpose will leave it unchanged since M^-1 = M^T .
-	 *
-	 * See Higham, Nicholas J. (1986). Computing the polar decomposition - with Applications.
-	 */
+	// Polar decomposition of matrix. Repeatedly calculates (where x^T = x transposed,
+	// x^-1 = inverse of x):
+	//
+	// M = (M + (M^T)^-1) * 0.5
+	//
+	// until convergence. If M is a pure rotation matrix, averaging it with the inverse of its
+	// transpose will leave it unchanged since M^-1 = M^T .
+	//
+	// See Higham, Nicholas J. (1986). Computing the polar decomposition - with Applications.
 	template <typename Matrix>
 	struct PolarDecomposition
 	{

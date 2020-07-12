@@ -31,14 +31,12 @@ namespace Rayni
 	class MatrixInverse
 	{
 	public:
-		/**
-		 * In-place inverse of (non-singular) matrix.
-		 *
-		 * Calling this method with a singular matrix is considered a programming error.
-		 *
-		 * Uses Gauss-Jordan elimination with partial (row) pivoting to increase numerical
-		 * stability.
-		 */
+		// In-place inverse of (non-singular) matrix.
+		//
+		// Calling this method with a singular matrix is considered a programming error.
+		//
+		// Uses Gauss-Jordan elimination with partial (row) pivoting to increase numerical
+		// stability.
 		template <typename Matrix>
 		static void find_in_place(Matrix &m)
 		{

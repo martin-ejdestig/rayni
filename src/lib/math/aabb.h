@@ -53,8 +53,8 @@ namespace Rayni
 
 		AABB &merge(const AABB &aabb)
 		{
-			minimum_ = Vector3::min(minimum(), aabb.minimum());
-			maximum_ = Vector3::max(maximum(), aabb.maximum());
+			minimum_ = Vector3::min(minimum_, aabb.minimum_);
+			maximum_ = Vector3::max(maximum_, aabb.maximum_);
 			return *this;
 		}
 
@@ -71,8 +71,8 @@ namespace Rayni
 			for (unsigned int i = 0; i < 3; i++)
 			{
 				real_t inv_ray_dir = 1 / ray.direction[i];
-				real_t t_near = (minimum()[i] - ray.origin[i]) * inv_ray_dir;
-				real_t t_far = (maximum()[i] - ray.origin[i]) * inv_ray_dir;
+				real_t t_near = (minimum_[i] - ray.origin[i]) * inv_ray_dir;
+				real_t t_far = (maximum_[i] - ray.origin[i]) * inv_ray_dir;
 
 				if (t_far < t_near)
 					std::swap(t_near, t_far);
@@ -96,13 +96,13 @@ namespace Rayni
 		                const Vector3 &inv_dir,
 		                real_t ray_t_max = std::numeric_limits<real_t>::infinity()) const
 		{
-			real_t t_min = (minimum().x() - ray.origin.x()) * inv_dir.x();
-			real_t t_max = (maximum().x() - ray.origin.x()) * inv_dir.x();
+			real_t t_min = (minimum_.x() - ray.origin.x()) * inv_dir.x();
+			real_t t_max = (maximum_.x() - ray.origin.x()) * inv_dir.x();
 			if (inv_dir.x() < 0)
 				std::swap(t_min, t_max);
 
-			real_t ty_min = (minimum().y() - ray.origin.y()) * inv_dir.y();
-			real_t ty_max = (maximum().y() - ray.origin.y()) * inv_dir.y();
+			real_t ty_min = (minimum_.y() - ray.origin.y()) * inv_dir.y();
+			real_t ty_max = (maximum_.y() - ray.origin.y()) * inv_dir.y();
 			if (inv_dir.y() < 0)
 				std::swap(ty_min, ty_max);
 
@@ -116,8 +116,8 @@ namespace Rayni
 			if (ty_max < t_max)
 				t_max = ty_max;
 
-			real_t tz_min = (minimum().z() - ray.origin.z()) * inv_dir.z();
-			real_t tz_max = (maximum().z() - ray.origin.z()) * inv_dir.z();
+			real_t tz_min = (minimum_.z() - ray.origin.z()) * inv_dir.z();
+			real_t tz_max = (maximum_.z() - ray.origin.z()) * inv_dir.z();
 			if (inv_dir.z() < 0)
 				std::swap(tz_min, tz_max);
 
@@ -135,12 +135,12 @@ namespace Rayni
 
 		AABB intersection(const AABB &aabb) const
 		{
-			return {Vector3::max(minimum(), aabb.minimum()), Vector3::min(maximum(), aabb.maximum())};
+			return {Vector3::max(minimum_, aabb.minimum_), Vector3::min(maximum_, aabb.maximum_)};
 		}
 
 		real_t surface_area() const
 		{
-			Vector3 d = maximum() - minimum();
+			Vector3 d = maximum_ - minimum_;
 			return 2 * (d.x() * d.y() + d.x() * d.z() + d.y() * d.z());
 		}
 
@@ -148,17 +148,17 @@ namespace Rayni
 
 		bool is_planar(unsigned int axis) const
 		{
-			return minimum()[axis] == maximum()[axis];
+			return minimum_[axis] == maximum_[axis];
 		}
 
 		Vector3 centroid() const
 		{
-			return (minimum() + maximum()) * real_t(0.5);
+			return (minimum_ + maximum_) * real_t(0.5);
 		}
 
 		unsigned int max_extent_axis() const
 		{
-			Vector3 d = maximum() - minimum();
+			Vector3 d = maximum_ - minimum_;
 
 			if (d.x() >= d.y() && d.x() >= d.z())
 				return 0;
@@ -181,7 +181,7 @@ namespace Rayni
 
 	inline AABB::Split AABB::split(unsigned int axis, real_t pos) const
 	{
-		assert(pos >= minimum()[axis] && pos <= maximum()[axis]);
+		assert(pos >= minimum_[axis] && pos <= maximum_[axis]);
 
 		AABB left = *this;
 		AABB right = *this;

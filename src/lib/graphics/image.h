@@ -50,7 +50,7 @@ namespace Rayni
 
 		bool is_empty() const
 		{
-			return width() == 0 || height() == 0;
+			return width_ == 0 || height_ == 0;
 		}
 
 		unsigned int width() const
@@ -65,7 +65,7 @@ namespace Rayni
 
 		unsigned int stride() const
 		{
-			return width() * BYTES_PER_PIXEL;
+			return width_ * BYTES_PER_PIXEL;
 		}
 
 		std::vector<std::uint8_t> &buffer()
@@ -80,7 +80,7 @@ namespace Rayni
 
 		std::uint8_t &start_of_row(unsigned int y)
 		{
-			return buffer()[offset_to(0, y)];
+			return buffer_[offset_to(0, y)];
 		}
 
 		Area whole_area() const;
@@ -97,7 +97,7 @@ namespace Rayni
 
 		unsigned int offset_to(unsigned int x, unsigned int y) const
 		{
-			assert(x < width() && y < height());
+			assert(x < width_ && y < height_);
 			return stride() * y + x * BYTES_PER_PIXEL;
 		}
 
@@ -126,7 +126,7 @@ namespace Rayni
 
 	inline Image::Area Image::whole_area() const
 	{
-		return {0, 0, width(), height()};
+		return {0, 0, width_, height_};
 	}
 }
 

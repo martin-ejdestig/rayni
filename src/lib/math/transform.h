@@ -111,12 +111,12 @@ namespace Rayni
 
 		static Transform combine(const Transform &t1, const Transform &t2)
 		{
-			return {t1.matrix() * t2.matrix(), t2.inverse_matrix() * t1.inverse_matrix()};
+			return {t1.matrix_ * t2.matrix_, t2.inverse_matrix_ * t1.inverse_matrix_};
 		}
 
 		Transform inverse() const
 		{
-			return {inverse_matrix(), matrix()};
+			return {inverse_matrix_, matrix_};
 		}
 
 		const Matrix4x4 &matrix() const
@@ -141,9 +141,9 @@ namespace Rayni
 		Vector3 transform_point(const Vector3 &v) const
 		{
 			Vector4 p(v.x(), v.y(), v.z(), 1);
-			real_t x = matrix().row(0).dot(p);
-			real_t y = matrix().row(1).dot(p);
-			real_t z = matrix().row(2).dot(p);
+			real_t x = matrix_.row(0).dot(p);
+			real_t y = matrix_.row(1).dot(p);
+			real_t z = matrix_.row(2).dot(p);
 			return {x, y, z};
 		}
 
@@ -161,9 +161,9 @@ namespace Rayni
 		Vector3 transform_direction(const Vector3 &v) const
 		{
 			Vector4 d(v.x(), v.y(), v.z(), 0);
-			real_t x = matrix().row(0).dot(d);
-			real_t y = matrix().row(1).dot(d);
-			real_t z = matrix().row(2).dot(d);
+			real_t x = matrix_.row(0).dot(d);
+			real_t y = matrix_.row(1).dot(d);
+			real_t z = matrix_.row(2).dot(d);
 			return {x, y, z};
 		}
 
@@ -183,7 +183,7 @@ namespace Rayni
 		Vector3 transform_normal(const Vector3 &v) const
 		{
 			Vector4 n(v.x(), v.y(), v.z(), 0);
-			Matrix4x4 t = inverse_matrix().transpose();
+			Matrix4x4 t = inverse_matrix_.transpose();
 			real_t x = t.row(0).dot(n);
 			real_t y = t.row(1).dot(n);
 			real_t z = t.row(2).dot(n);
@@ -229,16 +229,16 @@ namespace Rayni
 		// The same applies for maximum with min() replaced with max().
 		AABB transform_aabb(const AABB &aabb) const
 		{
-			Vector3 x1 = matrix().x_axis() * aabb.minimum().x();
-			Vector3 x2 = matrix().x_axis() * aabb.maximum().x();
-			Vector3 y1 = matrix().y_axis() * aabb.minimum().y();
-			Vector3 y2 = matrix().y_axis() * aabb.maximum().y();
-			Vector3 z1 = matrix().z_axis() * aabb.minimum().z();
-			Vector3 z2 = matrix().z_axis() * aabb.maximum().z();
+			Vector3 x1 = matrix_.x_axis() * aabb.minimum().x();
+			Vector3 x2 = matrix_.x_axis() * aabb.maximum().x();
+			Vector3 y1 = matrix_.y_axis() * aabb.minimum().y();
+			Vector3 y2 = matrix_.y_axis() * aabb.maximum().y();
+			Vector3 z1 = matrix_.z_axis() * aabb.minimum().z();
+			Vector3 z2 = matrix_.z_axis() * aabb.maximum().z();
 			Vector3 min = Vector3::min(x1, x2) + Vector3::min(y1, y2) + Vector3::min(z1, z2) +
-			              matrix().translation();
+			              matrix_.translation();
 			Vector3 max = Vector3::max(x1, x2) + Vector3::max(y1, y2) + Vector3::max(z1, z2) +
-			              matrix().translation();
+			              matrix_.translation();
 			return {min, max};
 		}
 

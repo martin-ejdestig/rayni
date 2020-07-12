@@ -211,11 +211,13 @@ namespace Rayni
 
 		static bool active(const Data &data)
 		{
+			// NOLINTNEXTLINE(modernize-use-nullptr) TODO: https://bugs.llvm.org/show_bug.cgi?id=46235
 			return data.expiration > CLOCK_EPOCH;
 		}
 
 		static bool expired(const Data &data, clock::time_point now)
 		{
+			// NOLINTNEXTLINE(modernize-use-nullptr) TODO: https://bugs.llvm.org/show_bug.cgi?id=46235
 			return active(data) && data.expiration <= now;
 		}
 

@@ -35,13 +35,16 @@ namespace Rayni
 		auto ss = std::chrono::duration_cast<std::chrono::duration<double>>(ns % 1min).count();
 		std::ostringstream stream;
 
+		// NOLINTNEXTLINE(modernize-use-nullptr) TODO: https://bugs.llvm.org/show_bug.cgi?id=46235 fixed?
 		if (ns >= 1h)
 			stream << hh << ":";
 
+		// NOLINTNEXTLINE(modernize-use-nullptr) TODO: https://bugs.llvm.org/show_bug.cgi?id=46235 fixed?
 		if (ns >= 1min)
 			stream << std::setw(2) << std::setfill('0') << mm << ":";
 
 		int seconds_width = 1;
+		// NOLINTNEXTLINE(modernize-use-nullptr) TODO: https://bugs.llvm.org/show_bug.cgi?id=46235 fixed?
 		if (ns >= 10s)
 			seconds_width++;
 		if (options.seconds_precision > 0)

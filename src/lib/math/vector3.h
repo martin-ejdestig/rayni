@@ -195,6 +195,11 @@ namespace Rayni
 			return max_axis;
 		}
 
+		Vector3 abs() const
+		{
+			return {std::abs(x()), std::abs(y()), std::abs(z())};
+		}
+
 		std::size_t hash() const
 		{
 			return hash_combine_for(x(), y(), z());

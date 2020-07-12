@@ -228,6 +228,16 @@ namespace Rayni
 		EXPECT_EQ(2, Vector3(-1, -2, -30).max_extent_axis());
 	}
 
+	TEST(Vector3, Abs)
+	{
+		EXPECT_NEAR(1, Vector3(1, 2, 3).abs().x(), 1e-100);
+		EXPECT_NEAR(2, Vector3(1, 2, 3).abs().y(), 1e-100);
+		EXPECT_NEAR(3, Vector3(1, 2, 3).abs().z(), 1e-100);
+		EXPECT_NEAR(1, Vector3(-1, 2, 3).abs().x(), 1e-100);
+		EXPECT_NEAR(2, Vector3(1, -2, 3).abs().y(), 1e-100);
+		EXPECT_NEAR(3, Vector3(1, 2, -3).abs().z(), 1e-100);
+	}
+
 	TEST(Vector3, Hash)
 	{
 		EXPECT_TRUE(Vector3(1, 0, 0).hash() != Vector3(0, 1, 0).hash());

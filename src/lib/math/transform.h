@@ -149,6 +149,25 @@ namespace Rayni
 			return points;
 		}
 
+		// Calculate error bounds for when transform is appliced to point with error bounds
+		// point_error.
+		//
+		// See Pharr, M, Jakob, W, and Humphreys, G 2016. Physically Based Rendering. 3rd ed.
+		// Chapter 3.9.4, Bounding Intersection Point Error, p. 227-229.
+		Vector3 transform_point_error(const Vector3 &point, const Vector3 &point_error) const
+		{
+			Vector3 r0 = matrix_.upper3x3().row(0).abs();
+			Vector3 r1 = matrix_.upper3x3().row(1).abs();
+			Vector3 r2 = matrix_.upper3x3().row(2).abs();
+			Vector3 t = matrix_.translation().abs();
+			real_t g3 = error_bound_gamma(3);
+			real_t g31 = g3 + real_t(1);
+			real_t x_error = g31 * r0.dot(point_error) + g3 * (r0.dot(point) + t.x());
+			real_t y_error = g31 * r1.dot(point_error) + g3 * (r1.dot(point) + t.y());
+			real_t z_error = g31 * r2.dot(point_error) + g3 * (r2.dot(point) + t.z());
+			return {x_error, y_error, z_error};
+		}
+
 		// Transform a direction/vector represented by a Vector3.
 		//
 		// When using a Vector3 to represent a homogeneous vector, the weight is implicitly

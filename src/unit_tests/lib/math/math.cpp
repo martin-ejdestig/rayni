@@ -80,6 +80,9 @@ namespace Rayni
 		test_next_up(two_minus_ulp);
 		test_next_up(-two_minus_ulp);
 
+		test_next_up(REAL_MAX);
+		test_next_up(REAL_LOWEST);
+
 		test_next_up(REAL_INFINITY);
 		test_next_up(-REAL_INFINITY);
 	}
@@ -99,6 +102,9 @@ namespace Rayni
 		real_t two_minus_ulp = std::nextafter(real_t(2), -REAL_INFINITY);
 		test_next_down(two_minus_ulp);
 		test_next_down(-two_minus_ulp);
+
+		test_next_down(REAL_MAX);
+		test_next_down(REAL_LOWEST);
 
 		test_next_down(REAL_INFINITY);
 		test_next_down(-REAL_INFINITY);

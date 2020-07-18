@@ -37,7 +37,16 @@ namespace Rayni
 	class BinaryReader
 	{
 	public:
-		class Exception;
+		class Exception : public std::runtime_error
+		{
+		public:
+			using std::runtime_error::runtime_error;
+
+			Exception(const std::string &prefix, const std::string &str) :
+			        std::runtime_error(prefix.empty() ? str : prefix + ": " + str)
+			{
+			}
+		};
 
 		void open_file(const std::string &file_name);
 
@@ -68,43 +77,93 @@ namespace Rayni
 			read_bytes(dest.data(), dest.size(), dest_offset, num_bytes);
 		}
 
-		std::uint8_t read_uint8();
+		std::uint8_t read_uint8()
+		{
+			const std::uint8_t *p = next_bytes(1);
+
+			return *p;
+		}
+
 		std::int8_t read_int8()
 		{
 			return static_cast<std::int8_t>(read_uint8());
 		}
 
-		std::uint16_t read_big_endian_uint16();
+		std::uint16_t read_big_endian_uint16()
+		{
+			const std::uint8_t *p = next_bytes(2);
+
+			return static_cast<std::uint16_t>(p[0]) << 8 | static_cast<std::uint16_t>(p[1]);
+		}
+
 		std::int16_t read_big_endian_int16()
 		{
 			return static_cast<std::int16_t>(read_big_endian_uint16());
 		}
 
-		std::uint16_t read_little_endian_uint16();
+		std::uint16_t read_little_endian_uint16()
+		{
+			const std::uint8_t *p = next_bytes(2);
+
+			return static_cast<std::uint16_t>(p[1]) << 8 | static_cast<std::uint16_t>(p[0]);
+		}
+
 		std::int16_t read_little_endian_int16()
 		{
 			return static_cast<std::int16_t>(read_little_endian_uint16());
 		}
 
-		std::uint32_t read_big_endian_uint32();
+		std::uint32_t read_big_endian_uint32()
+		{
+			const std::uint8_t *p = next_bytes(4);
+
+			return static_cast<std::uint32_t>(p[0]) << 24 | static_cast<std::uint32_t>(p[1]) << 16 |
+			       static_cast<std::uint32_t>(p[2]) << 8 | static_cast<std::uint32_t>(p[3]);
+		}
+
 		std::int32_t read_big_endian_int32()
 		{
 			return static_cast<std::int32_t>(read_big_endian_uint32());
 		}
 
-		std::uint32_t read_little_endian_uint32();
+		std::uint32_t read_little_endian_uint32()
+		{
+			const std::uint8_t *p = next_bytes(4);
+
+			return static_cast<std::uint32_t>(p[3]) << 24 | static_cast<std::uint32_t>(p[2]) << 16 |
+			       static_cast<std::uint32_t>(p[1]) << 8 | static_cast<std::uint32_t>(p[0]);
+		}
+
 		std::int32_t read_little_endian_int32()
 		{
 			return static_cast<std::int32_t>(read_little_endian_uint32());
 		}
 
-		std::uint64_t read_big_endian_uint64();
+		std::uint64_t read_big_endian_uint64()
+		{
+			const std::uint8_t *p = next_bytes(8);
+
+			return static_cast<std::uint64_t>(p[0]) << 56 | static_cast<std::uint64_t>(p[1]) << 48 |
+			       static_cast<std::uint64_t>(p[2]) << 40 | static_cast<std::uint64_t>(p[3]) << 32 |
+			       static_cast<std::uint64_t>(p[4]) << 24 | static_cast<std::uint64_t>(p[5]) << 16 |
+			       static_cast<std::uint64_t>(p[6]) << 8 | static_cast<std::uint64_t>(p[7]);
+		}
+
 		std::int64_t read_big_endian_int64()
 		{
 			return static_cast<std::int64_t>(read_big_endian_uint64());
 		}
 
-		std::uint64_t read_little_endian_uint64();
+		std::uint64_t read_little_endian_uint64()
+		{
+			const std::uint8_t *p = next_bytes(8);
+
+			return static_cast<std::uint64_t>(p[7]) << 56 | static_cast<std::uint64_t>(p[6]) << 48 |
+			       static_cast<std::uint64_t>(p[5]) << 40 | static_cast<std::uint64_t>(p[4]) << 32 |
+			       static_cast<std::uint64_t>(p[3]) << 24 | static_cast<std::uint64_t>(p[2]) << 16 |
+			       static_cast<std::uint64_t>(p[1]) << 8 | static_cast<std::uint64_t>(p[0]);
+		}
+
 		std::int64_t read_little_endian_int64()
 		{
 			return static_cast<std::int64_t>(read_little_endian_uint64());
@@ -138,12 +197,29 @@ namespace Rayni
 
 		void skip_bytes(std::size_t num_bytes);
 
-		std::optional<std::int8_t> peek_int8();
+		std::optional<std::int8_t> peek_int8()
+		{
+			if (buffer_position_ >= buffer_size_)
+				return {};
+
+			return buffer_[buffer_position_];
+		}
 
 		std::string position() const;
 
 	private:
 		void read_bytes(void *dest, std::size_t dest_size, std::size_t dest_offset, std::size_t num_bytes);
+
+		const std::uint8_t *next_bytes(unsigned int i)
+		{
+			if (buffer_position_ + i > buffer_size_)
+				throw Exception(position(), "unexpected end of stream");
+
+			const std::uint8_t *p = buffer_ + buffer_position_;
+			buffer_position_ += i;
+
+			return p;
+		}
 
 		template <typename F, typename I>
 		static F float_from_int(I i)
@@ -167,17 +243,6 @@ namespace Rayni
 		std::size_t buffer_position_ = 0;
 
 		std::string position_prefix_;
-	};
-
-	class BinaryReader::Exception : public std::runtime_error
-	{
-	public:
-		using std::runtime_error::runtime_error;
-
-		Exception(const std::string &prefix, const std::string &str) :
-		        std::runtime_error(prefix.empty() ? str : prefix + ": " + str)
-		{
-		}
 	};
 
 	template <typename T>

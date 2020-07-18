@@ -35,15 +35,7 @@
 
 namespace Rayni
 {
-	// TODO: Loading Lucy with PLYReader in anon ns takes ~2.91s while it
-	//       only takes ~2.34s when commenting out the anon ns (same as
-	//       when PLYReader was in .h and the public facing API) or just
-	//       giving the ns a name. Why?!?!? Why is so much slower code
-	//       generated. More inlining that hits instruction cache in a bad
-	//       way? Something else? What is GCC doing here? *sigh* Need to
-	//       add some method annotations or change some compiler flags?
-	//       Better in GCC 10 (soon to be released)?
-	namespace RemoveMe
+	namespace
 	{
 		using Exception = BinaryReader::Exception;
 
@@ -645,7 +637,6 @@ namespace Rayni
 
 	Result<TriangleMeshData> ply_read_file(const std::string &file_name)
 	{
-		using namespace RemoveMe; // NOLINT(google-build-using-namespace) TODO: Remove ns. See above.
 		TriangleMeshData mesh_data;
 
 		try
@@ -664,7 +655,6 @@ namespace Rayni
 
 	Result<TriangleMeshData> ply_read_data(std::vector<std::uint8_t> &&data)
 	{
-		using namespace RemoveMe; // NOLINT(google-build-using-namespace) TODO: Remove ns. See above.
 		TriangleMeshData mesh_data;
 
 		try

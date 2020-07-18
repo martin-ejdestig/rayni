@@ -91,63 +91,6 @@ namespace Rayni
 		buffer_position_ += num_bytes;
 	}
 
-	std::uint8_t BinaryReader::read_uint8()
-	{
-		std::array<std::uint8_t, 1> bytes;
-		read_bytes(bytes);
-		return bytes[0];
-	}
-
-	std::uint16_t BinaryReader::read_big_endian_uint16()
-	{
-		std::array<std::uint8_t, 2> bytes;
-		read_bytes(bytes);
-		return static_cast<std::uint16_t>(bytes[0]) << 8 | static_cast<std::uint16_t>(bytes[1]);
-	}
-
-	std::uint16_t BinaryReader::read_little_endian_uint16()
-	{
-		std::array<std::uint8_t, 2> bytes;
-		read_bytes(bytes);
-		return static_cast<std::uint16_t>(bytes[1]) << 8 | static_cast<std::uint16_t>(bytes[0]);
-	}
-
-	std::uint32_t BinaryReader::read_big_endian_uint32()
-	{
-		std::array<std::uint8_t, 4> bytes;
-		read_bytes(bytes);
-		return static_cast<std::uint32_t>(bytes[0]) << 24 | static_cast<std::uint32_t>(bytes[1]) << 16 |
-		       static_cast<std::uint32_t>(bytes[2]) << 8 | static_cast<std::uint32_t>(bytes[3]);
-	}
-
-	std::uint32_t BinaryReader::read_little_endian_uint32()
-	{
-		std::array<std::uint8_t, 4> bytes;
-		read_bytes(bytes);
-		return static_cast<std::uint32_t>(bytes[3]) << 24 | static_cast<std::uint32_t>(bytes[2]) << 16 |
-		       static_cast<std::uint32_t>(bytes[1]) << 8 | static_cast<std::uint32_t>(bytes[0]);
-	}
-
-	std::uint64_t BinaryReader::read_big_endian_uint64()
-	{
-		std::array<std::uint8_t, 8> bytes;
-		read_bytes(bytes);
-		return static_cast<std::uint64_t>(bytes[0]) << 56 | static_cast<std::uint64_t>(bytes[1]) << 48 |
-		       static_cast<std::uint64_t>(bytes[2]) << 40 | static_cast<std::uint64_t>(bytes[3]) << 32 |
-		       static_cast<std::uint64_t>(bytes[4]) << 24 | static_cast<std::uint64_t>(bytes[5]) << 16 |
-		       static_cast<std::uint64_t>(bytes[6]) << 8 | static_cast<std::uint64_t>(bytes[7]);
-	}
-
-	std::uint64_t BinaryReader::read_little_endian_uint64()
-	{
-		std::array<std::uint8_t, 8> bytes;
-		read_bytes(bytes);
-		return static_cast<std::uint64_t>(bytes[7]) << 56 | static_cast<std::uint64_t>(bytes[6]) << 48 |
-		       static_cast<std::uint64_t>(bytes[5]) << 40 | static_cast<std::uint64_t>(bytes[4]) << 32 |
-		       static_cast<std::uint64_t>(bytes[3]) << 24 | static_cast<std::uint64_t>(bytes[2]) << 16 |
-		       static_cast<std::uint64_t>(bytes[1]) << 8 | static_cast<std::uint64_t>(bytes[0]);
-	}
-
 	void BinaryReader::skip_bytes(std::size_t num_bytes)
 	{
 		if (num_bytes == 0)
@@ -157,14 +100,6 @@ namespace Rayni
 			throw Exception(position(), "failed to skip " + std::to_string(num_bytes) + " bytes");
 
 		buffer_position_ += num_bytes;
-	}
-
-	std::optional<std::int8_t> BinaryReader::peek_int8()
-	{
-		if (buffer_position_ >= buffer_size_)
-			return std::nullopt;
-
-		return buffer_[buffer_position_];
 	}
 
 	std::string BinaryReader::position() const

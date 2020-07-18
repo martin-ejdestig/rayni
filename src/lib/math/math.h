@@ -38,6 +38,11 @@ namespace Rayni
 	static_assert(sizeof(real_t) == sizeof(real_uint_t));
 	static_assert(std::numeric_limits<real_t>::is_iec559, "real_t is not a IEEE 754 float");
 
+	static constexpr real_t REAL_MAX = std::numeric_limits<real_t>::max();
+	static constexpr real_t REAL_LOWEST = std::numeric_limits<real_t>::lowest();
+	static constexpr real_t REAL_EPSILON = std::numeric_limits<real_t>::epsilon();
+	static constexpr real_t REAL_INFINITY = std::numeric_limits<real_t>::infinity();
+
 	static constexpr real_t PI = real_t(3.14159265358979323846);
 
 	static constexpr inline real_t frac(real_t x)
@@ -88,8 +93,8 @@ namespace Rayni
 	// infinity: 0x7f800000, that is all bits in mantissa cleared and all bits in exponent set).
 	static constexpr inline real_t real_next_up(real_t r)
 	{
-		if (r > std::numeric_limits<real_t>::max())
-			return r; // +infinity. Detect with > max() since std::isinf() is a NOP with -ffast-math.
+		if (r > REAL_MAX)
+			return r; // +infinity. Detect with > max since std::isinf() is a NOP with -ffast-math.
 
 		if (r == -real_t(0))
 			r = 0; // +0 and -0 bit patterns are not adjacent, -0 => +0
@@ -116,8 +121,8 @@ namespace Rayni
 	// and sign bit set).
 	static constexpr inline real_t real_next_down(real_t r)
 	{
-		if (r < std::numeric_limits<real_t>::lowest())
-			return r; // -infinity. Detect with < lowest() since std::isinf() is a NOP with -ffast-math.
+		if (r < REAL_LOWEST)
+			return r; // -infinity. Detect with < lowest since std::isinf() is a NOP with -ffast-math.
 
 		if (r == 0)
 			r = -real_t(0); // -0 and +0 bit patterns are not adjacent, +0 => -0
@@ -136,7 +141,7 @@ namespace Rayni
 	// Chapter 3.9, Managing Rounding Error, p. 206-236.
 	static constexpr inline real_t error_bound_gamma(unsigned int n)
 	{
-		constexpr real_t MACHINE_EPSILON = std::numeric_limits<real_t>::epsilon() / 2;
+		constexpr real_t MACHINE_EPSILON = REAL_EPSILON / 2;
 
 		return (real_t(n) * MACHINE_EPSILON) / (1 - real_t(n) * MACHINE_EPSILON);
 	}

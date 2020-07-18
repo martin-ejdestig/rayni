@@ -27,8 +27,6 @@ namespace Rayni
 {
 	namespace
 	{
-		constexpr real_t REAL_INFINITY = std::numeric_limits<real_t>::infinity();
-
 		void test_next_up(real_t r)
 		{
 			EXPECT_EQ(real_next_up(r), std::nextafter(r, REAL_INFINITY)) << "r = " << r;

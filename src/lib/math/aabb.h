@@ -22,7 +22,6 @@
 
 #include <algorithm>
 #include <cassert>
-#include <limits>
 
 #include "lib/math/math.h"
 #include "lib/math/ray.h"
@@ -66,7 +65,7 @@ namespace Rayni
 		bool intersects(const Ray &ray, real_t &t_min_out, real_t &t_max_out) const
 		{
 			real_t t_min = 0;
-			real_t t_max = std::numeric_limits<real_t>::infinity();
+			real_t t_max = REAL_INFINITY;
 
 			for (unsigned int i = 0; i < 3; i++)
 			{
@@ -92,9 +91,7 @@ namespace Rayni
 			return true;
 		}
 
-		bool intersects(const Ray &ray,
-		                const Vector3 &inv_dir,
-		                real_t ray_t_max = std::numeric_limits<real_t>::infinity()) const
+		bool intersects(const Ray &ray, const Vector3 &inv_dir, real_t ray_t_max = REAL_INFINITY) const
 		{
 			real_t t_min = (minimum_.x() - ray.origin.x()) * inv_dir.x();
 			real_t t_max = (maximum_.x() - ray.origin.x()) * inv_dir.x();

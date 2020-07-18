@@ -25,7 +25,6 @@
 #include <cassert>
 #include <cmath>
 #include <cstddef>
-#include <limits>
 
 #include "lib/containers/variant.h"
 #include "lib/math/hash.h"
@@ -54,9 +53,7 @@ namespace Rayni
 
 		static constexpr Vector3 infinity()
 		{
-			return {std::numeric_limits<real_t>::infinity(),
-			        std::numeric_limits<real_t>::infinity(),
-			        std::numeric_limits<real_t>::infinity()};
+			return {REAL_INFINITY, REAL_INFINITY, REAL_INFINITY};
 		}
 
 		static Vector3 min(const Vector3 &a, const Vector3 &b)

@@ -24,6 +24,8 @@
 // Turn it off. No complicated formatting should be done in this section anyway.
 // clang-format off
 
+#define RAYNI_L1_CACHE_LINE_SIZE @l1_cache_line_size@
+
 #define RAYNI_DOUBLE_PRECISION @double_precision@
 
 #define RAYNI_RAY_TRIANGLE_INTERSECTION_MOLLER_TRUMBORE 1

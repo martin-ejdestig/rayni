@@ -61,6 +61,20 @@ namespace Rayni
 			}
 		}
 
+		void arrive()
+		{
+			std::unique_lock<std::mutex> lock(mutex_);
+
+			arrived_++;
+
+			if (arrived_ == num_threads_)
+			{
+				arrived_ = 0;
+				generation_++;
+				condition_.notify_all();
+			}
+		}
+
 	private:
 		std::mutex mutex_;
 		std::condition_variable condition_;

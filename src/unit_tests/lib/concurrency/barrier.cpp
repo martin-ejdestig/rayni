@@ -48,6 +48,26 @@ namespace Rayni
 			thread.join();
 	}
 
+	TEST(Barrier, Arrive)
+	{
+		constexpr unsigned int NUM_THREADS = 16;
+		Barrier barrier(NUM_THREADS + 1);
+		std::atomic<int> counter{0};
+		std::vector<std::thread> threads;
+
+		for (unsigned int i = 0; i < NUM_THREADS; i++)
+			threads.emplace_back([&] {
+				counter++;
+				barrier.arrive();
+			});
+
+		barrier.arrive_and_wait();
+		EXPECT_EQ(NUM_THREADS, counter);
+
+		for (auto &thread : threads)
+			thread.join();
+	}
+
 	TEST(Barrier, ArriveAndWaitMultipleTimesWithSameBarrier)
 	{
 		constexpr unsigned int NUM_THREADS = 16;

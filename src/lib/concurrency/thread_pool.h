@@ -77,10 +77,14 @@ namespace Rayni
 			return promise->get_future();
 		}
 
-		bool thread_available() const
+		// NOTE: Number of available threads may change after this method has returned.
+		// Other threads can add tasks and tasks can finish. Only call this if it is known
+		// at call site not to change until value has been used or if it can be quaranteed
+		// not to change in a way that affects call site.
+		unsigned int threads_available() const
 		{
 			std::lock_guard<std::mutex> lock(mutex_);
-			return threads_.size() - threads_working_ > 0;
+			return threads_.size() - threads_working_;
 		}
 
 	private:

@@ -140,27 +140,37 @@ namespace Rayni
 		EXPECT_EQ(SUM, sum);
 	}
 
-	TEST(ThreadPool, ThreadAvailable)
+	TEST(ThreadPool, ThreadsAvailable)
 	{
 		constexpr unsigned int NUM_THREADS = 2;
 		ThreadPool thread_pool(NUM_THREADS);
-		Barrier barrier(NUM_THREADS + 1);
-		auto task = [&] {
-			barrier.arrive_and_wait(); // Wait for pre EXPECT_FALSE.
-			barrier.arrive_and_wait(); // Wait for post EXPECT_FALSE.
-		};
+		Barrier barrier_one(1 + 1);
+		Barrier barrier_all(NUM_THREADS + 1);
 
-		EXPECT_TRUE(thread_pool.thread_available());
+		EXPECT_EQ(NUM_THREADS, thread_pool.threads_available());
 
-		thread_pool.add_task(task);
-		EXPECT_TRUE(thread_pool.thread_available());
+		thread_pool.add_task([&] {
+			barrier_one.arrive_and_wait(); // Wait for pre "1 thread busy?".
+			barrier_all.arrive_and_wait(); // Wait for pre "all threads busy?".
+			barrier_all.arrive_and_wait(); // Wait for post "all threads_busy?".
+		});
 
-		thread_pool.add_task(task);
-		barrier.arrive_and_wait(); // Pre EXPECT_FALSE.
-		EXPECT_FALSE(thread_pool.thread_available());
-		barrier.arrive_and_wait(); // Post EXPECT_FALSE.
+		barrier_one.arrive_and_wait(); // pre "1 thread busy?".
+		EXPECT_EQ(1, thread_pool.threads_available());
+
+		thread_pool.add_task([&] {
+			barrier_all.arrive_and_wait(); // Wait for pre "all threads busy?".
+			barrier_all.arrive_and_wait(); // Wait for post "all threads busy?".
+		});
+
+		barrier_all.arrive_and_wait(); // pre "all threads busy?"
+
+		EXPECT_EQ(0, thread_pool.threads_available());
+
+		barrier_all.arrive_and_wait(); // post "all threds busy?"
 
 		thread_pool.wait();
-		EXPECT_TRUE(thread_pool.thread_available());
+
+		EXPECT_EQ(NUM_THREADS, thread_pool.threads_available());
 	}
 }

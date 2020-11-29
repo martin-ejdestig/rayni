@@ -24,6 +24,7 @@
 #	pragma clang diagnostic ignored "-Wdeprecated-register"
 #	pragma clang diagnostic ignored "-Wold-style-cast"
 #	pragma clang diagnostic ignored "-Wsign-conversion"
+#	pragma clang diagnostic ignored "-Wsuggest-override"
 #	pragma clang diagnostic ignored "-Wzero-as-null-pointer-constant"
 #elif defined __GNUC__
 #	pragma GCC diagnostic push

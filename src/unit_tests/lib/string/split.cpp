@@ -90,7 +90,6 @@ namespace Rayni
 
 	TEST(StringSplit, ToArrayEmptyString)
 	{
-		EXPECT_EQ(ResultArray<0>({}), (string_split_to_array<std::string, 0>("", ' ')));
 		EXPECT_EQ(ResultArray<1>({""}), (string_split_to_array<std::string, 1>("", ' ')));
 		EXPECT_EQ(ResultArray<2>({"", ""}), (string_split_to_array<std::string, 2>("", ' ')));
 	}

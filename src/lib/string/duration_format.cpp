@@ -24,6 +24,13 @@
 #include <iomanip>
 #include <sstream>
 
+// TODO: Remove once https://bugs.llvm.org/show_bug.cgi?id=44325 is fixed.
+// Spurious warning when e.g. >= is rewritten to <=>, which happens with chrono. *sigh*
+#if defined __clang__
+#	pragma clang diagnostic push
+#	pragma clang diagnostic ignored "-Wzero-as-null-pointer-constant"
+#endif
+
 namespace Rayni
 {
 	std::string duration_format(std::chrono::nanoseconds ns, const DurationFormatOptions &options)
@@ -57,3 +64,7 @@ namespace Rayni
 		return stream.str();
 	}
 }
+
+#if defined __clang__
+#	pragma clang diagnostic pop
+#endif

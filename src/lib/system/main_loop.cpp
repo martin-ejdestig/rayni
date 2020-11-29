@@ -26,6 +26,13 @@
 
 #include "lib/math/hash.h"
 
+// TODO: Remove once https://bugs.llvm.org/show_bug.cgi?id=44325 is fixed.
+// Spurious warning when e.g. >= is rewritten to <=>, which happens with chrono. *sigh*
+#if defined __clang__
+#	pragma clang diagnostic push
+#	pragma clang diagnostic ignored "-Wzero-as-null-pointer-constant"
+#endif
+
 namespace Rayni
 {
 	// Data for monitoring file descriptors.
@@ -425,3 +432,7 @@ namespace Rayni
 		data->remove(std::exchange(id_, TIMER_ID_EMPTY));
 	}
 }
+
+#if defined __clang__
+#	pragma clang diagnostic pop
+#endif

@@ -8,6 +8,12 @@
 #   are called in a function marked noexcept. Unclear if the bug is in
 #   clang-tidy or libstdc++. TODO: Fixed? File bug(s)?
 #
+# - misc-no-recursion is disabled because... do not want it. (Many algorithms
+#   etc. are much easier to reason about with recursion. In some cases, e.g.
+#   tree building, a stack could be used. But then an artificial limit would
+#   have to be imposed or memory has to be allocated dynamically on the heap.
+#   Do not want that.)
+#
 # - modernize-pass-by-value is disabled because it causes many "false" warnings
 #   and I have never really liked the recommendation in general. It is too
 #   broad. It also seems like the C++ community has swung around a bit on this
@@ -48,6 +54,10 @@
 #
 # - readability-misleading-indentation is broken with "if constexpr". See
 #   https://bugs.llvm.org/show_bug.cgi?id=32204 .
+#
+# - readability-use-anyofallof is disabled because it does not make code more
+#   readable more often than not in my opinion. That it suggests std::ranges in
+#   C++20 mode makes it even worse (still _very_ sceptical about std::ranges).
 
 Checks: "\
 bugprone-*,\
@@ -59,6 +69,7 @@ google-explicit-constructor,\
 google-global-names-in-headers,\
 google-readability-casting,\
 misc-*,\
+-misc-no-recursion,\
 modernize-*,\
 -modernize-avoid-c-arrays,\
 -modernize-pass-by-value,\
@@ -68,6 +79,7 @@ performance-*,\
 readability-*,\
 -readability-magic-numbers,\
 -readability-misleading-indentation,\
+-readability-use-anyofallof,\
 "
 
 HeaderFilterRegex: '^src/'

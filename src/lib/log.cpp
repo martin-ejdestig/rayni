@@ -95,6 +95,8 @@ namespace Rayni
 			return state;
 		}
 
+		std::string format_string(const char *format, std::va_list args) RAYNI_LOG_PRINTF_ATTRIBUTE(1, 0);
+
 		std::string format_string(const char *format, std::va_list args)
 		{
 			char buffer[1024];

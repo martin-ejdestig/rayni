@@ -234,7 +234,7 @@ namespace Rayni
 				return read_ascii_number<T>(reader);
 
 			return header.format == Format::BINARY_BIG_ENDIAN ? reader.read_big_endian<T>() :
-			                                                    reader.read_little_endian<T>();
+                                                                            reader.read_little_endian<T>();
 		}
 
 		template <typename T>

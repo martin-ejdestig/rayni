@@ -60,7 +60,7 @@ namespace Rayni
 		}
 
 		template <typename... Args>
-		static Variant map(Args &&... args)
+		static Variant map(Args &&...args)
 		{
 			Map map;
 			fill_map(map, std::forward<Args>(args)...);
@@ -80,7 +80,7 @@ namespace Rayni
 		}
 
 		template <typename... Args>
-		static Variant vector(Args &&... args)
+		static Variant vector(Args &&...args)
 		{
 			Vector vector;
 			fill_vector(vector, std::forward<Args>(args)...);
@@ -235,14 +235,14 @@ namespace Rayni
 		}
 
 		template <typename... Args>
-		static void fill_map(Map &map, const std::string &key, Variant &&value, Args &&... args)
+		static void fill_map(Map &map, const std::string &key, Variant &&value, Args &&...args)
 		{
 			map.emplace(key, std::move(value));
 			fill_map(map, std::forward<Args>(args)...);
 		}
 
 		template <typename T, typename... Args>
-		static void fill_map(Map &map, const std::string &key, const T &value, Args &&... args)
+		static void fill_map(Map &map, const std::string &key, const T &value, Args &&...args)
 		{
 			return fill_map(map, key, Variant(value), std::forward<Args>(args)...);
 		}
@@ -261,14 +261,14 @@ namespace Rayni
 		}
 
 		template <typename... Args>
-		static void fill_vector(Vector &vector, Variant &&value, Args &&... args)
+		static void fill_vector(Vector &vector, Variant &&value, Args &&...args)
 		{
 			vector.emplace_back(std::move(value));
 			fill_vector(vector, std::forward<Args>(args)...);
 		}
 
 		template <typename T, typename... Args>
-		static void fill_vector(Vector &vector, const T &value, Args &&... args)
+		static void fill_vector(Vector &vector, const T &value, Args &&...args)
 		{
 			return fill_vector(vector, Variant(value), std::forward<Args>(args)...);
 		}

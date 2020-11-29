@@ -124,7 +124,7 @@ namespace Rayni
 		}
 
 		template <typename Method, typename... Args>
-		void notify(Method method, const Args &... args)
+		void notify(Method method, const Args &...args)
 		{
 			for (auto *listener : listeners_)
 				(listener->*method)(args...);

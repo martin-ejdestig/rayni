@@ -65,7 +65,7 @@ namespace Rayni
 
 		if (type == "scale")
 			return args.is_vector() ? Transform::scale(args.to<Vector3>()) :
-			                          Transform::scale(args.to<real_t>());
+                                                  Transform::scale(args.to<real_t>());
 
 		if (type == "rotate_x")
 			return Transform::rotate_x(radians_from_degrees(args.to<real_t>()));

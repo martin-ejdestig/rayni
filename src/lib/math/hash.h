@@ -37,7 +37,7 @@ namespace Rayni
 	}
 
 	template <typename T1, typename T2, typename... Args>
-	static constexpr inline std::size_t hash_combine_for(const T1 &value1, const T2 &value2, const Args &... args)
+	static constexpr inline std::size_t hash_combine_for(const T1 &value1, const T2 &value2, const Args &...args)
 	{
 		return hash_combine(std::hash<T1>()(value1), hash_combine_for(value2, args...));
 	}

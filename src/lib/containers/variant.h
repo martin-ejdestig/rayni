@@ -149,7 +149,6 @@ namespace Rayni
 
 		Variant &operator=(Variant &&other) noexcept
 		{
-			reset_to_none();
 			initialize_from(std::move(other));
 			return *this;
 		}

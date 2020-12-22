@@ -75,7 +75,8 @@ namespace Rayni
 
 	void Variant::initialize_from(Variant &&other) noexcept
 	{
-		assert(type_ == Type::NONE);
+		if (type_ != Type::NONE)
+			reset_to_none();
 
 		switch (other.type_)
 		{

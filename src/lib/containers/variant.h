@@ -27,7 +27,6 @@
 #include <string>
 #include <type_traits>
 #include <utility>
-#include <variant>
 #include <vector>
 
 namespace Rayni
@@ -40,12 +39,20 @@ namespace Rayni
 		using Map = std::map<std::string, Variant>;
 		using Vector = std::vector<Variant>;
 
-		Variant() = default;
-		Variant(const Variant &) = delete;
-		Variant(Variant &&other) noexcept;
-
-		explicit Variant(Map &&map) noexcept : value_(std::move(map))
+		Variant()
 		{
+		}
+
+		Variant(const Variant &) = delete;
+
+		Variant(Variant &&other) noexcept
+		{
+			initialize_from(std::move(other));
+		}
+
+		explicit Variant(Map &&map) noexcept : type_(Type::MAP)
+		{
+			new (&value_.map) Map(std::move(map));
 			reparent_children();
 		}
 
@@ -67,8 +74,9 @@ namespace Rayni
 			return Variant(std::move(map));
 		}
 
-		explicit Variant(Vector &&vector) noexcept : value_(std::move(vector))
+		explicit Variant(Vector &&vector) noexcept : type_(Type::VECTOR)
 		{
+			new (&value_.vector) Vector(std::move(vector));
 			reparent_children();
 		}
 
@@ -87,102 +95,169 @@ namespace Rayni
 			return Variant(std::move(vector));
 		}
 
-		explicit Variant(bool boolean) noexcept : value_(boolean)
+		explicit Variant(bool boolean) noexcept : type_(Type::BOOL)
 		{
+			value_.boolean = boolean;
 		}
 
-		explicit Variant(int number) noexcept : value_(number)
+		explicit Variant(int number) noexcept : type_(Type::INT)
 		{
+			value_.number_int = number;
 		}
 
-		explicit Variant(unsigned int number) noexcept : value_(number)
+		explicit Variant(unsigned int number) noexcept : type_(Type::UNSIGNED_INT)
 		{
+			value_.number_unsigned_int = number;
 		}
 
-		explicit Variant(float number) noexcept : value_(number)
+		explicit Variant(float number) noexcept : type_(Type::FLOAT)
 		{
+			value_.number_float = number;
 		}
 
-		explicit Variant(double number) noexcept : value_(number)
+		explicit Variant(double number) noexcept : type_(Type::DOUBLE)
 		{
+			value_.number_double = number;
 		}
 
 		explicit Variant(const char *string) : Variant(std::string(string))
 		{
 		}
 
-		explicit Variant(std::string &&string) noexcept : value_(std::move(string))
+		explicit Variant(std::string &&string) noexcept : type_(Type::STRING)
 		{
+			new (&value_.string) std::string(std::move(string));
 		}
 
-		explicit Variant(const std::string &string) : Variant(std::string(string))
+		explicit Variant(const std::string &string) : type_(Type::STRING)
 		{
+			new (&value_.string) std::string(string);
 		}
 
-		~Variant() = default;
+		~Variant()
+		{
+			reset_to_none();
+		}
 
 		Variant &operator=(const Variant &) = delete;
-		Variant &operator=(Variant &&other) noexcept;
+
+		Variant &operator=(Variant &&other) noexcept
+		{
+			reset_to_none();
+			initialize_from(std::move(other));
+			return *this;
+		}
 
 		bool is_none() const
 		{
-			return std::holds_alternative<std::monostate>(value_);
+			return type_ == Type::NONE;
 		}
 
 		bool is_map() const
 		{
-			return std::holds_alternative<Map>(value_);
+			return type_ == Type::MAP;
 		}
 
 		bool is_vector() const
 		{
-			return std::holds_alternative<Vector>(value_);
+			return type_ == Type::VECTOR;
 		}
 
 		bool is_bool() const
 		{
-			return std::holds_alternative<bool>(value_);
+			return type_ == Type::BOOL;
 		}
 
 		bool is_int() const
 		{
-			return std::holds_alternative<int>(value_);
+			return type_ == Type::INT;
 		}
 
 		bool is_unsigned_int() const
 		{
-			return std::holds_alternative<unsigned int>(value_);
+			return type_ == Type::UNSIGNED_INT;
 		}
 
 		bool is_float() const
 		{
-			return std::holds_alternative<float>(value_);
+			return type_ == Type::FLOAT;
 		}
 
 		bool is_double() const
 		{
-			return std::holds_alternative<double>(value_);
+			return type_ == Type::DOUBLE;
 		}
 
 		bool is_string() const
 		{
-			return std::holds_alternative<std::string>(value_);
+			return type_ == Type::STRING;
 		}
 
-		Map &as_map();
-		const Map &as_map() const;
+		Map &as_map()
+		{
+			require_type(Type::MAP);
+			return value_.map;
+		}
 
-		Vector &as_vector();
-		const Vector &as_vector() const;
+		const Map &as_map() const
+		{
+			require_type(Type::MAP);
+			return value_.map;
+		}
 
-		const bool &as_bool() const;
-		const int &as_int() const;
-		const unsigned int &as_unsigned_int() const;
-		const float &as_float() const;
-		const double &as_double() const;
-		const std::string &as_string() const;
+		Vector &as_vector()
+		{
+			require_type(Type::VECTOR);
+			return value_.vector;
+		}
 
-		bool has(const std::string &key) const;
+		const Vector &as_vector() const
+		{
+			require_type(Type::VECTOR);
+			return value_.vector;
+		}
+
+		const bool &as_bool() const
+		{
+			require_type(Type::BOOL);
+			return value_.boolean;
+		}
+
+		const int &as_int() const
+		{
+			require_type(Type::INT);
+			return value_.number_int;
+		}
+
+		const unsigned int &as_unsigned_int() const
+		{
+			require_type(Type::UNSIGNED_INT);
+			return value_.number_unsigned_int;
+		}
+
+		const float &as_float() const
+		{
+			require_type(Type::FLOAT);
+			return value_.number_float;
+		}
+
+		const double &as_double() const
+		{
+			require_type(Type::DOUBLE);
+			return value_.number_double;
+		}
+
+		const std::string &as_string() const
+		{
+			require_type(Type::STRING);
+			return value_.string;
+		}
+
+		bool has(const std::string &key) const
+		{
+			auto i = map_iterator(key);
+			return i != value_.map.cend();
+		}
 
 		const Variant &get(const std::string &key) const;
 
@@ -195,9 +270,8 @@ namespace Rayni
 		template <typename T>
 		T get(const std::string &key, const T &default_value) const
 		{
-			const Map &map = as_map();
-			auto i = map.find(key);
-			return i == map.cend() ? default_value : i->second.to<T>();
+			auto i = map_iterator(key);
+			return i == value_.map.cend() ? default_value : i->second.to<T>();
 		}
 
 		const Variant &get(std::size_t index) const;
@@ -221,6 +295,23 @@ namespace Rayni
 		std::string path() const;
 
 	private:
+		enum class Type
+		{
+			NONE,
+
+			MAP,
+			VECTOR,
+
+			BOOL,
+
+			INT,
+			UNSIGNED_INT,
+			FLOAT,
+			DOUBLE,
+
+			STRING
+		};
+
 		// TODO: fill_map() should be removed when std::initializer_list can handle
 		//       non-copyable types. See TODO for Variant::map() above.
 		static void fill_map(Map &map, const std::string &key, Variant &&value)
@@ -273,18 +364,59 @@ namespace Rayni
 			return fill_vector(vector, Variant(value), std::forward<Args>(args)...);
 		}
 
+		void reset_to_none() noexcept;
+		void initialize_from(Variant &&other) noexcept;
 		void reparent_children() noexcept;
+
+		Map::const_iterator map_iterator(const std::string &key) const;
 
 		std::string key_in_parent() const;
 		std::size_t index_in_parent() const;
 
 		std::string prepend_path_if_has_parent(const std::string &str) const;
 
+		void require_type(Type required_type) const;
+
 		static std::string map_to_string(const Map &map);
 		static std::string vector_to_string(const Vector &vector);
 
+		std::string type_to_string() const
+		{
+			return type_to_string(type_);
+		}
+		static std::string type_to_string(Type type);
+
 		const Variant *parent_ = nullptr;
-		std::variant<std::monostate, Map, Vector, bool, int, unsigned int, float, double, std::string> value_;
+		Type type_ = Type::NONE;
+
+		union Value
+		{
+			Value()
+			{
+			}
+
+			Value(Value &other) = delete;
+			Value(Value &&other) = delete;
+
+			~Value()
+			{
+			}
+
+			Value &operator=(const Value &other) = delete;
+			Value &operator=(Value &&other) = delete;
+
+			Map map;
+			Vector vector;
+
+			bool boolean;
+
+			int number_int;
+			unsigned int number_unsigned_int;
+			float number_float;
+			double number_double;
+
+			std::string string;
+		} value_;
 	};
 
 	class Variant::Exception : public std::runtime_error

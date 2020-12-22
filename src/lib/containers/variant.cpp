@@ -33,9 +33,13 @@ namespace Rayni
 		case Type::NONE:
 			break;
 		case Type::MAP:
+			// TODO: False positive. Clang analyzer fixed? Moved from object must still be destroyed.
+			// NOLINTNEXTLINE(clang-analyzer-cplusplus.Move)
 			value_.map.~Map();
 			break;
 		case Type::VECTOR:
+			// TODO: False positive. Clang analyzer fixed? Moved from object must still be destroyed.
+			// NOLINTNEXTLINE(clang-analyzer-cplusplus.Move)
 			value_.vector.~Vector();
 			break;
 		case Type::BOOL:
@@ -60,6 +64,8 @@ namespace Rayni
 			// is a bug in Clang. See http://llvm.org/bugs/show_bug.cgi?id=12350 and its
 			// dependencies. Temporary workaround with using until Clang has been fixed.
 			using String = std::string;
+			// TODO: False positive. Clang analyzer fixed? Moved from object must still be destroyed.
+			// NOLINTNEXTLINE(clang-analyzer-cplusplus.Move)
 			value_.string.~String();
 			break;
 		}
@@ -125,7 +131,7 @@ namespace Rayni
 	{
 		auto i = map_iterator(key);
 		if (i == value_.map.cend())
-			throw Exception(*this, "key \"" + key + "\" not found");
+			throw Exception(*this, "key " + key + " not found");
 		return i->second;
 	}
 
@@ -139,7 +145,7 @@ namespace Rayni
 	{
 		require_type(Type::VECTOR);
 		if (index >= value_.vector.size())
-			throw Exception(*this, "index \"" + std::to_string(index) + "\" out of bounds");
+			throw Exception(*this, "index " + std::to_string(index) + " out of bounds");
 		return value_.vector[index];
 	}
 
@@ -148,7 +154,7 @@ namespace Rayni
 		if (is_bool())
 			return value_.boolean;
 
-		throw Exception(*this, "cannot convert \"" + type_to_string() + "\" to \"bool\"");
+		throw Exception(*this, "cannot convert " + type_to_string() + " to bool");
 	}
 
 	int Variant::to_int() const
@@ -255,7 +261,7 @@ namespace Rayni
 			return value_.string;
 		}
 
-		throw Exception(*this, "cannot convert \"" + type_to_string() + "\" to \"string\"");
+		throw Exception(*this, "cannot convert " + type_to_string() + " to string");
 	}
 
 	std::string Variant::map_to_string(const Map &map)

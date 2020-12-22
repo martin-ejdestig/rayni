@@ -39,9 +39,7 @@ namespace Rayni
 		using Map = std::map<std::string, Variant>;
 		using Vector = std::vector<Variant>;
 
-		Variant()
-		{
-		}
+		Variant() = default;
 
 		Variant(const Variant &) = delete;
 
@@ -391,14 +389,14 @@ namespace Rayni
 
 		union Value
 		{
-			Value()
+			Value() // NOLINT(modernize-use-equals-default)
 			{
 			}
 
 			Value(Value &other) = delete;
 			Value(Value &&other) = delete;
 
-			~Value()
+			~Value() // NOLINT(modernize-use-equals-default)
 			{
 			}
 

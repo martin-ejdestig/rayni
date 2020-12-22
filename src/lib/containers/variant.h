@@ -31,6 +31,14 @@
 
 namespace Rayni
 {
+	// Simple variant class. Mainly used instead of std::variant since:
+	// - It was created long before std::variant existed.
+	// - std::variant lacks some features in Variant (e.g. to() and path()).
+	// - The std::variant API is not good.
+	// std::variant was used internally in Variant instead of a union for a while but
+	// reverted it due to it generating worse code (at least when using libstdc++/libc++ and
+	// GCC/Clang). E.g. a lot of unnecessary exception code for accessing wrong value type even
+	// though type check was done just prior to getting value etc.
 	class Variant
 	{
 	public:

@@ -21,11 +21,9 @@
 #define RAYNI_LIB_FUNCTION_RESULT_H
 
 #include <cassert>
-#include <memory>
 #include <string>
 #include <system_error>
 #include <utility>
-#include <variant>
 
 // TODO: clang-format can not handle [[nodiscard]]. Remove clang-format off/on once
 //       https://bugs.llvm.org/show_bug.cgi?id=38401 is fixed. Until then, temporarily remove
@@ -44,10 +42,6 @@ namespace Rayni
 	// TODO: Perform more performance measurements to see if reasoning about size is justified.
 	//       Code generated for returning error will be larger with separate allocation which in
 	//       turn puts higher preassure on instruction cache.
-	//
-	// TODO: What is the status of std::expected? It did not make it into C++20. Check in >C++20
-	//       if something useful has been added to the standard that can replace Result or be
-	//       used in it.
 
 	class Error
 	{
@@ -75,114 +69,174 @@ namespace Rayni
 	{
 	public:
 		// NOLINTNEXTLINE(google-explicit-constructor) Want implicit conversion for less verbosity.
-		Result(T &&value) : value_or_error_(std::move(value))
+		Result(T &&value)
 		{
+			new (&value_or_error_.value) T(std::move(value));
 		}
 
 		// NOLINTNEXTLINE(google-explicit-constructor) Want implicit conversion for less verbosity.
-		Result(Error &&error) : value_or_error_(std::make_unique<Error>(std::move(error)))
+		Result(Error &&error) : is_error_(true)
 		{
+			value_or_error_.error = new Error(std::move(error));
 		}
 
 		// NOLINTNEXTLINE(google-explicit-constructor) Want implicit conversion for less verbosity.
-		Result(const Error &error) : value_or_error_(std::make_unique<Error>(error))
+		Result(const Error &error) : is_error_(true)
 		{
+			value_or_error_.error = new Error(error);
+		}
+
+		Result(Result &&other) noexcept
+		{
+			set_from(std::move(other));
 		}
 
 		Result(const Result &) = delete;
-		Result(Result &&) noexcept = default;
+
+		~Result()
+		{
+			reset();
+		}
+
 		Result &operator=(const Result &) = delete;
-		Result &operator=(Result &&) noexcept = default;
+
+		Result &operator=(Result &&other) noexcept
+		{
+			reset();
+			set_from(std::move(other));
+			return *this;
+		}
 
 		explicit operator bool() const
 		{
-			return !is_error();
+			return !is_error_;
 		}
 
 		bool is_error() const
 		{
-			return std::holds_alternative<std::unique_ptr<Error>>(value_or_error_);
+			return is_error_;
 		}
 
 		const Error &error() const
 		{
-			assert(is_error());
-			return *std::get<std::unique_ptr<Error>>(value_or_error_);
+			assert(is_error_ && value_or_error_.error);
+			return *value_or_error_.error;
 		}
 
 		T &operator*() &
 		{
-			return value();
+			assert(!is_error_);
+			return value_or_error_.value;
 		}
 
 		const T &operator*() const &
 		{
-			return value();
+			assert(!is_error_);
+			return value_or_error_.value;
 		}
 
 		T &&operator*() &&
 		{
-			return std::move(value());
+			assert(!is_error_);
+			return std::move(value_or_error_.value);
 		}
 
 		const T &&operator*() const &&
 		{
-			return std::move(value());
+			assert(!is_error_);
+			return std::move(value_or_error_.value);
 		}
 
 		T *operator->()
 		{
-			return &value();
+			assert(!is_error_);
+			return &value_or_error_.value;
 		}
 
 		const T *operator->() const
 		{
-			return &value();
+			assert(!is_error_);
+			return &value_or_error_.value;
 		}
 
 		T &value() &
 		{
-			assert(!is_error());
-			return std::get<T>(value_or_error_);
+			assert(!is_error_);
+			return value_or_error_.value;
 		}
 
 		const T &value() const &
 		{
-			assert(!is_error());
-			return std::get<T>(value_or_error_);
+			assert(!is_error_);
+			return value_or_error_.value;
 		}
 
 		T &&value() &&
 		{
-			assert(!is_error());
-			return std::move(std::get<T>(value_or_error_));
+			assert(!is_error_);
+			return std::move(value_or_error_.value);
 		}
 
 		const T &&value() const &&
 		{
-			assert(!is_error());
-			return std::move(std::get<T>(value_or_error_));
+			assert(!is_error_);
+			return std::move(value_or_error_.value);
 		}
 
 		T value_or(T &&default_value) const &
 		{
-			if (is_error())
+			if (is_error_)
 				return std::forward<T>(default_value);
 
-			return value();
+			return value_or_error_.value;
 		}
 
 		T value_or(T &&default_value) &&
 		{
-			if (is_error())
+			if (is_error_)
 				return std::forward<T>(default_value);
 
-			return std::move(value());
+			return std::move(value_or_error_.value);
 		}
 
 	private:
-		// TODO: Consider removing use of std::variant. Generates unnecessary code with exceptions.
-		std::variant<T, std::unique_ptr<Error>> value_or_error_;
+		void reset() noexcept
+		{
+			if (is_error_)
+			{
+				delete value_or_error_.error;
+				value_or_error_.error = nullptr;
+			}
+			else
+			{
+				if constexpr (std::is_destructible_v<T>)
+					value_or_error_.value.~T();
+			}
+		}
+
+		void set_from(Result &&other) noexcept
+		{
+			if (other.is_error_)
+			{
+				value_or_error_.error = std::exchange(other.value_or_error_.error, nullptr);
+				is_error_ = true;
+			}
+			else
+			{
+				new (&value_or_error_.value) T(std::move(other.value_or_error_.value));
+				is_error_ = false;
+			}
+		}
+
+		bool is_error_ = false;
+
+		union ValueOrError
+		{
+			ValueOrError() {} // NOLINT(modernize-use-equals-default)
+			~ValueOrError() {} // NOLINT(modernize-use-equals-default)
+			T value;
+			const Error *error;
+		} value_or_error_;
 	};
 
 	template <>
@@ -192,23 +246,38 @@ namespace Rayni
 		Result() = default;
 
 		// NOLINTNEXTLINE(google-explicit-constructor) Want implicit conversion for less verbosity.
-		Result(Error &&error) : error_(std::make_unique<Error>(std::move(error)))
+		Result(Error &&error) : error_(new Error(std::move(error)))
 		{
 		}
 
 		// NOLINTNEXTLINE(google-explicit-constructor) Want implicit conversion for less verbosity.
-		Result(const Error &error) : error_(std::make_unique<Error>(error))
+		Result(const Error &error) : error_(new Error(error))
 		{
 		}
 
 		Result(const Result &) = delete;
-		Result(Result &&) noexcept = default;
-		Result &operator=(Result &&) = default;
+
+		Result(Result &&other) noexcept : error_(std::exchange(other.error_, nullptr))
+		{
+		}
+
+		~Result()
+		{
+			delete error_;
+		}
+
 		Result &operator=(const Result &) noexcept = delete;
+
+		Result &operator=(Result &&other) noexcept
+		{
+			delete error_;
+			error_ = std::exchange(other.error_, nullptr);
+			return *this;
+		}
 
 		explicit operator bool() const
 		{
-			return !is_error();
+			return error_ == nullptr;
 		}
 
 		bool is_error() const
@@ -218,12 +287,12 @@ namespace Rayni
 
 		const Error &error() const
 		{
-			assert(is_error());
+			assert(error_ != nullptr);
 			return *error_;
 		}
 
 	private:
-		std::unique_ptr<Error> error_;
+		const Error *error_ = nullptr;
 	};
 
 	// See resoning about size at top of this file.

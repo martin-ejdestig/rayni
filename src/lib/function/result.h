@@ -55,6 +55,11 @@ namespace Rayni
 		{
 		}
 
+		Error(const std::string &prefix, const std::string &message) :
+		        message_(prefix.empty() ? message : prefix + ": " + message)
+		{
+		}
+
 		const std::string &message() const
 		{
 			return message_;

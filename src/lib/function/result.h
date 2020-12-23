@@ -25,6 +25,15 @@
 #include <system_error>
 #include <utility>
 
+// TODO: Other compilers than GCC. __GNUC__ is defined for Clang but it is just ignored. At least it
+//       looks like it when looking at the generated assembly.
+#ifdef __GNUC__
+#	define RAYNI_RESULT_COLD_ATTRIBUTE __attribute__((cold))
+#else
+#	warning Missing compiler support for RAYNI_RESULT_COLD_ATTRIBUTE
+#	define RAYNI_RESULT_COLD_ATTRIBUTE
+#endif
+
 // TODO: clang-format can not handle [[nodiscard]]. Remove clang-format off/on once
 //       https://bugs.llvm.org/show_bug.cgi?id=38401 is fixed. Until then, temporarily remove
 //       [[nodiscard]], format and add it back again when changing this file.
@@ -46,21 +55,21 @@ namespace Rayni
 	class Error
 	{
 	public:
-		explicit Error(std::string &&message) : message_(std::move(message))
+		explicit Error(std::string &&message) RAYNI_RESULT_COLD_ATTRIBUTE : message_(std::move(message))
 		{
 		}
 
-		Error(const std::string &message, std::error_code error_code) :
+		Error(const std::string &message, std::error_code error_code) RAYNI_RESULT_COLD_ATTRIBUTE :
 		        message_(message + ": " + error_code.message())
 		{
 		}
 
-		Error(const std::string &prefix, const std::string &message) :
+		Error(const std::string &prefix, const std::string &message) RAYNI_RESULT_COLD_ATTRIBUTE :
 		        message_(prefix.empty() ? message : prefix + ": " + message)
 		{
 		}
 
-		const std::string &message() const
+		const std::string &message() const RAYNI_RESULT_COLD_ATTRIBUTE
 		{
 			return message_;
 		}
@@ -80,13 +89,13 @@ namespace Rayni
 		}
 
 		// NOLINTNEXTLINE(google-explicit-constructor) Want implicit conversion for less verbosity.
-		Result(Error &&error) : is_error_(true)
+		Result(Error &&error) RAYNI_RESULT_COLD_ATTRIBUTE : is_error_(true)
 		{
 			value_or_error_.error = new Error(std::move(error));
 		}
 
 		// NOLINTNEXTLINE(google-explicit-constructor) Want implicit conversion for less verbosity.
-		Result(const Error &error) : is_error_(true)
+		Result(const Error &error) RAYNI_RESULT_COLD_ATTRIBUTE : is_error_(true)
 		{
 			value_or_error_.error = new Error(error);
 		}
@@ -114,15 +123,21 @@ namespace Rayni
 
 		explicit operator bool() const
 		{
-			return !is_error_;
+			if (is_error_) [[unlikely]]
+				return false; // NOLINT(readability-simplify-boolean-expr) Want [[unlikely]].
+
+			return true;
 		}
 
 		bool is_error() const
 		{
-			return is_error_;
+			if (is_error_) [[unlikely]]
+				return true; // NOLINT(readability-simplify-boolean-expr) Want [[unlikely]].
+
+			return false;
 		}
 
-		const Error &error() const
+		const Error &error() const RAYNI_RESULT_COLD_ATTRIBUTE
 		{
 			assert(is_error_ && value_or_error_.error);
 			return *value_or_error_.error;
@@ -190,7 +205,7 @@ namespace Rayni
 
 		T value_or(T &&default_value) const &
 		{
-			if (is_error_)
+			if (is_error_) [[unlikely]]
 				return std::forward<T>(default_value);
 
 			return value_or_error_.value;
@@ -198,7 +213,7 @@ namespace Rayni
 
 		T value_or(T &&default_value) &&
 		{
-			if (is_error_)
+			if (is_error_) [[unlikely]]
 				return std::forward<T>(default_value);
 
 			return std::move(value_or_error_.value);
@@ -207,7 +222,7 @@ namespace Rayni
 	private:
 		void reset() noexcept
 		{
-			if (is_error_)
+			if (is_error_) [[unlikely]]
 			{
 				delete value_or_error_.error;
 				value_or_error_.error = nullptr;
@@ -221,7 +236,7 @@ namespace Rayni
 
 		void set_from(Result &&other) noexcept
 		{
-			if (other.is_error_)
+			if (other.is_error_) [[unlikely]]
 			{
 				value_or_error_.error = std::exchange(other.value_or_error_.error, nullptr);
 				is_error_ = true;
@@ -251,12 +266,12 @@ namespace Rayni
 		Result() = default;
 
 		// NOLINTNEXTLINE(google-explicit-constructor) Want implicit conversion for less verbosity.
-		Result(Error &&error) : error_(new Error(std::move(error)))
+		Result(Error &&error) RAYNI_RESULT_COLD_ATTRIBUTE : error_(new Error(std::move(error)))
 		{
 		}
 
 		// NOLINTNEXTLINE(google-explicit-constructor) Want implicit conversion for less verbosity.
-		Result(const Error &error) : error_(new Error(error))
+		Result(const Error &error) RAYNI_RESULT_COLD_ATTRIBUTE : error_(new Error(error))
 		{
 		}
 
@@ -282,15 +297,21 @@ namespace Rayni
 
 		explicit operator bool() const
 		{
-			return error_ == nullptr;
+			if (error_) [[unlikely]]
+				return false; // NOLINT(readability-simplify-boolean-expr) Want [[unlikely]].
+
+			return true;
 		}
 
 		bool is_error() const
 		{
-			return error_ != nullptr;
+			if (error_) [[unlikely]]
+				return true; // NOLINT(readability-simplify-boolean-expr) Want [[unlikely]].
+
+			return false;
 		}
 
-		const Error &error() const
+		const Error &error() const RAYNI_RESULT_COLD_ATTRIBUTE
 		{
 			assert(error_ != nullptr);
 			return *error_;

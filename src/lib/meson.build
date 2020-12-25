@@ -2,7 +2,7 @@ lib_deps = [
     dependency('libjpeg', version : '>=1.5.0'),
     dependency('libpng', version : '>=1.6'),
     dependency('libwebp', version : '>=0.4'),
-    dependency('OpenEXR', version : '>=2.3.0')
+    tinyexr_dep
 ]
 
 version_info_header = vcs_tag(input : 'version_info.h.in',

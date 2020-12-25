@@ -67,7 +67,7 @@ namespace Rayni
 		std::vector<std::uint8_t> corrupt_exr_data()
 		{
 			auto data = exr_data();
-			data.at(data.size() - 20) ^= 0x01;
+			data.at(10) ^= 0x01;
 			return data;
 		}
 

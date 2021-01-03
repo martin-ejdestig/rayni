@@ -89,8 +89,7 @@ namespace Rayni
 			error_manager.error_exit = error_exit;
 			error_manager.output_message = output_message;
 
-			if (setjmp(error_manager.jump_buffer))
-			{
+			if (setjmp(error_manager.jump_buffer)) {
 				jpeg_destroy_decompress(&jpeg_decompress);
 				return false;
 			}
@@ -99,8 +98,7 @@ namespace Rayni
 			jpeg_stdio_src(&jpeg_decompress, &file);
 			jpeg_read_header(&jpeg_decompress, 1);
 
-			if (color_space_requires_manual_conversion(jpeg_decompress.jpeg_color_space))
-			{
+			if (color_space_requires_manual_conversion(jpeg_decompress.jpeg_color_space)) {
 				jpeg_destroy_decompress(&jpeg_decompress);
 				return false;
 			}
@@ -111,8 +109,7 @@ namespace Rayni
 
 			jpeg_start_decompress(&jpeg_decompress);
 
-			while (jpeg_decompress.output_scanline < jpeg_decompress.output_height)
-			{
+			while (jpeg_decompress.output_scanline < jpeg_decompress.output_height) {
 				std::uint8_t *scanline = &image.start_of_row(jpeg_decompress.output_scanline);
 				jpeg_read_scanlines(&jpeg_decompress, &scanline, 1);
 			}

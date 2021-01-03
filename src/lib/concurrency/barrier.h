@@ -46,14 +46,11 @@ namespace Rayni
 
 			arrived_++;
 
-			if (arrived_ == num_threads_)
-			{
+			if (arrived_ == num_threads_) {
 				arrived_ = 0;
 				generation_++;
 				condition_.notify_all();
-			}
-			else
-			{
+			} else {
 				unsigned int current_generation = generation_;
 
 				while (current_generation == generation_)
@@ -67,8 +64,7 @@ namespace Rayni
 
 			arrived_++;
 
-			if (arrived_ == num_threads_)
-			{
+			if (arrived_ == num_threads_) {
 				arrived_ = 0;
 				generation_++;
 				condition_.notify_all();

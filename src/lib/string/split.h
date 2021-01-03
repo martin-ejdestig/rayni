@@ -39,12 +39,10 @@ namespace Rayni
 		std::array<T, N> splits;
 		std::string_view remaining = string;
 
-		for (std::size_t i = 0; i < N && !remaining.empty(); i++)
-		{
+		for (std::size_t i = 0; i < N && !remaining.empty(); i++) {
 			std::size_t pos = i < N - 1 ? remaining.find(split_char) : std::string_view::npos;
 
-			if (pos == std::string_view::npos)
-			{
+			if (pos == std::string_view::npos) {
 				splits[i] = remaining;
 				break;
 			}

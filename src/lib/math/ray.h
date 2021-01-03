@@ -77,8 +77,7 @@ namespace Rayni
 
 		Vector3 offset_origin = origin + offset;
 
-		for (unsigned int i = 0; i < 3; ++i)
-		{
+		for (unsigned int i = 0; i < 3; ++i) {
 			if (offset[i] > 0)
 				offset_origin[i] = real_next_up(offset_origin[i]);
 			else if (offset[i] < 0)

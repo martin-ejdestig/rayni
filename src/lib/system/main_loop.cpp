@@ -85,8 +85,7 @@ namespace Rayni
 			Epoll::EventCount num_events = epoll_.wait(events);
 			std::lock_guard<std::recursive_mutex> lock(mutex_);
 
-			for (Epoll::EventCount i = 0; i < num_events; i++)
-			{
+			for (Epoll::EventCount i = 0; i < num_events; i++) {
 				auto it = map_.find(events[i].fd());
 
 				if (it != map_.cend() && it->second.callback)
@@ -177,14 +176,11 @@ namespace Rayni
 			clock::time_point now = clock::now();
 			bool dispatch_needed = true; // Repeat timers may expire again and callback can restart timer.
 
-			while (dispatch_needed)
-			{
+			while (dispatch_needed) {
 				dispatch_needed = false;
 
-				for (auto &[key, data] : map_)
-				{
-					if (expired(data, now))
-					{
+				for (auto &[key, data] : map_) {
+					if (expired(data, now)) {
 						if (data.interval.count() > 0)
 							data.expiration += data.interval;
 						else
@@ -255,8 +251,7 @@ namespace Rayni
 
 	int MainLoop::loop()
 	{
-		while (!exited())
-		{
+		while (!exited()) {
 			bool call_dispatch = wait();
 
 			if (call_dispatch)
@@ -287,35 +282,26 @@ namespace Rayni
 	{
 		auto events_left_to_process = std::exchange(events_occurred_, 0);
 
-		for (const auto &event : events_)
-		{
+		for (const auto &event : events_) {
 			if (events_left_to_process-- == 0)
 				break;
 
-			if (event.fd() == exit_event_fd_.fd())
-			{
+			if (event.fd() == exit_event_fd_.fd()) {
 				exit_event_fd_.read();
 				break;
 			}
 
-			if (event.fd() == run_in_event_fd_.fd())
-			{
+			if (event.fd() == run_in_event_fd_.fd()) {
 				run_in_event_fd_.read();
 				run_in_functions_.dispatch();
-			}
-			else if (event.fd() == timer_fd_.fd())
-			{
+			} else if (event.fd() == timer_fd_.fd()) {
 				timer_fd_.read();
 				timer_data_->dispatch();
 				set_timer_fd_from_timer_data();
-			}
-			else if (event.fd() == timer_data_->changed_fd())
-			{
+			} else if (event.fd() == timer_data_->changed_fd()) {
 				timer_data_->changed_fd_read();
 				set_timer_fd_from_timer_data();
-			}
-			else if (event.fd() == fd_data_->needs_dispatch_fd())
-			{
+			} else if (event.fd() == fd_data_->needs_dispatch_fd()) {
 				fd_data_->dispatch();
 			}
 		}
@@ -363,8 +349,7 @@ namespace Rayni
 	                                std::function<void(FDFlags flags)> &&callback)
 	{
 		auto data = fd_data_.lock();
-		if (data != main_loop.fd_data_)
-		{
+		if (data != main_loop.fd_data_) {
 			if (data)
 				data->remove(std::exchange(fd_, -1));
 
@@ -372,8 +357,7 @@ namespace Rayni
 			data = main_loop.fd_data_;
 		}
 
-		if (fd_ == fd)
-		{
+		if (fd_ == fd) {
 			data->modify(fd, flags, std::move(callback));
 			return;
 		}
@@ -401,8 +385,7 @@ namespace Rayni
 	                            std::function<void()> &&callback)
 	{
 		auto data = timer_data_.lock();
-		if (data != main_loop.timer_data_)
-		{
+		if (data != main_loop.timer_data_) {
 			if (data)
 				remove();
 

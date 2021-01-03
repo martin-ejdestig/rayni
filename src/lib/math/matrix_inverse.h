@@ -43,8 +43,7 @@ namespace Rayni
 			std::array<PivotPosition, Matrix::SIZE> pivot_positions;
 			std::array<unsigned int, Matrix::SIZE> pivot_used = {};
 
-			for (auto &pivot_position : pivot_positions)
-			{
+			for (auto &pivot_position : pivot_positions) {
 				pivot_position = find_pivot_position(m, pivot_used);
 
 				if (pivot_position.row != pivot_position.column)
@@ -55,10 +54,8 @@ namespace Rayni
 				m(pos, pos) = 1;
 				m.row(pos) *= pivot_inv;
 
-				for (unsigned int row = 0; row < Matrix::SIZE; row++)
-				{
-					if (row != pos)
-					{
+				for (unsigned int row = 0; row < Matrix::SIZE; row++) {
+					if (row != pos) {
 						real_t old_value = m(row, pos);
 						m(row, pos) = 0;
 						m.row(row) += m.row(pos) * -old_value;
@@ -93,15 +90,12 @@ namespace Rayni
 			PivotPosition pos;
 			real_t max = 0;
 
-			for (unsigned int row = 0; row < Matrix::SIZE; row++)
-			{
+			for (unsigned int row = 0; row < Matrix::SIZE; row++) {
 				if (pivot_used[row] == 1)
 					continue;
 
-				for (unsigned int column = 0; column < Matrix::SIZE; column++)
-				{
-					if (pivot_used[column] == 0 && std::abs(m(row, column)) >= max)
-					{
+				for (unsigned int column = 0; column < Matrix::SIZE; column++) {
+					if (pivot_used[column] == 0 && std::abs(m(row, column)) >= max) {
 						max = std::abs(m(row, column));
 						pos = {row, column};
 					}

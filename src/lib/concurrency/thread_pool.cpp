@@ -33,8 +33,7 @@ namespace Rayni
 
 	ThreadPool::ThreadPool(unsigned int size)
 	{
-		if (size < 1)
-		{
+		if (size < 1) {
 			size = default_size();
 			log_warning("Number of threads in thread pool too small (<1), using default (%u)", size);
 		}
@@ -58,8 +57,7 @@ namespace Rayni
 	{
 		unsigned int size = std::thread::hardware_concurrency();
 
-		if (size == 0)
-		{
+		if (size == 0) {
 			size = 8;
 			log_error("Failed to determine number of threads to use in thread pool, using %u", size);
 		}
@@ -107,8 +105,7 @@ namespace Rayni
 	{
 		std::unique_lock<std::mutex> lock(mutex_);
 
-		while (true)
-		{
+		while (true) {
 			while (!stop_ && tasks_.empty())
 				work_condition_.wait(lock);
 

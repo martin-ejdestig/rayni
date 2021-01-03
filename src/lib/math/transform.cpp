@@ -76,8 +76,7 @@ namespace Rayni
 		if (type == "rotate_z")
 			return Transform::rotate_z(radians_from_degrees(args.to<real_t>()));
 
-		if (type == "rotate")
-		{
+		if (type == "rotate") {
 			if (args.is_map())
 				return Transform::rotate(radians_from_degrees(args.get<real_t>("angle")),
 				                         args.get<Vector3>("axis"));

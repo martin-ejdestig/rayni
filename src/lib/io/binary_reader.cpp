@@ -112,8 +112,7 @@ namespace Rayni
 		if (!position_prefix_.empty())
 			str += position_prefix_;
 
-		if (buffer_position_ <= buffer_size_)
-		{
+		if (buffer_position_ <= buffer_size_) {
 			if (!str.empty())
 				str += ":";
 			str += "<offset " + std::to_string(buffer_position_) + ">";

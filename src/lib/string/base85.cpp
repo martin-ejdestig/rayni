@@ -39,8 +39,7 @@ namespace
 	{
 		Base85DecodingTable table = {};
 
-		for (std::uint8_t i = 0; i < static_cast<std::uint8_t>(BASE85_ALPHABET.size()); i++)
-		{
+		for (std::uint8_t i = 0; i < static_cast<std::uint8_t>(BASE85_ALPHABET.size()); i++) {
 			auto index = static_cast<std::uint8_t>(BASE85_ALPHABET[i]);
 			table[index] = i + 1;
 		}
@@ -57,12 +56,10 @@ namespace Rayni
 	{
 		std::vector<std::uint8_t> decoded_data;
 
-		for (std::string::size_type pos = 0; pos < str.length(); pos += 5)
-		{
+		for (std::string::size_type pos = 0; pos < str.length(); pos += 5) {
 			std::uint32_t accumulator = 0;
 
-			for (unsigned int i = 0; i < 5; i++)
-			{
+			for (unsigned int i = 0; i < 5; i++) {
 				auto c = static_cast<std::uint8_t>(pos + i < str.length() ? str[pos + i] : '~');
 				std::uint8_t decoded_byte = BASE85_DECODING_TABLE[c];
 
@@ -71,8 +68,7 @@ namespace Rayni
 
 				decoded_byte--;
 
-				if (i == 4)
-				{
+				if (i == 4) {
 					if (accumulator > 0xffffffff / 85 ||
 					    accumulator * 85 > 0xffffffff - decoded_byte)
 						return std::nullopt;
@@ -83,8 +79,7 @@ namespace Rayni
 
 			unsigned int num_bytes = str.length() - pos < 5 ? str.length() - pos - 1 : 4;
 
-			for (unsigned int i = 0; i < num_bytes; i++)
-			{
+			for (unsigned int i = 0; i < num_bytes; i++) {
 				decoded_data.emplace_back((accumulator >> 24) & 0xff);
 				accumulator = accumulator << 8;
 			}

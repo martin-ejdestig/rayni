@@ -30,8 +30,7 @@ namespace Rayni
 		std::vector<std::string> splits;
 		std::string_view remaining = string;
 
-		while (!remaining.empty())
-		{
+		while (!remaining.empty()) {
 			auto [left, right] = string_split_to_array<std::string_view, 2>(remaining, split_char);
 			splits.emplace_back(left);
 			remaining = right;

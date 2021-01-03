@@ -222,13 +222,10 @@ namespace Rayni
 	private:
 		void reset() noexcept
 		{
-			if (is_error_) [[unlikely]]
-			{
+			if (is_error_) [[unlikely]] {
 				delete value_or_error_.error;
 				value_or_error_.error = nullptr;
-			}
-			else
-			{
+			} else {
 				if constexpr (std::is_destructible_v<T>)
 					value_or_error_.value.~T();
 			}
@@ -236,13 +233,10 @@ namespace Rayni
 
 		void set_from(Result &&other) noexcept
 		{
-			if (other.is_error_) [[unlikely]]
-			{
+			if (other.is_error_) [[unlikely]] {
 				value_or_error_.error = std::exchange(other.value_or_error_.error, nullptr);
 				is_error_ = true;
-			}
-			else
-			{
+			} else {
 				new (&value_or_error_.value) T(std::move(other.value_or_error_.value));
 				is_error_ = false;
 			}

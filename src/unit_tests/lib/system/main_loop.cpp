@@ -407,8 +407,7 @@ namespace Rayni
 
 		fd_monitor.start(main_loop, event_fd.fd(), MainLoop::FDFlag::OUT, [&](auto /*flags*/) {
 			count++;
-			if (count == 2)
-			{
+			if (count == 2) {
 				fd_monitor.stop();
 				main_loop.run_in([&] { main_loop.exit(); });
 			}
@@ -448,12 +447,9 @@ namespace Rayni
 
 		fd_monitor1.start(main_loop, event_fd.fd(), MainLoop::FDFlag::OUT, [&](auto /*flags*/) {
 			count++;
-			if (count == 1)
-			{
+			if (count == 1) {
 				fd_monitor3 = std::move(fd_monitor2);
-			}
-			else if (count == 2)
-			{
+			} else if (count == 2) {
 				fd_monitor3.stop();
 				main_loop.exit();
 			}
@@ -575,8 +571,7 @@ namespace Rayni
 
 		timer.start_repeat(main_loop, 1ns, [&] {
 			count++;
-			if (count == 2)
-			{
+			if (count == 2) {
 				timer.stop();
 				main_loop.run_in([&] { main_loop.exit(); });
 			}
@@ -703,12 +698,9 @@ namespace Rayni
 
 		timer1.start_repeat(main_loop, 1ns, [&] {
 			count++;
-			if (count == 1)
-			{
+			if (count == 1) {
 				timer3 = std::move(timer2);
-			}
-			else if (count == 2)
-			{
+			} else if (count == 2) {
 				timer3.stop();
 				main_loop.exit();
 			}

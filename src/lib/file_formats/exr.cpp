@@ -34,8 +34,7 @@ namespace Rayni
 		int height;
 		const char *err = nullptr;
 
-		if (LoadEXR(&out, &width, &height, file_name.c_str(), &err) != TINYEXR_SUCCESS)
-		{
+		if (LoadEXR(&out, &width, &height, file_name.c_str(), &err) != TINYEXR_SUCCESS) {
 			if (err)
 				FreeEXRErrorMessage(err);
 			return Error(file_name + ": failed to read EXR image");
@@ -47,10 +46,8 @@ namespace Rayni
 
 		Image image(static_cast<unsigned int>(width), static_cast<unsigned int>(height));
 
-		for (unsigned int y = 0; y < image.height(); y++)
-		{
-			for (unsigned int x = 0; x < image.width(); x++)
-			{
+		for (unsigned int y = 0; y < image.height(); y++) {
+			for (unsigned int x = 0; x < image.width(); x++) {
 				const float *rgba = out + (y * image.width() + x) * 4;
 				Color c;
 				c.r() = rgba[0] * rgba[3];

@@ -122,8 +122,7 @@ namespace Rayni
 
 		std::string level_to_color_start(Level level)
 		{
-			switch (level)
-			{
+			switch (level) {
 			case Level::INFO:
 				return COLOR_GREEN;
 			case Level::WARNING:
@@ -136,8 +135,7 @@ namespace Rayni
 
 		std::string level_to_prefix(Level level)
 		{
-			switch (level)
-			{
+			switch (level) {
 			case Level::INFO:
 				return "INFO";
 			case Level::WARNING:
@@ -162,8 +160,7 @@ namespace Rayni
 				ret += COLOR_RESET;
 			ret += ": ";
 
-			while (!message.empty())
-			{
+			while (!message.empty()) {
 				if (first_line)
 					first_line = false;
 				else
@@ -188,8 +185,7 @@ namespace Rayni
 	{
 		LogConfig old;
 
-		if (config.callback)
-		{
+		if (config.callback) {
 			std::unique_lock lock(state().shared_callback.mutex);
 
 			old.callback = std::move(state().shared_callback.callback);

@@ -127,8 +127,7 @@ namespace Rayni
 
 		void skip_space(BinaryReader &reader)
 		{
-			while (true)
-			{
+			while (true) {
 				std::optional<std::int8_t> c = reader.peek_int8();
 
 				if (!c.has_value() || (c.value() != ' ' && c.value() != '\n'))
@@ -148,8 +147,7 @@ namespace Rayni
 		{
 			skip_space(reader);
 
-			while (true)
-			{
+			while (true) {
 				std::int8_t c = reader.read_int8();
 
 				if (c == ' ' || c == '\n')
@@ -163,8 +161,7 @@ namespace Rayni
 
 			skip_space(reader);
 
-			while (true)
-			{
+			while (true) {
 				std::int8_t c = reader.read_int8();
 
 				if (c == ' ' || c == '\n')
@@ -202,12 +199,9 @@ namespace Rayni
 			std::string str = read_word(reader);
 			Type type;
 
-			if (str != "list")
-			{
+			if (str != "list") {
 				type.basic_type = str_to_basic_type(str);
-			}
-			else
-			{
+			} else {
 				type.list_size_type = str_to_basic_type(read_word(reader));
 				type.basic_type = str_to_basic_type(read_word(reader));
 				type.is_list = true;
@@ -242,8 +236,7 @@ namespace Rayni
 		{
 			std::optional<T> value = 0;
 
-			switch (basic_type)
-			{
+			switch (basic_type) {
 			case BasicType::INT8:
 				value = numeric_cast<T>(read_number<std::int8_t>(reader, header));
 				break;
@@ -306,17 +299,13 @@ namespace Rayni
 			if (type.is_list)
 				count = read_number<std::uint32_t>(reader, header, type.list_size_type);
 
-			if (header.format == Format::ASCII)
-			{
+			if (header.format == Format::ASCII) {
 				for (std::size_t i = 0; i < count; i++)
 					skip_word(reader);
-			}
-			else
-			{
+			} else {
 				std::size_t basic_type_size = 0;
 
-				switch (type.basic_type)
-				{
+				switch (type.basic_type) {
 				case BasicType::INT8:
 				case BasicType::UINT8:
 					basic_type_size = 1;
@@ -397,8 +386,7 @@ namespace Rayni
 			property.type = read_type(reader);
 			std::string name = read_word(reader);
 
-			if (element_name == Element::Name::VERTEX)
-			{
+			if (element_name == Element::Name::VERTEX) {
 				// Only x, y, z is mentioned in original spec. Have seen all others below
 				// in .ply files though. Annoying with different names for same properties.
 				if (name == "x")
@@ -417,9 +405,7 @@ namespace Rayni
 					property.name = Property::Name::VERTEX_U;
 				else if (name == "v" || name == "t" || name == "texture_v" || name == "texture_t")
 					property.name = Property::Name::VERTEX_V;
-			}
-			else if (element_name == Element::Name::FACE)
-			{
+			} else if (element_name == Element::Name::FACE) {
 				if (name == "vertex_indices")
 					property.name = Property::Name::VERTEX_INDICES;
 			}
@@ -434,16 +420,12 @@ namespace Rayni
 			read_magic(reader);
 			header.format = read_format(reader);
 
-			while (true)
-			{
+			while (true) {
 				std::string keyword = read_word(reader);
 
-				if (keyword == "comment")
-				{
+				if (keyword == "comment") {
 					skip_comment(reader);
-				}
-				else if (keyword == "element")
-				{
+				} else if (keyword == "element") {
 					Element element = read_element(reader);
 
 					if (element.name != Element::Name::UNKNOWN &&
@@ -451,9 +433,7 @@ namespace Rayni
 						throw Exception(reader.position(), "duplicate element in header");
 
 					header.elements.emplace_back(element);
-				}
-				else if (keyword == "property")
-				{
+				} else if (keyword == "property") {
 					if (header.elements.empty())
 						throw Exception(reader.position(),
 						                "property found in header before any element");
@@ -466,13 +446,9 @@ namespace Rayni
 						throw Exception(reader.position(), "duplicate property for element");
 
 					element.properties.emplace_back(property);
-				}
-				else if (keyword == "end_header")
-				{
+				} else if (keyword == "end_header") {
 					break;
-				}
-				else
-				{
+				} else {
 					throw Exception(reader.position(),
 					                "unknown header keyword: \"" + keyword + "\"");
 				}
@@ -511,10 +487,8 @@ namespace Rayni
 			if (has_uvs)
 				data.uvs.reserve(element.count);
 
-			for (Element::Count i = 0; i < element.count; i++)
-			{
-				for (const Property &property : element.properties)
-				{
+			for (Element::Count i = 0; i < element.count; i++) {
+				for (const Property &property : element.properties) {
 					if (property.name == Property::Name::VERTEX_X)
 						point.x() = read_number<real_t>(reader, header, property.type);
 					else if (property.name == Property::Name::VERTEX_Y)
@@ -552,12 +526,9 @@ namespace Rayni
 
 			data.indices.reserve(element.count);
 
-			for (Element::Count i = 0; i < element.count; i++)
-			{
-				for (const Property &property : element.properties)
-				{
-					if (property.name == Property::Name::VERTEX_INDICES)
-					{
+			for (Element::Count i = 0; i < element.count; i++) {
+				for (const Property &property : element.properties) {
+					if (property.name == Property::Name::VERTEX_INDICES) {
 						read_list<TriangleMeshData::Index>(reader,
 						                                   header,
 						                                   property.type,
@@ -570,15 +541,12 @@ namespace Rayni
 						TriangleMeshData::Index i2 = 0;
 						TriangleMeshData::Index i3 = indices[1];
 
-						for (std::size_t j = 2; j < indices.size(); j++)
-						{
+						for (std::size_t j = 2; j < indices.size(); j++) {
 							i2 = i3;
 							i3 = indices[j];
 							data.indices.emplace_back(i1, i2, i3);
 						}
-					}
-					else
-					{
+					} else {
 						skip_value(reader, header, property.type);
 					}
 				}
@@ -589,18 +557,12 @@ namespace Rayni
 		{
 			TriangleMeshData data;
 
-			for (const Element &element : header.elements)
-			{
-				if (element.name == Element::Name::VERTEX)
-				{
+			for (const Element &element : header.elements) {
+				if (element.name == Element::Name::VERTEX) {
 					read_vertex_data(reader, header, element, data);
-				}
-				else if (element.name == Element::Name::FACE)
-				{
+				} else if (element.name == Element::Name::FACE) {
 					read_face_data(reader, header, element, data);
-				}
-				else
-				{
+				} else {
 					for (Element::Count i = 0; i < element.count; i++)
 						for (const Property &property : element.properties)
 							skip_value(reader, header, property.type);
@@ -639,14 +601,11 @@ namespace Rayni
 	{
 		TriangleMeshData mesh_data;
 
-		try
-		{
+		try {
 			BinaryReader reader;
 			reader.open_file(file_name);
 			mesh_data = read_ply(reader);
-		}
-		catch (const BinaryReader::Exception &e)
-		{
+		} catch (const BinaryReader::Exception &e) {
 			return Error(e.what());
 		}
 
@@ -657,14 +616,11 @@ namespace Rayni
 	{
 		TriangleMeshData mesh_data;
 
-		try
-		{
+		try {
 			BinaryReader reader;
 			reader.set_data(std::move(data));
 			mesh_data = read_ply(reader);
-		}
-		catch (const BinaryReader::Exception &e)
-		{
+		} catch (const BinaryReader::Exception &e) {
 			return Error(e.what());
 		}
 

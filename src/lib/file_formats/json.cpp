@@ -41,13 +41,11 @@ namespace Rayni
 
 			std::string string;
 
-			while (!reader.skip_char('\"'))
-			{
+			while (!reader.skip_char('\"')) {
 				if (reader.at_newline())
 					throw Exception(reader.position(), "missing string termination");
 
-				if (reader.skip_char('\\'))
-				{
+				if (reader.skip_char('\\')) {
 					if (reader.skip_char('b'))
 						string += '\b';
 					else if (reader.skip_char('t'))
@@ -69,8 +67,7 @@ namespace Rayni
 						                "escaped code points currently not supported");
 					else
 						throw Exception(reader.position(), "invalid escape char");
-				}
-				else
+				} else
 					string += reader.next_get();
 			}
 
@@ -87,20 +84,17 @@ namespace Rayni
 			if (reader.at('-'))
 				number += reader.next_get();
 
-			if (reader.skip_char('0'))
-			{
+			if (reader.skip_char('0')) {
 				number += '0';
 				if (reader.at_digit())
 					throw Exception(reader.position(), "number may not start with 0");
-			}
-			else if (!reader.at_digit())
+			} else if (!reader.at_digit())
 				throw Exception(reader.position(), "expected digit between 1-9");
 
 			while (reader.at_digit())
 				number += reader.next_get();
 
-			if (reader.at('.'))
-			{
+			if (reader.at('.')) {
 				number += reader.next_get();
 				if (!reader.at_digit())
 					throw Exception(reader.position(), "expected digit");
@@ -108,8 +102,7 @@ namespace Rayni
 					number += reader.next_get();
 			}
 
-			if (reader.at('e'))
-			{
+			if (reader.at('e')) {
 				number += reader.next_get();
 				if (reader.at('-') || reader.at('+'))
 					number += reader.next_get();
@@ -135,21 +128,17 @@ namespace Rayni
 
 			reader.skip_space();
 
-			while (!reader.skip_char(']'))
-			{
+			while (!reader.skip_char(']')) {
 				vector.emplace_back(read_value(reader));
 
 				reader.skip_space();
 
-				if (reader.skip_char(','))
-				{
+				if (reader.skip_char(',')) {
 					reader.skip_space();
 					if (reader.at(']'))
 						throw Exception(reader.position(),
 						                "expected value instead of ] after ,");
-				}
-				else if (!reader.at(']'))
-				{
+				} else if (!reader.at(']')) {
 					throw Exception(reader.position(), "expected , or ]");
 				}
 			}
@@ -166,8 +155,7 @@ namespace Rayni
 
 			reader.skip_space();
 
-			while (!reader.skip_char('}'))
-			{
+			while (!reader.skip_char('}')) {
 				Variant key = read_string(reader);
 
 				if (map.find(key.as_string()) != map.cend())
@@ -181,14 +169,11 @@ namespace Rayni
 
 				reader.skip_space();
 
-				if (reader.skip_char(','))
-				{
+				if (reader.skip_char(',')) {
 					reader.skip_space();
 					if (reader.at('}'))
 						throw Exception(reader.position(), "expected key instead of } after ,");
-				}
-				else if (!reader.at('}'))
-				{
+				} else if (!reader.at('}')) {
 					throw Exception(reader.position(), "expected , or }");
 				}
 			}
@@ -228,8 +213,7 @@ namespace Rayni
 		{
 			Variant value = read_value(reader);
 
-			while (!reader.at_eof())
-			{
+			while (!reader.at_eof()) {
 				if (!reader.at_space())
 					throw Exception(reader.position(), "expected space or end of document");
 
@@ -244,14 +228,11 @@ namespace Rayni
 	{
 		Variant variant;
 
-		try
-		{
+		try {
 			TextReader reader;
 			reader.open_file(file_name);
 			variant = read_document(reader);
-		}
-		catch (const TextReader::Exception &e)
-		{
+		} catch (const TextReader::Exception &e) {
 			return Error(e.what());
 		}
 
@@ -262,14 +243,11 @@ namespace Rayni
 	{
 		Variant variant;
 
-		try
-		{
+		try {
 			TextReader reader;
 			reader.set_string(std::move(string));
 			variant = read_document(reader);
-		}
-		catch (const TextReader::Exception &e)
-		{
+		} catch (const TextReader::Exception &e) {
 			return Error(e.what());
 		}
 

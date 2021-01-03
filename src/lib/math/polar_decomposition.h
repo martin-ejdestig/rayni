@@ -41,8 +41,7 @@ namespace Rayni
 			static constexpr unsigned int MAX_STEPS = 100;
 			Matrix rotation = matrix;
 
-			for (unsigned int i = 0; i < MAX_STEPS; i++)
-			{
+			for (unsigned int i = 0; i < MAX_STEPS; i++) {
 				Matrix rotation_next = (rotation + rotation.transpose().inverse()) * real_t(0.5);
 				real_t norm_of_diff = (rotation - rotation_next).max_absolute_row_sum_norm();
 

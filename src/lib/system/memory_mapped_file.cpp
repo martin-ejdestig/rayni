@@ -52,8 +52,7 @@ namespace Rayni
 		auto size = static_cast<std::size_t>(stat.st_size);
 		void *ptr = nullptr;
 
-		if (size != 0)
-		{
+		if (size != 0) {
 			ptr = mmap(nullptr, size, PROT_READ, MAP_PRIVATE, fd.get(), 0);
 			if (ptr == MAP_FAILED)
 				return Error(file_name + ": failed to map file",

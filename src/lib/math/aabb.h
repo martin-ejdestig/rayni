@@ -67,8 +67,7 @@ namespace Rayni
 			real_t t_min = 0;
 			real_t t_max = REAL_INFINITY;
 
-			for (unsigned int i = 0; i < 3; i++)
-			{
+			for (unsigned int i = 0; i < 3; i++) {
 				real_t inv_ray_dir = 1 / ray.direction[i];
 				real_t t_near = (minimum_[i] - ray.origin[i]) * inv_ray_dir;
 				real_t t_far = (maximum_[i] - ray.origin[i]) * inv_ray_dir;

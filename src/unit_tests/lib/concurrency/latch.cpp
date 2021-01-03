@@ -36,8 +36,7 @@ namespace Rayni
 
 		for (unsigned int t = 0; t < NUM_THREADS; t++)
 			threads.emplace_back([&] {
-				for (unsigned int i = 0; i < ITERATIONS_PER_THREAD; i++)
-				{
+				for (unsigned int i = 0; i < ITERATIONS_PER_THREAD; i++) {
 					counter++;
 					latch.count_down();
 				}

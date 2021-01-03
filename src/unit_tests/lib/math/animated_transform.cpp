@@ -45,8 +45,7 @@ namespace Rayni
 			auto m2 = transform.matrix();
 			auto m2_inv = transform.inverse().matrix();
 
-			for (unsigned int i = 0; i < 4; i++)
-			{
+			for (unsigned int i = 0; i < 4; i++) {
 				for (unsigned int j = 0; j < 4; j++)
 					if (std::abs(m1(i, j) - m2(i, j)) > abs_error ||
 					    std::abs(m1_inv(i, j) - m2_inv(i, j)) > abs_error)

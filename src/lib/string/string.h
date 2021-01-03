@@ -53,8 +53,7 @@ namespace Rayni
 		if constexpr (std::is_same_v<T, double>)
 			return string_to_double(str);
 
-		if constexpr (std::is_integral_v<T>)
-		{
+		if constexpr (std::is_integral_v<T>) {
 			T value;
 			std::from_chars_result result = std::from_chars(str.data(), str.data() + str.length(), value);
 

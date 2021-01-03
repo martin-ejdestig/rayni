@@ -38,8 +38,7 @@ namespace Rayni
 			Color diff = c1 - c2;
 
 			if (std::abs(diff.r()) > COMPONENT_MAX_DIFF || std::abs(diff.g()) > COMPONENT_MAX_DIFF ||
-			    std::abs(diff.b()) > COMPONENT_MAX_DIFF)
-			{
+			    std::abs(diff.b()) > COMPONENT_MAX_DIFF) {
 				return testing::AssertionFailure()
 				       << c1_expr << " and " << c2_expr << " componentwise difference is (" << diff.r()
 				       << ", " << diff.g() << ", " << diff.b() << ").";

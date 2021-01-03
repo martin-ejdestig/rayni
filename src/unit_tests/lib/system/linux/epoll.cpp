@@ -86,17 +86,13 @@ namespace Rayni
 
 		EXPECT_EQ(2, epoll.wait(events));
 
-		for (const auto &event : events)
-		{
+		for (const auto &event : events) {
 			ASSERT_TRUE(event.fd() == event_fd1.fd() || event.fd() == event_fd2.fd());
 
-			if (event.fd() == event_fd1.fd())
-			{
+			if (event.fd() == event_fd1.fd()) {
 				EXPECT_TRUE(event.is_set(Epoll::Flag::IN));
 				EXPECT_FALSE(event.is_set(Epoll::Flag::OUT)); // event_fd1 not added with OUT.
-			}
-			else if (event.fd() == event_fd2.fd())
-			{
+			} else if (event.fd() == event_fd2.fd()) {
 				EXPECT_TRUE(event.is_set(Epoll::Flag::IN));
 				EXPECT_TRUE(event.is_set(Epoll::Flag::OUT));
 			}

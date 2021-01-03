@@ -43,13 +43,10 @@ namespace Rayni
 			{
 				auto other_list = other.list_;
 
-				if (other_list)
-				{
+				if (other_list) {
 					other_list->remove(other.self_);
 					other_list->add(self_);
-				}
-				else if (list_)
-				{
+				} else if (list_) {
 					list_->remove(self_);
 				}
 
@@ -116,8 +113,7 @@ namespace Rayni
 		void remove(Listener &listener)
 		{
 			auto iterator = std::find(listeners_.cbegin(), listeners_.cend(), &listener);
-			if (iterator != listeners_.cend())
-			{
+			if (iterator != listeners_.cend()) {
 				listeners_.erase(iterator);
 				listener.list_ = nullptr;
 			}

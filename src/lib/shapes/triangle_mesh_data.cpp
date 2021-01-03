@@ -55,8 +55,7 @@ namespace Rayni
 
 			reader.set_data(std::move(data));
 
-			for (std::size_t i = 0; i < number_of_values; i++)
-			{
+			for (std::size_t i = 0; i < number_of_values; i++) {
 				std::array<real_t, INTS_PER_VALUE> reals;
 
 				for (auto &real : reals)
@@ -78,8 +77,7 @@ namespace Rayni
 
 			reader.set_data(std::move(data));
 
-			for (std::size_t i = 0; i < number_of_values; i++)
-			{
+			for (std::size_t i = 0; i < number_of_values; i++) {
 				std::array<I, INTS_PER_VALUE> integers;
 
 				for (auto &integer : integers)
@@ -151,8 +149,7 @@ namespace Rayni
 		data.points = decode_points(v.get("points"));
 		data.indices = decode_indices(v.get("indices"), data.points.size());
 
-		if (v.has("normals"))
-		{
+		if (v.has("normals")) {
 			const Variant &vn = v.get("normals");
 
 			if (vn.as_string() == "calculate")
@@ -171,8 +168,7 @@ namespace Rayni
 	{
 		data.normals = std::vector<Vector3>(data.points.size());
 
-		for (const Indices &is : data.indices)
-		{
+		for (const Indices &is : data.indices) {
 			const Vector3 &point1 = data.points[is.index1];
 			const Vector3 &point2 = data.points[is.index2];
 			const Vector3 &point3 = data.points[is.index3];

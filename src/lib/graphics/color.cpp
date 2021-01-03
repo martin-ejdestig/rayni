@@ -25,8 +25,7 @@ namespace Rayni
 {
 	Color Color::from_variant(const Variant &v)
 	{
-		if (v.is_string())
-		{
+		if (v.is_string()) {
 			const std::string &str = v.as_string();
 
 			if (str == "black")

@@ -83,17 +83,14 @@ namespace Rayni
 			poll_fds[1].fd = stderr_pipe.read_fd();
 			poll_fds[1].events = PIPE_READ_EVENTS;
 
-			while (poll_fds[0].fd >= 0 || poll_fds[1].fd >= 0)
-			{
-				while (poll(poll_fds.data(), poll_fds.size(), -1) == -1)
-				{
+			while (poll_fds[0].fd >= 0 || poll_fds[1].fd >= 0) {
+				while (poll(poll_fds.data(), poll_fds.size(), -1) == -1) {
 					if (errno != EINTR)
 						return Error("poll() for child pipes failed",
 						             std::error_code(errno, std::system_category()));
 				}
 
-				try
-				{
+				try {
 					if ((poll_fds[0].revents & PIPE_READ_EVENTS) != 0)
 						if (stdout_pipe.read_append_to_string(stdout_str) == 0)
 							poll_fds[0].fd = -1;
@@ -101,9 +98,7 @@ namespace Rayni
 					if ((poll_fds[1].revents & PIPE_READ_EVENTS) != 0)
 						if (stderr_pipe.read_append_to_string(stderr_str) == 0)
 							poll_fds[1].fd = -1;
-				}
-				catch (const std::exception &e)
-				{
+				} catch (const std::exception &e) {
 					return Error("failed to read child pipes: " + std::string(e.what()));
 				}
 			}
@@ -115,8 +110,7 @@ namespace Rayni
 		{
 			int status = 0;
 
-			while (waitpid(child_pid, &status, 0) == -1)
-			{
+			while (waitpid(child_pid, &status, 0) == -1) {
 				if (errno != EINTR)
 					return Error("waitpid() for pid " + std::to_string(child_pid) + " failed",
 					             std::error_code(errno, std::system_category()));

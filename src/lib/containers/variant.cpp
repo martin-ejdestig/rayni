@@ -28,8 +28,7 @@ namespace Rayni
 {
 	void Variant::reset_to_none() noexcept
 	{
-		switch (type_)
-		{
+		switch (type_) {
 		case Type::NONE:
 			break;
 		case Type::MAP:
@@ -78,8 +77,7 @@ namespace Rayni
 		if (type_ != Type::NONE)
 			reset_to_none();
 
-		switch (other.type_)
-		{
+		switch (other.type_) {
 		case Type::NONE:
 			break;
 		case Type::MAP:
@@ -116,13 +114,10 @@ namespace Rayni
 
 	void Variant::reparent_children() noexcept
 	{
-		if (is_map())
-		{
+		if (is_map()) {
 			for (auto &[key, value] : value_.map)
 				value.parent_ = this;
-		}
-		else if (is_vector())
-		{
+		} else if (is_vector()) {
 			for (auto &v : value_.vector)
 				v.parent_ = this;
 		}
@@ -240,8 +235,7 @@ namespace Rayni
 
 	std::string Variant::to_string() const
 	{
-		switch (type_)
-		{
+		switch (type_) {
 		case Type::NONE:
 			break;
 		case Type::MAP:
@@ -270,8 +264,7 @@ namespace Rayni
 		std::string delimiter;
 		std::string str = "{ ";
 
-		for (const auto &[key, value] : map)
-		{
+		for (const auto &[key, value] : map) {
 			if (delimiter.empty())
 				delimiter = ", ";
 			else
@@ -290,8 +283,7 @@ namespace Rayni
 		std::string delimiter;
 		std::string str = "[ ";
 
-		for (const auto &v : vector)
-		{
+		for (const auto &v : vector) {
 			if (delimiter.empty())
 				delimiter = ", ";
 			else
@@ -355,8 +347,7 @@ namespace Rayni
 
 	std::string Variant::type_to_string(Type type)
 	{
-		switch (type)
-		{
+		switch (type) {
 		case Type::NONE:
 			break;
 		case Type::MAP:

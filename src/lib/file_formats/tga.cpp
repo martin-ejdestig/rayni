@@ -141,15 +141,12 @@ namespace Rayni
 			header.image.bytes_per_pixel = (header.image.pixel_size + 7U) / 8; // For convenience.
 			header.image.descriptor = data[17];
 
-			if (header.image_type == ImageType::COLOR_MAPPED)
-			{
+			if (header.image_type == ImageType::COLOR_MAPPED) {
 				if (header.color_map.length == 0 || header.color_map.entry_size == 0 ||
 				    header.color_map_type == ColorMapType::ABSCENT)
 					throw Exception(reader.position(),
 					                "missing color map in color mapped TGA image");
-			}
-			else
-			{
+			} else {
 				if (header.color_map.length != 0 || header.color_map.entry_size != 0 ||
 				    header.color_map_type == ColorMapType::PRESENT)
 					throw Exception(reader.position(), "color map found in RGB/Mono TGA image");
@@ -173,21 +170,16 @@ namespace Rayni
 		{
 			std::size_t pos = 0;
 
-			while (pos < dest.size())
-			{
-				if (rle_state.bytes_left == 0)
-				{
+			while (pos < dest.size()) {
+				if (rle_state.bytes_left == 0) {
 					std::uint8_t repetition_count = reader.read_uint8();
 
 					rle_state.raw = repetition_count < 0x80;
 
-					if (rle_state.raw)
-					{
+					if (rle_state.raw) {
 						rle_state.bytes_left =
 						        (repetition_count + 1U) * header.image.bytes_per_pixel;
-					}
-					else
-					{
+					} else {
 						rle_state.bytes_left =
 						        (repetition_count - 127U) * header.image.bytes_per_pixel;
 						rle_state.pixel_pos = 0;
@@ -195,18 +187,14 @@ namespace Rayni
 					}
 				}
 
-				if (rle_state.raw)
-				{
+				if (rle_state.raw) {
 					auto size = std::min(dest.size() - pos,
 					                     static_cast<std::size_t>(rle_state.bytes_left));
 					reader.read_bytes(dest, pos, size);
 					rle_state.bytes_left -= size;
 					pos += size;
-				}
-				else
-				{
-					while (pos < dest.size() && rle_state.bytes_left > 0)
-					{
+				} else {
+					while (pos < dest.size() && rle_state.bytes_left > 0) {
 						dest[pos++] = rle_state.pixel[rle_state.pixel_pos++];
 						rle_state.bytes_left--;
 						if (rle_state.pixel_pos >= header.image.bytes_per_pixel)
@@ -224,40 +212,33 @@ namespace Rayni
 			bool right_to_left = (header.image.descriptor & 0x10) != 0;
 			bool top_to_bottom = (header.image.descriptor & 0x20) != 0;
 
-			for (unsigned int y = 0; y < header.image.height; y++)
-			{
+			for (unsigned int y = 0; y < header.image.height; y++) {
 				if (header.run_length_encoded)
 					read_run_length_encoded(reader, header, rle_state, row);
 				else
 					reader.read_bytes(row);
 
-				for (unsigned int x = 0; x < header.image.width; x++)
-				{
+				for (unsigned int x = 0; x < header.image.width; x++) {
 					unsigned int image_x = right_to_left ? header.image.width - 1U - x : x;
 					unsigned int image_y = top_to_bottom ? y : header.image.height - 1U - y;
 					const std::uint8_t *pixel = &row[header.image.bytes_per_pixel * x];
 					Color color;
 
-					if (header.image_type == ImageType::RGB && header.image.pixel_size == 24)
-					{
+					if (header.image_type == ImageType::RGB && header.image.pixel_size == 24) {
 						color = {real_t(pixel[2]) / 255,
 						         real_t(pixel[1]) / 255,
 						         real_t(pixel[0]) / 255};
-					}
-					else if (header.image_type == ImageType::RGB && header.image.pixel_size == 32)
-					{
+					} else if (header.image_type == ImageType::RGB &&
+					           header.image.pixel_size == 32) {
 						color = {real_t(pixel[2] * pixel[3]) / (255 * 255),
 						         real_t(pixel[1] * pixel[3]) / (255 * 255),
 						         real_t(pixel[0] * pixel[3]) / (255 * 255)};
-					}
-					else if (header.image_type == ImageType::MONO && header.image.pixel_size == 8)
-					{
+					} else if (header.image_type == ImageType::MONO &&
+					           header.image.pixel_size == 8) {
 						color = {real_t(pixel[0]) / 255,
 						         real_t(pixel[0]) / 255,
 						         real_t(pixel[0]) / 255};
-					}
-					else
-					{
+					} else {
 						throw Exception(reader.position(), "unsupported TGA image type");
 					}
 
@@ -286,14 +267,11 @@ namespace Rayni
 	{
 		Image image;
 
-		try
-		{
+		try {
 			BinaryReader reader;
 			reader.open_file(file_name);
 			image = read_tga(reader);
-		}
-		catch (const BinaryReader::Exception &e)
-		{
+		} catch (const BinaryReader::Exception &e) {
 			return Error(e.what());
 		}
 

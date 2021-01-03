@@ -45,12 +45,10 @@ namespace Rayni
 				       << "size of " << normals1_expr << " is " << normals1.size() << "\n"
 				       << "size of " << normals2_expr << " is " << normals2.size();
 
-			for (std::size_t i = 0; i < normals1.size(); i++)
-			{
+			for (std::size_t i = 0; i < normals1.size(); i++) {
 				Vector3 diff = normals1[i] - normals2[i];
 
-				for (unsigned int j = 0; j < 3; j++)
-				{
+				for (unsigned int j = 0; j < 3; j++) {
 					if (std::abs(diff[j]) > abs_error)
 						return testing::AssertionFailure()
 						       << "Normal component " << j << " of normal " << i
@@ -71,8 +69,7 @@ namespace Rayni
 		TriangleMeshData data;
 		std::vector<Vector3> expected_normals;
 
-		for (unsigned int normal_axis = 0; normal_axis < 3; normal_axis++)
-		{
+		for (unsigned int normal_axis = 0; normal_axis < 3; normal_axis++) {
 			TriangleMeshData::Index index = normal_axis * 6;
 			unsigned int axis1 = (normal_axis + 1) % 3;
 			unsigned int axis2 = (normal_axis + 2) % 3;

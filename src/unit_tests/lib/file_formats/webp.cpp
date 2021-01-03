@@ -71,10 +71,8 @@ namespace Rayni
 		ASSERT_EQ(VALID_WIDTH, image.width());
 		ASSERT_EQ(VALID_HEIGHT, image.height());
 
-		for (unsigned int y = 0; y < VALID_HEIGHT; y++)
-		{
-			for (unsigned int x = 0; x < VALID_WIDTH; x++)
-			{
+		for (unsigned int y = 0; y < VALID_HEIGHT; y++) {
+			for (unsigned int x = 0; x < VALID_WIDTH; x++) {
 				Color color = image.read_pixel(x, y);
 				EXPECT_NEAR(VALID_COLORS[y][x].r(), color.r(), 1e-100);
 				EXPECT_NEAR(VALID_COLORS[y][x].g(), color.g(), 1e-100);

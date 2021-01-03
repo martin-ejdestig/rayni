@@ -88,13 +88,10 @@ namespace Rayni
 			if (at_eof())
 				throw Exception(position_, "end of stream");
 
-			if (at_newline())
-			{
+			if (at_newline()) {
 				buffer_position_++;
 				position_.next_line();
-			}
-			else
-			{
+			} else {
 				buffer_position_++;
 				position_.next_column();
 			}

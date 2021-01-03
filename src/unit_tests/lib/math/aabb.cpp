@@ -66,8 +66,7 @@ namespace Rayni
 		                 Ray({0, 0, 5}, {0, 0, -1}, 0),
 		                 Ray({0, 0, -5}, {0, 0, 1}, 0)};
 
-		for (const Ray &ray : hit_rays)
-		{
+		for (const Ray &ray : hit_rays) {
 			real_t t_min = 0;
 			real_t t_max = 0;
 
@@ -92,8 +91,7 @@ namespace Rayni
 		                    Ray({0, 0, -0.5}, {0, 0, -1}, 0),
 		                    Ray({0, 0, 0.5}, {0, 0, 1}, 0)};
 
-		for (const Ray &ray : inside_rays)
-		{
+		for (const Ray &ray : inside_rays) {
 			real_t t_min = 1;
 			real_t t_max = 0;
 
@@ -129,8 +127,7 @@ namespace Rayni
 		         Ray({0, 0, -5}, {1, 0, 0}, 0),  Ray({0, 0, -5}, {-1, 0, 0}, 0), Ray({0, 0, -5}, {0, 1, 0}, 0),
 		         Ray({0, 0, -5}, {0, -1, 0}, 0), Ray({0, 0, -5}, {0, 0, -1}, 0)};
 
-		for (const Ray &ray : miss_rays)
-		{
+		for (const Ray &ray : miss_rays) {
 			real_t t_min = 12345;
 			real_t t_max = 67890;
 			EXPECT_FALSE(aabb.intersects(ray, t_min, t_max));

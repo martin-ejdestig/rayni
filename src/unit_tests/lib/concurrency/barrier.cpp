@@ -81,15 +81,13 @@ namespace Rayni
 
 		for (unsigned int i = 0; i < NUM_THREADS; i++)
 			threads.emplace_back([&] {
-				for (auto &counter : counters)
-				{
+				for (auto &counter : counters) {
 					counter++;
 					barrier.arrive_and_wait();
 				}
 			});
 
-		for (auto &counter : counters)
-		{
+		for (auto &counter : counters) {
 			barrier.arrive_and_wait();
 			EXPECT_EQ(NUM_THREADS, counter);
 		}

@@ -63,8 +63,7 @@ namespace Rayni
 		static constexpr unsigned int STEPS = 256;
 		AABB bounds;
 
-		for (unsigned int i = 0; i < STEPS; i++)
-		{
+		for (unsigned int i = 0; i < STEPS; i++) {
 			real_t time = lerp(real_t(i) / (STEPS - 1), start_time_, end_time_);
 			bounds.merge(interpolate(time).transform_aabb(aabb));
 		}

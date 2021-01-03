@@ -165,8 +165,7 @@ namespace Rayni
 			real_t w;
 			real_t t = trace();
 
-			if (t > 0)
-			{
+			if (t > 0) {
 				real_t s = std::sqrt(t + 1);
 
 				w = s * real_t(0.5);
@@ -174,9 +173,7 @@ namespace Rayni
 				xyz[0] = (rows_[2][1] - rows_[1][2]) * s;
 				xyz[1] = (rows_[0][2] - rows_[2][0]) * s;
 				xyz[2] = (rows_[1][0] - rows_[0][1]) * s;
-			}
-			else
-			{
+			} else {
 				unsigned int i = max_diagonal_position();
 				unsigned int j = (i + 1) % 3;
 				unsigned int k = (j + 1) % 3;

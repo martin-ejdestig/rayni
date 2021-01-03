@@ -46,10 +46,8 @@ namespace Rayni
 				error_elements += "(" + std::to_string(row) + "," + std::to_string(column) + ")";
 			};
 
-			for (unsigned int row = 0; row < 4; row++)
-			{
-				for (unsigned int column = 0; column < 4; column++)
-				{
+			for (unsigned int row = 0; row < 4; row++) {
+				for (unsigned int column = 0; column < 4; column++) {
 					real_t diff = std::abs(m1(row, column) - m2(row, column));
 
 					if (diff > abs_error)

@@ -49,8 +49,7 @@ namespace Rayni
 
 			using C = std::common_type_t<T, V>;
 
-			if constexpr (std::is_integral_v<T> && std::is_integral_v<V>)
-			{
+			if constexpr (std::is_integral_v<T> && std::is_integral_v<V>) {
 				using CU = std::make_unsigned_t<C>;
 
 				if constexpr (std::is_unsigned_v<T>)

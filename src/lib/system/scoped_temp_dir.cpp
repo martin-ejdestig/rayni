@@ -41,8 +41,7 @@ namespace
 		std::vector<char> buffer(template_path.native().cbegin(), template_path.native().cend());
 		buffer.push_back('\0');
 
-		if (!mkdtemp(buffer.data()))
-		{
+		if (!mkdtemp(buffer.data())) {
 			std::error_code error_code(errno, std::system_category());
 			throw std::filesystem::filesystem_error("mkdtemp() failed", template_path, error_code);
 		}

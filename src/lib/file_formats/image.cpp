@@ -104,8 +104,7 @@ namespace Rayni
 	{
 		ImageFormat format = image_format_from_file(file_name);
 
-		switch (format)
-		{
+		switch (format) {
 		case ImageFormat::EXR:
 			return exr_read_file(file_name);
 

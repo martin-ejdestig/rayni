@@ -82,8 +82,7 @@ namespace Rayni
 		{
 			ssize_t bytes_read;
 
-			while (true)
-			{
+			while (true) {
 				bytes_read = ::read(read_fd(), buffer.data(), buffer.size());
 
 				if (bytes_read >= 0)
@@ -111,8 +110,7 @@ namespace Rayni
 		{
 			ssize_t bytes_written;
 
-			while (true)
-			{
+			while (true) {
 				bytes_written = ::write(write_fd(), buffer.data(), buffer.size());
 
 				if (bytes_written >= 0)

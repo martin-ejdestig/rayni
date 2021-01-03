@@ -57,8 +57,7 @@ namespace Rayni
 			Color diff = color - image.read_pixel(x, y);
 
 			if (std::abs(diff.r()) > COMPONENT_MAX_DIFF || std::abs(diff.g()) > COMPONENT_MAX_DIFF ||
-			    std::abs(diff.b()) > COMPONENT_MAX_DIFF)
-			{
+			    std::abs(diff.b()) > COMPONENT_MAX_DIFF) {
 				return testing::AssertionFailure()
 				       << color_expr << " and " << image_expr << " color at (" << x << ", " << y
 				       << ") componentwise difference is (" << diff.r() << ", " << diff.g() << ", "
@@ -88,8 +87,7 @@ namespace Rayni
 		                                       const Image &image,
 		                                       const std::vector<Pixel> &pixels)
 		{
-			for (std::vector<Pixel>::size_type i = 0; i < pixels.size(); i++)
-			{
+			for (std::vector<Pixel>::size_type i = 0; i < pixels.size(); i++) {
 				std::string pixels_expr_i = std::string(pixels_expr) + "[" + std::to_string(i) + "]";
 				auto result = expect_color_at(image_expr,
 				                              (pixels_expr_i + ".x").c_str(),

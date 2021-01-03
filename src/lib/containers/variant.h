@@ -20,14 +20,17 @@
 #ifndef RAYNI_LIB_CONTAINERS_VARIANT_H
 #define RAYNI_LIB_CONTAINERS_VARIANT_H
 
+#include <array>
+#include <cassert>
 #include <map>
 #include <memory>
 #include <new>
-#include <stdexcept>
 #include <string>
 #include <type_traits>
 #include <utility>
 #include <vector>
+
+#include "lib/function/result.h"
 
 namespace Rayni
 {
@@ -42,8 +45,6 @@ namespace Rayni
 	class Variant
 	{
 	public:
-		class Exception;
-
 		using Map = std::map<std::string, Variant>;
 		using Vector = std::vector<Variant>;
 
@@ -200,99 +201,143 @@ namespace Rayni
 
 		Map &as_map()
 		{
-			require_type(Type::MAP);
+			assert(is_map());
 			return value_.map;
 		}
 
 		const Map &as_map() const
 		{
-			require_type(Type::MAP);
+			assert(is_map());
 			return value_.map;
 		}
 
 		Vector &as_vector()
 		{
-			require_type(Type::VECTOR);
+			assert(is_vector());
 			return value_.vector;
 		}
 
 		const Vector &as_vector() const
 		{
-			require_type(Type::VECTOR);
+			assert(is_vector());
 			return value_.vector;
 		}
 
 		const bool &as_bool() const
 		{
-			require_type(Type::BOOL);
+			assert(is_bool());
 			return value_.boolean;
 		}
 
 		const int &as_int() const
 		{
-			require_type(Type::INT);
+			assert(is_int());
 			return value_.number_int;
 		}
 
 		const unsigned int &as_unsigned_int() const
 		{
-			require_type(Type::UNSIGNED_INT);
+			assert(is_unsigned_int());
 			return value_.number_unsigned_int;
 		}
 
 		const float &as_float() const
 		{
-			require_type(Type::FLOAT);
+			assert(is_float());
 			return value_.number_float;
 		}
 
 		const double &as_double() const
 		{
-			require_type(Type::DOUBLE);
+			assert(is_double());
 			return value_.number_double;
 		}
 
 		const std::string &as_string() const
 		{
-			require_type(Type::STRING);
+			assert(is_string());
 			return value_.string;
 		}
 
 		bool has(const std::string &key) const
 		{
-			auto i = map_iterator(key);
-			return i != value_.map.cend();
+			if (!is_map())
+				return false;
+			return value_.map.find(key) != value_.map.cend();
 		}
 
-		const Variant &get(const std::string &key) const;
+		const Variant *get(const std::string &key) const
+		{
+			if (!is_map())
+				return nullptr;
+			auto i = value_.map.find(key);
+			return i != value_.map.cend() ? &i->second : nullptr;
+		}
 
 		template <typename T>
-		T get(const std::string &key) const
+		Result<T> get(const std::string &key) const
 		{
-			return get(key).to<T>();
+			if (const Variant *v = get(key); v)
+				return v->to<T>();
+			return Error(path(), "key \"" + key + "\" not found");
 		}
 
 		template <typename T>
-		T get(const std::string &key, const T &default_value) const
+		Result<T> get(const std::string &key, const T &default_value) const
 		{
-			auto i = map_iterator(key);
-			return i == value_.map.cend() ? default_value : i->second.to<T>();
+			if (const Variant *v = get(key); v)
+				return v->to<T>();
+			return T(default_value);
 		}
-
-		const Variant &get(std::size_t index) const;
 
 		template <typename T>
-		T get(std::size_t index) const
+		Result<T> get(const std::string &key, T &&default_value) const
 		{
-			return get(index).to<T>();
+			if (const Variant *v = get(key); v)
+				return v->to<T>();
+			return std::forward<T>(default_value);
 		}
 
-		bool to_bool() const;
-		int to_int() const;
-		unsigned int to_unsigned_int() const;
-		float to_float() const;
-		double to_double() const;
-		std::string to_string() const;
+		const Variant *get(std::size_t index) const
+		{
+			if (!is_vector())
+				return nullptr;
+			if (index >= value_.vector.size())
+				return nullptr;
+			return &value_.vector[index];
+		}
+
+		template <typename T>
+		Result<T> get(std::size_t index) const
+		{
+			if (const Variant *v = get(index); v)
+				return v->to<T>();
+			return Error(path(), "index " + std::to_string(index) + " does not exist");
+		}
+
+		Result<bool> to_bool() const;
+		Result<int> to_int() const;
+		Result<unsigned int> to_unsigned_int() const;
+		Result<float> to_float() const;
+		Result<double> to_double() const;
+		Result<std::string> to_string() const;
+
+		template <typename T, std::size_t N>
+		Result<std::array<T, N>> to_array() const
+		{
+			if (!is_vector() || as_vector().size() != N)
+				return Error(path(), "cannot convert to array of size " + std::to_string(N));
+
+			std::array<T, N> values;
+
+			for (std::size_t i = 0; i < N; i++)
+				if (auto r = value_.vector[i].to<T>(); !r)
+					return r.error();
+				else
+					values[i] = *r;
+
+			return values;
+		}
 
 		template <typename T>
 		auto to() const;
@@ -373,14 +418,8 @@ namespace Rayni
 		void initialize_from(Variant &&other) noexcept;
 		void reparent_children() noexcept;
 
-		Map::const_iterator map_iterator(const std::string &key) const;
-
 		std::string key_in_parent() const;
 		std::size_t index_in_parent() const;
-
-		std::string prepend_path_if_has_parent(const std::string &str) const;
-
-		void require_type(Type required_type) const;
 
 		static std::string map_to_string(const Map &map);
 		static std::string vector_to_string(const Vector &vector);
@@ -424,15 +463,6 @@ namespace Rayni
 		} value_;
 	};
 
-	class Variant::Exception : public std::runtime_error
-	{
-	public:
-		Exception(const Variant &variant, const std::string &str) :
-		        std::runtime_error(variant.prepend_path_if_has_parent(str))
-		{
-		}
-	};
-
 	template <typename T>
 	auto Variant::to() const
 	{
@@ -448,8 +478,6 @@ namespace Rayni
 			return to_double();
 		else if constexpr (std::is_same_v<T, std::string>)
 			return to_string();
-		else if constexpr (std::is_constructible_v<T, const Variant &>)
-			return T(*this);
 		else if constexpr (std::is_pointer_v<T>)
 			return std::remove_pointer_t<T>::get_from_variant(*this);
 		else

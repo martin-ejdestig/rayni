@@ -27,6 +27,7 @@
 #include <vector>
 
 #include "lib/containers/variant.h"
+#include "lib/function/result.h"
 #include "lib/math/hash.h"
 #include "lib/math/math.h"
 #include "lib/math/vector3.h"
@@ -49,7 +50,7 @@ namespace Rayni
 		TriangleMeshData &operator=(const TriangleMeshData &) = delete;
 		TriangleMeshData &operator=(TriangleMeshData &&) noexcept = default;
 
-		static TriangleMeshData from_variant(const Variant &v);
+		static Result<TriangleMeshData> from_variant(const Variant &v);
 
 		static void calculate_normals(TriangleMeshData &data);
 

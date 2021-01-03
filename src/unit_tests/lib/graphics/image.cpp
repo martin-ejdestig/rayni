@@ -114,12 +114,12 @@ namespace Rayni
 		ASSERT_TRUE(file_write(path, {0x00, 0x00, 0x02, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
 		                              0x00, 0x01, 0x00, 0x01, 0x00, 0x18, 0x00, 0xff, 0xff, 0xff}));
 
-		Image image = Variant::map("path", path).to<Image>();
+		Image image = Variant::map("path", path).to<Image>().value_or({});
 		EXPECT_PRED_FORMAT4(expect_color_at, image, 0, 0, Color::white());
 
-		EXPECT_THROW(Variant::map("path", missing_path).to<Image>(), Variant::Exception);
+		EXPECT_FALSE(Variant::map("path", missing_path).to<Image>());
 
-		EXPECT_THROW(Variant::map().to<Image>(), Variant::Exception);
+		EXPECT_FALSE(Variant::map().to<Image>());
 	}
 
 	TEST(Image, Size)

@@ -23,7 +23,7 @@
 
 namespace Rayni
 {
-	Color Color::from_variant(const Variant &v)
+	Result<Color> Color::from_variant(const Variant &v)
 	{
 		if (v.is_string()) {
 			const std::string &str = v.as_string();
@@ -41,12 +41,17 @@ namespace Rayni
 			if (str == "blue")
 				return Color::blue();
 
-			throw Variant::Exception(v, "unknown color \"" + str + "\"");
+			return Error(v.path(), "unknown color \"" + str + "\"");
 		}
 
-		if (v.is_vector())
-			return Color(v.get<real_t>(0), v.get<real_t>(1), v.get<real_t>(2)).clamp();
+		if (v.is_vector() && v.as_vector().size() == 3) {
+			auto rgb = v.to_array<real_t, 3>();
+			if (!rgb)
+				return rgb.error();
 
-		throw Variant::Exception(v, "color must be a string or vector");
+			return Color(*rgb).clamp();
+		}
+
+		return Error(v.path(), "color must be a string or vector of size 3");
 	}
 }

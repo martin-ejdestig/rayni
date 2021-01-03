@@ -27,6 +27,7 @@
 #include <cstddef>
 
 #include "lib/containers/variant.h"
+#include "lib/function/result.h"
 #include "lib/math/hash.h"
 #include "lib/math/math.h"
 
@@ -47,9 +48,7 @@ namespace Rayni
 		{
 		}
 
-		explicit Vector3(const Variant &v) : Vector3(v.get<real_t>(0), v.get<real_t>(1), v.get<real_t>(2))
-		{
-		}
+		static Result<Vector3> from_variant(const Variant &v);
 
 		static constexpr Vector3 infinity()
 		{

@@ -27,17 +27,17 @@ namespace Rayni
 {
 	TEST(Vector3, Variant)
 	{
-		Vector3 v = Variant::vector(1, 2, 3).to<Vector3>();
+		Vector3 v = Variant::vector(1, 2, 3).to<Vector3>().value_or({});
 		EXPECT_NEAR(1, v.x(), 1e-100);
 		EXPECT_NEAR(2, v.y(), 1e-100);
 		EXPECT_NEAR(3, v.z(), 1e-100);
 
-		EXPECT_THROW(Variant::vector().to<Vector3>(), Variant::Exception);
-		EXPECT_THROW(Variant::vector(1).to<Vector3>(), Variant::Exception);
-		EXPECT_THROW(Variant::vector(1, 2).to<Vector3>(), Variant::Exception);
-		EXPECT_NO_THROW(Variant::vector(1, 2, 3, 4).to<Vector3>()); // TODO: Reconsider?
+		EXPECT_FALSE(Variant::vector().to<Vector3>());
+		EXPECT_FALSE(Variant::vector(1).to<Vector3>());
+		EXPECT_FALSE(Variant::vector(1, 2).to<Vector3>());
+		EXPECT_FALSE(Variant::vector(1, 2, 3, 4).to<Vector3>());
 
-		EXPECT_THROW(Variant(0).to<Vector3>(), Variant::Exception);
+		EXPECT_FALSE(Variant(0).to<Vector3>());
 	}
 
 	TEST(Vector3, ComponentMinMax)

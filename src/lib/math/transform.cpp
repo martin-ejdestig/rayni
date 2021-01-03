@@ -29,7 +29,7 @@
 
 namespace Rayni
 {
-	Transform Transform::from_variant(const Variant &v)
+	Result<Transform> Transform::from_variant(const Variant &v)
 	{
 		if (v.is_string())
 			return from_variant_string(v);
@@ -38,73 +38,126 @@ namespace Rayni
 		if (v.is_vector())
 			return from_variant_vector(v);
 
-		throw Variant::Exception(v, "transform must be a string, map or vector");
+		return Error(v.path(), "transform must be a string, map or vector");
 	}
 
-	Transform Transform::from_variant_string(const Variant &v)
+	Result<Transform> Transform::from_variant_string(const Variant &v)
 	{
 		const std::string &str = v.as_string();
 
 		if (str == "identity")
 			return Transform::identity();
 
-		throw Variant::Exception(v, "invalid transform \"" + str + "\"");
+		return Error(v.path(), "invalid transform \"" + str + "\"");
 	}
 
-	Transform Transform::from_variant_map(const Variant &v)
+	Result<Transform> Transform::from_variant_map(const Variant &v)
 	{
 		const auto &map = v.as_map();
 
 		if (map.size() != 1)
-			throw Variant::Exception(v, "transform map must contain a single key value pair");
+			return Error(v.path(), "transform map must contain a single key value pair");
 
 		const auto &[type, args] = *map.cbegin();
 
-		if (type == "translate")
-			return Transform::translate(args.to<Vector3>());
-
-		if (type == "scale")
-			return args.is_vector() ? Transform::scale(args.to<Vector3>()) :
-                                                  Transform::scale(args.to<real_t>());
-
-		if (type == "rotate_x")
-			return Transform::rotate_x(radians_from_degrees(args.to<real_t>()));
-
-		if (type == "rotate_y")
-			return Transform::rotate_y(radians_from_degrees(args.to<real_t>()));
-
-		if (type == "rotate_z")
-			return Transform::rotate_z(radians_from_degrees(args.to<real_t>()));
-
-		if (type == "rotate") {
-			if (args.is_map())
-				return Transform::rotate(radians_from_degrees(args.get<real_t>("angle")),
-				                         args.get<Vector3>("axis"));
-			if (args.is_vector())
-				return Transform::rotate(Quaternion(args));
-
-			throw Variant::Exception(args, "expected map (with angle and axis) or vector (quaternion)");
+		if (type == "translate") {
+			auto translation = args.to<Vector3>();
+			if (!translation)
+				return translation.error();
+			return Transform::translate(*translation);
 		}
 
-		if (type == "look_at")
-			return Transform::look_at(args.get<Vector3>("translation"),
-			                          args.get<Vector3>("center"),
-			                          args.get<Vector3>("up"));
+		if (type == "scale") {
+			if (args.is_vector()) {
+				auto scale = args.to<Vector3>();
+				if (!scale)
+					return scale.error();
+				return Transform::scale(*scale);
+			}
 
-		throw Variant::Exception(v, "unknown transform type \"" + type + "\"");
+			auto scale = args.to<real_t>();
+			if (!scale)
+				return scale.error();
+			return Transform::scale(*scale);
+		}
+
+		if (type == "rotate_x") {
+			auto x = args.to<real_t>();
+			if (!x)
+				return x.error();
+			return Transform::rotate_x(radians_from_degrees(*x));
+		}
+
+		if (type == "rotate_y") {
+			auto y = args.to<real_t>();
+			if (!y)
+				return y.error();
+			return Transform::rotate_y(radians_from_degrees(*y));
+		}
+
+		if (type == "rotate_z") {
+			auto z = args.to<real_t>();
+			if (!z)
+				return z.error();
+			return Transform::rotate_z(radians_from_degrees(*z));
+		}
+
+		if (type == "rotate") {
+			if (args.is_map()) {
+				auto angle = args.get<real_t>("angle");
+				if (!angle)
+					return angle.error();
+				auto axis = args.get<Vector3>("axis");
+				if (!axis)
+					return axis.error();
+				return Transform::rotate(radians_from_degrees(*angle), *axis);
+			}
+
+			if (args.is_vector()) {
+				auto rotation = args.to<Quaternion>();
+				if (!rotation)
+					return rotation.error();
+				return Transform::rotate(*rotation);
+			}
+
+			return Error(args.path(), "expected map (with angle and axis) or vector (quaternion)");
+		}
+
+		if (type == "look_at") {
+			auto translation = args.get<Vector3>("translation");
+			if (!translation)
+				return translation.error();
+			auto center = args.get<Vector3>("center");
+			if (!center)
+				return center.error();
+			auto up = args.get<Vector3>("up");
+			if (!up)
+				return up.error();
+			return Transform::look_at(*translation, *center, *up);
+		}
+
+		return Error(v.path(), "unknown transform type \"" + type + "\"");
 	}
 
-	Transform Transform::from_variant_vector(const Variant &v)
+	Result<Transform> Transform::from_variant_vector(const Variant &v)
 	{
-		auto num_transforms = v.as_vector().size();
+		const auto &vector = v.as_vector();
 
-		if (num_transforms < 2)
-			throw Variant::Exception(v, "transform vector must contain at least 2 elements");
+		if (vector.size() < 2)
+			return Error(v.path(), "transform vector must contain at least 2 elements");
 
-		auto t = v.get<Transform>(0);
+		Transform t = Transform::identity();
 
-		for (std::size_t i = 1; i < num_transforms; i++)
-			t = Transform::combine(t, v.get<Transform>(i));
+		for (std::size_t i = 0; i < vector.size(); i++) {
+			auto ti = Transform::from_variant(vector[i]);
+			if (!ti)
+				return ti.error();
+
+			if (i == 0)
+				t = *ti;
+			else
+				t = Transform::combine(t, *ti);
+		}
 
 		return t;
 	}

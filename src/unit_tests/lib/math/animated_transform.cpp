@@ -73,12 +73,13 @@ namespace Rayni
 		};
 
 		EXPECT_PRED_FORMAT4(animated_transform_interpolate_near,
-		                    AnimatedTransform(double_scale_variant(0, 2)),
+		                    AnimatedTransform::from_variant(double_scale_variant(0, 2))
+		                            .value_or({0, Transform::identity(), 1, Transform::identity()}),
 		                    Transform::scale(1.5),
 		                    1,
 		                    1e-7);
 
-		EXPECT_THROW(AnimatedTransform(double_scale_variant(2, 0)), Variant::Exception);
+		EXPECT_FALSE(AnimatedTransform::from_variant(double_scale_variant(2, 0)));
 	}
 
 	TEST(AnimatedTransform, Interpolate)

@@ -20,9 +20,11 @@
 #ifndef RAYNI_LIB_MATH_QUATERNION_H
 #define RAYNI_LIB_MATH_QUATERNION_H
 
+#include <array>
 #include <cmath>
 
 #include "lib/containers/variant.h"
+#include "lib/function/result.h"
 #include "lib/math/math.h"
 
 namespace Rayni
@@ -32,14 +34,16 @@ namespace Rayni
 	public:
 		Quaternion() = default;
 
-		Quaternion(real_t x, real_t y, real_t z, real_t w) : x_(x), y_(y), z_(z), w_(w)
+		constexpr Quaternion(real_t x, real_t y, real_t z, real_t w) : x_(x), y_(y), z_(z), w_(w)
 		{
 		}
 
-		explicit Quaternion(const Variant &v) :
-		        Quaternion(v.get<real_t>(0), v.get<real_t>(1), v.get<real_t>(2), v.get<real_t>(3))
+		constexpr explicit Quaternion(const std::array<real_t, 4> &xyzw) :
+		        Quaternion(xyzw[0], xyzw[1], xyzw[2], xyzw[3])
 		{
 		}
+
+		static Result<Quaternion> from_variant(const Variant &v);
 
 		real_t x() const
 		{

@@ -20,6 +20,7 @@
 #include "lib/math/animated_transform.h"
 
 #include <algorithm>
+#include <cassert>
 
 #include "lib/math/aabb.h"
 #include "lib/math/lerp.h"
@@ -36,16 +37,31 @@ namespace Rayni
 	        end_time_(end_time),
 	        end_(end_transform.matrix())
 	{
+		assert(start_time < end_time);
 	}
 
-	AnimatedTransform::AnimatedTransform(const Variant &v) :
-	        AnimatedTransform(v.get<real_t>("start_time"),
-	                          v.get<Transform>("start_transform"),
-	                          v.get<real_t>("end_time"),
-	                          v.get<Transform>("end_transform"))
+	Result<AnimatedTransform> AnimatedTransform::from_variant(const Variant &v)
 	{
-		if (start_time_ >= end_time_)
-			throw Variant::Exception(v, "start_time >= end_time");
+		auto start_time = v.get<real_t>("start_time");
+		if (!start_time)
+			return start_time.error();
+
+		auto start_transform = v.get<Transform>("start_transform");
+		if (!start_transform)
+			return start_transform.error();
+
+		auto end_time = v.get<real_t>("end_time");
+		if (!end_time)
+			return end_time.error();
+
+		auto end_transform = v.get<Transform>("end_transform");
+		if (!end_transform)
+			return end_transform.error();
+
+		if (*start_time >= *end_time)
+			return Error(v.path(), "start_time >= end_time");
+
+		return AnimatedTransform(*start_time, *start_transform, *end_time, *end_transform);
 	}
 
 	Transform AnimatedTransform::interpolate(real_t time) const

@@ -70,72 +70,82 @@ namespace Rayni
 
 	TEST(Transform, VariantString)
 	{
-		EXPECT_PRED_FORMAT3(transform_near, Variant("identity").to<Transform>(), Transform::identity(), 1e-100);
+		EXPECT_PRED_FORMAT3(transform_near,
+		                    Variant("identity").to<Transform>().value_or(Transform::scale(10)),
+		                    Transform::identity(),
+		                    1e-100);
 
-		EXPECT_THROW(Variant("foo").to<Transform>(), Variant::Exception);
+		EXPECT_FALSE(Variant("foo").to<Transform>());
 	}
 
 	TEST(Transform, VariantMapSizeLargerThanOneNotAllowed)
 	{
-		EXPECT_THROW(Variant::map("rotate_x", 1, "rotate_y", 2).to<Transform>(), Variant::Exception);
+		EXPECT_FALSE(Variant::map("rotate_x", 1, "rotate_y", 2).to<Transform>());
 	}
 
 	TEST(Transform, VariantMapTranslate)
 	{
 		EXPECT_PRED_FORMAT3(transform_near,
-		                    Variant::map("translate", Variant::vector(1, 2, 3)).to<Transform>(),
+		                    Variant::map("translate", Variant::vector(1, 2, 3))
+		                            .to<Transform>()
+		                            .value_or(Transform::identity()),
 		                    Transform::translate({1, 2, 3}),
 		                    1e-100);
 
-		EXPECT_THROW(Variant::map("translate", Variant::vector(1, 2)).to<Transform>(), Variant::Exception);
-		EXPECT_THROW(Variant::map("translate", 1).to<Transform>(), Variant::Exception);
+		EXPECT_FALSE(Variant::map("translate", Variant::vector(1, 2)).to<Transform>());
+		EXPECT_FALSE(Variant::map("translate", 1).to<Transform>());
 	}
 
 	TEST(Transform, VariantMapScale)
 	{
 		EXPECT_PRED_FORMAT3(transform_near,
-		                    Variant::map("scale", Variant::vector(1, 2, 3)).to<Transform>(),
+		                    Variant::map("scale", Variant::vector(1, 2, 3))
+		                            .to<Transform>()
+		                            .value_or(Transform::identity()),
 		                    Transform::scale(1, 2, 3),
 		                    1e-100);
 
 		EXPECT_PRED_FORMAT3(transform_near,
-		                    Variant::map("scale", 2).to<Transform>(),
+		                    Variant::map("scale", 2).to<Transform>().value_or(Transform::identity()),
 		                    Transform::scale(2),
 		                    1e-100);
 
-		EXPECT_THROW(Variant::map("scale", Variant::vector(1, 2)).to<Transform>(), Variant::Exception);
-		EXPECT_THROW(Variant::map("scale", "foo").to<Transform>(), Variant::Exception);
+		EXPECT_FALSE(Variant::map("scale", Variant::vector(1, 2)).to<Transform>());
+		EXPECT_FALSE(Variant::map("scale", "foo").to<Transform>());
 	}
 
 	TEST(Transform, VariantMapRotate)
 	{
 		EXPECT_PRED_FORMAT3(transform_near,
-		                    Variant::map("rotate_x", 30).to<Transform>(),
+		                    Variant::map("rotate_x", 30).to<Transform>().value_or(Transform::identity()),
 		                    Transform::rotate_x(radians_from_degrees(30)),
 		                    1e-7);
 
 		EXPECT_PRED_FORMAT3(transform_near,
-		                    Variant::map("rotate_y", 30).to<Transform>(),
+		                    Variant::map("rotate_y", 30).to<Transform>().value_or(Transform::identity()),
 		                    Transform::rotate_y(radians_from_degrees(30)),
 		                    1e-7);
 
 		EXPECT_PRED_FORMAT3(transform_near,
-		                    Variant::map("rotate_z", 30).to<Transform>(),
+		                    Variant::map("rotate_z", 30).to<Transform>().value_or(Transform::identity()),
 		                    Transform::rotate_z(radians_from_degrees(30)),
 		                    1e-7);
 
 		EXPECT_PRED_FORMAT3(transform_near,
 		                    Variant::map("rotate", Variant::map("angle", 30, "axis", Variant::vector(1, 2, 3)))
-		                            .to<Transform>(),
+		                            .to<Transform>()
+		                            .value_or(Transform::identity()),
 		                    Transform::rotate(radians_from_degrees(30), {1, 2, 3}),
 		                    1e-7);
 
 		EXPECT_PRED_FORMAT3(transform_near,
-		                    Variant::map("rotate", Variant::vector(1, 2, 3, 4)).to<Transform>(),
+		                    Variant::map("rotate", Variant::vector(1, 2, 3, 4))
+		                            .to<Transform>()
+		                            .value_or(Transform::identity()),
 		                    Transform::rotate({1, 2, 3, 4}),
 		                    1e-100);
 
-		EXPECT_THROW(Variant::map("rotate", 3).to<Transform>(), Variant::Exception);
+		EXPECT_FALSE(Variant::map("rotate", 3).to<Transform>());
 	}
 
 	TEST(Transform, VariantMapLookAt)
@@ -148,14 +158,15 @@ namespace Rayni
 		                                              Variant::vector(4, 5, 6),
 		                                              "up",
 		                                              Variant::vector(7, 8, 9)))
-		                            .to<Transform>(),
+		                            .to<Transform>()
+		                            .value_or(Transform::identity()),
 		                    Transform::look_at({1, 2, 3}, {4, 5, 6}, {7, 8, 9}),
 		                    1e-6);
 	}
 
 	TEST(Transform, VariantUnknownType)
 	{
-		EXPECT_THROW(Variant::map("unknown_type", 0).to<Transform>(), Variant::Exception);
+		EXPECT_FALSE(Variant::map("unknown_type", 0).to<Transform>());
 	}
 
 	TEST(Transform, VariantVector)
@@ -163,12 +174,13 @@ namespace Rayni
 		EXPECT_PRED_FORMAT3(transform_near,
 		                    Variant::vector(Variant::map("scale", 2),
 		                                    Variant::map("translate", Variant::vector(10, 20, 30)))
-		                            .to<Transform>(),
+		                            .to<Transform>()
+		                            .value_or(Transform::identity()),
 		                    Transform::combine(Transform::scale(2), Transform::translate(10, 20, 30)),
 		                    1e-100);
 
-		EXPECT_THROW(Variant::vector<std::string>({}).to<Transform>(), Variant::Exception);
-		EXPECT_THROW(Variant::vector<std::string>({"identity"}).to<Transform>(), Variant::Exception);
+		EXPECT_FALSE(Variant::vector<std::string>({}).to<Transform>());
+		EXPECT_FALSE(Variant::vector<std::string>({"identity"}).to<Transform>());
 	}
 
 	TEST(Transform, Inverse)

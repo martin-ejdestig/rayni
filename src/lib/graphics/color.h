@@ -21,10 +21,12 @@
 #define RAYNI_LIB_GRAPHICS_COLOR_H
 
 #include <algorithm>
+#include <array>
 #include <cmath>
 #include <cstdint>
 
 #include "lib/containers/variant.h"
+#include "lib/function/result.h"
 #include "lib/math/math.h"
 
 namespace Rayni
@@ -35,6 +37,10 @@ namespace Rayni
 		Color() = default;
 
 		constexpr Color(real_t r, real_t g, real_t b) : r_(r), g_(g), b_(b)
+		{
+		}
+
+		constexpr explicit Color(const std::array<real_t, 3> &rgb) : Color(rgb[0], rgb[1], rgb[2])
 		{
 		}
 
@@ -68,7 +74,7 @@ namespace Rayni
 			return {0, 0, 1};
 		}
 
-		static Color from_variant(const Variant &v);
+		static Result<Color> from_variant(const Variant &v);
 
 		real_t r() const
 		{

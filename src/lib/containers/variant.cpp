@@ -123,101 +123,79 @@ namespace Rayni
 		}
 	}
 
-	const Variant &Variant::get(const std::string &key) const
-	{
-		auto i = map_iterator(key);
-		if (i == value_.map.cend())
-			throw Exception(*this, "key " + key + " not found");
-		return i->second;
-	}
-
-	Variant::Map::const_iterator Variant::map_iterator(const std::string &key) const
-	{
-		require_type(Type::MAP);
-		return value_.map.find(key);
-	}
-
-	const Variant &Variant::get(std::size_t index) const
-	{
-		require_type(Type::VECTOR);
-		if (index >= value_.vector.size())
-			throw Exception(*this, "index " + std::to_string(index) + " out of bounds");
-		return value_.vector[index];
-	}
-
-	bool Variant::to_bool() const
+	Result<bool> Variant::to_bool() const
 	{
 		if (is_bool())
-			return value_.boolean;
+			return bool(value_.boolean);
 
-		throw Exception(*this, "cannot convert " + type_to_string() + " to bool");
+		return Error(path(), "cannot convert " + type_to_string() + " to bool");
 	}
 
-	int Variant::to_int() const
+	Result<int> Variant::to_int() const
 	{
-		if (is_int())
-			return as_int();
-
 		std::optional<int> result;
 
-		if (is_unsigned_int())
+		if (is_int())
+			result = value_.number_int;
+		else if (is_unsigned_int())
 			result = numeric_cast<int>(value_.number_unsigned_int);
 		else if (is_float())
 			result = numeric_cast<int>(value_.number_float);
 		else if (is_double())
 			result = numeric_cast<int>(value_.number_double);
+		else
+			return Error(path(), "cannot convert " + type_to_string() + " to int");
 
-		if (!result.has_value())
-			throw Exception(*this, "cannot convert to int");
+		if (!result)
+			return Error(path(), "cannot convert to int, value out of bounds");
 
-		return result.value();
+		return int(*result);
 	}
 
-	unsigned int Variant::to_unsigned_int() const
+	Result<unsigned int> Variant::to_unsigned_int() const
 	{
-		if (is_unsigned_int())
-			return as_unsigned_int();
-
 		std::optional<unsigned int> result;
 
 		if (is_int())
 			result = numeric_cast<unsigned int>(value_.number_int);
+		else if (is_unsigned_int())
+			result = value_.number_unsigned_int;
 		else if (is_float())
 			result = numeric_cast<unsigned int>(value_.number_float);
 		else if (is_double())
 			result = numeric_cast<unsigned int>(value_.number_double);
+		else
+			return Error(path(), "cannot convert " + type_to_string() + " to unsigned int");
 
-		if (!result.has_value())
-			throw Exception(*this, "cannot convert to unsigned int");
+		if (!result)
+			return Error(path(), "cannot convert to unsigned int, value out of bounds");
 
-		return result.value();
+		return unsigned(*result);
 	}
 
-	float Variant::to_float() const
+	Result<float> Variant::to_float() const
 	{
-		if (is_float())
-			return as_float();
-
 		std::optional<float> result;
 
 		if (is_int())
 			result = numeric_cast<float>(value_.number_int);
 		else if (is_unsigned_int())
 			result = numeric_cast<float>(value_.number_unsigned_int);
+		else if (is_float())
+			result = value_.number_float;
 		else if (is_double())
 			result = numeric_cast<float>(value_.number_double);
+		else
+			return Error(path(), "cannot convert " + type_to_string() + " to float");
 
-		if (!result.has_value())
-			throw Exception(*this, "cannot convert to float");
+		if (!result)
+			return Error(path(), "cannot convert to float, value out of bounds");
 
-		return result.value();
+		return float(*result);
 	}
 
-	double Variant::to_double() const
+	Result<double> Variant::to_double() const
 	{
-		if (is_double())
-			return value_.number_double;
-
 		std::optional<double> result;
 
 		if (is_int())
@@ -226,14 +204,18 @@ namespace Rayni
 			result = numeric_cast<double>(value_.number_unsigned_int);
 		else if (is_float())
 			result = numeric_cast<double>(value_.number_float);
+		else if (is_double())
+			result = value_.number_double;
+		else
+			return Error(path(), "cannot convert " + type_to_string() + " to double");
 
-		if (!result.has_value())
-			throw Exception(*this, "cannot convert to double");
+		if (!result)
+			return Error(path(), "cannot convert to double, value out of bounds");
 
-		return result.value();
+		return double(*result);
 	}
 
-	std::string Variant::to_string() const
+	Result<std::string> Variant::to_string() const
 	{
 		switch (type_) {
 		case Type::NONE:
@@ -243,7 +225,7 @@ namespace Rayni
 		case Type::VECTOR:
 			return vector_to_string(value_.vector);
 		case Type::BOOL:
-			return value_.boolean ? "true" : "false";
+			return value_.boolean ? std::string("true") : std::string("false");
 		case Type::INT:
 			return std::to_string(value_.number_int);
 		case Type::UNSIGNED_INT:
@@ -253,10 +235,10 @@ namespace Rayni
 		case Type::DOUBLE:
 			return std::to_string(value_.number_double);
 		case Type::STRING:
-			return value_.string;
+			return std::string(value_.string);
 		}
 
-		throw Exception(*this, "cannot convert " + type_to_string() + " to string");
+		return Error(path(), "cannot convert " + type_to_string() + " to string");
 	}
 
 	std::string Variant::map_to_string(const Map &map)
@@ -270,7 +252,7 @@ namespace Rayni
 			else
 				str += delimiter;
 
-			str += key + ": " + value.to_string();
+			str += key + ": " + value.to_string().value_or("");
 		}
 
 		str += " }";
@@ -289,7 +271,7 @@ namespace Rayni
 			else
 				str += delimiter;
 
-			str += v.to_string();
+			str += v.to_string().value_or("");
 		}
 
 		str += " ]";
@@ -330,19 +312,6 @@ namespace Rayni
 		assert(parent_ && parent_->is_vector());
 
 		return static_cast<std::size_t>(this - &parent_->value_.vector[0]);
-	}
-
-	std::string Variant::prepend_path_if_has_parent(const std::string &str) const
-	{
-		return parent_ ? path() + ": " + str : str;
-	}
-
-	void Variant::require_type(Type required_type) const
-	{
-		if (type_ != required_type)
-			throw Exception(*this,
-			                "expected \"" + type_to_string(required_type) + "\" instead of \"" +
-			                        type_to_string(type_) + "\"");
 	}
 
 	std::string Variant::type_to_string(Type type)

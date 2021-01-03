@@ -23,6 +23,7 @@
 #include <vector>
 
 #include "lib/containers/variant.h"
+#include "lib/function/result.h"
 #include "lib/math/aabb.h"
 #include "lib/math/math.h"
 #include "lib/math/matrix4x4.h"
@@ -41,7 +42,7 @@ namespace Rayni
 		{
 		}
 
-		static Transform from_variant(const Variant &v);
+		static Result<Transform> from_variant(const Variant &v);
 
 		static Transform identity()
 		{
@@ -264,9 +265,9 @@ namespace Rayni
 		}
 
 	private:
-		static Transform from_variant_string(const Variant &v);
-		static Transform from_variant_map(const Variant &v);
-		static Transform from_variant_vector(const Variant &v);
+		static Result<Transform> from_variant_string(const Variant &v);
+		static Result<Transform> from_variant_map(const Variant &v);
+		static Result<Transform> from_variant_vector(const Variant &v);
 
 		Matrix4x4 matrix_;
 		Matrix4x4 inverse_matrix_;

@@ -50,20 +50,23 @@ namespace Rayni
 
 	TEST(Color, Variant)
 	{
-		EXPECT_PRED_FORMAT2(color_near, Color::black(), Variant("black").to<Color>());
-		EXPECT_PRED_FORMAT2(color_near, Color::white(), Variant("white").to<Color>());
-		EXPECT_PRED_FORMAT2(color_near, Color::red(), Variant("red").to<Color>());
-		EXPECT_PRED_FORMAT2(color_near, Color::yellow(), Variant("yellow").to<Color>());
-		EXPECT_PRED_FORMAT2(color_near, Color::green(), Variant("green").to<Color>());
-		EXPECT_PRED_FORMAT2(color_near, Color::blue(), Variant("blue").to<Color>());
+		EXPECT_PRED_FORMAT2(color_near, Color::black(), Variant("black").to<Color>().value_or(Color::white()));
+		EXPECT_PRED_FORMAT2(color_near, Color::white(), Variant("white").to<Color>().value_or(Color::black()));
+		EXPECT_PRED_FORMAT2(color_near, Color::red(), Variant("red").to<Color>().value_or(Color::black()));
+		EXPECT_PRED_FORMAT2(color_near,
+		                    Color::yellow(),
+		                    Variant("yellow").to<Color>().value_or(Color::black()));
+		EXPECT_PRED_FORMAT2(color_near, Color::green(), Variant("green").to<Color>().value_or(Color::black()));
+		EXPECT_PRED_FORMAT2(color_near, Color::blue(), Variant("blue").to<Color>().value_or(Color::black()));
+		EXPECT_PRED_FORMAT2(color_near,
+		                    Color(0.1, 0.2, 0.3),
+		                    Variant::vector(0.1, 0.2, 0.3).to<Color>().value_or(Color::black()));
 
-		EXPECT_PRED_FORMAT2(color_near, Color(0.1, 0.2, 0.3), Variant::vector(0.1, 0.2, 0.3).to<Color>());
-
-		EXPECT_THROW(Variant().to<Color>(), Variant::Exception);
-		EXPECT_THROW(Variant::vector(0).to<Color>(), Variant::Exception);
-		EXPECT_THROW(Variant(true).to<Color>(), Variant::Exception);
-		EXPECT_THROW(Variant(0).to<Color>(), Variant::Exception);
-		EXPECT_THROW(Variant("").to<Color>(), Variant::Exception);
+		EXPECT_FALSE(Variant().to<Color>());
+		EXPECT_FALSE(Variant::vector(0).to<Color>());
+		EXPECT_FALSE(Variant(true).to<Color>());
+		EXPECT_FALSE(Variant(0).to<Color>());
+		EXPECT_FALSE(Variant("").to<Color>());
 	}
 
 	TEST(Color, OperatorAddition)

@@ -21,6 +21,7 @@
 #define RAYNI_LIB_MATH_ANIMATED_TRANSFORM_H
 
 #include "lib/containers/variant.h"
+#include "lib/function/result.h"
 #include "lib/math/decomposed_matrix4x4.h"
 #include "lib/math/math.h"
 #include "lib/math/transform.h"
@@ -35,7 +36,7 @@ namespace Rayni
 		                  real_t end_time,
 		                  const Transform &end_transform);
 
-		explicit AnimatedTransform(const Variant &v);
+		static Result<AnimatedTransform> from_variant(const Variant &v);
 
 		Transform interpolate(real_t time) const;
 

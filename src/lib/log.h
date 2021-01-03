@@ -24,9 +24,6 @@
 #include <optional>
 #include <string>
 
-// TODO: Try using std::format (added in C++20) instead of printf-like strings.
-//       Not implemented in libstdc++ and libc++ yet though. Remove attribute if
-//       switch is made.
 #ifdef __GNUC__
 #	define RAYNI_LOG_PRINTF_ATTRIBUTE(f, a) __attribute__((format(printf, f, a)))
 #else

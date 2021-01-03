@@ -26,7 +26,7 @@
 #
 # - modernize-use-nodiscard is disabled because it is too agressive. It warns in
 #   many cases where it does not matter (simple getters) and/or where the
-#   compiler might as well emit a warning. Littering almost every code with
+#   compiler might as well emit a warning. Littering almost every function with
 #   [[nodiscard]] is not useful. Better to use [[nodiscard]] judiciously where
 #   it really does matter if the return value is unused (e.g. critical OS
 #   operations that can fail at runtime and exception is not suitable, for

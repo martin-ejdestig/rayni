@@ -330,4 +330,6 @@ namespace Rayni
 // TODO: Remove once clang-format bug is fixed. See above.
 // clang-format on
 
+#undef RAYNI_RESULT_COLD_ATTRIBUTE
+
 #endif // RAYNI_LIB_FUNCTION_RESULT_H

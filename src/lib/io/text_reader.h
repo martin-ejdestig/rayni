@@ -22,11 +22,12 @@
 
 #include <cassert>
 #include <cstddef>
-#include <stdexcept>
+#include <optional>
 #include <string>
 #include <string_view>
 #include <utility>
 
+#include "lib/function/result.h"
 #include "lib/system/memory_mapped_file.h"
 
 namespace Rayni
@@ -40,6 +41,11 @@ namespace Rayni
 			Position() = default;
 			explicit Position(const std::string &prefix);
 
+			operator std::string() const // NOLINT(google-explicit-constructor) For brevity.
+			{
+				return string();
+			}
+
 			void next_line();
 			void next_column();
 			void next_columns(std::size_t num_columns);
@@ -47,33 +53,15 @@ namespace Rayni
 			std::size_t line() const;
 			std::size_t column() const;
 
-			std::string to_string() const;
+			std::string string() const;
 
 		private:
-			bool is_set() const;
-
 			std::size_t line_ = 0;
 			std::size_t column_ = 0;
 			std::string prefix_;
 		};
 
-		class Exception : public std::runtime_error
-		{
-		public:
-			using std::runtime_error::runtime_error;
-
-			Exception(const Position &position, const std::string &str) :
-			        Exception(position.to_string(), str)
-			{
-			}
-
-			Exception(const std::string &prefix, const std::string &str) :
-			        Exception(prefix.empty() ? str : prefix + ": " + str)
-			{
-			}
-		};
-
-		void open_file(const std::string &file_name);
+		Result<void> open_file(const std::string &file_name);
 
 		void set_string(std::string &&string, const std::string &position_prefix);
 		void set_string(std::string &&string)
@@ -83,10 +71,10 @@ namespace Rayni
 
 		void close();
 
-		void next()
+		bool next()
 		{
 			if (at_eof())
-				throw Exception(position_, "end of stream");
+				return false;
 
 			if (at_newline()) {
 				buffer_position_++;
@@ -95,12 +83,15 @@ namespace Rayni
 				buffer_position_++;
 				position_.next_column();
 			}
+
+			return true;
 		}
 
-		char next_get()
+		std::optional<char> next_get()
 		{
 			std::size_t pos = buffer_position_;
-			next();
+			if (!next())
+				return {};
 			return buffer_[pos];
 		}
 

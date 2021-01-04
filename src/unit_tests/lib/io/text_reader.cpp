@@ -71,31 +71,31 @@ namespace Rayni
 		EXPECT_EQ(11U, position.column());
 	}
 
-	TEST(TextReader, PositionToString)
+	TEST(TextReader, PositionString)
 	{
 		TextReader::Position position;
-		EXPECT_EQ("", position.to_string());
+		EXPECT_EQ("", position.string());
 
 		position.next_line();
-		EXPECT_EQ("1:1", position.to_string());
+		EXPECT_EQ("1:1", position.string());
 
 		position.next_line();
-		EXPECT_EQ("2:1", position.to_string());
+		EXPECT_EQ("2:1", position.string());
 
 		position.next_column();
-		EXPECT_EQ("2:2", position.to_string());
+		EXPECT_EQ("2:2", position.string());
 
 		position.next_line();
-		EXPECT_EQ("3:1", position.to_string());
+		EXPECT_EQ("3:1", position.string());
 
 		position.next_columns(10);
-		EXPECT_EQ("3:11", position.to_string());
+		EXPECT_EQ("3:11", position.string());
 
 		position = TextReader::Position("prefix");
-		EXPECT_EQ("prefix", position.to_string());
+		EXPECT_EQ("prefix", position.string());
 
 		position.next_line();
-		EXPECT_EQ("prefix:1:1", position.to_string());
+		EXPECT_EQ("prefix:1:1", position.string());
 	}
 
 	TEST(TextReader, OpenFile)
@@ -109,30 +109,30 @@ namespace Rayni
 		text_to_file(exists2_path, "test2");
 
 		TextReader reader;
-		EXPECT_EQ("", reader.position().to_string());
+		EXPECT_EQ("", reader.position().string());
 
-		reader.open_file(exists1_path);
-		EXPECT_EQ(exists1_path + ":1:1", reader.position().to_string());
+		EXPECT_TRUE(reader.open_file(exists1_path));
+		EXPECT_EQ(exists1_path + ":1:1", reader.position().string());
 
-		reader.open_file(exists2_path);
-		EXPECT_EQ(exists2_path + ":1:1", reader.position().to_string());
+		EXPECT_TRUE(reader.open_file(exists2_path));
+		EXPECT_EQ(exists2_path + ":1:1", reader.position().string());
 
-		EXPECT_THROW(reader.open_file(does_not_exist_path), TextReader::Exception);
+		EXPECT_FALSE(reader.open_file(does_not_exist_path));
 	}
 
 	TEST(TextReader, SetString)
 	{
 		TextReader reader;
-		EXPECT_EQ("", reader.position().to_string());
+		EXPECT_EQ("", reader.position().string());
 
 		reader.set_string("test1", "prefix1");
-		EXPECT_EQ("prefix1:1:1", reader.position().to_string());
+		EXPECT_EQ("prefix1:1:1", reader.position().string());
 
 		reader.set_string("test2", "prefix2");
-		EXPECT_EQ("prefix2:1:1", reader.position().to_string());
+		EXPECT_EQ("prefix2:1:1", reader.position().string());
 
 		reader.set_string("test3");
-		EXPECT_EQ("1:1", reader.position().to_string());
+		EXPECT_EQ("1:1", reader.position().string());
 	}
 
 	TEST(TextReader, Close)
@@ -140,7 +140,7 @@ namespace Rayni
 		TextReader reader;
 		reader.set_string("test", "prefix");
 		reader.close();
-		EXPECT_EQ("", reader.position().to_string());
+		EXPECT_EQ("", reader.position().string());
 	}
 
 	TEST(TextReader, NextAndNextGet)
@@ -148,30 +148,30 @@ namespace Rayni
 		TextReader reader;
 		reader.set_string("abc\ndef");
 
-		EXPECT_EQ("1:1", reader.position().to_string());
-		EXPECT_EQ('a', reader.next_get());
-		EXPECT_EQ("1:2", reader.position().to_string());
-		EXPECT_EQ('b', reader.next_get());
-		EXPECT_EQ("1:3", reader.position().to_string());
-		EXPECT_EQ('c', reader.next_get());
-		EXPECT_EQ("1:4", reader.position().to_string());
-		EXPECT_EQ('\n', reader.next_get());
-		EXPECT_EQ("2:1", reader.position().to_string());
+		EXPECT_EQ("1:1", reader.position().string());
+		EXPECT_EQ('a', reader.next_get().value_or(0));
+		EXPECT_EQ("1:2", reader.position().string());
+		EXPECT_EQ('b', reader.next_get().value_or(0));
+		EXPECT_EQ("1:3", reader.position().string());
+		EXPECT_EQ('c', reader.next_get().value_or(0));
+		EXPECT_EQ("1:4", reader.position().string());
+		EXPECT_EQ('\n', reader.next_get().value_or(0));
+		EXPECT_EQ("2:1", reader.position().string());
 
-		EXPECT_EQ('d', reader.next_get());
-		EXPECT_EQ("2:2", reader.position().to_string());
+		EXPECT_EQ('d', reader.next_get().value_or(0));
+		EXPECT_EQ("2:2", reader.position().string());
 		reader.next();
-		EXPECT_EQ("2:3", reader.position().to_string());
-		EXPECT_EQ('f', reader.next_get());
-		EXPECT_EQ("2:4", reader.position().to_string());
+		EXPECT_EQ("2:3", reader.position().string());
+		EXPECT_EQ('f', reader.next_get().value_or(0));
+		EXPECT_EQ("2:4", reader.position().string());
 
 		EXPECT_TRUE(reader.at_eof());
-		EXPECT_THROW(reader.next(), TextReader::Exception);
-		EXPECT_EQ("2:4", reader.position().to_string());
+		EXPECT_FALSE(reader.next());
+		EXPECT_EQ("2:4", reader.position().string());
 
 		EXPECT_TRUE(reader.at_eof());
-		EXPECT_THROW(reader.next_get(), TextReader::Exception);
-		EXPECT_EQ("2:4", reader.position().to_string());
+		EXPECT_FALSE(reader.next_get());
+		EXPECT_EQ("2:4", reader.position().string());
 	}
 
 	TEST(TextReader, At)
@@ -234,38 +234,38 @@ namespace Rayni
 		TextReader reader;
 		reader.set_string("abcdef \t\r\n  gh  i  \nj");
 
-		EXPECT_EQ("1:1", reader.position().to_string());
+		EXPECT_EQ("1:1", reader.position().string());
 		EXPECT_TRUE(reader.skip_char('a'));
-		EXPECT_EQ("1:2", reader.position().to_string());
+		EXPECT_EQ("1:2", reader.position().string());
 		EXPECT_FALSE(reader.skip_char('a'));
-		EXPECT_EQ("1:2", reader.position().to_string());
+		EXPECT_EQ("1:2", reader.position().string());
 		EXPECT_TRUE(reader.skip_char('b'));
-		EXPECT_EQ("1:3", reader.position().to_string());
+		EXPECT_EQ("1:3", reader.position().string());
 
 		EXPECT_TRUE(reader.skip_string("cd"));
-		EXPECT_EQ("1:5", reader.position().to_string());
+		EXPECT_EQ("1:5", reader.position().string());
 		EXPECT_FALSE(reader.skip_string("ee"));
-		EXPECT_EQ("1:5", reader.position().to_string());
+		EXPECT_EQ("1:5", reader.position().string());
 		EXPECT_TRUE(reader.skip_string("ef"));
-		EXPECT_EQ("1:7", reader.position().to_string());
+		EXPECT_EQ("1:7", reader.position().string());
 
 		reader.skip_space();
-		EXPECT_EQ("2:3", reader.position().to_string());
+		EXPECT_EQ("2:3", reader.position().string());
 		EXPECT_TRUE(reader.skip_char('g'));
-		EXPECT_EQ("2:4", reader.position().to_string());
+		EXPECT_EQ("2:4", reader.position().string());
 		reader.skip_space();
-		EXPECT_EQ("2:4", reader.position().to_string());
+		EXPECT_EQ("2:4", reader.position().string());
 
 		EXPECT_TRUE(reader.skip_char('h'));
-		EXPECT_EQ("2:5", reader.position().to_string());
+		EXPECT_EQ("2:5", reader.position().string());
 
 		reader.skip_space();
-		EXPECT_EQ("2:7", reader.position().to_string());
+		EXPECT_EQ("2:7", reader.position().string());
 		EXPECT_TRUE(reader.skip_char('i'));
-		EXPECT_EQ("2:8", reader.position().to_string());
+		EXPECT_EQ("2:8", reader.position().string());
 		reader.skip_space();
-		EXPECT_EQ("3:1", reader.position().to_string());
+		EXPECT_EQ("3:1", reader.position().string());
 		EXPECT_TRUE(reader.skip_char('j'));
-		EXPECT_EQ("3:2", reader.position().to_string());
+		EXPECT_EQ("3:2", reader.position().string());
 	}
 }

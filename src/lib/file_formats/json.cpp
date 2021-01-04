@@ -23,6 +23,7 @@
 #include <utility>
 
 #include "lib/containers/variant.h"
+#include "lib/function/result.h"
 #include "lib/io/text_reader.h"
 #include "lib/string/string.h"
 
@@ -30,20 +31,18 @@ namespace Rayni
 {
 	namespace
 	{
-		using Exception = TextReader::Exception;
+		Result<Variant> read_value(TextReader &reader);
 
-		Variant read_value(TextReader &reader);
-
-		Variant read_string(TextReader &reader)
+		Result<Variant> read_string(TextReader &reader)
 		{
 			if (!reader.skip_char('"'))
-				throw Exception(reader.position(), "expected start of string");
+				return Error(reader.position(), "expected start of string");
 
 			std::string string;
 
 			while (!reader.skip_char('\"')) {
 				if (reader.at_newline())
-					throw Exception(reader.position(), "missing string termination");
+					return Error(reader.position(), "missing string termination");
 
 				if (reader.skip_char('\\')) {
 					if (reader.skip_char('b'))
@@ -63,125 +62,136 @@ namespace Rayni
 					else if (reader.skip_char('\\'))
 						string += '\\';
 					else if (reader.skip_char('u'))
-						throw Exception(reader.position(),
-						                "escaped code points currently not supported");
+						return Error(reader.position(),
+						             "escaped code points currently not supported");
 					else
-						throw Exception(reader.position(), "invalid escape char");
-				} else
-					string += reader.next_get();
+						return Error(reader.position(), "invalid escape char");
+				} else {
+					auto c = reader.next_get();
+					if (!c)
+						return Error(reader.position(), "expected character");
+					string += *c;
+				}
 			}
 
 			return Variant(std::move(string));
 		}
 
-		Variant read_number(TextReader &reader)
+		Result<Variant> read_number(TextReader &reader)
 		{
 			if (!reader.at_digit() && !reader.at('-'))
-				throw Exception(reader.position(), "expected digit or -");
+				return Error(reader.position(), "expected digit or -");
 
 			std::string number;
 
-			if (reader.at('-'))
-				number += reader.next_get();
+			if (reader.skip_char('-'))
+				number += '-';
 
 			if (reader.skip_char('0')) {
 				number += '0';
 				if (reader.at_digit())
-					throw Exception(reader.position(), "number may not start with 0");
+					return Error(reader.position(), "number may not start with 0");
 			} else if (!reader.at_digit())
-				throw Exception(reader.position(), "expected digit between 1-9");
+				return Error(reader.position(), "expected digit between 1-9");
 
 			while (reader.at_digit())
-				number += reader.next_get();
+				number += *reader.next_get();
 
-			if (reader.at('.')) {
-				number += reader.next_get();
+			if (reader.skip_char('.')) {
+				number += '.';
 				if (!reader.at_digit())
-					throw Exception(reader.position(), "expected digit");
+					return Error(reader.position(), "expected digit");
 				while (reader.at_digit())
-					number += reader.next_get();
+					number += *reader.next_get();
 			}
 
-			if (reader.at('e')) {
-				number += reader.next_get();
+			if (reader.skip_char('e')) {
+				number += 'e';
 				if (reader.at('-') || reader.at('+'))
-					number += reader.next_get();
+					number += *reader.next_get();
 				if (!reader.at_digit())
-					throw Exception(reader.position(), "expected digit");
+					return Error(reader.position(), "expected digit");
 				while (reader.at_digit())
-					number += reader.next_get();
+					number += *reader.next_get();
 			}
 
 			auto d = string_to_number<double>(number);
-			if (!d.has_value())
-				throw Exception(reader.position(), "number conversion failed");
+			if (!d)
+				return Error(reader.position(), "number conversion failed");
 
-			return Variant(d.value());
+			return Variant(*d);
 		}
 
-		Variant read_array(TextReader &reader)
+		Result<Variant> read_array(TextReader &reader)
 		{
 			if (!reader.skip_char('['))
-				throw Exception(reader.position(), "expected start of array");
+				return Error(reader.position(), "expected start of array");
 
 			Variant::Vector vector;
 
 			reader.skip_space();
 
 			while (!reader.skip_char(']')) {
-				vector.emplace_back(read_value(reader));
+				Result<Variant> value = read_value(reader);
+				if (!value)
+					return value.error();
+				vector.emplace_back(std::move(*value));
 
 				reader.skip_space();
 
 				if (reader.skip_char(',')) {
 					reader.skip_space();
 					if (reader.at(']'))
-						throw Exception(reader.position(),
-						                "expected value instead of ] after ,");
+						return Error(reader.position(), "expected value instead of ] after ,");
 				} else if (!reader.at(']')) {
-					throw Exception(reader.position(), "expected , or ]");
+					return Error(reader.position(), "expected , or ]");
 				}
 			}
 
 			return Variant(std::move(vector));
 		}
 
-		Variant read_object(TextReader &reader)
+		Result<Variant> read_object(TextReader &reader)
 		{
 			if (!reader.skip_char('{'))
-				throw Exception(reader.position(), "expected start of object");
+				return Error(reader.position(), "expected start of object");
 
 			Variant::Map map;
 
 			reader.skip_space();
 
 			while (!reader.skip_char('}')) {
-				Variant key = read_string(reader);
+				Result<Variant> key = read_string(reader);
+				if (!key)
+					return key.error();
 
-				if (map.find(key.as_string()) != map.cend())
-					throw Exception(reader.position(), "duplicate key");
+				if (map.find(key->as_string()) != map.cend())
+					return Error(reader.position(), "duplicate key");
 
 				reader.skip_space();
 				if (!reader.skip_char(':'))
-					throw Exception(reader.position(), "expected :");
+					return Error(reader.position(), "expected :");
 
-				map.emplace(key.as_string(), read_value(reader));
+				Result<Variant> value = read_value(reader);
+				if (!value)
+					return value.error();
+				map.emplace(key->as_string(), std::move(*value));
 
 				reader.skip_space();
 
 				if (reader.skip_char(',')) {
 					reader.skip_space();
 					if (reader.at('}'))
-						throw Exception(reader.position(), "expected key instead of } after ,");
+						return Error(reader.position(), "expected key instead of } after ,");
 				} else if (!reader.at('}')) {
-					throw Exception(reader.position(), "expected , or }");
+					return Error(reader.position(), "expected , or }");
 				}
 			}
 
 			return Variant(std::move(map));
 		}
 
-		Variant read_value(TextReader &reader)
+		Result<Variant> read_value(TextReader &reader)
 		{
 			reader.skip_space();
 
@@ -206,19 +216,19 @@ namespace Rayni
 			if (reader.skip_string("null"))
 				return Variant();
 
-			throw Exception(reader.position(), "invalid value");
+			return Error(reader.position(), "invalid value");
 		}
 
-		Variant read_document(TextReader &reader)
+		Result<Variant> read_document(TextReader &reader)
 		{
-			Variant value = read_value(reader);
+			Result<Variant> value = read_value(reader);
+			if (!value)
+				return value.error();
 
-			while (!reader.at_eof()) {
-				if (!reader.at_space())
-					throw Exception(reader.position(), "expected space or end of document");
+			reader.skip_space();
 
-				reader.next();
-			}
+			if (!reader.at_eof())
+				return Error(reader.position(), "expected space or end of document");
 
 			return value;
 		}
@@ -226,31 +236,16 @@ namespace Rayni
 
 	Result<Variant> json_read_file(const std::string &file_name)
 	{
-		Variant variant;
-
-		try {
-			TextReader reader;
-			reader.open_file(file_name);
-			variant = read_document(reader);
-		} catch (const TextReader::Exception &e) {
-			return Error(e.what());
-		}
-
-		return variant;
+		TextReader reader;
+		if (auto r = reader.open_file(file_name); !r)
+			return r.error();
+		return read_document(reader);
 	}
 
 	Result<Variant> json_read_string(std::string &&string)
 	{
-		Variant variant;
-
-		try {
-			TextReader reader;
-			reader.set_string(std::move(string));
-			variant = read_document(reader);
-		} catch (const TextReader::Exception &e) {
-			return Error(e.what());
-		}
-
-		return variant;
+		TextReader reader;
+		reader.set_string(std::move(string));
+		return read_document(reader);
 	}
 }

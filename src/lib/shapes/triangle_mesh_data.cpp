@@ -58,7 +58,7 @@ namespace Rayni
 				std::array<real_t, INTS_PER_VALUE> reals;
 
 				for (auto &real : reals)
-					real = real_t(reader.read_big_endian<I>()) / real_t(denominator);
+					real = real_t(*reader.read_big_endian<I>()) / real_t(denominator);
 
 				values.emplace_back(reals);
 			}
@@ -87,7 +87,7 @@ namespace Rayni
 				std::array<I, INTS_PER_VALUE> integers;
 
 				for (auto &integer : integers)
-					integer = reader.read_big_endian<I>();
+					integer = *reader.read_big_endian<I>();
 
 				values.emplace_back(integers);
 			}

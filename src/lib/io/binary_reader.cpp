@@ -28,18 +28,20 @@
 
 namespace Rayni
 {
-	void BinaryReader::open_file(const std::string &file_name)
+	Result<void> BinaryReader::open_file(const std::string &file_name)
 	{
 		close();
 
 		if (auto result = mmap_file_.map(file_name); !result)
-			throw Exception(result.error().message());
+			return result.error();
 
 		buffer_ = static_cast<const std::uint8_t *>(mmap_file_.data());
 		buffer_size_ = mmap_file_.size();
 		buffer_position_ = 0;
 
 		position_prefix_ = file_name;
+
+		return {};
 	}
 
 	void BinaryReader::set_data(std::vector<std::uint8_t> &&data, const std::string &position_prefix)
@@ -69,37 +71,31 @@ namespace Rayni
 		position_prefix_ = "";
 	}
 
-	void BinaryReader::read_bytes(void *dest, std::size_t dest_size, std::size_t dest_offset, std::size_t num_bytes)
+	Result<void> BinaryReader::read_bytes(void *dest,
+	                                      std::size_t dest_size,
+	                                      std::size_t dest_offset,
+	                                      std::size_t num_bytes)
 	{
 		if (dest_offset >= dest_size)
-			throw Exception(position(),
-			                "invalid offset (size: " + std::to_string(dest_size) +
-			                        ", offset: " + std::to_string(dest_offset) + ")");
+			return Error(position(),
+			             "invalid offset (size: " + std::to_string(dest_size) +
+			                     ", offset: " + std::to_string(dest_offset) + ")");
 
 		std::size_t max_num_bytes = dest_size - dest_offset;
 
 		if (num_bytes > max_num_bytes)
-			throw Exception(position(),
-			                "byte count too large (byte count: " + std::to_string(num_bytes) +
-			                        ", max: " + std::to_string(max_num_bytes) + ")");
+			return Error(position(),
+			             "byte count too large (byte count: " + std::to_string(num_bytes) +
+			                     ", max: " + std::to_string(max_num_bytes) + ")");
 
 		if (buffer_position_ + num_bytes > buffer_size_)
-			throw Exception(position(), "unexpected end of stream");
+			return Error(position(), "unexpected end of stream");
 
 		std::memcpy(static_cast<std::uint8_t *>(dest) + dest_offset, buffer_ + buffer_position_, num_bytes);
 
 		buffer_position_ += num_bytes;
-	}
 
-	void BinaryReader::skip_bytes(std::size_t num_bytes)
-	{
-		if (num_bytes == 0)
-			return;
-
-		if (buffer_position_ + num_bytes > buffer_size_)
-			throw Exception(position(), "failed to skip " + std::to_string(num_bytes) + " bytes");
-
-		buffer_position_ += num_bytes;
+		return {};
 	}
 
 	std::string BinaryReader::position() const

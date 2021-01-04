@@ -34,8 +34,6 @@ namespace Rayni
 {
 	namespace
 	{
-		using Exception = BinaryReader::Exception;
-
 		enum class ColorMapType : std::uint8_t
 		{
 			ABSCENT = 0,
@@ -108,23 +106,24 @@ namespace Rayni
 			return {};
 		}
 
-		Header read_header(BinaryReader &reader)
+		Result<Header> read_header(BinaryReader &reader)
 		{
 			Header header;
 			std::array<std::uint8_t, 18> data;
 
-			reader.read_bytes(data);
+			if (auto r = reader.read_bytes(data); !r)
+				return r.error();
 
 			header.id_field_length = data[0];
 
 			auto color_map_type = byte_to_color_map_type(data[1]);
 			if (!color_map_type)
-				throw Exception(reader.position(), "unknown color map type field in TGA header");
+				return Error(reader.position(), "unknown color map type field in TGA header");
 			header.color_map_type = *color_map_type;
 
 			auto image_type = byte_to_image_type(data[2] & 0x07);
 			if (!image_type)
-				throw Exception(reader.position(), "unknown image type field in TGA header");
+				return Error(reader.position(), "unknown image type field in TGA header");
 			header.image_type = *image_type;
 
 			header.run_length_encoded = (data[2] & 0x08) != 0;
@@ -144,53 +143,58 @@ namespace Rayni
 			if (header.image_type == ImageType::COLOR_MAPPED) {
 				if (header.color_map.length == 0 || header.color_map.entry_size == 0 ||
 				    header.color_map_type == ColorMapType::ABSCENT)
-					throw Exception(reader.position(),
-					                "missing color map in color mapped TGA image");
+					return Error(reader.position(), "missing color map in color mapped TGA image");
 			} else {
 				if (header.color_map.length != 0 || header.color_map.entry_size != 0 ||
 				    header.color_map_type == ColorMapType::PRESENT)
-					throw Exception(reader.position(), "color map found in RGB/Mono TGA image");
+					return Error(reader.position(), "color map found in RGB/Mono TGA image");
 			}
 
 			if (header.image.width == 0 || header.image.height == 0)
-				throw Exception(reader.position(), "invalid image dimensions in TGA image");
+				return Error(reader.position(), "invalid image dimensions in TGA image");
 
 			if (header.image.pixel_size != 8 && header.image.pixel_size != 15 &&
 			    header.image.pixel_size != 16 && header.image.pixel_size != 24 &&
 			    header.image.pixel_size != 32)
-				throw Exception(reader.position(), "invalid pixel depth in TGA image");
+				return Error(reader.position(), "invalid pixel depth in TGA image");
 
 			return header;
 		}
 
-		void read_run_length_encoded(BinaryReader &reader,
-		                             const Header &header,
-		                             RLEState &rle_state,
-		                             std::vector<std::uint8_t> &dest)
+		Result<void> read_run_length_encoded(BinaryReader &reader,
+		                                     const Header &header,
+		                                     RLEState &rle_state,
+		                                     std::vector<std::uint8_t> &dest)
 		{
 			std::size_t pos = 0;
 
 			while (pos < dest.size()) {
 				if (rle_state.bytes_left == 0) {
-					std::uint8_t repetition_count = reader.read_uint8();
+					Result<std::uint8_t> repetition_count = reader.read_uint8();
+					if (!repetition_count)
+						return repetition_count.error();
 
-					rle_state.raw = repetition_count < 0x80;
+					rle_state.raw = *repetition_count < 0x80;
 
 					if (rle_state.raw) {
 						rle_state.bytes_left =
-						        (repetition_count + 1U) * header.image.bytes_per_pixel;
+						        (*repetition_count + 1U) * header.image.bytes_per_pixel;
 					} else {
 						rle_state.bytes_left =
-						        (repetition_count - 127U) * header.image.bytes_per_pixel;
+						        (*repetition_count - 127U) * header.image.bytes_per_pixel;
 						rle_state.pixel_pos = 0;
-						reader.read_bytes(rle_state.pixel, header.image.bytes_per_pixel);
+						if (auto r = reader.read_bytes(rle_state.pixel,
+						                               header.image.bytes_per_pixel);
+						    !r)
+							return r.error();
 					}
 				}
 
 				if (rle_state.raw) {
 					auto size = std::min(dest.size() - pos,
 					                     static_cast<std::size_t>(rle_state.bytes_left));
-					reader.read_bytes(dest, pos, size);
+					if (auto r = reader.read_bytes(dest, pos, size); !r)
+						return r.error();
 					rle_state.bytes_left -= size;
 					pos += size;
 				} else {
@@ -202,9 +206,11 @@ namespace Rayni
 					}
 				}
 			}
+
+			return {};
 		}
 
-		Image read_image_data(BinaryReader &reader, const Header &header)
+		Result<Image> read_image_data(BinaryReader &reader, const Header &header)
 		{
 			Image image(header.image.width, header.image.height);
 			std::vector<std::uint8_t> row(unsigned(header.image.bytes_per_pixel * header.image.width));
@@ -213,10 +219,13 @@ namespace Rayni
 			bool top_to_bottom = (header.image.descriptor & 0x20) != 0;
 
 			for (unsigned int y = 0; y < header.image.height; y++) {
-				if (header.run_length_encoded)
-					read_run_length_encoded(reader, header, rle_state, row);
-				else
-					reader.read_bytes(row);
+				if (header.run_length_encoded) {
+					if (auto r = read_run_length_encoded(reader, header, rle_state, row); !r)
+						return r.error();
+				} else {
+					if (auto r = reader.read_bytes(row); !r)
+						return r.error();
+				}
 
 				for (unsigned int x = 0; x < header.image.width; x++) {
 					unsigned int image_x = right_to_left ? header.image.width - 1U - x : x;
@@ -239,7 +248,7 @@ namespace Rayni
 						         real_t(pixel[0]) / 255,
 						         real_t(pixel[0]) / 255};
 					} else {
-						throw Exception(reader.position(), "unsupported TGA image type");
+						return Error(reader.position(), "unsupported TGA image type");
 					}
 
 					image.write_pixel(image_x, image_y, color);
@@ -249,32 +258,27 @@ namespace Rayni
 			return image;
 		}
 
-		Image read_tga(BinaryReader &reader)
+		Result<Image> read_tga(BinaryReader &reader)
 		{
-			Header header = read_header(reader);
+			Result<Header> header = read_header(reader);
+			if (!header)
+				return header.error();
 
-			reader.skip_bytes(header.id_field_length);
+			if (auto r = reader.skip_bytes(header->id_field_length); !r)
+				return r.error();
 
-			if (header.color_map_type == ColorMapType::PRESENT)
-				throw Exception(reader.position(),
-				                "support for color mapped TGA images not implemented");
+			if (header->color_map_type == ColorMapType::PRESENT)
+				return Error(reader.position(), "support for color mapped TGA images not implemented");
 
-			return read_image_data(reader, header);
+			return read_image_data(reader, *header);
 		}
 	}
 
 	Result<Image> tga_read_file(const std::string &file_name)
 	{
-		Image image;
-
-		try {
-			BinaryReader reader;
-			reader.open_file(file_name);
-			image = read_tga(reader);
-		} catch (const BinaryReader::Exception &e) {
-			return Error(e.what());
-		}
-
-		return image;
+		BinaryReader reader;
+		if (auto r = reader.open_file(file_name); !r)
+			return r.error();
+		return read_tga(reader);
 	}
 }

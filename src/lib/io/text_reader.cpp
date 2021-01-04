@@ -25,12 +25,12 @@
 
 namespace Rayni
 {
-	void TextReader::open_file(const std::string &file_name)
+	Result<void> TextReader::open_file(const std::string &file_name)
 	{
 		close();
 
 		if (auto result = mmap_file_.map(file_name); !result)
-			throw Exception(result.error().message());
+			return result.error();
 
 		buffer_ = static_cast<const char *>(mmap_file_.data());
 		buffer_size_ = mmap_file_.size();
@@ -38,6 +38,8 @@ namespace Rayni
 
 		position_ = Position(file_name);
 		position_.next_line();
+
+		return {};
 	}
 
 	void TextReader::set_string(std::string &&string, const std::string &position_prefix)
@@ -82,7 +84,7 @@ namespace Rayni
 		return true;
 	}
 
-	std::string TextReader::Position::to_string() const
+	std::string TextReader::Position::string() const
 	{
 		if (line_ == 0)
 			return prefix_;

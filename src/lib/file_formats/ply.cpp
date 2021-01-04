@@ -20,6 +20,7 @@
 #include "lib/file_formats/ply.h"
 
 #include <array>
+#include <cassert>
 #include <cstdint>
 #include <cstdlib>
 #include <optional>
@@ -27,6 +28,7 @@
 #include <utility>
 #include <vector>
 
+#include "lib/function/result.h"
 #include "lib/io/binary_reader.h"
 #include "lib/math/math.h"
 #include "lib/math/numeric_cast.h"
@@ -37,8 +39,6 @@ namespace Rayni
 {
 	namespace
 	{
-		using Exception = BinaryReader::Exception;
-
 		enum class Format
 		{
 			ASCII,
@@ -127,28 +127,31 @@ namespace Rayni
 
 		void skip_space(BinaryReader &reader)
 		{
-			while (true) {
-				std::optional<std::int8_t> c = reader.peek_int8();
-
-				if (!c.has_value() || (c.value() != ' ' && c.value() != '\n'))
+			while (!reader.at_eof()) {
+				if (!reader.at(' ') && !reader.at('\n'))
 					break;
 
-				reader.read_int8();
+				[[maybe_unused]] auto r = reader.skip_bytes(1);
+				assert(r);
 			}
 		}
 
 		void skip_comment(BinaryReader &reader)
 		{
-			while (reader.read_int8() != '\n')
-				;
+			while (!reader.at_eof()) {
+				std::int8_t c = *reader.read_int8();
+
+				if (c == '\n')
+					break;
+			}
 		}
 
 		void skip_word(BinaryReader &reader)
 		{
 			skip_space(reader);
 
-			while (true) {
-				std::int8_t c = reader.read_int8();
+			while (!reader.at_eof()) {
+				std::int8_t c = *reader.read_int8();
 
 				if (c == ' ' || c == '\n')
 					break;
@@ -161,8 +164,8 @@ namespace Rayni
 
 			skip_space(reader);
 
-			while (true) {
-				std::int8_t c = reader.read_int8();
+			while (!reader.at_eof()) {
+				std::int8_t c = *reader.read_int8();
 
 				if (c == ' ' || c == '\n')
 					break;
@@ -173,9 +176,9 @@ namespace Rayni
 			return word;
 		}
 
-		Type read_type(BinaryReader &reader)
+		Result<Type> read_type(BinaryReader &reader)
 		{
-			auto str_to_basic_type = [&](const std::string &str) {
+			auto str_to_basic_type = [&](const std::string &str) -> Result<BasicType> {
 				if (str == "int8" || str == "char")
 					return BasicType::INT8;
 				if (str == "uint8" || str == "uchar")
@@ -193,17 +196,28 @@ namespace Rayni
 				if (str == "float64" || str == "double")
 					return BasicType::FLOAT64;
 
-				throw Exception(reader.position(), "unknown type \"" + str + "\"");
+				return Error(reader.position(), "unknown type \"" + str + "\"");
 			};
 
 			std::string str = read_word(reader);
 			Type type;
 
 			if (str != "list") {
-				type.basic_type = str_to_basic_type(str);
+				if (auto r = str_to_basic_type(str); r)
+					type.basic_type = *r;
+				else
+					return r.error();
 			} else {
-				type.list_size_type = str_to_basic_type(read_word(reader));
-				type.basic_type = str_to_basic_type(read_word(reader));
+				if (auto r = str_to_basic_type(read_word(reader)); r)
+					type.list_size_type = *r;
+				else
+					return r.error();
+
+				if (auto r = str_to_basic_type(read_word(reader)); r)
+					type.basic_type = *r;
+				else
+					return r.error();
+
 				type.is_list = true;
 			}
 
@@ -211,93 +225,109 @@ namespace Rayni
 		}
 
 		template <typename T>
-		T read_ascii_number(BinaryReader &reader)
+		Result<T> read_ascii_number(BinaryReader &reader)
 		{
 			auto v = string_to_number<T>(read_word(reader));
 
-			if (!v.has_value())
-				throw Exception(reader.position(), "failed to convert string to number");
+			if (!v)
+				return Error(reader.position(), "invalid ASCII number");
 
-			return v.value();
+			return Result<T>(std::move(*v));
 		}
 
 		template <typename T>
-		T read_number(BinaryReader &reader, const Header &header)
+		Result<T> read_number(BinaryReader &reader, const Header &header)
 		{
-			if (header.format == Format::ASCII)
-				return read_ascii_number<T>(reader);
+			if (header.format == Format::BINARY_BIG_ENDIAN)
+				return reader.read_big_endian<T>();
+			if (header.format == Format::BINARY_LITTLE_ENDIAN)
+				return reader.read_little_endian<T>();
 
-			return header.format == Format::BINARY_BIG_ENDIAN ? reader.read_big_endian<T>() :
-                                                                            reader.read_little_endian<T>();
+			return read_ascii_number<T>(reader); // header.format == Format::ASCII
 		}
 
 		template <typename T>
-		T read_number(BinaryReader &reader, const Header &header, BasicType basic_type)
+		Result<T> read_number(BinaryReader &reader, const Header &header, BasicType basic_type)
 		{
-			std::optional<T> value = 0;
+			auto cast = [&](auto r) -> Result<T> {
+				if (!r)
+					return r.error();
+				std::optional<T> v = numeric_cast<T>(*r);
+				if (!v)
+					return Error(reader.position(), "value out of range");
+				return Result<T>(std::move(*v));
+			};
 
 			switch (basic_type) {
 			case BasicType::INT8:
-				value = numeric_cast<T>(read_number<std::int8_t>(reader, header));
-				break;
+				return cast(read_number<std::int8_t>(reader, header));
 			case BasicType::UINT8:
-				value = numeric_cast<T>(read_number<std::uint8_t>(reader, header));
-				break;
+				return cast(read_number<std::uint8_t>(reader, header));
 			case BasicType::INT16:
-				value = numeric_cast<T>(read_number<std::int16_t>(reader, header));
-				break;
+				return cast(read_number<std::int16_t>(reader, header));
 			case BasicType::UINT16:
-				value = numeric_cast<T>(read_number<std::uint16_t>(reader, header));
-				break;
+				return cast(read_number<std::uint16_t>(reader, header));
 			case BasicType::INT32:
-				value = numeric_cast<T>(read_number<std::int32_t>(reader, header));
-				break;
+				return cast(read_number<std::int32_t>(reader, header));
 			case BasicType::UINT32:
-				value = numeric_cast<T>(read_number<std::uint32_t>(reader, header));
-				break;
+				return cast(read_number<std::uint32_t>(reader, header));
 			case BasicType::FLOAT32:
-				value = numeric_cast<T>(read_number<float>(reader, header));
-				break;
+				return cast(read_number<float>(reader, header));
 			case BasicType::FLOAT64:
-				value = numeric_cast<T>(read_number<double>(reader, header));
-				break;
+				return cast(read_number<double>(reader, header));
 			}
 
-			if (!value)
-				throw Exception(reader.position(), "value out of range");
-
-			return *value;
+			assert(false);
+			return Error(reader.position(), "unhandled number type");
 		}
 
 		template <typename T>
-		T read_number(BinaryReader &reader, const Header &header, const Type &type)
+		Result<T> read_number(BinaryReader &reader, const Header &header, const Type &type)
 		{
 			if (type.is_list)
-				throw Exception(reader.position(), "unexpected list value, expected scalar");
+				return Error(reader.position(), "unexpected list value, expected scalar");
 
 			return read_number<T>(reader, header, type.basic_type);
 		}
 
 		template <typename T>
-		void read_list(BinaryReader &reader, const Header &header, const Type &type, std::vector<T> &dest)
+		Result<void> read_list(BinaryReader &reader,
+		                       const Header &header,
+		                       const Type &type,
+		                       std::vector<T> &dest)
 		{
 			if (!type.is_list)
-				throw Exception(reader.position(), "unexpected scalar value, expected list");
+				return Error(reader.position(), "unexpected scalar value, expected list");
 
-			std::size_t count = read_number<std::uint32_t>(reader, header, type.list_size_type);
+			std::uint32_t count;
+			if (auto r = read_number<std::uint32_t>(reader, header, type.list_size_type); r)
+				count = *r;
+			else
+				return r.error();
+
 			dest.clear(); // Assume capacity() is left unchanged and memory is reused.
 			dest.reserve(count);
 
-			for (std::size_t i = 0; i < count; i++)
-				dest.emplace_back(read_number<T>(reader, header, type.basic_type));
+			for (std::uint32_t i = 0; i < count; i++) {
+				auto n = read_number<T>(reader, header, type.basic_type);
+				if (!n)
+					return n.error();
+				dest.emplace_back(*n);
+			}
+
+			return {};
 		}
 
-		void skip_value(BinaryReader &reader, const Header &header, const Type &type)
+		Result<void> skip_value(BinaryReader &reader, const Header &header, const Type &type)
 		{
 			std::size_t count = 1;
 
-			if (type.is_list)
-				count = read_number<std::uint32_t>(reader, header, type.list_size_type);
+			if (type.is_list) {
+				if (auto r = read_number<std::uint32_t>(reader, header, type.list_size_type); r)
+					count = *r;
+				else
+					return r.error();
+			}
 
 			if (header.format == Format::ASCII) {
 				for (std::size_t i = 0; i < count; i++)
@@ -324,25 +354,31 @@ namespace Rayni
 					break;
 				}
 
-				reader.skip_bytes(basic_type_size * count);
+				if (auto r = reader.skip_bytes(basic_type_size * count); !r)
+					return r.error();
 			}
+
+			return {};
 		}
 
-		void read_magic(BinaryReader &reader)
+		Result<void> read_magic(BinaryReader &reader)
 		{
 			const std::array<std::uint8_t, 4> expected_magic = {'p', 'l', 'y', '\n'};
 			std::array<std::uint8_t, 4> magic;
 
-			reader.read_bytes(magic);
+			if (auto r = reader.read_bytes(magic); !r)
+				return r.error();
 
 			if (magic != expected_magic)
-				throw Exception(reader.position(), R"(header must start with "ply\n")");
+				return Error(reader.position(), R"(header must start with "ply\n")");
+
+			return {};
 		}
 
-		Format read_format(BinaryReader &reader)
+		Result<Format> read_format(BinaryReader &reader)
 		{
 			if (read_word(reader) != "format")
-				throw Exception(reader.position(), "expected \"format\"");
+				return Error(reader.position(), "expected \"format\"");
 
 			std::string format_str = read_word(reader);
 			Format format;
@@ -354,37 +390,49 @@ namespace Rayni
 			else if (format_str == "binary_little_endian")
 				format = Format::BINARY_LITTLE_ENDIAN;
 			else
-				throw Exception(reader.position(), "unknown format type: \"" + format_str + "\"");
+				return Error(reader.position(), "unknown format type: \"" + format_str + "\"");
 
 			std::string version = read_word(reader);
 
 			if (version != "1.0")
-				throw Exception(reader.position(), "unknown version: \"" + version + "\"");
+				return Error(reader.position(), "unknown version: \"" + version + "\"");
 
 			return format;
 		}
 
-		Element read_element(BinaryReader &reader)
+		Result<Element> read_element(BinaryReader &reader)
 		{
 			Element element;
 
 			std::string name = read_word(reader);
+			if (name.empty())
+				return Error(reader.position(), "expected element name");
+
 			if (name == "vertex")
 				element.name = Element::Name::VERTEX;
 			else if (name == "face")
 				element.name = Element::Name::FACE;
 
-			element.count = read_ascii_number<Element::Count>(reader);
+			if (auto r = read_ascii_number<Element::Count>(reader); r)
+				element.count = *r;
+			else
+				return r.error();
 
 			return element;
 		}
 
-		Property read_property(BinaryReader &reader, Element::Name element_name)
+		Result<Property> read_property(BinaryReader &reader, Element::Name element_name)
 		{
 			Property property;
 
-			property.type = read_type(reader);
+			if (auto r = read_type(reader); r)
+				property.type = *r;
+			else
+				return r.error();
+
 			std::string name = read_word(reader);
+			if (name.empty())
+				return Error(reader.position(), "expected property name");
 
 			if (element_name == Element::Name::VERTEX) {
 				// Only x, y, z is mentioned in original spec. Have seen all others below
@@ -413,12 +461,17 @@ namespace Rayni
 			return property;
 		}
 
-		Header read_header(BinaryReader &reader)
+		Result<Header> read_header(BinaryReader &reader)
 		{
 			Header header;
 
-			read_magic(reader);
-			header.format = read_format(reader);
+			if (auto r = read_magic(reader); !r)
+				return r.error();
+
+			if (auto r = read_format(reader); r)
+				header.format = *r;
+			else
+				return r.error();
 
 			while (true) {
 				std::string keyword = read_word(reader);
@@ -426,51 +479,54 @@ namespace Rayni
 				if (keyword == "comment") {
 					skip_comment(reader);
 				} else if (keyword == "element") {
-					Element element = read_element(reader);
+					Result<Element> element = read_element(reader);
+					if (!element)
+						return element.error();
 
-					if (element.name != Element::Name::UNKNOWN &&
-					    Header::has_element(header, element.name))
-						throw Exception(reader.position(), "duplicate element in header");
+					if (element->name != Element::Name::UNKNOWN &&
+					    Header::has_element(header, element->name))
+						return Error(reader.position(), "duplicate element in header");
 
-					header.elements.emplace_back(element);
+					header.elements.emplace_back(*element);
 				} else if (keyword == "property") {
 					if (header.elements.empty())
-						throw Exception(reader.position(),
-						                "property found in header before any element");
+						return Error(reader.position(),
+						             "property found in header before any element");
 
 					Element &element = header.elements.back();
-					Property property = read_property(reader, element.name);
+					Result<Property> property = read_property(reader, element.name);
+					if (!property)
+						return property.error();
 
-					if (property.name != Property::Name::UNKNOWN &&
-					    Element::has_property(element, property.name))
-						throw Exception(reader.position(), "duplicate property for element");
+					if (property->name != Property::Name::UNKNOWN &&
+					    Element::has_property(element, property->name))
+						return Error(reader.position(), "duplicate property for element");
 
-					element.properties.emplace_back(property);
+					element.properties.emplace_back(*property);
 				} else if (keyword == "end_header") {
 					break;
 				} else {
-					throw Exception(reader.position(),
-					                "unknown header keyword: \"" + keyword + "\"");
+					return Error(reader.position(), "unknown header keyword: \"" + keyword + "\"");
 				}
 			}
 
 			if (!Header::has_element(header, Element::Name::VERTEX))
-				throw Exception(reader.position(), "missing vertex element in header");
+				return Error(reader.position(), "missing vertex element in header");
 
 			if (!Header::has_element(header, Element::Name::FACE))
-				throw Exception(reader.position(), "missing face element in header");
+				return Error(reader.position(), "missing face element in header");
 
 			for (const auto &element : header.elements)
 				if (element.properties.empty())
-					throw Exception(reader.position(), "element without properties in header");
+					return Error(reader.position(), "element without properties in header");
 
 			return header;
 		}
 
-		void read_vertex_data(BinaryReader &reader,
-		                      const Header &header,
-		                      const Element &element,
-		                      TriangleMeshData &data)
+		Result<void> read_vertex_data(BinaryReader &reader,
+		                              const Header &header,
+		                              const Element &element,
+		                              TriangleMeshData &data)
 		{
 			bool has_uvs = Element::has_property(element, Property::Name::VERTEX_U) ||
 			               Element::has_property(element, Property::Name::VERTEX_V);
@@ -489,24 +545,26 @@ namespace Rayni
 
 			for (Element::Count i = 0; i < element.count; i++) {
 				for (const Property &property : element.properties) {
+					Result<real_t> n = read_number<real_t>(reader, header, property.type);
+					if (!n)
+						return n.error();
+
 					if (property.name == Property::Name::VERTEX_X)
-						point.x() = read_number<real_t>(reader, header, property.type);
+						point.x() = *n;
 					else if (property.name == Property::Name::VERTEX_Y)
-						point.y() = read_number<real_t>(reader, header, property.type);
+						point.y() = *n;
 					else if (property.name == Property::Name::VERTEX_Z)
-						point.z() = read_number<real_t>(reader, header, property.type);
+						point.z() = *n;
 					else if (property.name == Property::Name::VERTEX_NORMAL_X)
-						normal.x() = read_number<real_t>(reader, header, property.type);
+						normal.x() = *n;
 					else if (property.name == Property::Name::VERTEX_NORMAL_Y)
-						normal.y() = read_number<real_t>(reader, header, property.type);
+						normal.y() = *n;
 					else if (property.name == Property::Name::VERTEX_NORMAL_Z)
-						normal.z() = read_number<real_t>(reader, header, property.type);
+						normal.z() = *n;
 					else if (property.name == Property::Name::VERTEX_U)
-						uv.u = read_number<real_t>(reader, header, property.type);
+						uv.u = *n;
 					else if (property.name == Property::Name::VERTEX_V)
-						uv.v = read_number<real_t>(reader, header, property.type);
-					else
-						skip_value(reader, header, property.type);
+						uv.v = *n;
 				}
 
 				data.points.emplace_back(point);
@@ -515,12 +573,14 @@ namespace Rayni
 				if (has_uvs)
 					data.uvs.emplace_back(uv);
 			}
+
+			return {};
 		}
 
-		void read_face_data(BinaryReader &reader,
-		                    const Header &header,
-		                    const Element &element,
-		                    TriangleMeshData &data)
+		Result<void> read_face_data(BinaryReader &reader,
+		                            const Header &header,
+		                            const Element &element,
+		                            TriangleMeshData &data)
 		{
 			std::vector<TriangleMeshData::Index> indices;
 
@@ -529,13 +589,16 @@ namespace Rayni
 			for (Element::Count i = 0; i < element.count; i++) {
 				for (const Property &property : element.properties) {
 					if (property.name == Property::Name::VERTEX_INDICES) {
-						read_list<TriangleMeshData::Index>(reader,
-						                                   header,
-						                                   property.type,
-						                                   indices);
+						if (auto r = read_list<TriangleMeshData::Index>(reader,
+						                                                header,
+						                                                property.type,
+						                                                indices);
+						    !r)
+							return r.error();
+
 						if (indices.size() < 3)
-							throw Exception(reader.position(),
-							                "face element must have at least 3 indices");
+							return Error(reader.position(),
+							             "face element must have at least 3 indices");
 
 						TriangleMeshData::Index i1 = indices[0];
 						TriangleMeshData::Index i2 = 0;
@@ -547,83 +610,76 @@ namespace Rayni
 							data.indices.emplace_back(i1, i2, i3);
 						}
 					} else {
-						skip_value(reader, header, property.type);
+						if (auto r = skip_value(reader, header, property.type); !r)
+							return r.error();
 					}
 				}
 			}
+
+			return {};
 		}
 
-		TriangleMeshData read_mesh_data(BinaryReader &reader, const Header &header)
+		Result<TriangleMeshData> read_mesh_data(BinaryReader &reader, const Header &header)
 		{
 			TriangleMeshData data;
 
 			for (const Element &element : header.elements) {
 				if (element.name == Element::Name::VERTEX) {
-					read_vertex_data(reader, header, element, data);
+					if (auto r = read_vertex_data(reader, header, element, data); !r)
+						return r.error();
 				} else if (element.name == Element::Name::FACE) {
-					read_face_data(reader, header, element, data);
+					if (auto r = read_face_data(reader, header, element, data); !r)
+						return r.error();
 				} else {
 					for (Element::Count i = 0; i < element.count; i++)
 						for (const Property &property : element.properties)
-							skip_value(reader, header, property.type);
+							if (auto r = skip_value(reader, header, property.type); !r)
+								return r.error();
 				}
 			}
 
 			if (data.points.size() < 3)
-				throw Exception(reader.position(), "number of vertices must be at least 3");
+				return Error(reader.position(), "number of vertices must be at least 3");
 
 			if (data.indices.empty())
-				throw Exception(reader.position(), "missing indices");
+				return Error(reader.position(), "missing indices");
 
 			auto max_index = data.points.size() - 1;
 
 			for (auto &indices : data.indices)
 				if (indices.index1 > max_index || indices.index2 > max_index ||
 				    indices.index3 > max_index)
-					throw Exception(reader.position(),
-					                "invalid indices (" + std::to_string(indices.index1) + ", " +
-					                        std::to_string(indices.index2) + ", " +
-					                        std::to_string(indices.index3) + ")" +
-					                        ", max allowed: " + std::to_string(max_index));
+					return Error(reader.position(),
+					             "invalid indices (" + std::to_string(indices.index1) + ", " +
+					                     std::to_string(indices.index2) + ", " +
+					                     std::to_string(indices.index3) + ")" +
+					                     ", max allowed: " + std::to_string(max_index));
 
 			return data;
 		}
 
-		TriangleMeshData read_ply(BinaryReader &reader)
+		Result<TriangleMeshData> read_ply(BinaryReader &reader)
 		{
-			Header header = read_header(reader);
+			Result<Header> header = read_header(reader);
+			if (!header)
+				return header.error();
 
-			return read_mesh_data(reader, header);
+			return read_mesh_data(reader, *header);
 		}
 	}
 
 	Result<TriangleMeshData> ply_read_file(const std::string &file_name)
 	{
-		TriangleMeshData mesh_data;
-
-		try {
-			BinaryReader reader;
-			reader.open_file(file_name);
-			mesh_data = read_ply(reader);
-		} catch (const BinaryReader::Exception &e) {
-			return Error(e.what());
-		}
-
-		return mesh_data;
+		BinaryReader reader;
+		if (auto r = reader.open_file(file_name); !r)
+			return r.error();
+		return read_ply(reader);
 	}
 
 	Result<TriangleMeshData> ply_read_data(std::vector<std::uint8_t> &&data)
 	{
-		TriangleMeshData mesh_data;
-
-		try {
-			BinaryReader reader;
-			reader.set_data(std::move(data));
-			mesh_data = read_ply(reader);
-		} catch (const BinaryReader::Exception &e) {
-			return Error(e.what());
-		}
-
-		return mesh_data;
+		BinaryReader reader;
+		reader.set_data(std::move(data));
+		return read_ply(reader);
 	}
 }

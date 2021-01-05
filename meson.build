@@ -6,6 +6,8 @@ project('rayni-staging',
             'b_ndebug=if-release',
             'buildtype=release',
             'cpp_std=c++2a',
+            'cpp_eh=none',
+            'cpp_rtti=false',
             'warning_level=3',
             'werror=true'
         ])

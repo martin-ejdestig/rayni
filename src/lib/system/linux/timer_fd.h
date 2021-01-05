@@ -29,6 +29,7 @@
 #include <system_error>
 #include <utility>
 
+#include "lib/function/result.h"
 #include "lib/system/unique_fd.h"
 
 namespace Rayni
@@ -45,12 +46,15 @@ namespace Rayni
 			std::chrono::nanoseconds interval;
 		};
 
-		static constexpr clockid_t CLOCK_ID = CLOCK_MONOTONIC;
-
-		TimerFD() : timer_fd_(timerfd_create(CLOCK_ID, TFD_CLOEXEC))
+		static Result<TimerFD> create()
 		{
-			if (timer_fd_.get() == -1)
-				throw std::system_error(errno, std::system_category(), "timerfd_create() failed");
+			TimerFD t;
+
+			t.timer_fd_ = UniqueFD(timerfd_create(CLOCK_MONOTONIC, TFD_CLOEXEC));
+			if (t.timer_fd_.get() == -1)
+				return Error("timerfd_create() failed", std::error_code(errno, std::system_category()));
+
+			return t;
 		}
 
 		int fd() const
@@ -58,79 +62,81 @@ namespace Rayni
 			return timer_fd_.get();
 		}
 
-		void set(std::chrono::nanoseconds expiration) const
+		Result<void> set(std::chrono::nanoseconds expiration) const
 		{
 			struct itimerspec timer_spec = {};
 
 			timer_spec.it_value = time_spec_from_ns(expiration);
 
-			settime(0, timer_spec);
+			return settime(0, timer_spec);
 		}
 
-		void set(std::chrono::nanoseconds initial_expiration, std::chrono::nanoseconds interval) const
+		Result<void> set(std::chrono::nanoseconds initial_expiration, std::chrono::nanoseconds interval) const
 		{
 			struct itimerspec timer_spec = {};
 
 			timer_spec.it_value = time_spec_from_ns(initial_expiration);
 			timer_spec.it_interval = time_spec_from_ns(interval);
 
-			settime(0, timer_spec);
+			return settime(0, timer_spec);
 		}
 
-		void set(clock::time_point expiration) const
+		Result<void> set(clock::time_point expiration) const
 		{
 			struct itimerspec timer_spec = {};
 
 			timer_spec.it_value = time_spec_from_time_point(expiration);
 
-			settime(TFD_TIMER_ABSTIME, timer_spec);
+			return settime(TFD_TIMER_ABSTIME, timer_spec);
 		}
 
-		void set(clock::time_point initial_expiration, std::chrono::nanoseconds interval) const
+		Result<void> set(clock::time_point initial_expiration, std::chrono::nanoseconds interval) const
 		{
 			struct itimerspec timer_spec = {};
 
 			timer_spec.it_value = time_spec_from_time_point(initial_expiration);
 			timer_spec.it_interval = time_spec_from_ns(interval);
 
-			settime(TFD_TIMER_ABSTIME, timer_spec);
+			return settime(TFD_TIMER_ABSTIME, timer_spec);
 		}
 
-		Value get() const
+		Result<Value> get() const
 		{
 			struct itimerspec timer_spec = {};
 
 			if (timerfd_gettime(timer_fd_.get(), &timer_spec) == -1)
-				throw std::system_error(errno, std::system_category(), "timerfd_gettime() failed");
+				return Error("timerfd_gettime() failed",
+				             std::error_code(errno, std::system_category()));
 
-			return {time_spec_to_ns(timer_spec.it_value), time_spec_to_ns(timer_spec.it_interval)};
+			return Value{time_spec_to_ns(timer_spec.it_value), time_spec_to_ns(timer_spec.it_interval)};
 		}
 
-		void disarm() const
+		Result<void> disarm() const
 		{
 			struct itimerspec timer_spec = {};
 
-			settime(0, timer_spec);
+			return settime(0, timer_spec);
 		}
 
-		std::uint64_t read() const
+		Result<std::uint64_t> read() const
 		{
 			std::uint64_t value = 0;
 
 			while (::read(timer_fd_.get(), &value, sizeof value) != static_cast<ssize_t>(sizeof value))
 				if (errno != EINTR)
-					throw std::system_error(errno,
-					                        std::system_category(),
-					                        "read() from timerfd failed");
+					return Error("read() from timerfd failed",
+					             std::error_code(errno, std::system_category()));
 
 			return value;
 		}
 
 	private:
-		void settime(int flags, struct itimerspec &timer_spec) const
+		Result<void> settime(int flags, struct itimerspec &timer_spec) const
 		{
 			if (timerfd_settime(timer_fd_.get(), flags, &timer_spec, nullptr) == -1)
-				throw std::system_error(errno, std::system_category(), "timerfd_settime() failed");
+				return Error("timerfd_settime() failed",
+				             std::error_code(errno, std::system_category()));
+			return {};
 		}
 
 		static constexpr struct timespec time_spec_from_ns(std::chrono::nanoseconds ns)

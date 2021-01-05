@@ -32,7 +32,8 @@ namespace Rayni
 {
 	TEST(File, Write)
 	{
-		ScopedTempDir temp_dir;
+		ScopedTempDir temp_dir = ScopedTempDir::create().value_or({});
+		ASSERT_FALSE(temp_dir.path().empty());
 		const std::string path = temp_dir.path() / "foo";
 		const std::vector<std::uint8_t> write_data = {0x12, 0x34};
 

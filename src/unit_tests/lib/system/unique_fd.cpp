@@ -22,7 +22,6 @@
 #include <gtest/gtest.h>
 #include <sys/eventfd.h>
 
-#include <system_error>
 #include <utility>
 
 namespace
@@ -31,9 +30,6 @@ namespace
 	{
 		// #if:ery here for other OS:es when adding support... and remove this comment.
 		int fd = eventfd(0, EFD_CLOEXEC);
-
-		if (fd == -1)
-			throw std::system_error(errno, std::system_category(), "failed to create test fd");
 
 		return fd;
 	}
@@ -52,6 +48,7 @@ namespace Rayni
 	{
 		UniqueFD fd1(test_fd());
 		int fd = fd1.get();
+		ASSERT_NE(-1, fd);
 
 		UniqueFD fd2(std::move(fd1));
 
@@ -64,6 +61,7 @@ namespace Rayni
 	{
 		UniqueFD fd1(test_fd());
 		int fd = fd1.get();
+		ASSERT_NE(-1, fd);
 
 		UniqueFD fd2;
 		fd2 = std::move(fd1);
@@ -77,7 +75,7 @@ namespace Rayni
 	{
 		UniqueFD fd(test_fd());
 
-		EXPECT_NE(-1, fd.get());
+		ASSERT_NE(-1, fd.get());
 		fd.close();
 		EXPECT_EQ(-1, fd.get());
 	}

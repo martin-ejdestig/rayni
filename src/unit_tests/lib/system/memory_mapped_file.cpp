@@ -34,7 +34,8 @@ namespace Rayni
 {
 	TEST(MemoryMappedFile, Map)
 	{
-		ScopedTempDir temp_dir;
+		ScopedTempDir temp_dir = ScopedTempDir::create().value_or({});
+		ASSERT_FALSE(temp_dir.path().empty());
 		const std::string file_name = temp_dir.path() / "file";
 		const std::vector<std::uint8_t> bytes = {0x12, 0x98, 0x34, 0x76};
 		ASSERT_TRUE(file_write(file_name, bytes));
@@ -48,7 +49,8 @@ namespace Rayni
 
 	TEST(MemoryMappedFile, MapAlreadyMapped)
 	{
-		ScopedTempDir temp_dir;
+		ScopedTempDir temp_dir = ScopedTempDir::create().value_or({});
+		ASSERT_FALSE(temp_dir.path().empty());
 		const std::string file_name1 = temp_dir.path() / "file1";
 		const std::string file_name2 = temp_dir.path() / "file2";
 		const std::vector<std::uint8_t> bytes1 = {0xa1, 0xE7, 0x6d, 0x83};
@@ -69,7 +71,8 @@ namespace Rayni
 
 	TEST(MemoryMappedFile, MapFileThatDoesNotExist)
 	{
-		ScopedTempDir temp_dir;
+		ScopedTempDir temp_dir = ScopedTempDir::create().value_or({});
+		ASSERT_FALSE(temp_dir.path().empty());
 		const std::string file_name = temp_dir.path() / "does_not_exist";
 
 		MemoryMappedFile file;
@@ -78,7 +81,8 @@ namespace Rayni
 
 	TEST(MemoryMappedFile, MapZeroBytesFile)
 	{
-		ScopedTempDir temp_dir;
+		ScopedTempDir temp_dir = ScopedTempDir::create().value_or({});
+		ASSERT_FALSE(temp_dir.path().empty());
 		const std::string file_name = temp_dir.path() / "empty_file";
 		const std::vector<std::uint8_t> bytes = {};
 		ASSERT_TRUE(file_write(file_name, bytes));
@@ -91,7 +95,8 @@ namespace Rayni
 
 	TEST(MemoryMappedFile, UnmapResetsDataAndSize)
 	{
-		ScopedTempDir temp_dir;
+		ScopedTempDir temp_dir = ScopedTempDir::create().value_or({});
+		ASSERT_FALSE(temp_dir.path().empty());
 		const std::string file_name = temp_dir.path() / "file";
 		const std::vector<std::uint8_t> bytes = {0x12, 0x98, 0x34, 0x76};
 		ASSERT_TRUE(file_write(file_name, bytes));
@@ -122,7 +127,8 @@ namespace Rayni
 
 	TEST(MemoryMappedFile, MoveConstructor)
 	{
-		ScopedTempDir temp_dir;
+		ScopedTempDir temp_dir = ScopedTempDir::create().value_or({});
+		ASSERT_FALSE(temp_dir.path().empty());
 		const std::string file_name = temp_dir.path() / "file";
 		const std::vector<std::uint8_t> bytes = {0x12};
 		ASSERT_TRUE(file_write(file_name, bytes));
@@ -141,7 +147,8 @@ namespace Rayni
 
 	TEST(MemoryMappedFile, MoveAssignment)
 	{
-		ScopedTempDir temp_dir;
+		ScopedTempDir temp_dir = ScopedTempDir::create().value_or({});
+		ASSERT_FALSE(temp_dir.path().empty());
 		const std::string file_name = temp_dir.path() / "file";
 		const std::vector<std::uint8_t> bytes = {0x12};
 		ASSERT_TRUE(file_write(file_name, bytes));

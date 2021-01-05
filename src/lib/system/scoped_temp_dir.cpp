@@ -21,47 +21,43 @@
 
 #include <cerrno>
 #include <cstdlib>
-#include <filesystem>
 #include <system_error>
 #include <vector>
 
 #include "lib/log.h"
 
-namespace
+namespace Rayni
 {
-	// Cannot be done in a race-free manner with std::filesystem. It is not possible to
-	// determine if directory already existed with std::filesystem::create_directory().
-	// Checking before with std::filesystem::exists() introduces a race condition.
-	//
-	// TODO: Will there be something for this in the standard?
-	std::filesystem::path temp_dir_create_unique()
+	Result<ScopedTempDir> ScopedTempDir::create()
 	{
+		// Cannot be done in a race-free manner with std::filesystem. It is not possible to
+		// determine if directory already existed with std::filesystem::create_directory().
+		// Checking before with std::filesystem::exists() introduces a race condition.
+		//
+		// TODO: Will there be something for this in the standard?
+		// TODO: Ugh, a lot of copying going on before and after mkdtemp(). ScopedTempDir is
+		//       only used in tests at the moment, so ignore for now.
 		std::filesystem::path template_path = std::filesystem::temp_directory_path() / "XXXXXX";
 
 		std::vector<char> buffer(template_path.native().cbegin(), template_path.native().cend());
 		buffer.push_back('\0');
 
-		if (!mkdtemp(buffer.data())) {
-			std::error_code error_code(errno, std::system_category());
-			throw std::filesystem::filesystem_error("mkdtemp() failed", template_path, error_code);
-		}
+		if (!mkdtemp(buffer.data()))
+			return Error("mkdtemp() failed", std::error_code(errno, std::system_category()));
 
-		return std::filesystem::path(buffer.data());
-	}
-}
-
-namespace Rayni
-{
-	ScopedTempDir::ScopedTempDir() : path_(temp_dir_create_unique())
-	{
+		ScopedTempDir dir;
+		dir.path_ = std::filesystem::path(buffer.data());
+		return dir;
 	}
 
 	ScopedTempDir::~ScopedTempDir()
 	{
-		std::error_code error_code;
+		if (!path_.empty()) {
+			std::error_code error_code;
 
-		std::filesystem::remove_all(path(), error_code); // noexcept, safe in destructor
-		if (error_code)
-			log_error("Failed to remove %s: %s", path().c_str(), error_code.message().c_str());
+			std::filesystem::remove_all(path_, error_code); // noexcept, safe in destructor
+			if (error_code)
+				log_error("Failed to remove %s: %s", path_.c_str(), error_code.message().c_str());
+		}
 	}
 }

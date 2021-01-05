@@ -22,7 +22,7 @@
 #include <gtest/gtest.h>
 
 #include <array>
-#include <system_error>
+#include <atomic>
 #include <thread>
 
 #include "lib/system/linux/event_fd.h"
@@ -31,60 +31,69 @@ namespace Rayni
 {
 	TEST(Epoll, FD)
 	{
-		Epoll epoll;
+		Epoll epoll = Epoll::create().value_or({});
 
 		EXPECT_NE(-1, epoll.fd());
 	}
 
 	TEST(Epoll, AddAndWaitSingle)
 	{
-		Epoll epoll;
+		Epoll epoll = Epoll::create().value_or({});
+		ASSERT_NE(-1, epoll.fd());
+
+		EventFD event_fd = EventFD::create().value_or({});
+		ASSERT_NE(-1, event_fd.fd());
+
 		std::array<Epoll::Event, 1> events;
-		EventFD event_fd;
 
-		epoll.add(event_fd.fd(), Epoll::Flag::IN);
+		ASSERT_TRUE(epoll.add(event_fd.fd(), Epoll::Flag::IN));
 
-		EXPECT_EQ(0, epoll.wait(events, std::chrono::milliseconds(0)));
+		EXPECT_EQ(0, epoll.wait(events, std::chrono::milliseconds(0)).value_or(1));
 
-		event_fd.write(1);
+		ASSERT_TRUE(event_fd.write(1));
 
-		EXPECT_EQ(1, epoll.wait(events));
+		EXPECT_EQ(1, epoll.wait(events).value_or(0));
 		EXPECT_EQ(event_fd.fd(), events[0].fd());
 		EXPECT_TRUE(events[0].is_set(Epoll::Flag::IN));
 
-		EXPECT_EQ(1, epoll.wait(events, std::chrono::milliseconds(0)));
+		EXPECT_EQ(1, epoll.wait(events, std::chrono::milliseconds(0)).value_or(0));
 		EXPECT_EQ(event_fd.fd(), events[0].fd());
 		EXPECT_TRUE(events[0].is_set(Epoll::Flag::IN));
 
-		event_fd.read();
+		ASSERT_TRUE(event_fd.read());
 
-		EXPECT_EQ(0, epoll.wait(events, std::chrono::milliseconds(0)));
+		EXPECT_EQ(0, epoll.wait(events, std::chrono::milliseconds(0)).value_or(1));
 	}
 
 	TEST(Epoll, AddAndWaitMultiple)
 	{
-		Epoll epoll;
+		Epoll epoll = Epoll::create().value_or({});
+		ASSERT_NE(-1, epoll.fd());
+
+		EventFD event_fd1 = EventFD::create().value_or({});
+		ASSERT_NE(-1, event_fd1.fd());
+		EventFD event_fd2 = EventFD::create().value_or({});
+		ASSERT_NE(-1, event_fd2.fd());
+
 		std::array<Epoll::Event, 2> events;
-		EventFD event_fd1;
-		EventFD event_fd2;
 
-		epoll.add(event_fd1.fd(), Epoll::Flag::IN);
-		epoll.add(event_fd2.fd(), Epoll::Flag::IN | Epoll::Flag::OUT);
+		ASSERT_TRUE(epoll.add(event_fd1.fd(), Epoll::Flag::IN));
+		ASSERT_TRUE(epoll.add(event_fd2.fd(), Epoll::Flag::IN | Epoll::Flag::OUT));
 
-		EXPECT_EQ(1, epoll.wait(events));
+		EXPECT_EQ(1, epoll.wait(events).value_or(0));
 		EXPECT_EQ(event_fd2.fd(), events[0].fd());
 		EXPECT_TRUE(events[0].is_set(Epoll::Flag::OUT));
 
-		event_fd2.write(1);
+		ASSERT_TRUE(event_fd2.write(1));
 
-		EXPECT_EQ(1, epoll.wait(events));
+		EXPECT_EQ(1, epoll.wait(events).value_or(0));
 		EXPECT_EQ(event_fd2.fd(), events[0].fd());
 		EXPECT_TRUE(events[0].is_set(Epoll::Flag::IN));
 		EXPECT_TRUE(events[0].is_set(Epoll::Flag::OUT));
 
-		event_fd1.write(1);
+		ASSERT_TRUE(event_fd1.write(1));
 
-		EXPECT_EQ(2, epoll.wait(events));
+		EXPECT_EQ(2, epoll.wait(events).value_or(0));
 
 		for (const auto &event : events) {
 			ASSERT_TRUE(event.fd() == event_fd1.fd() || event.fd() == event_fd2.fd());
@@ -98,12 +107,12 @@ namespace Rayni
 			}
 		}
 
-		event_fd1.read();
-		event_fd2.read();
+		ASSERT_TRUE(event_fd1.read());
+		ASSERT_TRUE(event_fd2.read());
 
-		event_fd2.write(EventFD::MAX_VALUE); // Not possible to write more without blocking. OUT not set.
+		ASSERT_TRUE(event_fd2.write(EventFD::MAX_VALUE)); // Can not write more without blocking. OUT not set.
 
-		EXPECT_EQ(1, epoll.wait(events, std::chrono::milliseconds(0)));
+		EXPECT_EQ(1, epoll.wait(events, std::chrono::milliseconds(0)).value_or(0));
 		EXPECT_EQ(event_fd2.fd(), events[0].fd());
 		EXPECT_TRUE(events[0].is_set(Epoll::Flag::IN));
 		EXPECT_FALSE(events[0].is_set(Epoll::Flag::OUT));
@@ -111,221 +120,250 @@ namespace Rayni
 
 	TEST(Epoll, AddPointer)
 	{
-		Epoll epoll;
+		Epoll epoll = Epoll::create().value_or({});
+		ASSERT_NE(-1, epoll.fd());
+
+		EventFD event_fd1 = EventFD::create().value_or({});
+		ASSERT_NE(-1, event_fd1.fd());
+		EventFD event_fd2 = EventFD::create().value_or({});
+		ASSERT_NE(-1, event_fd2.fd());
+
 		std::array<Epoll::Event, 1> events;
-		EventFD event_fd1;
-		EventFD event_fd2;
 
-		epoll.add(event_fd1.fd(), Epoll::Flag::OUT, &event_fd1);
-		epoll.add(event_fd2.fd(), Epoll::Flag::IN, &event_fd2);
+		ASSERT_TRUE(epoll.add(event_fd1.fd(), Epoll::Flag::OUT, &event_fd1));
+		ASSERT_TRUE(epoll.add(event_fd2.fd(), Epoll::Flag::IN, &event_fd2));
 
-		EXPECT_EQ(1, epoll.wait(events));
+		EXPECT_EQ(1, epoll.wait(events).value_or(0));
 		EXPECT_EQ(events[0].ptr(), &event_fd1);
 		EXPECT_TRUE(events[0].is_set(Epoll::Flag::OUT));
 
-		event_fd1.write(EventFD::MAX_VALUE); // Not possible to write more without blocking. OUT not set.
-		event_fd2.write(1);
+		ASSERT_TRUE(event_fd1.write(EventFD::MAX_VALUE)); // Can not write more without blocking. OUT not set.
+		ASSERT_TRUE(event_fd2.write(1));
 
-		EXPECT_EQ(1, epoll.wait(events));
+		EXPECT_EQ(1, epoll.wait(events).value_or(0));
 		EXPECT_EQ(events[0].ptr(), &event_fd2);
 		EXPECT_TRUE(events[0].is_set(Epoll::Flag::IN));
 	}
 
 	TEST(Epoll, AddInvalidFileDescriptor)
 	{
-		Epoll epoll;
+		Epoll epoll = Epoll::create().value_or({});
+		ASSERT_NE(-1, epoll.fd());
 
-		EXPECT_THROW(epoll.add(1147483648, Epoll::Flag::IN), std::system_error);
-		EXPECT_THROW(epoll.add(1147483648, Epoll::Flag::IN, nullptr), std::system_error);
+		EXPECT_FALSE(epoll.add(1147483648, Epoll::Flag::IN));
+		EXPECT_FALSE(epoll.add(1147483648, Epoll::Flag::IN, nullptr));
 	}
 
 	TEST(Epoll, Modify)
 	{
-		Epoll epoll;
+		Epoll epoll = Epoll::create().value_or({});
+		ASSERT_NE(-1, epoll.fd());
+
+		EventFD event_fd = EventFD::create().value_or({});
+		ASSERT_NE(-1, event_fd.fd());
+
 		std::array<Epoll::Event, 1> events;
-		EventFD event_fd;
 
-		epoll.add(event_fd.fd(), Epoll::Flag::OUT);
+		ASSERT_TRUE(epoll.add(event_fd.fd(), Epoll::Flag::OUT));
 
-		EXPECT_EQ(1, epoll.wait(events));
+		EXPECT_EQ(1, epoll.wait(events).value_or(0));
 		EXPECT_EQ(event_fd.fd(), events[0].fd());
 		EXPECT_TRUE(events[0].is_set(Epoll::Flag::OUT));
 
-		epoll.modify(event_fd.fd(), Epoll::Flag::IN);
-		event_fd.write(1);
+		ASSERT_TRUE(epoll.modify(event_fd.fd(), Epoll::Flag::IN));
+		ASSERT_TRUE(event_fd.write(1));
 
-		EXPECT_EQ(1, epoll.wait(events));
+		EXPECT_EQ(1, epoll.wait(events).value_or(0));
 		EXPECT_EQ(event_fd.fd(), events[0].fd());
 		EXPECT_TRUE(events[0].is_set(Epoll::Flag::IN));
 		EXPECT_FALSE(events[0].is_set(Epoll::Flag::OUT));
 
-		epoll.modify(event_fd.fd(), Epoll::Flag::IN | Epoll::Flag::OUT);
+		ASSERT_TRUE(epoll.modify(event_fd.fd(), Epoll::Flag::IN | Epoll::Flag::OUT));
 
-		EXPECT_EQ(1, epoll.wait(events));
+		EXPECT_EQ(1, epoll.wait(events).value_or(0));
 		EXPECT_EQ(event_fd.fd(), events[0].fd());
 		EXPECT_TRUE(events[0].is_set(Epoll::Flag::IN | Epoll::Flag::OUT));
 	}
 
 	TEST(Epoll, ModifyPointer)
 	{
-		Epoll epoll;
+		Epoll epoll = Epoll::create().value_or({});
+		ASSERT_NE(-1, epoll.fd());
+
+		EventFD event_fd = EventFD::create().value_or({});
+		ASSERT_NE(-1, event_fd.fd());
+
 		std::array<Epoll::Event, 1> events;
-		EventFD event_fd;
 
-		epoll.add(event_fd.fd(), Epoll::Flag::OUT, &event_fd);
+		ASSERT_TRUE(epoll.add(event_fd.fd(), Epoll::Flag::OUT, &event_fd));
 
-		EXPECT_EQ(1, epoll.wait(events));
+		EXPECT_EQ(1, epoll.wait(events).value_or(0));
 		EXPECT_EQ(&event_fd, events[0].ptr());
 		EXPECT_TRUE(events[0].is_set(Epoll::Flag::OUT));
 
-		epoll.modify(event_fd.fd(), Epoll::Flag::IN, &event_fd + 1);
-		event_fd.write(1);
+		ASSERT_TRUE(epoll.modify(event_fd.fd(), Epoll::Flag::IN, &event_fd + 1));
+		ASSERT_TRUE(event_fd.write(1));
 
-		EXPECT_EQ(1, epoll.wait(events));
+		EXPECT_EQ(1, epoll.wait(events).value_or(0));
 		EXPECT_EQ(&event_fd + 1, events[0].ptr());
 		EXPECT_TRUE(events[0].is_set(Epoll::Flag::IN));
 		EXPECT_FALSE(events[0].is_set(Epoll::Flag::OUT));
 
-		epoll.modify(event_fd.fd(), Epoll::Flag::IN | Epoll::Flag::OUT, &event_fd);
+		ASSERT_TRUE(epoll.modify(event_fd.fd(), Epoll::Flag::IN | Epoll::Flag::OUT, &event_fd));
 
-		EXPECT_EQ(1, epoll.wait(events));
+		EXPECT_EQ(1, epoll.wait(events).value_or(0));
 		EXPECT_EQ(&event_fd, events[0].ptr());
 		EXPECT_TRUE(events[0].is_set(Epoll::Flag::IN | Epoll::Flag::OUT));
 	}
 
 	TEST(Epoll, ModifyNotAdded)
 	{
-		Epoll epoll;
-		EventFD event_fd;
+		Epoll epoll = Epoll::create().value_or({});
+		ASSERT_NE(-1, epoll.fd());
+		EventFD event_fd = EventFD::create().value_or({});
+		ASSERT_NE(-1, event_fd.fd());
 
-		EXPECT_THROW(epoll.modify(event_fd.fd(), Epoll::Flag::IN), std::system_error);
+		EXPECT_FALSE(epoll.modify(event_fd.fd(), Epoll::Flag::IN));
 	}
 
 	TEST(Epoll, Remove)
 	{
-		Epoll epoll;
+		Epoll epoll = Epoll::create().value_or({});
+		ASSERT_NE(-1, epoll.fd());
+
+		EventFD event_fd1 = EventFD::create().value_or({});
+		ASSERT_NE(-1, event_fd1.fd());
+		EventFD event_fd2 = EventFD::create().value_or({});
+		ASSERT_NE(-1, event_fd2.fd());
+
 		std::array<Epoll::Event, 2> events;
-		EventFD event_fd1;
-		EventFD event_fd2;
 
-		epoll.add(event_fd1.fd(), Epoll::Flag::OUT);
-		epoll.add(event_fd2.fd(), Epoll::Flag::OUT);
+		ASSERT_TRUE(epoll.add(event_fd1.fd(), Epoll::Flag::OUT));
+		ASSERT_TRUE(epoll.add(event_fd2.fd(), Epoll::Flag::OUT));
 
-		epoll.remove(event_fd2.fd());
+		ASSERT_TRUE(epoll.remove(event_fd2.fd()));
 
-		EXPECT_EQ(1, epoll.wait(events));
+		EXPECT_EQ(1, epoll.wait(events).value_or(0));
 		EXPECT_EQ(event_fd1.fd(), events[0].fd());
 	}
 
 	TEST(Epoll, RemoveNotAdded)
 	{
-		Epoll epoll;
-		EventFD event_fd;
+		Epoll epoll = Epoll::create().value_or({});
+		ASSERT_NE(-1, epoll.fd());
 
-		EXPECT_THROW(epoll.remove(event_fd.fd()), std::system_error);
-	}
+		EventFD event_fd = EventFD::create().value_or({});
+		ASSERT_NE(-1, event_fd.fd());
 
-	TEST(Epoll, UseAfterMoveThrows)
-	{
-		Epoll epoll1;
-		Epoll epoll2(std::move(epoll1));
-		std::array<Epoll::Event, 1> events;
-		EventFD event_fd;
-
-		// NOLINTNEXTLINE(bugprone-use-after-move, clang-analyzer-cplusplus.Move) Tests move.
-		EXPECT_THROW(epoll1.add(event_fd.fd(), Epoll::Flag::IN), std::system_error);
-		EXPECT_THROW(epoll1.add(event_fd.fd(), Epoll::Flag::IN, &event_fd), std::system_error);
-		EXPECT_THROW(epoll1.modify(event_fd.fd(), Epoll::Flag::IN), std::system_error);
-		EXPECT_THROW(epoll1.modify(event_fd.fd(), Epoll::Flag::IN, &event_fd), std::system_error);
-		EXPECT_THROW(epoll1.remove(event_fd.fd()), std::system_error);
-		EXPECT_THROW(epoll1.wait(events), std::system_error);
+		EXPECT_FALSE(epoll.remove(event_fd.fd()));
 	}
 
 	TEST(Epoll, Nest)
 	{
-		Epoll epoll1;
-		Epoll epoll2;
+		Epoll epoll1 = Epoll::create().value_or({});
+		ASSERT_NE(-1, epoll1.fd());
+		Epoll epoll2 = Epoll::create().value_or({});
+		ASSERT_NE(-1, epoll2.fd());
+
+		EventFD event_fd = EventFD::create().value_or({});
+		ASSERT_NE(-1, event_fd.fd());
+
 		std::array<Epoll::Event, 1> events;
-		EventFD event_fd;
 
-		epoll1.add(epoll2.fd(), Epoll::Flag::IN);
-		epoll2.add(event_fd.fd(), Epoll::Flag::IN);
+		ASSERT_TRUE(epoll1.add(epoll2.fd(), Epoll::Flag::IN));
+		ASSERT_TRUE(epoll2.add(event_fd.fd(), Epoll::Flag::IN));
 
-		EXPECT_EQ(0, epoll1.wait(events, std::chrono::milliseconds(0)));
+		EXPECT_EQ(0, epoll1.wait(events, std::chrono::milliseconds(0)).value_or(1));
 
-		event_fd.write(1);
+		ASSERT_TRUE(event_fd.write(1));
 
-		EXPECT_EQ(1, epoll1.wait(events));
+		EXPECT_EQ(1, epoll1.wait(events).value_or(0));
 		EXPECT_EQ(epoll2.fd(), events[0].fd());
 		EXPECT_TRUE(events[0].is_set(Epoll::Flag::IN));
 
-		EXPECT_EQ(1, epoll2.wait(events));
+		EXPECT_EQ(1, epoll2.wait(events).value_or(0));
 		EXPECT_EQ(event_fd.fd(), events[0].fd());
 		EXPECT_TRUE(events[0].is_set(Epoll::Flag::IN));
 
-		event_fd.read();
+		ASSERT_TRUE(event_fd.read());
 
-		EXPECT_EQ(0, epoll1.wait(events, std::chrono::milliseconds(0)));
-		EXPECT_EQ(0, epoll2.wait(events, std::chrono::milliseconds(0)));
+		EXPECT_EQ(0, epoll1.wait(events, std::chrono::milliseconds(0)).value_or(1));
+		EXPECT_EQ(0, epoll2.wait(events, std::chrono::milliseconds(0)).value_or(1));
 	}
 
 	TEST(Epoll, WaitZeroEvents)
 	{
-		Epoll epoll;
+		Epoll epoll = Epoll::create().value_or({});
+		ASSERT_NE(-1, epoll.fd());
+
 		std::array<Epoll::Event, 0> events;
 
-		EXPECT_THROW(epoll.wait(events, std::chrono::milliseconds(0)), std::system_error);
+		EXPECT_FALSE(epoll.wait(events, std::chrono::milliseconds(0)));
 	}
 
 	TEST(Epoll, FlagsSetToZeroDisablesPollingOfFD)
 	{
-		Epoll epoll;
+		Epoll epoll = Epoll::create().value_or({});
+		ASSERT_NE(-1, epoll.fd());
+
+		EventFD event_fd = EventFD::create().value_or({});
+		ASSERT_NE(-1, event_fd.fd());
+
 		std::array<Epoll::Event, 1> events;
-		EventFD event_fd;
 
-		epoll.add(event_fd.fd(), Epoll::Flags());
+		ASSERT_TRUE(epoll.add(event_fd.fd(), Epoll::Flags()));
 
-		EXPECT_EQ(0, epoll.wait(events, std::chrono::milliseconds(0)));
+		EXPECT_EQ(0, epoll.wait(events, std::chrono::milliseconds(0)).value_or(1));
 
-		event_fd.write(1);
+		ASSERT_TRUE(event_fd.write(1));
 
-		EXPECT_EQ(0, epoll.wait(events, std::chrono::milliseconds(0)));
+		EXPECT_EQ(0, epoll.wait(events, std::chrono::milliseconds(0)).value_or(1));
 
-		epoll.modify(event_fd.fd(), Epoll::Flag::IN);
+		ASSERT_TRUE(epoll.modify(event_fd.fd(), Epoll::Flag::IN));
 
-		EXPECT_EQ(1, epoll.wait(events));
+		EXPECT_EQ(1, epoll.wait(events).value_or(0));
 		EXPECT_EQ(event_fd.fd(), events[0].fd());
 		EXPECT_TRUE(events[0].is_set(Epoll::Flag::IN));
 
-		epoll.modify(event_fd.fd(), Epoll::Flags());
+		ASSERT_TRUE(epoll.modify(event_fd.fd(), Epoll::Flags()));
 
-		EXPECT_EQ(0, epoll.wait(events, std::chrono::milliseconds(0)));
+		EXPECT_EQ(0, epoll.wait(events, std::chrono::milliseconds(0)).value_or(1));
 
-		epoll.remove(event_fd.fd());
-		epoll.add(event_fd.fd(), Epoll::Flag::IN);
+		ASSERT_TRUE(epoll.remove(event_fd.fd()));
+		ASSERT_TRUE(epoll.add(event_fd.fd(), Epoll::Flag::IN));
 
-		EXPECT_EQ(1, epoll.wait(events));
+		EXPECT_EQ(1, epoll.wait(events).value_or(0));
 		EXPECT_EQ(event_fd.fd(), events[0].fd());
 		EXPECT_TRUE(events[0].is_set(Epoll::Flag::IN));
 
-		epoll.modify(event_fd.fd(), Epoll::Flags());
+		ASSERT_TRUE(epoll.modify(event_fd.fd(), Epoll::Flags()));
 
-		EXPECT_EQ(0, epoll.wait(events, std::chrono::milliseconds(0)));
+		EXPECT_EQ(0, epoll.wait(events, std::chrono::milliseconds(0)).value_or(1));
 	}
 
 	TEST(Epoll, ModifyInOtherThread)
 	{
-		Epoll epoll;
+		Epoll epoll = Epoll::create().value_or({});
+		ASSERT_NE(-1, epoll.fd());
+
+		EventFD event_fd = EventFD::create().value_or({});
+		ASSERT_NE(-1, event_fd.fd());
+
 		std::array<Epoll::Event, 1> events;
-		EventFD event_fd;
+		std::atomic<bool> thread_end_reached = false;
 
 		std::thread thread([&] {
 			std::this_thread::sleep_for(std::chrono::microseconds(100));
-			epoll.add(event_fd.fd(), Epoll::Flag::IN);
-			event_fd.write(1);
+			if (!epoll.add(event_fd.fd(), Epoll::Flag::IN))
+				return;
+			if (!event_fd.write(1))
+				return;
+			thread_end_reached = true;
 		});
 
-		Epoll::EventCount event_count = epoll.wait(events);
+		Epoll::EventCount event_count = epoll.wait(events, std::chrono::seconds(1)).value_or(0);
+		ASSERT_TRUE(thread_end_reached);
+
 		EXPECT_EQ(1, event_count);
 		EXPECT_EQ(event_fd.fd(), events[0].fd());
 		EXPECT_TRUE(events[0].is_set(Epoll::Flag::IN));

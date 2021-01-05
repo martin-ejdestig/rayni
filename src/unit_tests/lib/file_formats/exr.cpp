@@ -85,7 +85,8 @@ namespace Rayni
 		static constexpr unsigned int VALID_HEIGHT = 2;
 		static constexpr Color VALID_COLORS[VALID_HEIGHT][VALID_WIDTH] = {{Color::red(), Color::yellow()},
 		                                                                  {Color::green(), Color::blue()}};
-		ScopedTempDir temp_dir;
+		ScopedTempDir temp_dir = ScopedTempDir::create().value_or({});
+		ASSERT_FALSE(temp_dir.path().empty());
 		const std::string path = temp_dir.path() / "valid.exr";
 		ASSERT_TRUE(file_write(path, exr_data()));
 		Image image = exr_read_file(path).value_or(Image());
@@ -107,7 +108,8 @@ namespace Rayni
 
 	TEST(EXRReadFile, Corrupt)
 	{
-		ScopedTempDir temp_dir;
+		ScopedTempDir temp_dir = ScopedTempDir::create().value_or({});
+		ASSERT_FALSE(temp_dir.path().empty());
 		const std::string path = temp_dir.path() / "corrupt.exr";
 		ASSERT_TRUE(file_write(path, corrupt_exr_data()));
 
@@ -116,7 +118,8 @@ namespace Rayni
 
 	TEST(EXRReadFile, Short)
 	{
-		ScopedTempDir temp_dir;
+		ScopedTempDir temp_dir = ScopedTempDir::create().value_or({});
+		ASSERT_FALSE(temp_dir.path().empty());
 		const std::string path = temp_dir.path() / "short.exr";
 		ASSERT_TRUE(file_write(path, short_exr_data()));
 
@@ -125,7 +128,8 @@ namespace Rayni
 
 	TEST(EXRReadFile, DoesNotExist)
 	{
-		ScopedTempDir temp_dir;
+		ScopedTempDir temp_dir = ScopedTempDir::create().value_or({});
+		ASSERT_FALSE(temp_dir.path().empty());
 		const std::string path = temp_dir.path() / "does_not_exist.exr";
 
 		EXPECT_FALSE(exr_read_file(path));

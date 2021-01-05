@@ -31,6 +31,7 @@
 #include <utility>
 #include <vector>
 
+#include "lib/function/result.h"
 #include "lib/system/linux/epoll.h"
 #include "lib/system/linux/event_fd.h"
 #include "lib/system/linux/timer_fd.h"
@@ -71,6 +72,9 @@ namespace Rayni
 	// MainLoop they are running in. Their callback is just never invoked if the MainLoop has
 	// been destroyed.
 	//
+	// If a system error occurs in the MainLoop, an error is logged and the MainLoop is exited
+	// with exit code EXIT_FAILURE.
+	//
 	// TODO: Make FDMonitor and Timer objects thread safe? (Note: already OK to use them in
 	//       other threads than the MainLoop thread, see above.) Not a common enough use case
 	//       and other user data probably needs to be protected together with monitor/timer so
@@ -100,6 +104,13 @@ namespace Rayni
 		using FDFlags = Epoll::Flags;
 
 		MainLoop();
+		MainLoop(const MainLoop &) = delete;
+		MainLoop(MainLoop &&) = delete;
+
+		~MainLoop();
+
+		MainLoop &operator=(const MainLoop &) = delete;
+		MainLoop &operator=(MainLoop &&) = delete;
 
 		int loop();
 
@@ -154,7 +165,9 @@ namespace Rayni
 		static constexpr clock::time_point CLOCK_EPOCH = clock::time_point();
 		static constexpr TimerId TIMER_ID_EMPTY = 0;
 
-		void set_timer_fd_from_timer_data() const;
+		void log_error_and_exit(const Error &error);
+
+		void set_timer_fd_from_timer_data();
 
 		Epoll epoll_;
 		std::array<Epoll::Event, 5> events_;

@@ -126,7 +126,8 @@ namespace Rayni
 
 		void test_read_file(const std::string &suffix, const std::vector<std::uint8_t> &valid_data_1x1)
 		{
-			ScopedTempDir temp_dir;
+			ScopedTempDir temp_dir = ScopedTempDir::create().value_or({});
+			ASSERT_FALSE(temp_dir.path().empty());
 			const std::string read_success_path = temp_dir.path() / ("valid." + suffix);
 			const std::string type_determinable_read_fail_path = temp_dir.path() / ("empty." + suffix);
 
@@ -143,7 +144,8 @@ namespace Rayni
 
 	TEST(ImageFormat, Magic)
 	{
-		ScopedTempDir temp_dir;
+		ScopedTempDir temp_dir = ScopedTempDir::create().value_or({});
+		ASSERT_FALSE(temp_dir.path().empty());
 
 		ASSERT_TRUE(file_write(temp_dir.path() / "exr_magic.bin", exr_magic()));
 		EXPECT_EQ(ImageFormat::EXR, image_format_from_file(temp_dir.path() / "exr_magic.bin"));
@@ -160,7 +162,8 @@ namespace Rayni
 
 	TEST(ImageFormat, ShortMagic)
 	{
-		ScopedTempDir temp_dir;
+		ScopedTempDir temp_dir = ScopedTempDir::create().value_or({});
+		ASSERT_FALSE(temp_dir.path().empty());
 
 		auto shorten = [](auto magic) {
 			magic.pop_back();
@@ -185,7 +188,8 @@ namespace Rayni
 
 	TEST(ImageFormat, CorruptMagic)
 	{
-		ScopedTempDir temp_dir;
+		ScopedTempDir temp_dir = ScopedTempDir::create().value_or({});
+		ASSERT_FALSE(temp_dir.path().empty());
 
 		auto corrupt = [](auto magic) {
 			magic.back() ^= 0x10;
@@ -209,7 +213,8 @@ namespace Rayni
 
 	TEST(ImageFormat, ExtensionOnly)
 	{
-		ScopedTempDir temp_dir;
+		ScopedTempDir temp_dir = ScopedTempDir::create().value_or({});
+		ASSERT_FALSE(temp_dir.path().empty());
 
 		ASSERT_TRUE(file_write(temp_dir.path() / "extension_only.exr", {}));
 		EXPECT_EQ(ImageFormat::EXR, image_format_from_file(temp_dir.path() / "extension_only.exr"));
@@ -250,7 +255,8 @@ namespace Rayni
 
 	TEST(ImageFormat, WrongExtension)
 	{
-		ScopedTempDir temp_dir;
+		ScopedTempDir temp_dir = ScopedTempDir::create().value_or({});
+		ASSERT_FALSE(temp_dir.path().empty());
 
 		ASSERT_TRUE(file_write(temp_dir.path() / "exr_wrong_extension.tga", exr_magic()));
 		EXPECT_EQ(ImageFormat::EXR, image_format_from_file(temp_dir.path() / "exr_wrong_extension.tga"));
@@ -267,7 +273,8 @@ namespace Rayni
 
 	TEST(ImageFormat, FileDoesNotExist)
 	{
-		ScopedTempDir temp_dir;
+		ScopedTempDir temp_dir = ScopedTempDir::create().value_or({});
+		ASSERT_FALSE(temp_dir.path().empty());
 
 		EXPECT_EQ(ImageFormat::UNDETERMINED,
 		          image_format_from_file(temp_dir.path() / "does_not_exist_and_unknown_extension.foo"));

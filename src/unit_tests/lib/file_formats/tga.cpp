@@ -61,7 +61,8 @@ namespace Rayni
 		static constexpr unsigned int VALID_HEIGHT = 2;
 		static constexpr Color VALID_COLORS[VALID_HEIGHT][VALID_WIDTH] = {{Color::red(), Color::yellow()},
 		                                                                  {Color::green(), Color::blue()}};
-		ScopedTempDir temp_dir;
+		ScopedTempDir temp_dir = ScopedTempDir::create().value_or({});
+		ASSERT_FALSE(temp_dir.path().empty());
 		const std::string path = temp_dir.path() / "valid.tga";
 		ASSERT_TRUE(file_write(path, tga_data()));
 		Image image = tga_read_file(path).value_or(Image());
@@ -83,7 +84,8 @@ namespace Rayni
 
 	TEST(TGAReadFile, Corrupt)
 	{
-		ScopedTempDir temp_dir;
+		ScopedTempDir temp_dir = ScopedTempDir::create().value_or({});
+		ASSERT_FALSE(temp_dir.path().empty());
 		const std::string path = temp_dir.path() / "corrupt.tga";
 		ASSERT_TRUE(file_write(path, corrupt_tga_data()));
 
@@ -92,7 +94,8 @@ namespace Rayni
 
 	TEST(TGAReadFile, Short)
 	{
-		ScopedTempDir temp_dir;
+		ScopedTempDir temp_dir = ScopedTempDir::create().value_or({});
+		ASSERT_FALSE(temp_dir.path().empty());
 		const std::string path = temp_dir.path() / "short.tga";
 		ASSERT_TRUE(file_write(path, short_tga_data()));
 
@@ -101,7 +104,8 @@ namespace Rayni
 
 	TEST(TGAReadFile, DoesNotExist)
 	{
-		ScopedTempDir temp_dir;
+		ScopedTempDir temp_dir = ScopedTempDir::create().value_or({});
+		ASSERT_FALSE(temp_dir.path().empty());
 		const std::string path = temp_dir.path() / "does_not_exist.tga";
 
 		EXPECT_FALSE(tga_read_file(path));

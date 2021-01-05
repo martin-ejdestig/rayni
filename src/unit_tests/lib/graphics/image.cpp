@@ -107,7 +107,8 @@ namespace Rayni
 
 	TEST(Image, Variant)
 	{
-		ScopedTempDir temp_dir;
+		ScopedTempDir temp_dir = ScopedTempDir::create().value_or({});
+		ASSERT_FALSE(temp_dir.path().empty());
 		const std::string path = temp_dir.path() / "image.tga";
 		const std::string missing_path = temp_dir.path() / "missing.tga";
 

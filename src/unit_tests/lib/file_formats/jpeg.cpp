@@ -93,7 +93,8 @@ namespace Rayni
 		static constexpr unsigned int VALID_HEIGHT = 2;
 		static constexpr Color VALID_COLORS[VALID_HEIGHT][VALID_WIDTH] = {{Color::red(), Color::yellow()},
 		                                                                  {Color::green(), Color::blue()}};
-		ScopedTempDir temp_dir;
+		ScopedTempDir temp_dir = ScopedTempDir::create().value_or({});
+		ASSERT_FALSE(temp_dir.path().empty());
 		const std::string path = temp_dir.path() / "valid.jpg";
 		ASSERT_TRUE(file_write(path, jpeg_data()));
 		Image image = jpeg_read_file(path).value_or(Image());
@@ -115,7 +116,8 @@ namespace Rayni
 
 	TEST(JPEGReadFile, Corrupt)
 	{
-		ScopedTempDir temp_dir;
+		ScopedTempDir temp_dir = ScopedTempDir::create().value_or({});
+		ASSERT_FALSE(temp_dir.path().empty());
 		const std::string path = temp_dir.path() / "corrupt.jpg";
 		ASSERT_TRUE(file_write(path, corrupt_jpeg_data()));
 
@@ -124,7 +126,8 @@ namespace Rayni
 
 	TEST(JPEGReadFile, Short)
 	{
-		ScopedTempDir temp_dir;
+		ScopedTempDir temp_dir = ScopedTempDir::create().value_or({});
+		ASSERT_FALSE(temp_dir.path().empty());
 		const std::string path = temp_dir.path() / "short.jpg";
 		ASSERT_TRUE(file_write(path, short_jpeg_data()));
 
@@ -133,7 +136,8 @@ namespace Rayni
 
 	TEST(JPEGReadFile, DoesNotExist)
 	{
-		ScopedTempDir temp_dir;
+		ScopedTempDir temp_dir = ScopedTempDir::create().value_or({});
+		ASSERT_FALSE(temp_dir.path().empty());
 		const std::string path = temp_dir.path() / "does_not_exist.jpg";
 
 		EXPECT_FALSE(jpeg_read_file(path));

@@ -29,6 +29,7 @@
 #include <cstdlib>
 #include <system_error>
 
+#include "lib/function/result.h"
 #include "lib/system/unique_fd.h"
 
 namespace Rayni
@@ -36,19 +37,19 @@ namespace Rayni
 	class Pipe
 	{
 	public:
-		Pipe() : Pipe(0)
-		{
-		}
-
-		explicit Pipe(int flags)
+		static Result<Pipe> create(int flags = 0)
 		{
 			std::array<int, 2> fds = {-1, -1};
 
 			if (pipe2(fds.data(), flags) != 0)
-				throw std::system_error(errno, std::system_category(), "pipe2() failed");
+				return Error("pipe2() failed", std::error_code(errno, std::system_category()));
 
-			read_fd_ = UniqueFD(fds[0]);
-			write_fd_ = UniqueFD(fds[1]);
+			Pipe pipe;
+
+			pipe.read_fd_ = UniqueFD(fds[0]);
+			pipe.write_fd_ = UniqueFD(fds[1]);
+
+			return pipe;
 		}
 
 		void close_fds()
@@ -78,7 +79,7 @@ namespace Rayni
 		}
 
 		template <typename Buffer>
-		std::size_t read(Buffer &buffer) const
+		Result<std::size_t> read(Buffer &buffer) const
 		{
 			ssize_t bytes_read;
 
@@ -88,25 +89,26 @@ namespace Rayni
 				if (bytes_read >= 0)
 					break;
 				if (errno != EINTR)
-					throw std::system_error(errno, std::system_category(), "pipe read() error");
+					return Error("pipe read() error",
+					             std::error_code(errno, std::system_category()));
 			}
 
 			return static_cast<std::size_t>(bytes_read);
 		}
 
-		std::size_t read_append_to_string(std::string &str) const
+		Result<std::size_t> read_append_to_string(std::string &str) const
 		{
 			std::array<char, PIPE_BUF> buffer;
-			std::size_t bytes_read = read(buffer);
+			Result<std::size_t> bytes_read = read(buffer);
 
-			if (bytes_read > 0)
-				str.append(buffer.data(), bytes_read);
+			if (bytes_read && *bytes_read > 0)
+				str.append(buffer.data(), *bytes_read);
 
 			return bytes_read;
 		}
 
 		template <typename Buffer>
-		std::size_t write(const Buffer &buffer) const
+		Result<std::size_t> write(const Buffer &buffer) const
 		{
 			ssize_t bytes_written;
 
@@ -116,7 +118,8 @@ namespace Rayni
 				if (bytes_written >= 0)
 					break;
 				if (errno != EINTR)
-					throw std::system_error(errno, std::system_category(), "pipe write() error");
+					return Error("pipe write() error",
+					             std::error_code(errno, std::system_category()));
 			}
 
 			return static_cast<std::size_t>(bytes_written);

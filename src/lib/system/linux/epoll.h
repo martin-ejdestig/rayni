@@ -32,6 +32,7 @@
 #include <system_error>
 #include <type_traits>
 
+#include "lib/function/result.h"
 #include "lib/math/bitmask.h"
 #include "lib/system/unique_fd.h"
 
@@ -77,10 +78,15 @@ namespace Rayni
 			}
 		};
 
-		Epoll() : epoll_fd_(epoll_create1(EPOLL_CLOEXEC))
+		static Result<Epoll> create()
 		{
-			if (epoll_fd_.get() == -1)
-				throw std::system_error(errno, std::system_category(), "epoll_create1() failed");
+			Epoll e;
+
+			e.epoll_fd_ = UniqueFD(epoll_create1(EPOLL_CLOEXEC));
+			if (e.epoll_fd_.get() == -1)
+				return Error("epoll_create1() failed", std::error_code(errno, std::system_category()));
+
+			return e;
 		}
 
 		int fd() const
@@ -88,55 +94,55 @@ namespace Rayni
 			return epoll_fd_.get();
 		}
 
-		void add(int fd, Flags flags)
+		Result<void> add(int fd, Flags flags)
 		{
 			Event event;
 			event.events = flags.value();
 			event.data.fd = fd;
 
-			ctl(EPOLL_CTL_ADD, fd, &event);
+			return ctl(EPOLL_CTL_ADD, fd, &event);
 		}
 
-		void add(int fd, Flags flags, void *ptr)
+		Result<void> add(int fd, Flags flags, void *ptr)
 		{
 			Event event;
 			event.events = flags.value();
 			event.data.ptr = ptr;
 
-			ctl(EPOLL_CTL_ADD, fd, &event);
+			return ctl(EPOLL_CTL_ADD, fd, &event);
 		}
 
-		void modify(int fd, Flags flags)
+		Result<void> modify(int fd, Flags flags)
 		{
 			Event event;
 			event.events = flags.value();
 			event.data.fd = fd;
 
-			ctl(EPOLL_CTL_MOD, fd, &event);
+			return ctl(EPOLL_CTL_MOD, fd, &event);
 		}
 
-		void modify(int fd, Flags flags, void *ptr)
+		Result<void> modify(int fd, Flags flags, void *ptr)
 		{
 			Event event;
 			event.events = flags.value();
 			event.data.ptr = ptr;
 
-			ctl(EPOLL_CTL_MOD, fd, &event);
+			return ctl(EPOLL_CTL_MOD, fd, &event);
 		}
 
-		void remove(int fd) const
+		Result<void> remove(int fd) const
 		{
-			ctl(EPOLL_CTL_DEL, fd, nullptr);
+			return ctl(EPOLL_CTL_DEL, fd, nullptr);
 		}
 
 		template <typename Events>
-		EventCount wait(Events &events, std::chrono::milliseconds timeout) const
+		Result<EventCount> wait(Events &events, std::chrono::milliseconds timeout) const
 		{
 			return wait(events.data(), events.size(), timeout);
 		}
 
 		template <typename Events>
-		EventCount wait(Events &events) const
+		Result<EventCount> wait(Events &events) const
 		{
 			return wait(events, std::chrono::milliseconds(-1));
 		}
@@ -144,13 +150,14 @@ namespace Rayni
 	private:
 		static_assert(sizeof(Event) == sizeof(epoll_event), "Accidentally added member to Event?");
 
-		void ctl(int op, int fd, Event *event) const
+		Result<void> ctl(int op, int fd, Event *event) const
 		{
 			if (epoll_ctl(epoll_fd_.get(), op, fd, event) == -1)
-				throw std::system_error(errno, std::system_category(), "epoll_ctl() failed");
+				return Error("epoll_ctl() failed", std::error_code(errno, std::system_category()));
+			return {};
 		}
 
-		EventCount wait(Event *events, std::size_t max_events, std::chrono::milliseconds timeout) const
+		Result<EventCount> wait(Event *events, std::size_t max_events, std::chrono::milliseconds timeout) const
 		{
 			using MsRep = std::chrono::milliseconds::rep;
 
@@ -168,7 +175,8 @@ namespace Rayni
 				if (ret >= 0)
 					break;
 				if (errno != EINTR)
-					throw std::system_error(errno, std::system_category(), "epoll_wait() failed");
+					return Error("epoll_wait() failed",
+					             std::error_code(errno, std::system_category()));
 			}
 
 			return static_cast<EventCount>(ret);

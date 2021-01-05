@@ -24,58 +24,50 @@
 
 #include <array>
 #include <cerrno>
-#include <system_error>
 
 namespace Rayni
 {
 	TEST(EventFD, FD)
 	{
-		EventFD event_fd;
+		EventFD event_fd = EventFD::create().value_or({});
 
 		EXPECT_NE(-1, event_fd.fd());
 	}
 
 	TEST(EventFD, ReadWrite)
 	{
-		EventFD event_fd;
+		EventFD event_fd = EventFD::create().value_or({});
+		ASSERT_NE(-1, event_fd.fd());
 
-		event_fd.write(1);
-		EXPECT_EQ(1, event_fd.read());
+		ASSERT_TRUE(event_fd.write(1));
+		EXPECT_EQ(1, event_fd.read().value_or(0));
 
-		event_fd.write(1);
-		event_fd.write(2);
-		EXPECT_EQ(3, event_fd.read());
+		ASSERT_TRUE(event_fd.write(1));
+		ASSERT_TRUE(event_fd.write(2));
+		EXPECT_EQ(3, event_fd.read().value_or(0));
 
-		event_fd.write(0x88c3306c799fc4b5U);
-		event_fd.write(0x7629581c5fb0628eU);
-		EXPECT_EQ(0xfeec8888d9502743, event_fd.read());
-	}
-
-	TEST(EventFD, ReadWriteAfterMoveThrows)
-	{
-		EventFD event_fd1;
-		EventFD event_fd2(std::move(event_fd1));
-
-		// NOLINTNEXTLINE(bugprone-use-after-move, clang-analyzer-cplusplus.Move) Tests move.
-		EXPECT_THROW(event_fd1.write(1), std::system_error);
-		EXPECT_THROW(event_fd1.read(), std::system_error);
+		ASSERT_TRUE(event_fd.write(0x88c3306c799fc4b5U));
+		ASSERT_TRUE(event_fd.write(0x7629581c5fb0628eU));
+		EXPECT_EQ(0xfeec8888d9502743, event_fd.read().value_or(0));
 	}
 
 	TEST(EventFD, MaxValue)
 	{
-		EventFD event_fd;
+		EventFD event_fd = EventFD::create().value_or({});
+		ASSERT_NE(-1, event_fd.fd());
 
-		event_fd.write(EventFD::MAX_VALUE);
-		EXPECT_EQ(EventFD::MAX_VALUE, event_fd.read());
+		ASSERT_TRUE(event_fd.write(EventFD::MAX_VALUE));
+		EXPECT_EQ(EventFD::MAX_VALUE, event_fd.read().value_or(0));
 
-		event_fd.write(EventFD::MAX_VALUE - 1);
-		event_fd.write(1);
-		EXPECT_EQ(EventFD::MAX_VALUE, event_fd.read());
+		ASSERT_TRUE(event_fd.write(EventFD::MAX_VALUE - 1));
+		ASSERT_TRUE(event_fd.write(1));
+		EXPECT_EQ(EventFD::MAX_VALUE, event_fd.read().value_or(0));
 	}
 
 	TEST(EventFD, Poll)
 	{
-		EventFD event_fd;
+		EventFD event_fd = EventFD::create().value_or({});
+		ASSERT_NE(-1, event_fd.fd());
 
 		std::array<pollfd, 1> poll_fds;
 		poll_fds[0].fd = event_fd.fd();
@@ -84,23 +76,23 @@ namespace Rayni
 		auto poll_and_check = [&](auto expected_events) {
 			while (poll(poll_fds.data(), poll_fds.size(), -1) == -1)
 				if (errno != EINTR)
-					throw std::system_error(errno, std::system_category(), "poll() failed");
+					return false;
 
 			return (poll_fds[0].revents & expected_events) == expected_events;
 		};
 
 		EXPECT_TRUE(poll_and_check(POLLOUT));
 
-		event_fd.write(1);
+		ASSERT_TRUE(event_fd.write(1));
 		EXPECT_TRUE(poll_and_check(POLLIN | POLLOUT));
 
-		event_fd.read();
+		ASSERT_TRUE(event_fd.read());
 		EXPECT_TRUE(poll_and_check(POLLOUT));
 
-		event_fd.write(EventFD::MAX_VALUE);
+		ASSERT_TRUE(event_fd.write(EventFD::MAX_VALUE));
 		EXPECT_TRUE(poll_and_check(POLLIN));
 
-		event_fd.read();
+		ASSERT_TRUE(event_fd.read());
 		EXPECT_TRUE(poll_and_check(POLLOUT));
 	}
 }

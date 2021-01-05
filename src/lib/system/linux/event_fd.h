@@ -27,6 +27,7 @@
 #include <cstdint>
 #include <system_error>
 
+#include "lib/function/result.h"
 #include "lib/system/unique_fd.h"
 
 namespace Rayni
@@ -37,10 +38,15 @@ namespace Rayni
 		// write()/add will block if value will exceed MAX_VALUE (and EFD_NONBLOCK is not set).
 		static constexpr std::uint64_t MAX_VALUE = 0xfffffffffffffffe;
 
-		EventFD() : event_fd_(eventfd(0, EFD_CLOEXEC))
+		static Result<EventFD> create()
 		{
-			if (event_fd_.get() == -1)
-				throw std::system_error(errno, std::system_category(), "eventfd() failed");
+			EventFD e;
+
+			e.event_fd_ = UniqueFD(eventfd(0, EFD_CLOEXEC));
+			if (e.event_fd_.get() == -1)
+				return Error("eventfd() failed", std::error_code(errno, std::system_category()));
+
+			return e;
 		}
 
 		int fd() const
@@ -48,26 +54,25 @@ namespace Rayni
 			return event_fd_.get();
 		}
 
-		std::uint64_t read() const
+		Result<std::uint64_t> read() const
 		{
 			std::uint64_t value = 0;
 
 			while (::read(event_fd_.get(), &value, sizeof value) != static_cast<ssize_t>(sizeof value))
 				if (errno != EINTR)
-					throw std::system_error(errno,
-					                        std::system_category(),
-					                        "read() from eventfd failed");
+					return Error("read() from eventfd failed",
+					             std::error_code(errno, std::system_category()));
 
 			return value;
 		}
 
-		void write(std::uint64_t value) const
+		Result<void> write(std::uint64_t value) const
 		{
 			while (::write(event_fd_.get(), &value, sizeof value) != static_cast<ssize_t>(sizeof value))
 				if (errno != EINTR)
-					throw std::system_error(errno,
-					                        std::system_category(),
-					                        "write() to eventfd failed");
+					return Error("write() to eventfd failed",
+					             std::error_code(errno, std::system_category()));
+			return {};
 		}
 
 	private:

@@ -22,12 +22,14 @@
 
 #include <filesystem>
 
+#include "lib/function/result.h"
+
 namespace Rayni
 {
 	class ScopedTempDir
 	{
 	public:
-		ScopedTempDir();
+		ScopedTempDir() = default;
 		ScopedTempDir(const ScopedTempDir &other) = delete;
 		ScopedTempDir(ScopedTempDir &&other) = default;
 
@@ -35,6 +37,8 @@ namespace Rayni
 
 		ScopedTempDir &operator=(const ScopedTempDir &other) = delete;
 		ScopedTempDir &operator=(ScopedTempDir &&other) = default;
+
+		static Result<ScopedTempDir> create();
 
 		const std::filesystem::path &path() const
 		{

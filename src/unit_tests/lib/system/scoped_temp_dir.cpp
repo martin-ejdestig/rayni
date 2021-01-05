@@ -38,7 +38,9 @@ namespace Rayni
 		std::filesystem::path path;
 
 		{
-			ScopedTempDir dir;
+			ScopedTempDir dir = ScopedTempDir::create().value_or({});
+			ASSERT_FALSE(dir.path().empty());
+
 			path = dir.path();
 
 			output_to_file(path / "foo", "bla bla");

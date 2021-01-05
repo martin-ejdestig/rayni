@@ -62,7 +62,8 @@ namespace Rayni
 		static constexpr unsigned int VALID_HEIGHT = 2;
 		static constexpr Color VALID_COLORS[VALID_HEIGHT][VALID_WIDTH] = {{Color::red(), Color::yellow()},
 		                                                                  {Color::green(), Color::blue()}};
-		ScopedTempDir temp_dir;
+		ScopedTempDir temp_dir = ScopedTempDir::create().value_or({});
+		ASSERT_FALSE(temp_dir.path().empty());
 
 		const std::string path = temp_dir.path() / "valid.webp";
 		ASSERT_TRUE(file_write(path, webp_data()));
@@ -83,7 +84,9 @@ namespace Rayni
 
 	TEST(WebPReadFile, Corrupt)
 	{
-		ScopedTempDir temp_dir;
+		ScopedTempDir temp_dir = ScopedTempDir::create().value_or({});
+		ASSERT_FALSE(temp_dir.path().empty());
+
 		const std::string path = temp_dir.path() / "corrupt.webp";
 		ASSERT_TRUE(file_write(path, corrupt_webp_data()));
 
@@ -92,7 +95,9 @@ namespace Rayni
 
 	TEST(WebPReadFile, Short)
 	{
-		ScopedTempDir temp_dir;
+		ScopedTempDir temp_dir = ScopedTempDir::create().value_or({});
+		ASSERT_FALSE(temp_dir.path().empty());
+
 		const std::string path = temp_dir.path() / "short.webp";
 		ASSERT_TRUE(file_write(path, short_webp_data()));
 
@@ -101,7 +106,9 @@ namespace Rayni
 
 	TEST(WebPReadFile, DoesNotExist)
 	{
-		ScopedTempDir temp_dir;
+		ScopedTempDir temp_dir = ScopedTempDir::create().value_or({});
+		ASSERT_FALSE(temp_dir.path().empty());
+
 		const std::string path = temp_dir.path() / "dir_that_does_not_exist" / "bar.webp";
 
 		EXPECT_FALSE(webp_read_file(path));

@@ -70,7 +70,8 @@ namespace Rayni
 		static constexpr unsigned int VALID_HEIGHT = 2;
 		static constexpr Color VALID_COLORS[VALID_HEIGHT][VALID_WIDTH] = {{Color::red(), Color::yellow()},
 		                                                                  {Color::green(), Color::blue()}};
-		ScopedTempDir temp_dir;
+		ScopedTempDir temp_dir = ScopedTempDir::create().value_or({});
+		ASSERT_FALSE(temp_dir.path().empty());
 		const std::string path = temp_dir.path() / "valid.png";
 		ASSERT_TRUE(file_write(path, png_data()));
 		Image image = png_read_file(path).value_or(Image());
@@ -92,7 +93,8 @@ namespace Rayni
 
 	TEST(PNGReadFile, Corrupt)
 	{
-		ScopedTempDir temp_dir;
+		ScopedTempDir temp_dir = ScopedTempDir::create().value_or({});
+		ASSERT_FALSE(temp_dir.path().empty());
 		const std::string path = temp_dir.path() / "corrupt.png";
 		ASSERT_TRUE(file_write(path, corrupt_png_data()));
 
@@ -101,7 +103,8 @@ namespace Rayni
 
 	TEST(PNGReadFile, Short)
 	{
-		ScopedTempDir temp_dir;
+		ScopedTempDir temp_dir = ScopedTempDir::create().value_or({});
+		ASSERT_FALSE(temp_dir.path().empty());
 		const std::string path = temp_dir.path() / "short.png";
 		ASSERT_TRUE(file_write(path, short_png_data()));
 
@@ -110,7 +113,8 @@ namespace Rayni
 
 	TEST(PNGReadFile, DoesNotExist)
 	{
-		ScopedTempDir temp_dir;
+		ScopedTempDir temp_dir = ScopedTempDir::create().value_or({});
+		ASSERT_FALSE(temp_dir.path().empty());
 		const std::string path = temp_dir.path() / "does_not_exist.png";
 
 		EXPECT_FALSE(png_read_file(path));
@@ -122,7 +126,8 @@ namespace Rayni
 		static constexpr unsigned int HEIGHT = 2;
 		static constexpr Color COLORS[HEIGHT][WIDTH] = {{Color::red(), Color::yellow()},
 		                                                {Color::green(), Color::blue()}};
-		ScopedTempDir temp_dir;
+		ScopedTempDir temp_dir = ScopedTempDir::create().value_or({});
+		ASSERT_FALSE(temp_dir.path().empty());
 		const std::string path = temp_dir.path() / "foo.png";
 
 		Image image(WIDTH, HEIGHT);
@@ -150,7 +155,8 @@ namespace Rayni
 
 	TEST(PNGWriteFile, DirDoesNotExist)
 	{
-		ScopedTempDir temp_dir;
+		ScopedTempDir temp_dir = ScopedTempDir::create().value_or({});
+		ASSERT_FALSE(temp_dir.path().empty());
 		const std::string path = temp_dir.path() / "dir_that_does_not_exist" / "bar.png";
 
 		EXPECT_FALSE(png_write_file(path, Image(2, 2)));

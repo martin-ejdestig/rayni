@@ -24,7 +24,6 @@
 #include <array>
 #include <chrono>
 #include <cstddef>
-#include <exception>
 #include <memory>
 #include <thread>
 
@@ -155,17 +154,18 @@ namespace Rayni
 	TEST(MainLoop, FDPoll)
 	{
 		MainLoop main_loop;
-		Epoll epoll;
+		Epoll epoll = Epoll::create().value_or({});
+		ASSERT_NE(-1, epoll.fd());
 		std::array<Epoll::Event, 1> events;
 
-		epoll.add(main_loop.fd(), Epoll::Flag::IN);
+		ASSERT_TRUE(epoll.add(main_loop.fd(), Epoll::Flag::IN));
 
-		EXPECT_EQ(0, epoll.wait(events, 0ms));
+		EXPECT_EQ(0, epoll.wait(events, 0ms).value_or(1));
 		EXPECT_FALSE(main_loop.wait(0ms));
 
 		main_loop.run_in([&] {});
 
-		EXPECT_EQ(1, epoll.wait(events, 0ms));
+		EXPECT_EQ(1, epoll.wait(events, 0ms).value_or(0));
 		EXPECT_EQ(events[0].fd(), main_loop.fd());
 		EXPECT_TRUE(events[0].is_set(Epoll::Flag::IN));
 		EXPECT_TRUE(main_loop.wait(0ms));
@@ -174,10 +174,14 @@ namespace Rayni
 	TEST(MainLoop, FDMonitorStart)
 	{
 		MainLoop main_loop;
-		EventFD event_fd1;
-		EventFD event_fd2;
-		EventFD event_fd3;
-		EventFD event_fd4;
+		EventFD event_fd1 = EventFD::create().value_or({});
+		ASSERT_NE(-1, event_fd1.fd());
+		EventFD event_fd2 = EventFD::create().value_or({});
+		ASSERT_NE(-1, event_fd2.fd());
+		EventFD event_fd3 = EventFD::create().value_or({});
+		ASSERT_NE(-1, event_fd3.fd());
+		EventFD event_fd4 = EventFD::create().value_or({});
+		ASSERT_NE(-1, event_fd4.fd());
 		MainLoop::FDMonitor fd_monitor1;
 		MainLoop::FDMonitor fd_monitor2;
 		MainLoop::FDMonitor fd_monitor3;
@@ -215,8 +219,8 @@ namespace Rayni
 			                  exit_if_all_flags_set();
 		                  });
 
-		event_fd1.write(1);
-		event_fd4.write(1);
+		ASSERT_TRUE(event_fd1.write(1));
+		ASSERT_TRUE(event_fd4.write(1));
 
 		main_loop.loop();
 
@@ -229,7 +233,8 @@ namespace Rayni
 	TEST(MainLoop, FDMonitorStartAlreadyStartedSameFD)
 	{
 		MainLoop main_loop;
-		EventFD event_fd;
+		EventFD event_fd = EventFD::create().value_or({});
+		ASSERT_NE(-1, event_fd.fd());
 		MainLoop::FDMonitor fd_monitor;
 		MainLoop::FDFlags flags1;
 		MainLoop::FDFlags flags2;
@@ -249,8 +254,10 @@ namespace Rayni
 	TEST(MainLoop, FDMonitorStartAlreadyStartedOtherFD)
 	{
 		MainLoop main_loop;
-		EventFD event_fd1;
-		EventFD event_fd2;
+		EventFD event_fd1 = EventFD::create().value_or({});
+		ASSERT_NE(-1, event_fd1.fd());
+		EventFD event_fd2 = EventFD::create().value_or({});
+		ASSERT_NE(-1, event_fd2.fd());
 		MainLoop::FDMonitor fd_monitor;
 		MainLoop::FDFlags flags1;
 		MainLoop::FDFlags flags2;
@@ -271,7 +278,8 @@ namespace Rayni
 	{
 		MainLoop main_loop1;
 		MainLoop main_loop2;
-		EventFD event_fd;
+		EventFD event_fd = EventFD::create().value_or({});
+		ASSERT_NE(-1, event_fd.fd());
 		MainLoop::FDMonitor fd_monitor;
 		bool called1 = false;
 		bool called2 = false;
@@ -295,52 +303,11 @@ namespace Rayni
 		EXPECT_TRUE(called2);
 	}
 
-	TEST(MainLoop, FDMonitorStartFDAlreadyUsedByOtherMonitor)
-	{
-		MainLoop main_loop;
-		EventFD event_fd;
-		MainLoop::FDMonitor fd_monitor1;
-		MainLoop::FDMonitor fd_monitor2;
-		MainLoop::FDFlags flags1;
-		MainLoop::FDFlags flags2;
-
-		fd_monitor1.start(main_loop, event_fd.fd(), MainLoop::FDFlag::OUT, [&](auto flags) {
-			flags1 = flags;
-			main_loop.exit();
-		});
-
-		EXPECT_THROW(fd_monitor2.start(main_loop,
-		                               event_fd.fd(),
-		                               MainLoop::FDFlag::OUT,
-		                               [&](auto flags) {
-			                               flags2 = flags;
-			                               main_loop.exit();
-		                               }),
-		             std::exception);
-
-		main_loop.loop();
-
-		EXPECT_FALSE(flags1.empty());
-		EXPECT_TRUE(flags2.empty());
-	}
-
-	TEST(MainLoop, FDMonitorStartInvalidFD)
-	{
-		MainLoop main_loop;
-		MainLoop::FDMonitor fd_monitor;
-
-		EXPECT_THROW(fd_monitor.start(main_loop, -1, MainLoop::FDFlag::OUT, [](auto /*flags*/) {}),
-		             std::exception);
-		EXPECT_THROW(fd_monitor.start(main_loop, -123, MainLoop::FDFlag::OUT, [](auto /*flags*/) {}),
-		             std::exception);
-		EXPECT_THROW(fd_monitor.start(main_loop, 2147483647, MainLoop::FDFlag::OUT, [](auto /*flags*/) {}),
-		             std::exception);
-	}
-
 	TEST(MainLoop, FDMonitorStartAgainWithOtherFlagsInOwnCallback)
 	{
 		MainLoop main_loop;
-		EventFD event_fd;
+		EventFD event_fd = EventFD::create().value_or({});
+		ASSERT_NE(-1, event_fd.fd());
 		MainLoop::FDMonitor fd_monitor;
 		bool called = false;
 
@@ -351,7 +318,7 @@ namespace Rayni
 			});
 		});
 
-		event_fd.write(1);
+		ASSERT_TRUE(event_fd.write(1));
 
 		main_loop.loop();
 
@@ -361,7 +328,8 @@ namespace Rayni
 	TEST(MainLoop, FDMonitorStop)
 	{
 		MainLoop main_loop;
-		EventFD event_fd;
+		EventFD event_fd = EventFD::create().value_or({});
+		ASSERT_NE(-1, event_fd.fd());
 		MainLoop::FDMonitor fd_monitor;
 		bool called = false;
 
@@ -379,7 +347,8 @@ namespace Rayni
 	TEST(MainLoop, FDMonitorStopAlreadyStoppedOrNeverStarted)
 	{
 		MainLoop main_loop;
-		EventFD event_fd;
+		EventFD event_fd = EventFD::create().value_or({});
+		ASSERT_NE(-1, event_fd.fd());
 		MainLoop::FDMonitor fd_monitor1;
 		MainLoop::FDMonitor fd_monitor2;
 		bool called = false;
@@ -388,9 +357,9 @@ namespace Rayni
 			called = true;
 		});
 		fd_monitor1.stop();
-		EXPECT_NO_THROW(fd_monitor1.stop());
+		fd_monitor1.stop();
 
-		EXPECT_NO_THROW(fd_monitor2.stop());
+		fd_monitor2.stop();
 
 		while (main_loop.wait(0s) && !called)
 			main_loop.dispatch();
@@ -401,7 +370,8 @@ namespace Rayni
 	TEST(MainLoop, FDMonitorStopInCallback)
 	{
 		MainLoop main_loop;
-		EventFD event_fd;
+		EventFD event_fd = EventFD::create().value_or({});
+		ASSERT_NE(-1, event_fd.fd());
 		MainLoop::FDMonitor fd_monitor;
 		int count = 0;
 
@@ -421,7 +391,8 @@ namespace Rayni
 	TEST(MainLoop, FDMonitorCallbackNotCalledWhenDestroyed)
 	{
 		MainLoop main_loop;
-		EventFD event_fd;
+		EventFD event_fd = EventFD::create().value_or({});
+		ASSERT_NE(-1, event_fd.fd());
 		auto fd_monitor = std::make_unique<MainLoop::FDMonitor>();
 		bool called = false;
 
@@ -439,7 +410,8 @@ namespace Rayni
 	TEST(MainLoop, FDMonitorMove)
 	{
 		MainLoop main_loop;
-		EventFD event_fd;
+		EventFD event_fd = EventFD::create().value_or({});
+		ASSERT_NE(-1, event_fd.fd());
 		MainLoop::FDMonitor fd_monitor1;
 		MainLoop::FDMonitor fd_monitor2;
 		MainLoop::FDMonitor fd_monitor3;
@@ -465,7 +437,8 @@ namespace Rayni
 	TEST(MainLoop, FDMonitorCallbackCalledInMainThread)
 	{
 		MainLoop main_loop;
-		EventFD event_fd;
+		EventFD event_fd = EventFD::create().value_or({});
+		ASSERT_NE(-1, event_fd.fd());
 		MainLoop::FDMonitor fd_monitor;
 		std::thread::id thread_id;
 		auto func = [&](MainLoop::FDFlags /*flags*/) {
@@ -483,7 +456,8 @@ namespace Rayni
 
 	TEST(MainLoop, FDMonitorUsedAndDestroyedAfterMainLoop)
 	{
-		EventFD event_fd;
+		EventFD event_fd = EventFD::create().value_or({});
+		ASSERT_NE(-1, event_fd.fd());
 		MainLoop::FDMonitor fd_monitor;
 
 		{
@@ -661,9 +635,9 @@ namespace Rayni
 
 		timer1.start(main_loop, 1ns, [&] { called = true; });
 		timer1.stop();
-		EXPECT_NO_THROW(timer1.stop());
+		timer1.stop();
 
-		EXPECT_NO_THROW(timer2.stop());
+		timer2.stop();
 
 		timer3.start(main_loop, 2ns, [&] { main_loop.exit(); });
 

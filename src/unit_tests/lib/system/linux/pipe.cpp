@@ -23,14 +23,13 @@
 
 #include <array>
 #include <string>
-#include <system_error>
 #include <utility>
 
 namespace Rayni
 {
 	TEST(Pipe, FDs)
 	{
-		Pipe pipe;
+		Pipe pipe = Pipe::create().value_or({});
 
 		EXPECT_NE(-1, pipe.read_fd());
 		EXPECT_NE(-1, pipe.write_fd());
@@ -39,17 +38,20 @@ namespace Rayni
 
 	TEST(Pipe, Close)
 	{
-		Pipe p1;
+		Pipe p1 = Pipe::create().value_or({});
+		ASSERT_TRUE(p1.read_fd() != -1 && p1.write_fd() != -1);
 		p1.close_read_fd();
 		EXPECT_EQ(-1, p1.read_fd());
 		EXPECT_NE(-1, p1.write_fd());
 
-		Pipe p2;
+		Pipe p2 = Pipe::create().value_or({});
+		ASSERT_TRUE(p2.read_fd() != -1 && p2.write_fd() != -1);
 		p2.close_write_fd();
 		EXPECT_NE(-1, p2.read_fd());
 		EXPECT_EQ(-1, p2.write_fd());
 
-		Pipe p3;
+		Pipe p3 = Pipe::create().value_or({});
+		ASSERT_TRUE(p3.read_fd() != -1 && p3.write_fd() != -1);
 		p3.close_fds();
 		EXPECT_EQ(-1, p3.read_fd());
 		EXPECT_EQ(-1, p3.write_fd());
@@ -57,33 +59,37 @@ namespace Rayni
 
 	TEST(Pipe, ReadWrite)
 	{
-		Pipe pipe;
+		Pipe pipe = Pipe::create().value_or({});
+		ASSERT_TRUE(pipe.read_fd() != -1 && pipe.write_fd() != -1);
 
 		const std::array<char, 2> write_buffer = {12, 34};
-		ASSERT_EQ(2, pipe.write(write_buffer));
+		ASSERT_EQ(2, pipe.write(write_buffer).value_or(0));
 
 		std::array<char, 2> read_buffer;
-		ASSERT_EQ(2, pipe.read(read_buffer));
+		ASSERT_EQ(2, pipe.read(read_buffer).value_or(0));
 		EXPECT_EQ(write_buffer, read_buffer);
 
 		pipe.close_fds();
 
-		EXPECT_THROW(pipe.write(write_buffer), std::system_error);
-		EXPECT_THROW(pipe.read(read_buffer), std::system_error);
+		EXPECT_FALSE(pipe.write(write_buffer));
+		EXPECT_FALSE(pipe.read(read_buffer));
 	}
 
 	TEST(Pipe, ReadAppendToString)
 	{
-		Pipe pipe;
+		Pipe pipe = Pipe::create().value_or({});
+		ASSERT_TRUE(pipe.read_fd() != -1 && pipe.write_fd() != -1);
+
 		std::string str;
 
-		pipe.write(std::string("abc"));
-		EXPECT_EQ(3, pipe.read_append_to_string(str));
+		ASSERT_EQ(3, pipe.write(std::string("abc")).value_or(0));
+		EXPECT_EQ(3, pipe.read_append_to_string(str).value_or(0));
 		EXPECT_EQ("abc", str);
 
-		pipe.write(std::string("123"));
-		pipe.write(std::string("d\0e", 3));
-		EXPECT_EQ(6, pipe.read_append_to_string(str));
+		ASSERT_EQ(3, pipe.write(std::string("123")).value_or(0));
+		ASSERT_EQ(3, pipe.write(std::string("d\0e", 3)).value_or(0));
+		ASSERT_EQ(6, pipe.read_append_to_string(str).value_or(0));
+
 		EXPECT_EQ(9, str.length());
 		EXPECT_EQ(std::string("abc123d\0e", 9), str);
 	}

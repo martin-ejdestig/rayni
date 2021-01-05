@@ -20,10 +20,14 @@
 #include "lib/system/main_loop.h"
 
 #include <algorithm>
+#include <cassert>
 #include <map>
 #include <optional>
 #include <unordered_map>
+#include <utility>
 
+#include "lib/function/result.h"
+#include "lib/log.h"
 #include "lib/math/hash.h"
 
 // TODO: Remove once https://bugs.llvm.org/show_bug.cgi?id=44325 is fixed.
@@ -48,14 +52,25 @@ namespace Rayni
 	// monitoring an fd already in events filled in by Epoll::wait(). Must therefore make sure
 	// fd is still in map when iterating over events and that callback has not been cleared
 	// before invoking it.
+	//
+	// If a system error occurs and the MainLoop still exists, log and exit the main loop. If
+	// main_loop_ is cleared, it means the MainLoop has been destroyed or is in the process of
+	// being destroyed. Just ignore the error.
 	class MainLoop::FDData
 	{
 	public:
+		explicit FDData(MainLoop *main_loop) : main_loop_(main_loop)
+		{
+		}
+
 		void add(int fd, FDFlags flags, std::function<void(FDFlags flags)> &&callback)
 		{
 			std::lock_guard<std::recursive_mutex> lock(mutex_);
 
-			epoll_.add(fd, flags);
+			if (auto r = epoll_.add(fd, flags); !r)
+				if (main_loop_)
+					main_loop_->log_error_and_exit(r.error());
+
 			map_[fd] = Data{std::move(callback)};
 		}
 
@@ -63,7 +78,10 @@ namespace Rayni
 		{
 			std::lock_guard<std::recursive_mutex> lock(mutex_);
 
-			epoll_.modify(fd, flags);
+			if (auto r = epoll_.modify(fd, flags); !r)
+				if (main_loop_)
+					main_loop_->log_error_and_exit(r.error());
+
 			map_[fd] = Data{std::move(callback)};
 		}
 
@@ -75,14 +93,27 @@ namespace Rayni
 			if (i == map_.cend())
 				return;
 
-			epoll_.remove(fd);
 			map_.erase(i);
+
+			if (auto r = epoll_.remove(fd); !r)
+				if (main_loop_)
+					main_loop_->log_error_and_exit(r.error());
 		}
 
 		void dispatch()
 		{
 			std::array<Epoll::Event, 4> events;
-			Epoll::EventCount num_events = epoll_.wait(events);
+			Epoll::EventCount num_events = 0;
+
+			if (auto r = epoll_.wait(events); r) {
+				num_events = *r;
+			} else {
+				std::lock_guard<std::recursive_mutex> lock(mutex_);
+				if (main_loop_)
+					main_loop_->log_error_and_exit(r.error());
+				return;
+			}
+
 			std::lock_guard<std::recursive_mutex> lock(mutex_);
 
 			for (Epoll::EventCount i = 0; i < num_events; i++) {
@@ -93,9 +124,15 @@ namespace Rayni
 			}
 		}
 
-		int needs_dispatch_fd() const
+		Epoll &epoll()
 		{
-			return epoll_.fd();
+			return epoll_;
+		}
+
+		void main_loop_destroyed()
+		{
+			std::lock_guard<std::recursive_mutex> lock(mutex_);
+			main_loop_ = nullptr;
 		}
 
 	private:
@@ -108,6 +145,8 @@ namespace Rayni
 
 		std::recursive_mutex mutex_;
 		std::unordered_map<int, Data> map_;
+
+		MainLoop *main_loop_;
 	};
 
 	// Data for all timers. Can be accessed from multiple threads.
@@ -120,9 +159,17 @@ namespace Rayni
 	// pointer to allow for it to be destroyed together with the MainLoop even if there are
 	// started Timer instances that have not been destroyed. Timers can not be dispatched when
 	// MainLoop no longer exists.
+	//
+	// If a system error occurs and the MainLoop still exists, log and exit the main loop. If
+	// main_loop_ is cleared, it means the MainLoop has been destroyed or is in the process of
+	// being destroyed. Just ignore the error.
 	class MainLoop::TimerData
 	{
 	public:
+		explicit TimerData(MainLoop *main_loop) : main_loop_(main_loop)
+		{
+		}
+
 		// TODO: [[nodiscard]] when https://bugs.llvm.org/show_bug.cgi?id=38401 is fixed.
 		TimerId set(const Timer *timer,
 		            TimerId id,
@@ -137,7 +184,9 @@ namespace Rayni
 
 			map_[id] = Data{expiration, interval, std::move(callback)};
 
-			changed_event_fd_.write(1);
+			if (auto r = changed_event_fd_.write(1); !r)
+				if (main_loop_)
+					main_loop_->log_error_and_exit(r.error());
 
 			return id;
 		}
@@ -152,7 +201,9 @@ namespace Rayni
 
 			map_.erase(i);
 
-			changed_event_fd_.write(1);
+			if (auto r = changed_event_fd_.write(1); !r)
+				if (main_loop_)
+					main_loop_->log_error_and_exit(r.error());
 		}
 
 		std::optional<clock::time_point> earliest_expiration()
@@ -194,14 +245,15 @@ namespace Rayni
 			}
 		}
 
-		int changed_fd() const
+		EventFD &changed_event_fd()
 		{
-			return changed_event_fd_.fd();
+			return changed_event_fd_;
 		}
 
-		void changed_fd_read() const
+		void main_loop_destroyed()
 		{
-			changed_event_fd_.read();
+			std::lock_guard<std::recursive_mutex> lock(mutex_);
+			main_loop_ = nullptr;
 		}
 
 	private:
@@ -238,15 +290,68 @@ namespace Rayni
 
 		std::recursive_mutex mutex_;
 		std::map<TimerId, Data> map_;
+		MainLoop *main_loop_;
 	};
 
-	MainLoop::MainLoop() : timer_data_(std::make_shared<TimerData>()), fd_data_(std::make_shared<FDData>())
+	MainLoop::MainLoop() : timer_data_(std::make_shared<TimerData>(this)), fd_data_(std::make_shared<FDData>(this))
 	{
-		epoll_.add(exit_event_fd_.fd(), Epoll::Flag::IN);
-		epoll_.add(run_in_event_fd_.fd(), Epoll::Flag::IN);
-		epoll_.add(timer_fd_.fd(), Epoll::Flag::IN);
-		epoll_.add(timer_data_->changed_fd(), Epoll::Flag::IN);
-		epoll_.add(fd_data_->needs_dispatch_fd(), Epoll::Flag::IN);
+		// Should maybe do early return on errors. But it does not really matter. Likelyhood
+		// of error is small and the worst that happens is that > 1 error is logged.
+		if (auto r = Epoll::create(); r)
+			epoll_ = std::move(*r);
+		else
+			log_error_and_exit(r.error());
+
+		if (auto r = EventFD::create(); r) {
+			exit_event_fd_ = std::move(*r);
+
+			if (auto re = epoll_.add(exit_event_fd_.fd(), Epoll::Flag::IN); !re)
+				log_error_and_exit(re.error());
+		} else {
+			log_error_and_exit(r.error());
+		}
+
+		if (auto r = EventFD::create(); r) {
+			run_in_event_fd_ = std::move(*r);
+
+			if (auto re = epoll_.add(run_in_event_fd_.fd(), Epoll::Flag::IN); !re)
+				log_error_and_exit(re.error());
+		} else {
+			log_error_and_exit(r.error());
+		}
+
+		if (auto r = TimerFD::create(); r) {
+			timer_fd_ = std::move(*r);
+
+			if (auto re = epoll_.add(timer_fd_.fd(), Epoll::Flag::IN); !re)
+				log_error_and_exit(re.error());
+		} else {
+			log_error_and_exit(r.error());
+		}
+
+		if (auto r = EventFD::create(); r) {
+			timer_data_->changed_event_fd() = std::move(*r);
+
+			if (auto re = epoll_.add(timer_data_->changed_event_fd().fd(), Epoll::Flag::IN); !re)
+				log_error_and_exit(re.error());
+		} else {
+			log_error_and_exit(r.error());
+		}
+
+		if (auto r = Epoll::create(); r) {
+			fd_data_->epoll() = std::move(*r);
+
+			if (auto re = epoll_.add(fd_data_->epoll().fd(), Epoll::Flag::IN); !re)
+				log_error_and_exit(re.error());
+		} else {
+			log_error_and_exit(r.error());
+		}
+	}
+
+	MainLoop::~MainLoop()
+	{
+		timer_data_->main_loop_destroyed();
+		fd_data_->main_loop_destroyed();
 	}
 
 	int MainLoop::loop()
@@ -265,7 +370,24 @@ namespace Rayni
 	{
 		exit_code_ = exit_code;
 		exited_ = true;
-		exit_event_fd_.write(1);
+
+		if (auto r = exit_event_fd_.write(1); !r)
+			log_error("MainLoop: %s", r.error().message().c_str());
+	}
+
+	void MainLoop::log_error_and_exit(const Error &error)
+	{
+		log_error("MainLoop: %s", error.message().c_str());
+
+		if (!exited_) {
+			exit_code_ = EXIT_FAILURE;
+			exited_ = true;
+
+			// log_error_and_exit() is internal and may be called before initialization has finished.
+			if (exit_event_fd_.fd() != -1)
+				if (auto r = exit_event_fd_.write(1); !r)
+					log_error("MainLoop: %s", r.error().message().c_str());
+		}
 	}
 
 	bool MainLoop::wait(std::chrono::milliseconds timeout)
@@ -273,7 +395,10 @@ namespace Rayni
 		if (exited())
 			return false;
 
-		events_occurred_ = epoll_.wait(events_, timeout);
+		if (auto r = epoll_.wait(events_, timeout); r)
+			events_occurred_ = *r;
+		else
+			log_error_and_exit(r.error());
 
 		return events_occurred_ > 0;
 	}
@@ -287,21 +412,33 @@ namespace Rayni
 				break;
 
 			if (event.fd() == exit_event_fd_.fd()) {
-				exit_event_fd_.read();
+				if (auto r = exit_event_fd_.read(); !r) {
+					assert(exited_); // Should be exiting, no need for log_error_and_exit().
+					log_error("MainLoop: %s", r.error().message().c_str());
+				}
 				break;
 			}
 
 			if (event.fd() == run_in_event_fd_.fd()) {
-				run_in_event_fd_.read();
+				if (auto r = run_in_event_fd_.read(); !r) {
+					log_error_and_exit(r.error());
+					return;
+				}
 				run_in_functions_.dispatch();
 			} else if (event.fd() == timer_fd_.fd()) {
-				timer_fd_.read();
+				if (auto r = timer_fd_.read(); !r) {
+					log_error_and_exit(r.error());
+					return;
+				}
 				timer_data_->dispatch();
 				set_timer_fd_from_timer_data();
-			} else if (event.fd() == timer_data_->changed_fd()) {
-				timer_data_->changed_fd_read();
+			} else if (event.fd() == timer_data_->changed_event_fd().fd()) {
+				if (auto r = timer_data_->changed_event_fd().read(); !r) {
+					log_error_and_exit(r.error());
+					return;
+				}
 				set_timer_fd_from_timer_data();
-			} else if (event.fd() == fd_data_->needs_dispatch_fd()) {
+			} else if (event.fd() == fd_data_->epoll().fd()) {
 				fd_data_->dispatch();
 			}
 		}
@@ -310,17 +447,22 @@ namespace Rayni
 	void MainLoop::run_in(std::function<void()> &&function)
 	{
 		run_in_functions_.add(std::move(function));
-		run_in_event_fd_.write(1);
+
+		if (auto r = run_in_event_fd_.write(1); !r)
+			log_error_and_exit(r.error());
 	}
 
-	void MainLoop::set_timer_fd_from_timer_data() const
+	void MainLoop::set_timer_fd_from_timer_data()
 	{
 		std::optional<clock::time_point> expiration = timer_data_->earliest_expiration();
 
-		if (expiration.has_value())
-			timer_fd_.set(expiration.value());
-		else
-			timer_fd_.disarm();
+		if (expiration.has_value()) {
+			if (auto r = timer_fd_.set(expiration.value()); !r)
+				log_error_and_exit(r.error());
+		} else {
+			if (auto r = timer_fd_.disarm(); !r)
+				log_error_and_exit(r.error());
+		}
 	}
 
 	void MainLoop::RunInFunctions::add(std::function<void()> &&function)

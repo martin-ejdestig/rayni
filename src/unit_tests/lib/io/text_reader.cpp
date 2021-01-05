@@ -100,7 +100,8 @@ namespace Rayni
 
 	TEST(TextReader, OpenFile)
 	{
-		ScopedTempDir temp_dir;
+		ScopedTempDir temp_dir = ScopedTempDir::create().value_or({});
+		ASSERT_FALSE(temp_dir.path().empty());
 		const std::string exists1_path = temp_dir.path() / "exists1.txt";
 		const std::string exists2_path = temp_dir.path() / "exists2.txt";
 		const std::string does_not_exist_path = temp_dir.path() / "does_not_exist.txt";

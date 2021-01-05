@@ -90,16 +90,20 @@ namespace Rayni
 						             std::error_code(errno, std::system_category()));
 				}
 
-				try {
-					if ((poll_fds[0].revents & PIPE_READ_EVENTS) != 0)
-						if (stdout_pipe.read_append_to_string(stdout_str) == 0)
-							poll_fds[0].fd = -1;
+				if ((poll_fds[0].revents & PIPE_READ_EVENTS) != 0) {
+					auto r = stdout_pipe.read_append_to_string(stdout_str);
+					if (!r)
+						return r.error();
+					if (*r == 0)
+						poll_fds[0].fd = -1;
+				}
 
-					if ((poll_fds[1].revents & PIPE_READ_EVENTS) != 0)
-						if (stderr_pipe.read_append_to_string(stderr_str) == 0)
-							poll_fds[1].fd = -1;
-				} catch (const std::exception &e) {
-					return Error("failed to read child pipes: " + std::string(e.what()));
+				if ((poll_fds[1].revents & PIPE_READ_EVENTS) != 0) {
+					auto r = stderr_pipe.read_append_to_string(stderr_str);
+					if (!r)
+						return r.error();
+					if (*r == 0)
+						poll_fds[1].fd = -1;
 				}
 			}
 
@@ -128,8 +132,17 @@ namespace Rayni
 
 	Result<CommandOutput> command_run(std::vector<std::string> &&args)
 	{
-		Pipe stdout_pipe(O_CLOEXEC);
-		Pipe stderr_pipe(O_CLOEXEC);
+		Pipe stdout_pipe;
+		if (auto r = Pipe::create(O_CLOEXEC); r)
+			stdout_pipe = std::move(*r);
+		else
+			return r.error();
+
+		Pipe stderr_pipe;
+		if (auto r = Pipe::create(O_CLOEXEC); r)
+			stderr_pipe = std::move(*r);
+		else
+			return r.error();
 
 		pid_t child_pid = fork();
 		if (child_pid == -1)

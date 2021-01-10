@@ -1,13 +1,3 @@
-# - bugprone-exception-escape is disabled because it causes too many false
-#   positives. E.g. if a function marked noexcept needs to take a mutex lock
-#   and that throws a std::system_error, what other reasonable thing is there
-#   to do than to exit the program? This is well defined. (std::terminate() is
-#   called if an exception is thrown in a method marked noexcept.) There also
-#   seems to be a bug with std::variant/std::monostate. Warnings are emitted
-#   even though only std::variant/std::monostate methods that should be noexcept
-#   are called in a function marked noexcept. Unclear if the bug is in
-#   clang-tidy or libstdc++. TODO: Fixed? File bug(s)?
-#
 # - misc-no-recursion is disabled because... do not want it. (Many algorithms
 #   etc. are much easier to reason about with recursion. In some cases, e.g.
 #   tree building, a stack could be used. But then an artificial limit would
@@ -61,7 +51,6 @@
 
 Checks: "\
 bugprone-*,\
--bugprone-exception-escape,\
 google-build-namespaces,\
 google-build-using-namespace,\
 google-default-arguments,\

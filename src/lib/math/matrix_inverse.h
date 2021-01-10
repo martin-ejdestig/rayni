@@ -28,66 +28,24 @@
 
 namespace Rayni
 {
-	class MatrixInverse
+	// In-place inverse of (non-singular) matrix.
+	//
+	// Calling this method with a singular matrix is considered a programming error.
+	//
+	// Uses Gauss-Jordan elimination with partial (row) pivoting to increase numerical stability.
+	template <typename Matrix>
+	static constexpr inline void matrix_inverse_in_place(Matrix &m)
 	{
-	public:
-		// In-place inverse of (non-singular) matrix.
-		//
-		// Calling this method with a singular matrix is considered a programming error.
-		//
-		// Uses Gauss-Jordan elimination with partial (row) pivoting to increase numerical
-		// stability.
-		template <typename Matrix>
-		static void find_in_place(Matrix &m)
-		{
-			std::array<PivotPosition, Matrix::SIZE> pivot_positions;
-			std::array<unsigned int, Matrix::SIZE> pivot_used = {};
-
-			for (auto &pivot_position : pivot_positions) {
-				pivot_position = find_pivot_position(m, pivot_used);
-
-				if (pivot_position.row != pivot_position.column)
-					m.swap_rows(pivot_position.row, pivot_position.column);
-
-				unsigned int pos = pivot_position.column;
-				real_t pivot_inv = 1 / m(pos, pos);
-				m(pos, pos) = 1;
-				m.row(pos) *= pivot_inv;
-
-				for (unsigned int row = 0; row < Matrix::SIZE; row++) {
-					if (row != pos) {
-						real_t old_value = m(row, pos);
-						m(row, pos) = 0;
-						m.row(row) += m.row(pos) * -old_value;
-					}
-				}
-			}
-
-			for (unsigned int i = Matrix::SIZE; i > 0; i--)
-				if (pivot_positions[i - 1].row != pivot_positions[i - 1].column)
-					m.swap_columns(pivot_positions[i - 1].row, pivot_positions[i - 1].column);
-		}
-
-		template <typename Matrix>
-		static Matrix find(const Matrix &m)
-		{
-			Matrix ret(m);
-			find_in_place(ret);
-			return ret;
-		}
-
-	private:
 		struct PivotPosition
 		{
 			unsigned int row = 0;
 			unsigned int column = 0;
 		};
 
-		template <typename Matrix>
-		static PivotPosition find_pivot_position(const Matrix &m,
-		                                         std::array<unsigned int, Matrix::SIZE> &pivot_used)
-		{
-			PivotPosition pos;
+		std::array<PivotPosition, Matrix::SIZE> pivot_positions;
+		std::array<unsigned int, Matrix::SIZE> pivot_used = {};
+
+		for (auto &pivot_position : pivot_positions) {
 			real_t max = 0;
 
 			for (unsigned int row = 0; row < Matrix::SIZE; row++) {
@@ -97,17 +55,43 @@ namespace Rayni
 				for (unsigned int column = 0; column < Matrix::SIZE; column++) {
 					if (pivot_used[column] == 0 && std::abs(m(row, column)) >= max) {
 						max = std::abs(m(row, column));
-						pos = {row, column};
+						pivot_position = {row, column};
 					}
 				}
 			}
 
-			assert(max > 0 && pivot_used[pos.column] == 0); // Singular matrix?
-			pivot_used[pos.column]++;
+			if (pivot_position.row != pivot_position.column)
+				m.swap_rows(pivot_position.row, pivot_position.column);
 
-			return pos;
+			unsigned int pos = pivot_position.column;
+			assert(max > 0 && pivot_used[pos] == 0); // Singular matrix?
+			pivot_used[pos]++;
+
+			real_t pivot_inv = 1 / m(pos, pos);
+			m(pos, pos) = 1;
+			m.row(pos) *= pivot_inv;
+
+			for (unsigned int row = 0; row < Matrix::SIZE; row++) {
+				if (row != pos) {
+					real_t old_value = m(row, pos);
+					m(row, pos) = 0;
+					m.row(row) += m.row(pos) * -old_value;
+				}
+			}
 		}
-	};
+
+		for (unsigned int i = Matrix::SIZE; i > 0; i--)
+			if (pivot_positions[i - 1].row != pivot_positions[i - 1].column)
+				m.swap_columns(pivot_positions[i - 1].row, pivot_positions[i - 1].column);
+	}
+
+	template <typename Matrix>
+	static constexpr inline Matrix matrix_inverse(const Matrix &m)
+	{
+		Matrix ret(m);
+		matrix_inverse_in_place(ret);
+		return ret;
+	}
 }
 
 #endif // RAYNI_LIB_MATH_MATRIX_INVERSE_H

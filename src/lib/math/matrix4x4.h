@@ -191,7 +191,7 @@ namespace Rayni
 
 		Matrix4x4 inverse() const
 		{
-			return MatrixInverse::find(*this);
+			return matrix_inverse(*this);
 		}
 
 		Matrix4x4 transpose() const

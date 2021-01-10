@@ -121,7 +121,7 @@ namespace Rayni
 
 		Matrix3x3 inverse() const
 		{
-			return MatrixInverse::find(*this);
+			return matrix_inverse(*this);
 		}
 
 		Matrix3x3 transpose() const

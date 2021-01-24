@@ -80,7 +80,7 @@ namespace Rayni
 		// API documentation. Take advantage of this to limit calls to jpeg_destroy_decompress().
 		// See libjpeg.txt and example.c in the libjpeg-turbo source root directory for more
 		// information.
-		bool decode_file_to_image(std::FILE &file, Image &image)
+		bool decode_file_to_image(std::FILE *file, Image &image)
 		{
 			jpeg_decompress_struct jpeg_decompress;
 			ErrorManager error_manager;
@@ -95,7 +95,7 @@ namespace Rayni
 			}
 
 			jpeg_create_decompress(&jpeg_decompress);
-			jpeg_stdio_src(&jpeg_decompress, &file);
+			jpeg_stdio_src(&jpeg_decompress, file);
 			jpeg_read_header(&jpeg_decompress, 1);
 
 			if (color_space_requires_manual_conversion(jpeg_decompress.jpeg_color_space)) {
@@ -130,7 +130,7 @@ namespace Rayni
 
 		Image image;
 
-		if (!decode_file_to_image(*file, image))
+		if (!decode_file_to_image(file, image))
 			return Error(file_name + ": failed to decode JPEG image");
 
 		return image;

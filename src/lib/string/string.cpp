@@ -44,6 +44,8 @@ namespace
 	// 6.5s - std::istringstream (with system locale)
 	// 8.0s - std::istringstream + imbue
 	// 4.5s - std::istringstream + imbue + thread local reuse
+	//
+	// TODO: Remove this when std::from_chars() supports float/double in libstdc++ and libc++.
 	std::istringstream &classic_locale_istringstream_get_with_string(std::string_view str)
 	{
 		static thread_local std::istringstream stream = [] {

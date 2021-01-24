@@ -55,6 +55,11 @@ namespace
 
 namespace Rayni
 {
+	TEST(String, Printf)
+	{
+		EXPECT_EQ("1 2 3", string_printf("1 %s %d", "2", 3));
+	}
+
 	TEST(String, Center)
 	{
 		EXPECT_EQ("", string_center(0, ""));

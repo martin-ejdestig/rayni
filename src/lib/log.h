@@ -24,11 +24,7 @@
 #include <optional>
 #include <string>
 
-#ifdef __GNUC__
-#	define RAYNI_LOG_PRINTF_ATTRIBUTE(f, a) __attribute__((format(printf, f, a)))
-#else
-#	define RAYNI_LOG_PRINTF_ATTRIBUTE(f, a)
-#endif
+#include "lib/string/string.h"
 
 namespace Rayni
 {
@@ -44,9 +40,9 @@ namespace Rayni
 
 	LogConfig log_set_config(LogConfig &&config);
 
-	void log_info(const char *format, ...) RAYNI_LOG_PRINTF_ATTRIBUTE(1, 2);
-	void log_warning(const char *format, ...) RAYNI_LOG_PRINTF_ATTRIBUTE(1, 2);
-	void log_error(const char *format, ...) RAYNI_LOG_PRINTF_ATTRIBUTE(1, 2);
+	void log_info(const char *format, ...) RAYNI_STRING_PRINTF_ATTRIBUTE(1, 2);
+	void log_warning(const char *format, ...) RAYNI_STRING_PRINTF_ATTRIBUTE(1, 2);
+	void log_error(const char *format, ...) RAYNI_STRING_PRINTF_ATTRIBUTE(1, 2);
 }
 
 #endif // RAYNI_LIB_LOG_H

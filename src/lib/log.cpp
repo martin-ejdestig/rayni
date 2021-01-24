@@ -33,6 +33,7 @@
 #include <utility>
 
 #include "lib/string/split.h"
+#include "lib/string/string.h"
 
 // Simple log functions. Not meant to be a generic "log framework". Do NOT complicate things
 // unnecessarily. E.g. only reason why it is possible to set a callback is to allow for CLI
@@ -93,31 +94,6 @@ namespace Rayni
 		{
 			static State state;
 			return state;
-		}
-
-		std::string format_string(const char *format, std::va_list args) RAYNI_LOG_PRINTF_ATTRIBUTE(1, 0);
-
-		std::string format_string(const char *format, std::va_list args)
-		{
-			char buffer[1024];
-			std::va_list args_copy;
-
-			va_copy(args_copy, args);
-			int size = std::vsnprintf(buffer, sizeof(buffer), format, args_copy);
-			va_end(args_copy);
-
-			if (size <= 0)
-				return "";
-
-			if (unsigned(size) < sizeof(buffer))
-				return std::string(buffer, unsigned(size));
-
-			std::string str(unsigned(size), '\0');
-			va_copy(args_copy, args);
-			std::vsnprintf(str.data(), str.size() + 1, format, args);
-			va_end(args_copy);
-
-			return str;
 		}
 
 		std::string level_to_color_start(Level level)
@@ -202,7 +178,7 @@ namespace Rayni
 	{
 		std::va_list args;
 		va_start(args, format);
-		std::string message = format_string(format, args);
+		std::string message = string_printf(format, args);
 		va_end(args);
 
 		invoke_callback(prepend_prefix(Level::INFO, message));
@@ -212,7 +188,7 @@ namespace Rayni
 	{
 		std::va_list args;
 		va_start(args, format);
-		std::string message = format_string(format, args);
+		std::string message = string_printf(format, args);
 		va_end(args);
 
 		invoke_callback(prepend_prefix(Level::WARNING, message));
@@ -222,7 +198,7 @@ namespace Rayni
 	{
 		std::va_list args;
 		va_start(args, format);
-		std::string message = format_string(format, args);
+		std::string message = string_printf(format, args);
 		va_end(args);
 
 		invoke_callback(prepend_prefix(Level::ERROR, message));

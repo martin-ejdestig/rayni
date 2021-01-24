@@ -22,14 +22,24 @@
 
 #include <cassert>
 #include <charconv>
+#include <cstdarg>
 #include <optional>
 #include <string>
 #include <string_view>
 #include <system_error>
 #include <type_traits>
 
+#ifdef __GNUC__
+#	define RAYNI_STRING_PRINTF_ATTRIBUTE(f, a) __attribute__((format(printf, f, a)))
+#else
+#	define RAYNI_STRING_PRINTF_ATTRIBUTE(f, a)
+#endif
+
 namespace Rayni
 {
+	std::string string_printf(const char *format, ...) RAYNI_STRING_PRINTF_ATTRIBUTE(1, 2);
+	std::string string_printf(const char *format, std::va_list args) RAYNI_STRING_PRINTF_ATTRIBUTE(1, 0);
+
 	std::string string_center(std::string::size_type width, const std::string &str);
 	std::string string_right_align(std::string::size_type width, const std::string &str);
 

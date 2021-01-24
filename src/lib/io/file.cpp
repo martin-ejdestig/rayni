@@ -19,12 +19,12 @@
 
 #include "lib/io/file.h"
 
-#include <algorithm>
+#include <cstdio>
 #include <cstring>
-#include <fstream>
-#include <iterator>
+#include <utility>
 
 #include "lib/function/result.h"
+#include "lib/function/scope_exit.h"
 #include "lib/system/memory_mapped_file.h"
 
 namespace Rayni
@@ -46,12 +46,13 @@ namespace Rayni
 
 	Result<void> file_write(const std::string &path, const std::vector<std::uint8_t> &data)
 	{
-		std::ofstream file(path, std::ios_base::binary);
+		std::FILE *file = std::fopen(path.c_str(), "wb");
+		if (!file)
+			return Error(path, "failed to open file for writing");
+		auto file_close = scope_exit([&] { std::fclose(file); });
 
-		std::copy(data.begin(), data.end(), std::ostream_iterator<std::uint8_t>(file));
-
-		if (!file.good())
-			return Error(path + ": failed to write to file");
+		if (std::fwrite(data.data(), 1, data.size(), file) != data.size())
+			return Error(path, "failed to write to file");
 
 		return {};
 	}

@@ -44,7 +44,7 @@ namespace Rayni
 		{
 			started_ = true;
 			time_start_ = time_point;
-			time_end_ = time_start_;
+			time_stop_ = time_start_;
 			return *this;
 		}
 
@@ -57,7 +57,7 @@ namespace Rayni
 		{
 			assert(started_ && time_start_ <= time_point);
 			started_ = false;
-			time_end_ = time_point;
+			time_stop_ = time_point;
 			return *this;
 		}
 
@@ -66,9 +66,19 @@ namespace Rayni
 			return started_;
 		}
 
+		clock::time_point time_start() const
+		{
+			return time_start_;
+		}
+
+		clock::time_point time_stop() const
+		{
+			return time_stop_;
+		}
+
 		clock::duration duration() const
 		{
-			return (started_ ? clock::now() : time_end_) - time_start_;
+			return (started_ ? clock::now() : time_stop_) - time_start_;
 		}
 
 		std::string string(const DurationFormatOptions &options = {.seconds_precision = 3}) const
@@ -79,7 +89,7 @@ namespace Rayni
 	private:
 		bool started_ = false;
 		clock::time_point time_start_;
-		clock::time_point time_end_;
+		clock::time_point time_stop_;
 	};
 }
 

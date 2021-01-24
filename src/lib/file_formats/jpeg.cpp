@@ -23,10 +23,10 @@
 
 #include <csetjmp>
 #include <cstdio>
-#include <memory>
 #include <string>
 
 #include "lib/function/result.h"
+#include "lib/function/scope_exit.h"
 #include "lib/graphics/image.h"
 
 namespace Rayni
@@ -123,10 +123,10 @@ namespace Rayni
 
 	Result<Image> jpeg_read_file(const std::string &file_name)
 	{
-		std::unique_ptr<std::FILE, decltype(&std::fclose)> file(std::fopen(file_name.c_str(), "rb"),
-		                                                        std::fclose);
+		std::FILE *file = std::fopen(file_name.c_str(), "rb");
 		if (!file)
 			return Error(file_name + ": failed to open JPEG image");
+		auto file_close = scope_exit([&] { std::fclose(file); });
 
 		Image image;
 

@@ -21,8 +21,8 @@
 
 #include <chrono>
 #include <cmath>
-#include <iomanip>
-#include <sstream>
+
+#include "lib/string/string.h"
 
 // TODO: Remove once https://bugs.llvm.org/show_bug.cgi?id=44325 is fixed.
 // Spurious warning when e.g. >= is rewritten to <=>, which happens with chrono. *sigh*
@@ -40,15 +40,15 @@ namespace Rayni
 		auto hh = std::chrono::duration_cast<std::chrono::hours>(ns).count();
 		auto mm = std::chrono::duration_cast<std::chrono::minutes>(ns % 1h).count();
 		auto ss = std::chrono::duration_cast<std::chrono::duration<double>>(ns % 1min).count();
-		std::ostringstream stream;
+		std::string str;
 
 		// NOLINTNEXTLINE(modernize-use-nullptr) TODO: https://bugs.llvm.org/show_bug.cgi?id=46235 fixed?
 		if (ns >= 1h)
-			stream << hh << ":";
+			str += string_printf("%d:", int(hh));
 
 		// NOLINTNEXTLINE(modernize-use-nullptr) TODO: https://bugs.llvm.org/show_bug.cgi?id=46235 fixed?
 		if (ns >= 1min)
-			stream << std::setw(2) << std::setfill('0') << mm << ":";
+			str += string_printf("%02d:", int(mm));
 
 		int seconds_width = 1;
 		// NOLINTNEXTLINE(modernize-use-nullptr) TODO: https://bugs.llvm.org/show_bug.cgi?id=46235 fixed?
@@ -58,10 +58,18 @@ namespace Rayni
 			seconds_width++;
 		seconds_width += options.seconds_precision;
 
-		stream << std::setw(seconds_width) << std::setfill('0') << std::fixed
-		       << std::setprecision(options.seconds_precision) << (options.floor_seconds ? std::floor(ss) : ss);
+		str += string_printf("%0*.*f",
+		                     seconds_width,
+		                     int(options.seconds_precision),
+		                     options.floor_seconds ? std::floor(ss) : ss);
 
-		return stream.str();
+		if (options.seconds_precision > 0) { // Hack to ignore locale specific decimal point.
+			char *c = &str[str.size() - options.seconds_precision - 1];
+			if (*c != '.')
+				*c = '.';
+		}
+
+		return str;
 	}
 }
 

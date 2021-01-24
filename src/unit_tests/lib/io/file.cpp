@@ -22,7 +22,6 @@
 #include <gtest/gtest.h>
 
 #include <cstdint>
-#include <fstream>
 #include <string>
 #include <vector>
 
@@ -30,21 +29,42 @@
 
 namespace Rayni
 {
-	TEST(File, Write)
+	TEST(File, ReadAndWrite)
 	{
 		ScopedTempDir temp_dir = ScopedTempDir::create().value_or({});
 		ASSERT_FALSE(temp_dir.path().empty());
 		const std::string path = temp_dir.path() / "foo";
+
 		const std::vector<std::uint8_t> write_data = {0x12, 0x34};
+		ASSERT_TRUE(file_write(path, write_data));
 
-		EXPECT_TRUE(file_write(path, write_data));
+		Result<std::vector<std::uint8_t>> read_data = file_read(path);
+		ASSERT_TRUE(read_data);
 
-		std::ifstream file(path, std::ios::binary);
-		std::vector<std::uint8_t> read_data((std::istreambuf_iterator<char>(file)),
-		                                    std::istreambuf_iterator<char>());
-
-		EXPECT_EQ(write_data, read_data);
-
-		EXPECT_FALSE(file_write(temp_dir.path() / "dir_that_does_not_exist" / "bar", write_data));
+		EXPECT_EQ(write_data, *read_data);
 	}
+
+	TEST(File, ReadAndWriteZeroBytes)
+	{
+		ScopedTempDir temp_dir = ScopedTempDir::create().value_or({});
+		ASSERT_FALSE(temp_dir.path().empty());
+		const std::string path = temp_dir.path() / "foo";
+
+		ASSERT_TRUE(file_write(path, {}));
+
+		Result<std::vector<std::uint8_t>> read_data = file_read(path);
+		ASSERT_TRUE(read_data);
+
+		EXPECT_EQ(0, read_data->size());
+	}
+
+	TEST(File, ReadAndWriteInNonexistingDirFails)
+	{
+		ScopedTempDir temp_dir = ScopedTempDir::create().value_or({});
+		ASSERT_FALSE(temp_dir.path().empty());
+
+		EXPECT_FALSE(file_read(temp_dir.path() / "dir_that_does_not_exist" / "bar"));
+		EXPECT_FALSE(file_write(temp_dir.path() / "dir_that_does_not_exist" / "baz", {0, 1, 2, 3}));
+	}
+
 }

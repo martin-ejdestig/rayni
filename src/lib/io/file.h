@@ -28,6 +28,8 @@
 
 namespace Rayni
 {
+	Result<std::vector<std::uint8_t>> file_read(const std::string &path);
+
 	Result<void> file_write(const std::string &path, const std::vector<std::uint8_t> &data);
 }
 

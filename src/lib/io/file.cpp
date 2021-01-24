@@ -20,13 +20,30 @@
 #include "lib/io/file.h"
 
 #include <algorithm>
+#include <cstring>
 #include <fstream>
 #include <iterator>
 
 #include "lib/function/result.h"
+#include "lib/system/memory_mapped_file.h"
 
 namespace Rayni
 {
+	Result<std::vector<std::uint8_t>> file_read(const std::string &path)
+	{
+		MemoryMappedFile file;
+		if (auto r = file.map(path); !r)
+			return r.error();
+
+		std::vector<std::uint8_t> buffer;
+		buffer.resize(file.size());
+
+		if (file.size() > 0)
+			std::memcpy(buffer.data(), file.data(), buffer.size());
+
+		return buffer;
+	}
+
 	Result<void> file_write(const std::string &path, const std::vector<std::uint8_t> &data)
 	{
 		std::ofstream file(path, std::ios_base::binary);

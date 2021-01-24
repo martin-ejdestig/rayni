@@ -21,21 +21,10 @@
 
 #include <gtest/gtest.h>
 
-#include <fstream>
 #include <string>
 
+#include "lib/io/file.h"
 #include "lib/system/scoped_temp_dir.h"
-
-namespace
-{
-	void text_to_file(const std::string &path, const std::string &text)
-	{
-		std::ofstream file(path);
-		file << text;
-		if (!file.good())
-			FAIL() << "Failed to write to file " << path << ".";
-	}
-}
 
 namespace Rayni
 {
@@ -106,8 +95,8 @@ namespace Rayni
 		const std::string exists2_path = temp_dir.path() / "exists2.txt";
 		const std::string does_not_exist_path = temp_dir.path() / "does_not_exist.txt";
 
-		text_to_file(exists1_path, "test1");
-		text_to_file(exists2_path, "test2");
+		ASSERT_TRUE(file_write(exists1_path, {'t', 'e', 's', 't', '1'}));
+		ASSERT_TRUE(file_write(exists2_path, {'t', 'e', 's', 't', '2'}));
 
 		TextReader reader;
 		EXPECT_EQ("", reader.position().string());

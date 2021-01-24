@@ -22,19 +22,13 @@
 #include <gtest/gtest.h>
 
 #include <filesystem>
-#include <fstream>
+
+#include "lib/io/file.h"
 
 namespace Rayni
 {
 	TEST(ScopedTempDir, RemovedWhenDestroyed)
 	{
-		auto output_to_file = [](auto path, auto content) {
-			std::ofstream stream(path);
-			stream << content;
-			if (!stream.good())
-				FAIL() << "Failed to write to file " << path << ".";
-		};
-
 		std::filesystem::path path;
 
 		{
@@ -43,10 +37,10 @@ namespace Rayni
 
 			path = dir.path();
 
-			output_to_file(path / "foo", "bla bla");
+			ASSERT_TRUE(file_write(path / "foo", {0, 1, 2, 3}));
 
 			std::filesystem::create_directory(path / "bar");
-			output_to_file(path / "bar" / "baz", "yada yada");
+			ASSERT_TRUE(file_write(path / "bar" / "baz", {4, 5, 6, 7}));
 		}
 
 		EXPECT_FALSE(std::filesystem::exists(path));

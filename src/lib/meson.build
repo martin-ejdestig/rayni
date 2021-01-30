@@ -15,7 +15,6 @@ lib_sources = [
     'concurrency/latch.h',
     'concurrency/thread_pool.cpp',
     'concurrency/thread_pool.h',
-    'containers/fixed_size_stack.h',
     'containers/listener_list.h',
     'containers/variant.cpp',
     'containers/variant.h',

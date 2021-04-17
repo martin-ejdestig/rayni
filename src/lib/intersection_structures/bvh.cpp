@@ -423,34 +423,39 @@ namespace Rayni
 
 		BucketSplit bucket_split(const Bucket *buckets, const AABB &aabb)
 		{
+			constexpr unsigned int NUM_SPLITS = NUM_BUCKETS - 1;
+			std::uint32_t left_count[NUM_SPLITS];
+			std::uint32_t right_count[NUM_SPLITS];
+			AABB left_aabb[NUM_SPLITS];
+			AABB right_aabb[NUM_SPLITS];
+
+			left_count[0] = buckets[0].count;
+			left_aabb[0] = buckets[0].aabb;
+			for (unsigned int i = 1; i < NUM_SPLITS; i++) {
+				left_count[i] = left_count[i - 1] + buckets[i].count;
+				left_aabb[i] = AABB(left_aabb[i - 1]).merge(buckets[i].aabb);
+			}
+
+			right_count[NUM_SPLITS - 1] = buckets[NUM_BUCKETS - 1].count;
+			right_aabb[NUM_SPLITS - 1] = buckets[NUM_BUCKETS - 1].aabb;
+			for (int i = NUM_SPLITS - 2; i >= 0; i--) {
+				right_count[i] = right_count[i + 1] + buckets[i + 1].count;
+				right_aabb[i] = AABB(right_aabb[i + 1]).merge(buckets[i + 1].aabb);
+			}
+
 			real_t split_cost = REAL_INFINITY;
 			unsigned int split_bucket = 0;
 
-			for (unsigned int i = 0; i < NUM_BUCKETS - 1; i++) {
-				AABB left_aabb;
-				AABB right_aabb;
-				std::uint32_t left_count = 0;
-				std::uint32_t right_count = 0;
-
-				for (unsigned int j = 0; j <= i; j++) {
-					left_aabb.merge(buckets[j].aabb);
-					left_count += buckets[j].count;
-				}
-
-				for (unsigned int j = i + 1; j < NUM_BUCKETS; j++) {
-					right_aabb.merge(buckets[j].aabb);
-					right_count += buckets[j].count;
-				}
-
-				real_t cost = 1 + (left_count * left_aabb.surface_area() +
-				                   right_count * right_aabb.surface_area()) /
-				                          aabb.surface_area();
-
+			for (unsigned int i = 0; i < NUM_SPLITS; i++) {
+				real_t cost = (left_count[i] * left_aabb[i].surface_area() +
+				               right_count[i] * right_aabb[i].surface_area());
 				if (cost < split_cost) {
 					split_cost = cost;
 					split_bucket = i;
 				}
 			}
+
+			split_cost = real_t(0.5) + split_cost / aabb.surface_area();
 
 			return {split_cost, split_bucket};
 		}
